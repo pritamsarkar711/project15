@@ -16,10 +16,10 @@
     <title>{{ $metaTitle ?? ($post->meta_title ?? ($page->meta_title ?? (setting('site_name','huvanti.com') . ' · ' . setting('site_tagline','Explore Ideas. Inspire Life.')))) }}</title>
     <meta name="description" content="{{ $metaDescription ?? ($post->meta_description ?? ($page->meta_description ?? setting('site_description','Huvanti is a multi niche blog covering technology, health, finance, travel, lifestyle and education.'))) }}">
     <meta name="keywords" content="{{ setting('site_keywords','huvanti, blog, technology, health, finance, travel, lifestyle') }}">
-    <link rel="canonical" href="{{ url()->current() }}">
+    <link rel="canonical" href="{{ config('app.url') . request()->getRequestUri() }}">
     <meta property="og:title" content="{{ $metaTitle ?? setting('site_name','huvanti.com') }}">
     <meta property="og:description" content="{{ $metaDescription ?? setting('site_description') }}">
-    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:url" content="{{ config('app.url') . request()->getRequestUri() }}">
     <meta property="og:type" content="website">
     <meta property="og:image" content="{{ $ogImage ?? asset('images/og-huvanti.jpg') }}">
     <meta name="twitter:card" content="summary_large_image">
@@ -65,7 +65,7 @@
             @endif
             @if(session('error'))
                 <div class="max-w-[1200px] mx-auto px-4 sm:px-6 mt-4">
-                    <div class="card-elev text-emerald-800 dark:text-emerald-300 px-4 py-3 text-sm !shadow-none border border-emerald-200 dark:border-emerald-400/20 dark:!bg-[#1e2b24]">{{ session('error') }}</div>
+                    <div class="card-elev text-red-700 dark:text-red-300 px-4 py-3 text-sm !shadow-none border border-red-200 dark:border-red-400/20 dark:!bg-[#2b1e1e]">{{ session('error') }}</div>
                 </div>
             @endif
             @yield('content')

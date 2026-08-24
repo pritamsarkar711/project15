@@ -35,7 +35,7 @@ class DatabaseSeeder extends Seeder
         // Categories - multi-niche - deep green palette consistent with primary #14532d
         $categories = [
             ['name'=>'Technology','slug'=>'technology','description'=>'Latest in tech AI gadgets and software','color'=>'#14532d','icon'=>'cpu'],
-            ['name'=>'Health & Wellness','slug'=>'health-wellness','description'=>'Fitness nutrition and mental health','color'=>'#0f3d22','icon'=>'heart'],
+            ['name'=>'Health & Wellness','slug'=>'health-wellness','description'=>'Fitness nutrition and mental health','color'=>'#0f3d22','icon'=>'heart-pulse'],
             ['name'=>'Finance','slug'=>'finance','description'=>'Money investing and personal finance','color'=>'#1b4332','icon'=>'wallet'],
             ['name'=>'Travel','slug'=>'travel','description'=>'Destinations guides and travel tips','color'=>'#0f5132','icon'=>'plane'],
             ['name'=>'Lifestyle','slug'=>'lifestyle','description'=>'Culture food and everyday inspiration','color'=>'#164e3b','icon'=>'sparkles'],
@@ -91,7 +91,7 @@ class DatabaseSeeder extends Seeder
 
         // Ads
         Advertisement::firstOrCreate(['title'=>'Sidebar Ad 300x250'], ['position'=>'sidebar','code'=>'<div style="background:#f3f4f6;border:2px dashed #d1d5db;border-radius:12px;height:250px;display:flex;align-items:center;justify-content:center;color:#6b7280">Advertisement 300x250</div>','is_active'=>true,'sort_order'=>1]);
-        Advertisement::firstOrCreate(['title'=>'Inline Ad'], ['position'=>'inline','code'=>'<div style="background:#fffbeb;border:2px dashed #f59e0b;border-radius:12px;height:90px;display:flex;align-items:center;justify-content:center;color:#92400e">Advertisement Zone</div>','is_active'=>true,'sort_order'=>1]);
+        Advertisement::firstOrCreate(['title'=>'Inline Ad'], ['position'=>'in_article','code'=>'<div style="background:#fffbeb;border:2px dashed #f59e0b;border-radius:12px;height:90px;display:flex;align-items:center;justify-content:center;color:#92400e">Advertisement Zone</div>','is_active'=>true,'sort_order'=>1]);
 
         // Posts - sample 8 posts across categories
         $cats = Category::all()->keyBy('slug');
@@ -200,7 +200,7 @@ class DatabaseSeeder extends Seeder
             foreach($sp['faqs'] as $idx=>$f){
                 Faq::firstOrCreate(['post_id'=>$post->id,'question'=>$f['q']], ['answer'=>$f['a'],'sort_order'=>$idx]);
             }
-            // Seed comments - 2 approved per post
+            // Seed comments - 1 approved, 1 pending per post
             if(Comment::where('post_id',$post->id)->count()==0){
                 Comment::create(['post_id'=>$post->id,'name'=>'Aarav Mehta','email'=>'aarav@example.com','content'=>'Really insightful article! The FAQ section cleared my doubts.','status'=>'approved']);
                 Comment::create(['post_id'=>$post->id,'name'=>'Sofia Lee','email'=>'sofia@example.com','content'=>'Thanks for sharing this. Would love a deeper piece on point 2.','status'=>'pending']);

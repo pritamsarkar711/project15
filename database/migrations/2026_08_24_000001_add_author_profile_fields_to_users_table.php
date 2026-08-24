@@ -37,6 +37,7 @@ return new class extends Migration {
             $table->foreignId('follower_id')->constrained('users')->cascadeOnDelete();
             $table->foreignId('followee_id')->constrained('users')->cascadeOnDelete();
             $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->nullable()->useCurrentOnUpdate();
             $table->primary(['follower_id', 'followee_id']);
             $table->index('followee_id');
         });

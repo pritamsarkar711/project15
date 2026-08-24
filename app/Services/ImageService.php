@@ -69,8 +69,13 @@ class ImageService
 
         $relative = trim($dir, '/').'/'.uniqid('', true).'.webp';
         Storage::disk('public')->makeDirectory(trim($dir, '/'));
-        Storage::disk('public')->put($relative, file_get_contents($tmp));
-        unlink($tmp);
+        try {
+            Storage::disk('public')->put($relative, file_get_contents($tmp));
+        } finally {
+            if (file_exists($tmp)) {
+                @unlink($tmp);
+            }
+        }
 
         return $relative;
     }
