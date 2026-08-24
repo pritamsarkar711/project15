@@ -6,6 +6,79 @@ database details + admin credentials, and the site is ready to use.
 
 ---
 
+## 🚨 EMERGENCY RECOVERY (blank HTTP 500 / "Class Illuminate\Foundation\Application not found")
+
+If your site is **down right now** — homepage shows a blank `HTTP ERROR 500` and/or
+`install.php` fails with `Class "Illuminate\Foundation\Application" not found` —
+follow these steps **in order**. Stop as soon as the homepage loads.
+
+> **Why this happens:** the Composer autoloader maps inside `vendor/composer/` got
+> damaged or `vendor/` was incompletely deployed, so PHP cannot find Laravel's
+> classes. The committed code detects and self-heals this automatically — **but
+> only if the current version of the files is actually on your server.** If you are
+> still seeing the raw error, your server is running an older copy of the code.
+
+### Step 0 — Diagnose in 30 seconds (upload one file)
+
+Upload the single **`doctor.php`** file (it's in the repo root) to `public_html/`
+via **hPanel → File Manager**, then open:
+
+```
+https://huvanti.com/doctor.php
+```
+
+It shows a green/red health checklist pinpointing the exact problem and has
+one-click repair buttons. **Delete `doctor.php` when you're done** (it has a
+self-delete button).
+
+### Step 1 — Click "Restore the Composer autoloader"
+
+On `doctor.php` (or `install.php?repair=1`), click **Restore the Composer
+autoloader**. This copies the good maps from `bootstrap/autoload_backup/` back over
+`vendor/composer/`. Then reload the homepage. This alone fixes the issue in most cases.
+
+### Step 2 — If that didn't work, do a CLEAN re-deploy (most reliable)
+
+The Git deploy tool sometimes serves a stale or partial copy. Do a fresh manual deploy:
+
+1. Download the repo as a ZIP: GitHub → `Code` → **Download ZIP** (or clone locally + zip).
+2. In **hPanel → File Manager**, go to `public_html/`.
+3. **Important:** back up your existing `.env` if it exists (it holds your DB
+   credentials) — copy it somewhere safe.
+4. Delete the old `vendor/` folder entirely (a half-deployed vendor is the usual culprit).
+5. Upload the ZIP to `public_html/`, right-click → **Extract**.
+6. If extraction created a subfolder (e.g. `project15-main/`), move its contents
+   up into `public_html/` directly so `install.php`, `vendor/`, `public/` are all
+   at the `public_html/` level.
+7. Restore your `.env` if you backed it up in step 3.
+8. Set folder permissions: `storage/` and `bootstrap/cache/` → **755** (or 775).
+9. Open `https://huvanti.com/` — it should load. If not, open `doctor.php` again.
+
+### Step 3 — Finish setup (if you never completed the installer)
+
+If your database is empty / `.env` is missing, open:
+
+```
+https://huvanti.com/install.php
+```
+
+Fill in your MySQL details (from hPanel → MySQL Databases) + admin credentials and
+click **Install**. The current `install.php` self-heals the autoloader before doing
+anything, so the old "Class not found" crash can no longer happen during setup.
+
+### Quick reference for the most common errors
+
+| Symptom | Fix |
+|---------|-----|
+| `Class "Illuminate\Foundation\Application" not found` | Autoloader clobbered / vendor incomplete. `doctor.php` → **Restore autoloader**, or clean re-deploy (Step 2). |
+| Blank `HTTP ERROR 500` on every page | Same as above — the front controller can't boot Laravel. `doctor.php` tells you which red item is blocking it. |
+| `Composer detected issues in your platform … PHP version` | Set PHP **8.3** in hPanel → PHP Configuration. |
+| `storage/ not writable` | File Manager → `storage/` → Permissions → **755**, apply to subdirectories. |
+| `DB connection failed` | Check DB name/user/password in hPanel → MySQL Databases; user needs ALL PRIVILEGES. |
+| Works after fix, then breaks again later | Re-run Git → Deploy WITHOUT a post-deploy script that calls composer. The repo intentionally ships no root `composer.json`. |
+
+---
+
 ## TL;DR (quick path)
 
 1. Push the repo to GitHub (already done at <https://github.com/pritamsarkar711/project15>).
