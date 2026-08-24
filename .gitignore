@@ -1,33 +1,17 @@
 /node_modules
-# composer.json is deliberately NOT tracked. Hostinger's Git auto-deploy
-# detects a root composer.json and runs `composer install`, which regenerates
-# vendor/composer/autoload_* from whatever composer.json declares. With a
-# dependency-less composer.json that stripped every framework mapping and
-# took the whole site down with a blank HTTP 500 (Illuminate\ classes could
-# no longer be autoloaded).
+# composer.json + composer.lock ARE tracked so Hostinger's Git auto-deploy
+# runs `composer install` with the CORRECT dependencies (laravel/framework, etc.).
+# This generates a valid autoloader with Illuminate\ mappings.
 #
-# Without composer.json the auto-deploy never invokes Composer and the
-# committed vendor/ directory (real autoload maps included) stays untouched.
-# Laravel's one runtime use of composer.json (Application::getNamespace) is
-# covered by the override in app/Application.php.
+# Previously, an empty/wrong composer.json on an old arena branch caused
+# Hostinger's auto-composer to strip all framework mappings, leading to
+# "Class Illuminate\Foundation\Application not found".
 #
-# vendor/ IS committed (see note at the bottom of this file) so the site
-# works with zero composer steps. bootstrap/autoload_backup/ holds pristine
-# copies of the autoloader files that public/index.php + install.php restore
-# automatically if anything ever damages vendor/composer/ again; authenticated
-# doctor.php also embeds them for standalone recovery.
+# vendor/ is still committed as a fallback in case composer install fails.
+# The committed bootstrap/autoload_backup/ also provides autoloader repair.
 #
-# The full composer.json + composer.lock live in .composer-backup/ for local
-# development. To add a package locally:
-#   1. cp .composer-backup/composer.json composer.json
-#   2. cp .composer-backup/composer.lock composer.lock
-#   3. composer require <package>
-#   4. cp composer.json .composer-backup/composer.json
-#   5. cp composer.lock .composer-backup/composer.lock
-#   6. delete composer.json + composer.lock from the project root
-#   7. commit vendor/ + refresh bootstrap/autoload_backup/ (see its README)
-/composer.json
-/composer.lock
+# app/Application.php overrides getNamespace() so the app boots without
+# reading composer.json at runtime (Laravel's only runtime use of it).
 
 # package.json + package-lock.json are NOT tracked (kept in .npm-backup/
 # for local dev) to avoid Hostinger's npm auto-detect. They are not needed
@@ -68,5 +52,3 @@ database/*.sqlite-journal
 
 # Build artifacts ARE committed so the repo is runnable without `npm run build`.
 # vendor/ IS committed so the repo is deployable without `composer install`.
-# This is intentional for Hostinger shared hosting where composer is unavailable
-# AND proc_open is disabled (so composer install would fail anyway).
