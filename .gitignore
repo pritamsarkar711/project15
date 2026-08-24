@@ -52,6 +52,7 @@
 /.env.production
 npm-local-*
 composer.phar
+.phpunit.result.cache
 *.log
 __pycache__/
 *.py[cod]
