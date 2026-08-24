@@ -13,7 +13,7 @@ ini_set('display_errors', '0');
 ini_set('log_errors', '1');
 
 const ROOT = __DIR__;
-const INSTALL_DEPLOYMENT = '2026-08-24-hostinger-launch-v2';
+const INSTALL_DEPLOYMENT = '2026-08-25-hostinger-launch-v3';
 
 header('Cache-Control: no-store, max-age=0');
 header('X-Robots-Tag: noindex, nofollow');
@@ -365,7 +365,7 @@ function huvanti_env_quote(string $value): string {
 }
 
 function check_requirements(): array {
-    return [
+    $checks = [
         'Deployment release' => ['ok' => true, 'value' => INSTALL_DEPLOYMENT],
         'PHP 8.3+' => ['ok' => version_compare(PHP_VERSION, '8.3.0', '>='), 'value' => PHP_VERSION],
         'pdo_mysql' => ['ok' => extension_loaded('pdo_mysql'), 'value' => extension_loaded('pdo_mysql') ? 'yes' : 'no'],
@@ -375,12 +375,42 @@ function check_requirements(): array {
         'gd' => ['ok' => extension_loaded('gd'), 'value' => extension_loaded('gd') ? 'yes' : 'no'],
         'fileinfo' => ['ok' => extension_loaded('fileinfo'), 'value' => extension_loaded('fileinfo') ? 'yes' : 'no'],
         'vendor/autoload.php' => ['ok' => file_exists(ROOT . '/vendor/autoload.php'), 'value' => file_exists(ROOT . '/vendor/autoload.php') ? 'ok' : 'missing'],
-        'autoload maps Illuminate' => ['ok' => huvanti_autoload_maps_ok(), 'value' => huvanti_autoload_maps_ok() ? 'ok' : 'clobbered — upload/open doctor.php'],
-        'Laravel framework files' => ['ok' => huvanti_framework_files_ok(), 'value' => huvanti_framework_files_ok() ? 'ok' : 'missing — delete vendor/, Git → Deploy'],
+        'autoload maps Illuminate' => ['ok' => huvanti_autoload_maps_ok(), 'value' => huvanti_autoload_maps_ok() ? 'ok' : 'clobbered — auto-restore will fix this'],
+        'Laravel framework files' => ['ok' => huvanti_framework_files_ok(), 'value' => huvanti_framework_files_ok() ? 'ok' : 'missing — delete vendor/ then Git deploy again'],
+        'composer.json has deps' => ['ok' => huvanti_composer_json_ok(), 'value' => huvanti_composer_json_ok() ? 'ok' : 'wrong/empty — Hostinger ran composer with bad config'],
         'storage/ writable' => ['ok' => is_writable(ROOT . '/storage'), 'value' => is_writable(ROOT . '/storage') ? 'yes' : 'no'],
         'bootstrap/cache/ writable' => ['ok' => is_writable(ROOT . '/bootstrap/cache'), 'value' => is_writable(ROOT . '/bootstrap/cache') ? 'yes' : 'no'],
         'root writable (.env)' => ['ok' => is_writable(ROOT), 'value' => is_writable(ROOT) ? 'yes' : 'no'],
     ];
+
+    // Detect old/wrong branch deployment
+    $oldBranchWarning = '';
+    if (file_exists(ROOT . '/.composer-backup/deploy-stub.composer.json')) {
+        $oldBranchWarning = 'An old deploy-stub composer.json was found. Ensure you deployed the main branch, not an arena/ branch.';
+    } elseif (!file_exists(ROOT . '/composer.json')) {
+        $oldBranchWarning = 'composer.json is missing — you may be on an old branch. Deploy the main branch.';
+    }
+    if ($oldBranchWarning !== '') {
+        $checks['Branch check'] = ['ok' => false, 'value' => $oldBranchWarning];
+    }
+
+    return $checks;
+}
+
+/**
+ * Verify that composer.json (if present) actually declares laravel/framework.
+ * An empty/wrong composer.json is the #1 cause of "Class not found" on Hostinger.
+ */
+function huvanti_composer_json_ok(): bool {
+    $cj = ROOT . '/composer.json';
+    if (!is_file($cj)) {
+        return false; // missing = bad
+    }
+    $content = @file_get_contents($cj, false, null, 0, 32768);
+    if ($content === false) {
+        return false;
+    }
+    return str_contains($content, 'laravel/framework');
 }
 
 /**

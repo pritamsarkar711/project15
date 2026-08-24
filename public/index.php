@@ -129,7 +129,7 @@ function huvanti_render_boot_failure_page(?Throwable $e, array $notes = []): voi
         header('Cache-Control: no-store, max-age=0');
         header('X-Robots-Tag: noindex, nofollow');
         header('X-Content-Type-Options: nosniff');
-        header('X-Huvanti-Deploy: 2026-08-24-hostinger-launch-v2');
+        header('X-Huvanti-Deploy: 2026-08-25-hostinger-launch-v3');
     }
 
     $h = static fn ($v): string => htmlspecialchars((string) $v, ENT_QUOTES, 'UTF-8');
@@ -137,7 +137,7 @@ function huvanti_render_boot_failure_page(?Throwable $e, array $notes = []): voi
     $checks = [
         'Deployment release' => [
             'ok' => true,
-            'value' => '2026-08-24-hostinger-launch-v2',
+            'value' => '2026-08-25-hostinger-launch-v3',
         ],
         'PHP version' => [
             'ok' => PHP_VERSION_ID >= 80300,
