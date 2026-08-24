@@ -31,7 +31,6 @@ return new class extends Migration
             $table->boolean('allow_comments')->default(true);
             $table->timestamps();
             $table->index(['status','published_at']);
-            $table->index('slug');
         });
     }
 
