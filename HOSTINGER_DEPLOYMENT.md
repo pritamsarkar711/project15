@@ -148,6 +148,7 @@ Hostinger trying to run `composer install` after detecting a root
 | Error | Fix |
 |-------|-----|
 | `vendor/autoload.php missing` | Re-deploy from git. The repo includes `vendor/` (~92 MB). |
+| `Migration/setup failed: Class "Illuminate\Foundation\Application" not found` | The Composer autoloader maps in `vendor/composer/` were damaged (Hostinger regenerating them) or `vendor/` was incompletely deployed. **Re-deploy from Git** so the current `install.php` (which detects and self-heals this automatically) is on the server, then retry the installer. If it still fails, open `install.php?repair=1` → **Restore autoloader**; if the checklist shows `Laravel framework files → missing`, delete `vendor/` in File Manager and Git → Deploy again. |
 | `storage/ not writable` | File Manager → right-click `storage/` → Permissions → set to 755 (or 775). Apply recursively. |
 | `bootstrap/cache/ not writable` | Same — set permissions to 755/775. |
 | `DB connection failed` | Verify DB host (`localhost`), DB name, username, password in hPanel → MySQL Databases. |
@@ -166,9 +167,13 @@ Laravel could boot — almost always a damaged Composer autoloader in
 against a root `composer.json`. The repo now prevents and self-heals this:
 
 1. **First, just reload the homepage.** `public/index.php` checks the
-   autoloader on every request and, if the `Illuminate\` mappings are missing,
-   restores them automatically from `bootstrap/autoload_backup/`. One reload is
-   often the entire fix.
+   autoloader on every request and, if the `Illuminate\` mappings are missing
+   from `vendor/composer/autoload_psr4.php` **or** `autoload_static.php`
+   (the authoritative map that actually feeds the runtime loader), restores
+   them automatically from `bootstrap/autoload_backup/`. One reload is
+   often the entire fix. `install.php` runs the same verify-and-heal before
+   loading the autoloader, so the installer can no longer die with
+   `Class "Illuminate\Foundation\Application" not found` either.
 2. **If it still fails, open the repair console:** `https://huvanti.com/install.php?repair=1`.
    It runs on plain PHP (works even when Laravel can't boot) and offers:
    - **Restore the Composer autoloader** — copies the pristine maps back over
