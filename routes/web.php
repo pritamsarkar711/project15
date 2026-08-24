@@ -178,6 +178,8 @@ Route::prefix('manage')->name('admin.')->group(function(){
         // Settings
         Route::get('settings', [SettingController::class,'index'])->name('settings.index');
         Route::post('settings', [SettingController::class,'update'])->name('settings.update');
+        Route::post('settings/smtp', [SettingController::class,'updateSmtp'])->name('settings.smtp.update');
+        Route::post('settings/test-email', [SettingController::class,'testEmail'])->name('settings.test-email');
         Route::get('settings/security', [SettingController::class,'security'])->name('settings.security');
         Route::post('settings/2fa/start', [SettingController::class,'start2FA'])->name('settings.2fa.start');
         Route::post('settings/2fa/confirm', [SettingController::class,'confirm2FA'])->name('settings.2fa.confirm');

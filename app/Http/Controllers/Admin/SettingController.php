@@ -8,6 +8,9 @@ use App\Services\ImageService;
 use App\Services\TotpService;
 use App\Support\FontFamilies;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Mail\Message;
 
 class SettingController extends Controller
 {
@@ -164,5 +167,98 @@ class SettingController extends Controller
         $user->save();
         session()->forget('2fa_setup_secret');
         return redirect()->route('admin.settings.security')->with('success', 'Two-factor authentication disabled.');
+    }
+
+    // ---------------------------------------------------------------------
+    // SMTP / Email configuration (admin-configurable, no .env edits)
+    // ---------------------------------------------------------------------
+
+    /**
+     * Persist SMTP configuration to the settings table.
+     *
+     * The settings are picked up at runtime by AppServiceProvider::boot()
+     * via overrideMailConfigFromSettings() — so on the next request the new
+     * SMTP values take effect (and Mail::to()->send() uses them).
+     *
+     * Password handling: if the submitted password field is empty, we keep
+     * the existing stored password (so the admin doesn't have to retype it
+     * every time they edit another field). Setting "Remove password"
+     * checkbox explicitly clears it.
+     */
+    public function updateSmtp(Request $request)
+    {
+        $request->validate([
+            'mail_mailer'        => 'nullable|string|in:smtp,log,sendmail,array',
+            'mail_host'          => 'nullable|string|max:255',
+            'mail_port'          => 'nullable|integer|min:1|max:65535',
+            'mail_username'      => 'nullable|string|max:255',
+            'mail_password'      => 'nullable|string|max:255',
+            'mail_encryption'    => 'nullable|string|in:tls,ssl,none',
+            'mail_from_address'  => 'nullable|email|max:255',
+            'mail_from_name'      => 'nullable|string|max:255',
+            'mail_remove_password' => 'nullable|in:1',
+        ]);
+
+        // Persist scalar settings.
+        Setting::set('mail_mailer', (string) $request->input('mail_mailer', ''), 'text', 'email');
+        Setting::set('mail_host', (string) $request->input('mail_host', ''), 'text', 'email');
+        Setting::set('mail_port', (string) $request->input('mail_port', ''), 'text', 'email');
+        Setting::set('mail_username', (string) $request->input('mail_username', ''), 'text', 'email');
+        Setting::set('mail_encryption', (string) $request->input('mail_encryption', ''), 'text', 'email');
+        Setting::set('mail_from_address', (string) $request->input('mail_from_address', ''), 'text', 'email');
+        Setting::set('mail_from_name', (string) $request->input('mail_from_name', ''), 'text', 'email');
+
+        // Password: explicit "remove" beats everything; else if input empty, keep existing.
+        if ($request->boolean('mail_remove_password')) {
+            Setting::set('mail_password', '', 'text', 'email');
+        } elseif ($request->filled('mail_password')) {
+            Setting::set('mail_password', (string) $request->input('mail_password'), 'text', 'email');
+        }
+        // else: keep existing.
+
+        return redirect()
+            ->route('admin.settings.index', ['tab' => 'email'])
+            ->with('success', 'SMTP settings saved. Next outgoing email will use these values.');
+    }
+
+    /**
+     * Send a test email to verify SMTP config works.
+     *
+     * Re-reads the latest settings table values via the runtime override
+     * in AppServiceProvider (which has already run for this request), then
+     * tries to send a plain test email to the address the admin typed.
+     *
+     * Failures are surfaced as errors (so the admin can see the SMTP
+     * rejection reason — e.g. "auth failed", "connection refused").
+     */
+    public function testEmail(Request $request)
+    {
+        $validated = $request->validate([
+            'test_email_to' => 'required|email|max:255',
+        ]);
+
+        try {
+            Mail::raw(
+                "This is a test email from your Huvanti admin panel.\n\n"
+                . "If you're reading this, your SMTP configuration is working correctly.\n\n"
+                . "Mailer: " . Config::get('mail.default') . "\n"
+                . "Host: " . Config::get('mail.mailers.smtp.host') . "\n"
+                . "Port: " . Config::get('mail.mailers.smtp.port') . "\n"
+                . "Username: " . Config::get('mail.mailers.smtp.username') . "\n"
+                . "From: " . Config::get('mail.from.address'),
+                function (Message $message) use ($validated) {
+                    $message
+                        ->to($validated['test_email_to'])
+                        ->subject('Huvanti SMTP test — ' . now()->format('Y-m-d H:i'));
+                }
+            );
+
+            return back()
+                ->with('success', "Test email sent to {$validated['test_email_to']}. Check the inbox (and spam folder).");
+        } catch (\Throwable $e) {
+            return back()
+                ->withInput()
+                ->with('error', 'SMTP test failed: ' . $e->getMessage());
+        }
     }
 }

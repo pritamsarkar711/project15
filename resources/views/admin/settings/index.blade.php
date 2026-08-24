@@ -8,7 +8,7 @@
 
 @section('content')
 <div class="flex items-center gap-1.5 mb-5 flex-wrap">
-    @foreach(['general' => 'General', 'appearance' => 'Appearance & Fonts', 'hero' => 'Hero Section', 'ads' => 'Ad Placement', 'integrations' => 'Integrations & SEO'] as $key => $label)
+    @foreach(['general' => 'General', 'appearance' => 'Appearance & Fonts', 'hero' => 'Hero Section', 'ads' => 'Ad Placement', 'email' => 'Email / SMTP', 'integrations' => 'Integrations & SEO'] as $key => $label)
         <a href="{{ route('admin.settings.index', $key !== 'general' ? ['tab'=>$key] : []) }}"
            class="h-9 px-4 inline-flex items-center text-sm font-medium border transition {{ (request('tab', 'general') === $key) ? 'bg-[#0C3B2E] text-white border-[#0C3B2E]' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800' }}">{{ $label }}</a>
     @endforeach
@@ -151,6 +151,107 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
             <p class="text-xs text-slate-500 mt-2 pt-3 border-t border-slate-200 dark:border-slate-700">Manage individual ads (code, position, scheduling) on the <a href="{{ route('admin.ads.index') }}" class="text-emerald-700 dark:text-emerald-300 hover:underline">Advertisements →</a> page.</p>
         </div>
         <button type="submit" class="h-11 px-6 bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold transition">Save Ad Settings</button>
+    </form>
+
+@elseif(request('tab') === 'email')
+    @php
+        // Read all mail_* settings in one shot for the form. Defaults fall
+        // back to current runtime config so the form is never empty even on
+        // a fresh install (before admin configures SMTP).
+        $mailSettings = [
+            'mail_mailer'       => $settings['mail_mailer']->value ?? config('mail.default'),
+            'mail_host'         => $settings['mail_host']->value ?? config('mail.mailers.smtp.host'),
+            'mail_port'         => $settings['mail_port']->value ?? config('mail.mailers.smtp.port'),
+            'mail_username'     => $settings['mail_username']->value ?? config('mail.mailers.smtp.username'),
+            'mail_password'     => $settings['mail_password']->value ?? '', // never echo env-stored password
+            'mail_encryption'   => $settings['mail_encryption']->value ?? (string) (config('mail.mailers.smtp.scheme') ?? 'tls'),
+            'mail_from_address' => $settings['mail_from_address']->value ?? config('mail.from.address'),
+            'mail_from_name'    => $settings['mail_from_name']->value ?? config('mail.from.name'),
+        ];
+        $passwordIsSet = !empty($settings['mail_password']->value);
+    @endphp
+
+    <form method="POST" action="{{ route('admin.settings.smtp.update') }}" class="space-y-5 max-w-3xl">
+        @csrf
+
+        <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-4">
+            <h3 class="font-semibold">Mailer</h3>
+            <div>
+                <label class="text-sm font-medium">Default mailer</label>
+                <select name="mail_mailer" class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
+                    @foreach(['smtp' => 'SMTP (recommended)', 'log' => 'Log file (dev / debug — emails written to laravel.log)', 'sendmail' => 'Sendmail (server MTA)', 'array' => 'Array (no actual delivery — for tests)'] as $value => $label)
+                        <option value="{{ $value }}" {{ old('mail_mailer', $mailSettings['mail_mailer']) === $value ? 'selected' : '' }}>{{ $label }}</option>
+                    @endforeach
+                </select>
+                <p class="text-xs text-slate-500 mt-1">When <code>log</code> is selected, every email Huvanti sends (password resets, post-submission notifications) is appended to <code>storage/logs/laravel.log</code> instead of being delivered. Useful for testing without SMTP credentials.</p>
+            </div>
+        </div>
+
+        <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-4">
+            <h3 class="font-semibold">SMTP Server</h3>
+            <div class="grid sm:grid-cols-2 gap-4">
+                <div class="sm:col-span-2">
+                    <label class="text-sm font-medium">Host</label>
+                    <input type="text" name="mail_host" value="{{ old('mail_host', $mailSettings['mail_host']) }}" placeholder="smtp.gmail.com" class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-mono placeholder:font-sans">
+                </div>
+                <div>
+                    <label class="text-sm font-medium">Port</label>
+                    <input type="number" name="mail_port" min="1" max="65535" value="{{ old('mail_port', $mailSettings['mail_port']) }}" placeholder="587" class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-mono placeholder:font-sans">
+                    <p class="text-xs text-slate-500 mt-1">Common: 587 (TLS), 465 (SSL), 25 (none).</p>
+                </div>
+                <div>
+                    <label class="text-sm font-medium">Encryption</label>
+                    <select name="mail_encryption" class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
+                        @foreach(['tls' => 'TLS (recommended, port 587)', 'ssl' => 'SSL (port 465)', 'none' => 'None / plaintext (port 25 — insecure)'] as $value => $label)
+                            <option value="{{ $value === 'none' ? 'none' : $value }}" {{ old('mail_encryption', $mailSettings['mail_encryption']) === $value ? 'selected' : '' }}>{{ $label }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label class="text-sm font-medium">Username</label>
+                    <input type="text" name="mail_username" value="{{ old('mail_username', $mailSettings['mail_username']) }}" placeholder="you@example.com" autocomplete="off" class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-mono placeholder:font-sans">
+                </div>
+                <div>
+                    <label class="text-sm font-medium">Password</label>
+                    <input type="password" name="mail_password" value="" placeholder="{{ $passwordIsSet ? '••••••••• (configured — leave blank to keep)' : 'Paste SMTP password' }}" autocomplete="new-password" class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-mono placeholder:font-sans">
+                    <label class="mt-2 inline-flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300 cursor-pointer">
+                        <input type="checkbox" name="mail_remove_password" value="1" class="text-emerald-600">
+                        Remove stored password
+                    </label>
+                </div>
+            </div>
+            <p class="text-xs text-slate-500 mt-1 pt-2 border-t border-slate-200 dark:border-slate-700">
+                For Gmail / Google Workspace, use an <a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noopener" class="text-emerald-700 dark:text-emerald-300 hover:underline">App Password</a> (not your account password). For Outlook / Microsoft 365, use the SMTP <code>user@domain</code> and password directly.
+            </p>
+        </div>
+
+        <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-4">
+            <h3 class="font-semibold">From Address</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400">The address that appears in the <code>From:</code> header of every email Huvanti sends.</p>
+            <div class="grid sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="text-sm font-medium">Email</label>
+                    <input type="email" name="mail_from_address" value="{{ old('mail_from_address', $mailSettings['mail_from_address']) }}" placeholder="noreply@huvanti.com" class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
+                </div>
+                <div>
+                    <label class="text-sm font-medium">Name</label>
+                    <input type="text" name="mail_from_name" value="{{ old('mail_from_name', $mailSettings['mail_from_name']) }}" placeholder="Huvanti" class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="h-11 px-6 bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold transition">Save SMTP Settings</button>
+    </form>
+
+    {{-- Test email form — separate POST so it doesn't conflict with the save form. --}}
+    <form method="POST" action="{{ route('admin.settings.test-email') }}" class="border border-dashed border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 p-6 space-y-4 max-w-3xl">
+        @csrf
+        <h3 class="font-semibold">Send a test email</h3>
+        <p class="text-xs text-slate-500 dark:text-slate-400">Verifies the SMTP settings above are correct. Sends a plain-text email to the address you type. The SMTP rejection reason (if any) is surfaced as a flash message.</p>
+        <div class="flex gap-3">
+            <input type="email" name="test_email_to" value="" required placeholder="you@example.com" class="flex-1 h-10 px-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
+            <button type="submit" class="h-10 px-5 bg-slate-700 dark:bg-slate-700 hover:bg-slate-800 dark:hover:bg-slate-600 text-white font-medium text-sm transition">Send test</button>
+        </div>
     </form>
 
 @else

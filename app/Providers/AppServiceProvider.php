@@ -2,9 +2,11 @@
 
 namespace App\Providers;
 
+use App\Models\Setting;
 use App\Support\RelativeAssetUrlGenerator;
 use Illuminate\Http\Request;
 use Illuminate\Routing\RouteCollectionInterface;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -44,6 +46,81 @@ class AppServiceProvider extends ServiceProvider
             && function_exists('symlink')
         ) {
             @symlink(storage_path('app/public'), $publicStorage);
+        }
+
+        // Override Laravel mail config at runtime from the settings table so
+        // the admin can configure SMTP without touching .env. Settings are
+        // read here (boot) so every request picks up the latest SMTP config.
+        // Failures are swallowed so a misconfigured DB never 500s the site.
+        try {
+            $this->overrideMailConfigFromSettings();
+        } catch (\Throwable $e) {
+            // DB might not be migrated yet during install; skip silently.
+        }
+    }
+
+    /**
+     * Override Laravel's mail.php config with values from the settings table.
+     *
+     * Reads the following keys (all optional, fall back to .env defaults):
+     *   - mail_mailer        (smtp | log | sendmail | array)
+     *   - mail_host          (e.g. smtp.gmail.com)
+     *   - mail_port          (e.g. 587)
+     *   - mail_username      (SMTP user)
+     *   - mail_password      (SMTP password — stored encrypted-ish; we treat as plain)
+     *   - mail_encryption    (tls | ssl | null)
+     *   - mail_from_address  (e.g. noreply@huvanti.com)
+     *   - mail_from_name     (e.g. "Huvanti")
+     *
+     * Admin updates these in /manage/settings?tab=email. If a key is empty,
+     * we leave the .env value intact (so admins can do partial overrides).
+     */
+    private function overrideMailConfigFromSettings(): void
+    {
+        // Read all mail-related settings in one query.
+        $keys = [
+            'mail_mailer', 'mail_host', 'mail_port', 'mail_username',
+            'mail_password', 'mail_encryption', 'mail_from_address', 'mail_from_name',
+        ];
+        $rows = Setting::whereIn('key', $keys)->pluck('value', 'key');
+
+        if ($rows->isEmpty()) {
+            return; // No admin-configured SMTP yet — keep using .env defaults.
+        }
+
+        $mailer = $rows->get('mail_mailer');
+        if (!empty($mailer)) {
+            Config::set('mail.default', $mailer);
+        }
+
+        // SMTP transport settings — only override if non-empty so admins can
+        // partially override (e.g. set host but keep port from .env).
+        if (!empty($rows->get('mail_host'))) {
+            Config::set('mail.mailers.smtp.host', $rows->get('mail_host'));
+        }
+        if (!empty($rows->get('mail_port'))) {
+            Config::set('mail.mailers.smtp.port', (int) $rows->get('mail_port'));
+        }
+        if (!empty($rows->get('mail_username'))) {
+            Config::set('mail.mailers.smtp.username', $rows->get('mail_username'));
+        }
+        // Password can be set to empty string intentionally to clear it,
+        // so we use has() over get() with default.
+        if ($rows->has('mail_password') && $rows->get('mail_password') !== '') {
+            Config::set('mail.mailers.smtp.password', $rows->get('mail_password'));
+        }
+        // Encryption: empty string means "no encryption" (override .env).
+        if ($rows->has('mail_encryption')) {
+            $enc = $rows->get('mail_encryption');
+            Config::set('mail.mailers.smtp.scheme', $enc === '' ? null : $enc);
+        }
+
+        // Global "From" address + name.
+        if (!empty($rows->get('mail_from_address'))) {
+            Config::set('mail.from.address', $rows->get('mail_from_address'));
+        }
+        if (!empty($rows->get('mail_from_name'))) {
+            Config::set('mail.from.name', $rows->get('mail_from_name'));
         }
     }
 }
