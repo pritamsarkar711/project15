@@ -103,11 +103,26 @@
             This post is currently <strong>{{ $post->review_status === 'approved' ? 'published' : 'in review' }}</strong> — it's locked for editing. Wait for the admin decision before making changes.
         </div>
     @else
+        @php
+            // Pull live submit-availability state so the submit button can be
+            // disabled client-side when the daily limit is reached.
+            $canSubmit = \App\Models\Post::authorSubmittedRecently(auth()->id()) === false;
+            $nextAt = \App\Models\Post::where('user_id', auth()->id())
+                ->whereNotNull('submitted_at')
+                ->where('submitted_at', '>=', now()->subDay())
+                ->orderBy('submitted_at')
+                ->value('submitted_at')?->addDay();
+        @endphp
+        @if(! $canSubmit)
+            <div class="bg-amber-50 dark:bg-amber-400/10 border border-amber-200 dark:border-amber-500/30 p-4 text-sm text-amber-800 dark:text-amber-300">
+                <strong>Daily limit reached.</strong> You can submit your next post for review{{ $nextAt ? ' in ' . $nextAt->diffForHumans() : ' in 24 hours' }}.
+            </div>
+        @endif
         <div class="flex flex-wrap items-center gap-3 pt-2">
             <button type="submit" name="action" value="save_draft" class="h-11 px-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 font-semibold text-sm">
                 Save as draft
             </button>
-            <button type="submit" name="action" value="submit" class="h-11 px-5 bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold text-sm">
+            <button type="submit" name="action" value="submit" @disabled(! $canSubmit) class="h-11 px-5 bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed">
                 {{ $isEdit && $post->review_status === 'returned' ? 'Re-submit for review' : 'Submit for review' }}
             </button>
             <a href="{{ route('author.rules') }}" class="ml-auto text-xs text-slate-500 hover:text-[#0C3B2E] dark:hover:text-emerald-300">Read the posting rules first →</a>

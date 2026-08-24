@@ -265,6 +265,14 @@ class PostController extends Controller
         $post->save();
         $this->syncFaqs($request, $post);
 
+        // Notify the author that their post is now live.
+        if ($post->user_id && $post->user) {
+            try { $post->user->notify(new \App\Notifications\PostApproved($post)); } catch (\Throwable $e) {
+                // Mail config may not be set up — silently skip on failure.
+                report($e);
+            }
+        }
+
         return redirect()->route('admin.posts.review-queue')
             ->with('success', 'Post approved and published.');
     }
@@ -287,6 +295,13 @@ class PostController extends Controller
         $post->reviewer_id = auth()->id();
         $post->reviewer_note = $validated['reviewer_note'];
         $post->save();
+
+        // Notify the author with the reviewer's note.
+        if ($post->user_id && $post->user) {
+            try { $post->user->notify(new \App\Notifications\PostReturned($post)); } catch (\Throwable $e) {
+                report($e);
+            }
+        }
 
         return redirect()->route('admin.posts.review-queue')
             ->with('success', 'Post returned to the author with your note.');

@@ -3,12 +3,14 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Notifications\ResetPassword;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\URL;
 
 #[Fillable(['name', 'email', 'password', 'role', 'bio', 'avatar', 'two_factor_enabled', 'two_factor_secret', 'theme_preference', 'google2fa_secret', 'author_avatar_path', 'username', 'role_title', 'portfolio_url', 'social_links', 'is_verified'])]
 #[Hidden(['password', 'remember_token', 'two_factor_secret', 'google2fa_secret'])]
@@ -38,6 +40,15 @@ class User extends Authenticatable
     public function posts()
     {
         return $this->hasMany(Post::class);
+    }
+
+    /**
+     * Send the frontend password reset notification (Huvanti-branded email
+     * that points to /reset-password/{token} instead of /manage).
+     */
+    public function sendPasswordResetNotification($token): void
+    {
+        $this->notify(new ResetPassword($token));
     }
 
     /**

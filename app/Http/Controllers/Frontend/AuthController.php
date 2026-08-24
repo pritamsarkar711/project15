@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Frontend;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Services\ImageService;
+use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 
 /**
@@ -19,6 +21,10 @@ use Illuminate\Support\Str;
  *   GET  /login              -> showLoginForm()
  *   POST /login              -> login()
  *   POST /logout             -> logout()
+ *   GET  /forgot-password    -> showForgotPasswordForm()
+ *   POST /forgot-password    -> sendResetLink()
+ *   GET  /reset-password/{token}  -> showResetForm()
+ *   POST /reset-password     -> reset()
  *
  * A registered user has role='author' by default. They get a separate
  * dashboard at /author-dashboard (NOT /manage) where they can submit posts
@@ -98,6 +104,72 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         return redirect()->route('home')->with('success', 'You\'ve been signed out.');
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    //  Password reset flow (frontend users — not /manage admins).
+    //  Standard Laravel broker pattern, using our ResetPassword
+    //  notification override on the User model.
+    // ──────────────────────────────────────────────────────────────
+
+    public function showForgotPasswordForm()
+    {
+        if (Auth::check()) {
+            return $this->redirectAfterAuth();
+        }
+        return view('frontend.auth.forgot-password');
+    }
+
+    public function sendResetLink(Request $request)
+    {
+        $request->validate(['email' => ['required', 'email']]);
+
+        $status = Password::broker()->sendResetLink(
+            $request->only('email')
+        );
+
+        return $status === Password::RESET_LINK_SENT
+            ? back()->with('status', __($status))
+            : back()->withErrors(['email' => __($status)])->onlyInput('email');
+    }
+
+    public function showResetForm(Request $request, $token = null)
+    {
+        if (Auth::check()) {
+            return $this->redirectAfterAuth();
+        }
+        return view('frontend.auth.reset-password', [
+            'token' => $token,
+            'email' => $request->query('email', ''),
+        ]);
+    }
+
+    public function reset(Request $request)
+    {
+        $validated = $request->validate([
+            'token'                 => ['required', 'string'],
+            'email'                 => ['required', 'email'],
+            'password'              => ['required', 'string', 'min:8', 'max:128', 'confirmed'],
+        ], [
+            'password.min'      => 'Password must be at least 8 characters.',
+            'password.confirmed'=> 'Password confirmation does not match.',
+        ]);
+
+        $status = Password::broker()->reset(
+            $validated,
+            function ($user, $password) use ($request) {
+                $user->forceFill([
+                    'password'       => $password, // cast to hash in User model
+                    'remember_token' => Str::random(60),
+                ])->setRememberToken($user->remember_token);
+                $user->save();
+                event(new PasswordReset($user));
+            }
+        );
+
+        return $status === Password::PASSWORD_RESET
+            ? redirect()->route('login')->with('success', __($status))
+            : back()->withErrors(['email' => __($status)])->onlyInput('email');
     }
 
     /**

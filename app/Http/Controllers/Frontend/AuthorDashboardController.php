@@ -150,6 +150,10 @@ class AuthorDashboardController extends Controller
         $post->save();
         $this->syncFaqs($request, $post);
 
+        if ($data['action'] === 'submit') {
+            $this->notifyAdminsOfSubmission($post);
+        }
+
         $msg = $data['action'] === 'submit'
             ? 'Post submitted for review. You can submit another post in 24 hours.'
             : 'Draft saved.';
@@ -238,6 +242,10 @@ class AuthorDashboardController extends Controller
         $post->save();
         $this->syncFaqs($request, $post);
 
+        if ($data['action'] === 'submit') {
+            $this->notifyAdminsOfSubmission($post);
+        }
+
         $msg = $data['action'] === 'submit'
             ? 'Updated and re-submitted for review.'
             : 'Draft saved.';
@@ -269,6 +277,8 @@ class AuthorDashboardController extends Controller
         $post->submitted_at = now();
         $post->reviewer_note = null;
         $post->save();
+
+        $this->notifyAdminsOfSubmission($post);
 
         return redirect()->route('author.posts.index')
             ->with('success', 'Submitted for review. We\'ll notify you when it\'s processed.');
@@ -408,6 +418,24 @@ class AuthorDashboardController extends Controller
         /** @var Post $post */
         $post = Post::byAuthor(auth()->id())->findOrFail($id);
         return $post;
+    }
+
+    /**
+     * Notify every admin (role='admin') that a post was submitted for review.
+     * Failures are swallowed (mail may not be configured on dev / shared hosting).
+     */
+    private function notifyAdminsOfSubmission(Post $post): void
+    {
+        try {
+            $admins = \App\Models\User::where('role', 'admin')->get();
+            foreach ($admins as $admin) {
+                try { $admin->notify(new \App\Notifications\PostSubmittedForReview($post)); } catch (\Throwable $e) {
+                    report($e);
+                }
+            }
+        } catch (\Throwable $e) {
+            report($e);
+        }
     }
 
     private function generateUniqueSlug(string $title): string

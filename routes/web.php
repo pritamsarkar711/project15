@@ -83,6 +83,13 @@ Route::get('/login', [FrontendAuthController::class, 'showLoginForm'])->name('lo
 Route::post('/login', [FrontendAuthController::class, 'login'])->name('login.post')->middleware('guest');
 Route::post('/logout', [FrontendAuthController::class, 'logout'])->name('logout')->middleware('auth');
 
+// Password reset (frontend users — uses Huvanti-branded ResetPassword
+// notification that points to /reset-password/{token} instead of /manage).
+Route::get('/forgot-password', [FrontendAuthController::class, 'showForgotPasswordForm'])->name('password.request')->middleware('guest');
+Route::post('/forgot-password', [FrontendAuthController::class, 'sendResetLink'])->name('password.email')->middleware('guest');
+Route::get('/reset-password/{token}', [FrontendAuthController::class, 'showResetForm'])->name('password.reset')->middleware('guest');
+Route::post('/reset-password', [FrontendAuthController::class, 'reset'])->name('password.update')->middleware('guest');
+
 // Author dashboard — for registered users (authors)
 Route::prefix('author-dashboard')->name('author.')->middleware('auth')->group(function () {
     Route::get('/', [AuthorDashboardController::class, 'index'])->name('dashboard');

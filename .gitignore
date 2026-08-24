@@ -1,15 +1,17 @@
 /node_modules
-# vendor/ IS committed so Hostinger shared hosting doesn't need composer install
-# (Hostinger disables proc_open which Composer needs)
-# package.json + package-lock.json are kept in .npm-backup/ for local dev
-# only — they are NOT tracked in the repo so Hostinger's git deploy doesn't
-# auto-detect this as an npm project and try to run `npm install` (which
-# would fail because proc_open is disabled). To rebuild assets locally,
-# copy from .npm-backup/ to the root first: `cp .npm-backup/* .`
+# composer.json + composer.lock ARE tracked because Laravel's
+# Application::getNamespace() reads composer.json at runtime to resolve
+# the PSR-4 autoload namespace. Without composer.json at the project root,
+# every request 500s during bootstrap.
+# Hostinger does NOT auto-run `composer install` unless the user explicitly
+# added it as a deployment job script. vendor/ is committed, so no install
+# is needed at deploy time.
+#
+# package.json + package-lock.json are NOT tracked (kept in .npm-backup/
+# for local dev) to avoid Hostinger's npm auto-detect. They are not needed
+# at runtime since public/build/ is committed.
 /package.json
 /package-lock.json
-/composer.json
-/composer.lock
 /storage/framework/cache/data/*
 !storage/framework/cache/data/.gitkeep
 /storage/framework/sessions/*

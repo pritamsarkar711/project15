@@ -103,6 +103,26 @@
                 <a href="/contact" class="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-50 dark:hover:bg-[#2a2a2a] text-slate-700 dark:text-slate-300 font-medium">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m22 7-8.5 5.5a4 4 0 0 1-3 0L2 7"/><rect width="20" height="14" x="2" y="5" rx="2"/></svg> Contact
                 </a>
+                @if(auth()->check())
+                    <a href="{{ auth()->user()->role === 'admin' ? route('admin.dashboard') : route('author.dashboard') }}" class="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-50 dark:hover:bg-[#2a2a2a] text-white font-semibold bg-[#0C3B2E]">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7h18M3 12h18M3 17h18"/></svg>
+                        {{ auth()->user()->role === 'admin' ? 'Admin Panel' : 'My Dashboard' }}
+                    </a>
+                    <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-50 dark:hover:bg-[#2a2a2a] text-slate-700 dark:text-slate-300 font-medium">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                        Sign out
+                    </a>
+                    <form id="logout-form" method="POST" action="{{ route('logout') }}" class="hidden">@csrf</form>
+                @else
+                    <a href="{{ route('login') }}" class="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-50 dark:hover:bg-[#2a2a2a] text-slate-700 dark:text-slate-300 font-medium">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12H3m0 0l4 4m-4-4l4-4"/><path stroke-linecap="round" stroke-linejoin="round" d="M21 4v16a2 2 0 01-2 2H9"/></svg>
+                        Sign in
+                    </a>
+                    <a href="{{ route('register') }}" class="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-50 dark:hover:bg-[#2a2a2a] text-white font-semibold bg-[#0C3B2E]">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2M9 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                        Create account
+                    </a>
+                @endif
             </nav>
         </div>
     </div>

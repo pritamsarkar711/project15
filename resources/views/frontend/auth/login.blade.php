@@ -45,7 +45,7 @@
             <a href="{{ route('register') }}" class="font-semibold text-[#0C3B2E] dark:text-emerald-300 hover:underline">Create an account</a>
         </p>
         <p class="text-[11px] text-slate-500 dark:text-slate-500 text-center mt-3">
-            Admin? <a href="{{ route('admin.login') }}" class="underline">Sign in at /manage</a>
+            <a href="{{ route('password.request') }}" class="hover:text-[#0C3B2E] dark:hover:text-emerald-300">Forgot your password?</a>
         </p>
     </div>
 </div>
