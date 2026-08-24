@@ -221,8 +221,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if (!$errors) {
             try {
-                require ROOT . '/vendor/autoload.php';
-                $app = require ROOT . '/bootstrap/app.php';
+                // Self-heals a damaged autoloader BEFORE loading it, verifies
+                // the framework classes are really loadable, and throws an
+                // actionable RuntimeException instead of a raw
+                // "Class Illuminate\Foundation\Application not found" crash.
+                $app = huvanti_boot_laravel();
                 $app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
                 Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
                 $migLog .= Illuminate\Support\Facades\Artisan::output();
@@ -280,7 +283,7 @@ function check_requirements(): array {
         'fileinfo' => ['ok' => extension_loaded('fileinfo'), 'value' => extension_loaded('fileinfo') ? 'yes' : 'no'],
         'vendor/autoload.php' => ['ok' => file_exists(ROOT . '/vendor/autoload.php'), 'value' => file_exists(ROOT . '/vendor/autoload.php') ? 'ok' : 'missing'],
         'autoload maps Illuminate' => ['ok' => huvanti_autoload_maps_ok(), 'value' => huvanti_autoload_maps_ok() ? 'ok' : 'clobbered — use repair console'],
-        'vendor/laravel/framework/' => ['ok' => is_dir(ROOT . '/vendor/laravel/framework'), 'value' => is_dir(ROOT . '/vendor/laravel/framework') ? 'ok' : 'missing'],
+        'Laravel framework files' => ['ok' => huvanti_framework_files_ok(), 'value' => huvanti_framework_files_ok() ? 'ok' : 'missing — delete vendor/, Git → Deploy'],
         'storage/ writable' => ['ok' => is_writable(ROOT . '/storage'), 'value' => is_writable(ROOT . '/storage') ? 'yes' : 'no'],
         'bootstrap/cache/ writable' => ['ok' => is_writable(ROOT . '/bootstrap/cache'), 'value' => is_writable(ROOT . '/bootstrap/cache') ? 'yes' : 'no'],
         'root writable (.env)' => ['ok' => is_writable(ROOT), 'value' => is_writable(ROOT) ? 'yes' : 'no'],
@@ -291,14 +294,48 @@ function check_requirements(): array {
  * True when the on-disk autoloader still maps the framework namespaces.
  * Inspects file content only (never requires it) so a clobbered autoloader
  * can't cause side effects here.
+ *
+ * BOTH map files are verified on purpose: Composer's runtime loader
+ * (autoload_real.php) is fed by autoload_static.php — the authoritative map —
+ * while autoload_psr4.php is only the fallback. Checking just the psr4 map
+ * once let a damaged static map pass as "healthy", and the installer then
+ * died with "Class Illuminate\Foundation\Application not found" even though
+ * every checklist row was green.
  */
 function huvanti_autoload_maps_ok(): bool {
-    $map = ROOT . '/vendor/composer/autoload_psr4.php';
-    if (!is_file($map)) {
-        return false;
+    foreach (['autoload_psr4.php', 'autoload_static.php'] as $name) {
+        $map = ROOT . '/vendor/composer/' . $name;
+        if (!is_file($map)) {
+            return false;
+        }
+        $head = @file_get_contents($map, false, null, 0, 65536);
+        if ($head === false || !str_contains($head, "'Illuminate\\\\'")) {
+            return false;
+        }
     }
-    $head = @file_get_contents($map, false, null, 0, 65536);
-    return $head !== false && str_contains($head, "'Illuminate\\\\'");
+    return true;
+}
+
+/**
+ * True when the Laravel framework's own entry class physically exists in
+ * vendor/. is_dir() alone is not enough — a partially-failed Git deploy can
+ * leave vendor/laravel/framework/ present but gutted, which also ends in
+ * "Class Illuminate\Foundation\Application not found".
+ */
+function huvanti_framework_files_ok(): bool {
+    return is_file(ROOT . '/vendor/laravel/framework/src/Illuminate/Foundation/Application.php');
+}
+
+/**
+ * Drop a file's compiled bytecode from OPcache (when enabled) so the next
+ * require() re-reads it from disk. Needed because some shared hosts run with
+ * opcache.validate_timestamps=off — copying a fixed autoloader over a broken
+ * one has no effect while the stale bytecode stays cached.
+ */
+function huvanti_opcache_forget(string $file): void {
+    if (function_exists('opcache_invalidate')) {
+        @opcache_invalidate($file, true);
+    }
 }
 
 /**
@@ -330,12 +367,76 @@ function huvanti_restore_autoload(): array {
             : $composerDir . '/' . $file;
         if (@copy($backupDir . '/' . $file, $dst)) {
             @chmod($dst, 0644);
+            huvanti_opcache_forget($dst);
             $copied[] = $file;
         } else {
             $failed[] = $file;
         }
     }
     return [$copied, $failed];
+}
+
+/**
+ * Load vendor/autoload.php (self-healing first) and boot Laravel. Returns
+ * the Application instance from bootstrap/app.php, or throws a RuntimeException
+ * with an actionable message — never a bare class-not-found crash.
+ */
+function huvanti_boot_laravel() {
+    if (!is_file(ROOT . '/vendor/autoload.php')) {
+        throw new RuntimeException(
+            'vendor/autoload.php is missing — the Git deploy did not copy vendor/. '
+            . 'In hPanel, run Git → Deploy again (vendor/ is committed to the repo), then retry.'
+        );
+    }
+
+    // Self-heal a clobbered autoloader BEFORE requiring it — the same
+    // strategy as public/index.php. A damaged autoloader must never actually
+    // be loaded, or its broken classes stick for the rest of the request.
+    if (!huvanti_autoload_maps_ok()) {
+        [, $failed] = huvanti_restore_autoload();
+        if ($failed || !huvanti_autoload_maps_ok()) {
+            throw new RuntimeException(
+                'The Composer autoloader in vendor/composer/ is damaged and the automatic '
+                . 'restore from bootstrap/autoload_backup/ failed ('
+                . ($failed !== [] ? implode(', ', $failed) : 'the restored maps still miss the Illuminate\\ mappings')
+                . '). Open install.php?repair=1 and run "Restore autoloader", or re-deploy from Git.'
+            );
+        }
+    }
+
+    // If OPcache is serving stale bytecode for the autoloader (hosts with
+    // validate_timestamps=off), forget those entries so require() below
+    // re-reads the pristine files from disk.
+    huvanti_opcache_forget(ROOT . '/vendor/autoload.php');
+    foreach (['autoload_real.php', 'autoload_static.php', 'autoload_psr4.php', 'platform_check.php'] as $name) {
+        huvanti_opcache_forget(ROOT . '/vendor/composer/' . $name);
+    }
+
+    // Fail fast (before any class loading) when the framework entry class is
+    // physically gone — a gutted vendor/ tree must not trigger noisy autoloader
+    // include-warnings on the installer page.
+    if (!huvanti_framework_files_ok()) {
+        throw new RuntimeException(
+            'The Laravel framework files are missing from vendor/. Delete the vendor/ folder '
+            . 'via hPanel → File Manager, then run Git → Deploy to restore the committed copy, '
+            . 'and run the installer again.'
+        );
+    }
+
+    require ROOT . '/vendor/autoload.php';
+
+    if (!class_exists(Illuminate\Foundation\Application::class)) {
+        // Maps fine + file present, yet the class will not load: the
+        // running PHP process is almost certainly serving stale OPcache.
+        throw new RuntimeException(
+            'The autoloader maps are intact and the framework files exist, but Illuminate '
+            . 'classes still do not load — stale OPcache is the likely cause. Open '
+            . 'install.php?repair=1 and run "Restore autoloader" (it also flushes the cached '
+            . 'bytecode), or wait a minute and retry.'
+        );
+    }
+
+    return require ROOT . '/bootstrap/app.php';
 }
 
 /**
@@ -356,8 +457,15 @@ function huvanti_repair_console(): string {
             [$copied, $failed] = huvanti_restore_autoload();
             if ($failed) {
                 $errors[] = 'Autoloader restore failed: ' . implode(', ', $failed);
+            } elseif (!huvanti_autoload_maps_ok()) {
+                $errors[] = 'Autoloader files were copied but the maps still look wrong — re-deploy the repo from Git.';
             } else {
-                $messages[] = 'Autoloader restored (' . count($copied) . ' files copied from bootstrap/autoload_backup/). Reload the homepage — the site should boot again.';
+                $messages[] = 'Autoloader restored (' . count($copied) . ' files copied from bootstrap/autoload_backup/, cached OPcache bytecode flushed).';
+                if (!huvanti_framework_files_ok()) {
+                    $errors[] = 'Autoloader maps are fine, but the Laravel framework files are missing from vendor/. Delete vendor/ via hPanel → File Manager, then Git → Deploy to restore the committed copy.';
+                } else {
+                    $messages[] = 'Reload the homepage — the site should boot again.';
+                }
             }
         }
 
@@ -373,11 +481,10 @@ function huvanti_repair_console(): string {
                 }
                 if (!$errors) {
                     try {
-                        require ROOT . '/vendor/autoload.php';
-                        if (!class_exists(Illuminate\Foundation\Application::class)) {
-                            throw new RuntimeException('Laravel framework files are missing from vendor/ even though the maps look fine. Delete vendor/ via hPanel → File Manager, then Git → Deploy to restore the committed copy.');
-                        }
-                        $app = require ROOT . '/bootstrap/app.php';
+                        // Same hardened boot as the installer: self-heals the
+                        // autoloader, defuses stale OPcache, and reports a
+                        // missing framework with actionable instructions.
+                        $app = huvanti_boot_laravel();
                         $app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
                         Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
                         $migLog = Illuminate\Support\Facades\Artisan::output();

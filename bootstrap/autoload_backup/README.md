@@ -12,10 +12,15 @@ When composer.json had no `require` entries (the old "deployment stub"), the
 regenerated autoloader mapped nothing, so `Illuminate\…` classes stopped
 loading and every request died with a blank HTTP 500.
 
-`public/index.php` now self-heals: before it requires `vendor/autoload.php`
-it verifies the autoloader maps contain `Illuminate\`. If they don't, it
-copies these files back over `vendor/composer/` + `vendor/autoload.php` and
-continues. `install.php?repair=1` can run the same restore from a browser.
+`public/index.php` and `install.php` now self-heal: before requiring
+`vendor/autoload.php` each verifies the autoloader maps — both
+`autoload_psr4.php` and `autoload_static.php` (the authoritative map the
+runtime loader actually uses; checking only the psr4 map once let a damaged
+static map slip through and crash with `Class Illuminate\Foundation\Application
+not found`). If either file lost the `Illuminate\` mappings, the pristine
+copies are restored from `bootstrap/autoload_backup/` (cached OPcache
+bytecode is flushed too) and the boot continues. `install.php?repair=1`
+can run the same restore from a browser.
 
 ## Maintenance
 

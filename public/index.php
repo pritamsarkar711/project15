@@ -38,17 +38,24 @@ if (file_exists($maintenance = __DIR__.'/../storage/framework/maintenance.php'))
  */
 function huvanti_autoloader_is_pristine(): bool
 {
-    $map = __DIR__.'/../vendor/composer/autoload_psr4.php';
-    if (!is_file($map)) {
-        return false;
+    // Both maps are verified: the runtime loader (autoload_real.php) is fed
+    // by autoload_static.php — the authoritative map — while
+    // autoload_psr4.php is only the fallback. A damaged static map with an
+    // intact psr4 map once passed this check and still crashed every request
+    // with "Class Illuminate\Foundation\Application not found".
+    foreach (['autoload_psr4.php', 'autoload_static.php'] as $name) {
+        $map = __DIR__.'/../vendor/composer/'.$name;
+        if (!is_file($map)) {
+            return false;
+        }
+
+        $head = @file_get_contents($map, false, null, 0, 65536);
+        if ($head === false || ! str_contains($head, "'Illuminate\\\\'")) {
+            return false;
+        }
     }
 
-    $head = @file_get_contents($map, false, null, 0, 65536);
-    if ($head === false) {
-        return false;
-    }
-
-    return str_contains($head, "'Illuminate\\\\'");
+    return true;
 }
 
 /**
@@ -81,6 +88,11 @@ function huvanti_restore_autoloader_backup(): array
 
         if (@copy($src, $dst)) {
             @chmod($dst, 0644);
+            // Make sure the next require() re-reads the restored file even on
+            // hosts that disable OPcache timestamp validation.
+            if (function_exists('opcache_invalidate')) {
+                @opcache_invalidate($dst, true);
+            }
             $copied[] = $file;
         } else {
             $failed[] = $file;
@@ -239,16 +251,29 @@ try {
         }
     }
 
-    // Register the Composer autoloader...
-    require $autoload;
-
-    if (!class_exists(Application::class)) {
-        // Maps looked fine but the framework classes are gone — composer
-        // "uninstalled" the vendored packages. Nothing PHP can do here.
+    // Fail fast (before any class loading) when the framework entry class is
+    // physically gone — composer "uninstalled" the vendored packages and no
+    // autoloader can fix that. Also avoids noisy include-warnings.
+    if (! is_file(__DIR__.'/../vendor/laravel/framework/src/Illuminate/Foundation/Application.php')) {
         huvanti_render_boot_failure_page(new RuntimeException(
             'The autoloader maps look intact but the Laravel framework files '
             .'are missing from vendor/. Delete the vendor/ folder via hPanel → '
             .'File Manager, then Git → Deploy to restore it.'
+        ));
+        exit(1);
+    }
+
+    // Register the Composer autoloader...
+    require $autoload;
+
+    if (!class_exists(Application::class)) {
+        // Maps fine + file present, yet the class will not load: the running
+        // PHP process is almost certainly serving stale OPcache.
+        huvanti_render_boot_failure_page(new RuntimeException(
+            'The autoloader maps are intact and the framework files exist, but Illuminate '
+            .'classes still do not load — stale OPcache is the likely cause. Reload this '
+            .'page, or use /install.php?repair=1 → "Restore autoloader" (it also flushes '
+            .'the cached bytecode).'
         ));
         exit(1);
     }
