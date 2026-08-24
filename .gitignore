@@ -1,0 +1,44 @@
+/node_modules
+# vendor/ IS committed so Hostinger shared hosting doesn't need composer install
+# (Hostinger disables proc_open which Composer needs)
+# package.json + package-lock.json are kept in .npm-backup/ for local dev
+# only — they are NOT tracked in the repo so Hostinger's git deploy doesn't
+# auto-detect this as an npm project and try to run `npm install` (which
+# would fail because proc_open is disabled). To rebuild assets locally,
+# copy from .npm-backup/ to the root first: `cp .npm-backup/* .`
+/package.json
+/package-lock.json
+/composer.json
+/composer.lock
+/storage/framework/cache/data/*
+!storage/framework/cache/data/.gitkeep
+/storage/framework/sessions/*
+!storage/framework/sessions/.gitkeep
+/storage/framework/views/*
+!storage/framework/views/.gitkeep
+/storage/logs/*.log
+!storage/logs/.gitkeep
+/storage/app/public/*
+!storage/app/public/.gitkeep
+!storage/app/.gitkeep
+/public/storage
+/public/hot
+/.env
+/.env.local
+/.env.production
+npm-local-*
+composer.phar
+*.log
+.DS_Store
+.idea
+.vscode
+*.swp
+*.swo
+
+# Local SQLite database (production uses MySQL — see install.php)
+database/*.sqlite
+database/*.sqlite-journal
+
+# Build artifacts ARE committed so the repo is runnable without `npm run build`.
+# vendor/ IS committed so the repo is deployable without `composer install`.
+# This is intentional for Hostinger shared hosting where composer is unavailable.

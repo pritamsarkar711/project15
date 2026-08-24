@@ -1,0 +1,95 @@
+@extends('layouts.admin')
+@section('title','Comments')
+@section('admin-breadcrumbs')
+    @include('admin.partials.breadcrumbs', ['crumbs' => [
+        ['label' => 'Comments'],
+    ]])
+@endsection
+
+@section('content')
+<div class="flex flex-wrap items-center gap-1.5 mb-5">
+    @php $tabs = ['all'=>'All','pending'=>'Pending','approved'=>'Approved','rejected'=>'Rejected','spam'=>'Spam']; @endphp
+    @foreach($tabs as $key => $label)
+        <a href="{{ route('admin.comments.index', $key !== 'all' ? ['status'=>$key] : []) }}"
+           class="h-9 px-4 inline-flex items-center gap-2 text-sm font-medium border transition {{ (request('status')==$key || (!request('status') && $key=='all')) ? 'bg-[#0C3B2E] text-white border-[#0C3B2E]' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800' }}">
+            {{ $label }} <span class="text-xs opacity-70">{{ $counts[$key] }}</span>
+        </a>
+    @endforeach
+</div>
+
+<div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden">
+    <div class="divide-y divide-slate-100 dark:divide-slate-800">
+        @forelse($comments as $c)
+            <div class="p-4 sm:p-5">
+                <div class="flex flex-wrap items-start justify-between gap-3">
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm font-semibold">{{ $c->name }}</span>
+                            <span class="text-xs text-slate-500 dark:text-slate-400">{{ $c->email }}</span>
+                            <span class="text-[11px] font-semibold px-2 py-0.5 {{ $c->status=='pending' ? 'bg-amber-100 text-amber-700 dark:bg-amber-400/10 dark:text-amber-300' : ($c->status=='approved' ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300') }}">{{ $c->status }}</span>
+                        </div>
+                        <div class="text-sm text-slate-600 dark:text-slate-300 mt-1">{{ $c->content }}</div>
+                        <div class="text-xs text-slate-400 dark:text-slate-500 mt-1">
+                            {{ $c->created_at->diffForHumans() }} · on
+                            <a href="{{ route('blog.show', $c->post->slug) }}" target="_blank" class="text-emerald-700 dark:text-emerald-300 hover:underline">{{ Str::limit($c->post->title, 50) }}</a>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1 shrink-0">
+                        @foreach(['approved','rejected','spam','pending'] as $s)
+                            @if($c->status != $s)
+                                <form method="POST" action="{{ route('admin.comments.status', $c) }}">@csrf @method('PATCH')
+                                    <input type="hidden" name="status" value="{{ $s }}">
+                                    <button class="h-7 px-2.5 text-xs border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 transition" title="Mark {{ $s }}">{{ ucfirst($s) }}</button>
+                                </form>
+                            @endif
+                        @endforeach
+                        <form method="POST" action="{{ route('admin.comments.destroy', $c) }}" onsubmit="return confirm('Delete this comment and its replies?')">@csrf @method('DELETE')
+                            <button class="w-7 h-7 bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-500/30 flex items-center justify-center" title="Delete">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6"/></svg>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                @if($c->replies->count())
+                    <div class="mt-3 ml-4 pl-4 border-l-2 border-slate-200 dark:border-slate-700 space-y-3">
+                        @foreach($c->replies->sortBy('created_at') as $reply)
+                            <div class="bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 p-3">
+                                <div class="flex flex-wrap items-start justify-between gap-2">
+                                    <div class="min-w-0 flex-1">
+                                        <div class="flex items-center gap-2">
+                                            <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m15 10 5 5-5 5"/><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v7a4 4 0 0 0 4 4h12"/></svg>
+                                            <span class="text-sm font-semibold">{{ $reply->name }}</span>
+                                            <span class="text-[11px] font-semibold px-2 py-0.5 {{ $reply->status=='pending' ? 'bg-amber-100 text-amber-700 dark:bg-amber-400/10 dark:text-amber-300' : ($reply->status=='approved' ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300') }}">{{ $reply->status }}</span>
+                                        </div>
+                                        <div class="text-sm text-slate-600 dark:text-slate-300 mt-1">{{ $reply->content }}</div>
+                                        <div class="text-xs text-slate-400 dark:text-slate-500 mt-1">{{ $reply->created_at->diffForHumans() }}</div>
+                                    </div>
+                                    <div class="flex items-center gap-1 shrink-0">
+                                        @foreach(['approved','rejected','pending'] as $s)
+                                            @if($reply->status != $s)
+                                                <form method="POST" action="{{ route('admin.comments.status', $reply) }}">@csrf @method('PATCH')
+                                                    <input type="hidden" name="status" value="{{ $s }}">
+                                                    <button class="h-6 px-2 text-[11px] border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-700 transition" title="Mark {{ $s }}">{{ ucfirst($s) }}</button>
+                                                </form>
+                                            @endif
+                                        @endforeach
+                                        <form method="POST" action="{{ route('admin.comments.destroy', $reply) }}" onsubmit="return confirm('Delete this reply?')">@csrf @method('DELETE')
+                                            <button class="w-6 h-6 bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-500/30 flex items-center justify-center" title="Delete">
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
+            </div>
+        @empty
+            <p class="p-10 text-center text-sm text-slate-500 dark:text-slate-400">No comments found.</p>
+        @endforelse
+    </div>
+    <div class="p-4 border-t border-slate-100 dark:border-slate-800">{{ $comments->links() }}</div>
+</div>
+@endsection

@@ -1,0 +1,52 @@
+# Hostinger Shared Hosting - Laravel root .htaccess
+# ----------------------------------------------------------------
+# If Hostinger lets you set the domain's document root to /public,
+#   you DON'T need this file - just point the domain to /public via
+#   hPanel → Websites → Domains → Manage → Document Root.
+# If your document root is stuck at the project root (public_html),
+#   this file forwards all web requests to /public/index.php, EXCEPT:
+#     - install.php (the web installer) runs directly from the root
+#     - existing real files (favicon, robots.txt, etc.) serve as-is
+
+# Prevent directory listing (no index file at project root = 403 otherwise).
+Options -Indexes
+
+# Prefer index.php / index.html when a directory is requested.
+DirectoryIndex index.php index.html
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # 1. Let the web installer run directly from project root.
+    RewriteRule ^install\.php$ - [L]
+
+    # 2. Real files at the project root serve as-is (robots.txt, favicon, etc.)
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteRule ^ - [L]
+
+    # 3. Everything else — including "/" and subdirectories — goes to
+    #    public/index.php (Laravel's front controller).
+    #    NOTE: we intentionally DO NOT bail on `-d` here. The project root
+    #    itself is a directory; if we let Apache list it, the visitor gets
+    #    a 403 (no index.php in project root). Forcing it through public/
+    #    makes "/" hit Laravel's router, which serves the homepage.
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
+
+# Security headers for production
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options nosniff
+    Header always set X-Frame-Options SAMEORIGIN
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# Protect sensitive files from direct HTTP access (Apache 2.4 syntax)
+<FilesMatch "^\.env|\.git|composer\.(json|lock)|package\.(json|lock)|vite\.config\.js|phpunit\.xml">
+    Require all denied
+</FilesMatch>
+
+# Block dotfiles (.git, .gitignore, .env, etc.) (Apache 2.4 syntax)
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
