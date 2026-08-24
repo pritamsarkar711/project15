@@ -1,12 +1,26 @@
 /node_modules
-# composer.json + composer.lock ARE tracked because Laravel's
-# Application::getNamespace() reads composer.json at runtime to resolve
-# the PSR-4 autoload namespace. Without composer.json at the project root,
-# every request 500s during bootstrap.
-# Hostinger does NOT auto-run `composer install` unless the user explicitly
-# added it as a deployment job script. vendor/ is committed, so no install
-# is needed at deploy time.
+# composer.json IS tracked as a DEPLOYMENT STUB (only `autoload` section).
+# Laravel's Application::getNamespace() reads composer.json at runtime to
+# resolve the PSR-4 autoload namespace (App\ -> app/). Without composer.json
+# at the project root, every request 500s during bootstrap.
 #
+# The stub composer.json has NO `require` / `require-dev` / `scripts` so
+# Hostinger's auto-detected `composer install --prefer-dist --quiet
+# --no-interaction` becomes a no-op (no packages to download -> no
+# proc_open needed -> deployment succeeds on shared hosting).
+#
+# composer.lock is NOT tracked. With no require section, a lock file is
+# pointless and would just make Hostinger's composer install slower.
+# If you need to install a new package locally:
+#   1. cp .composer-backup/composer.json composer.json
+#   2. cp .composer-backup/composer.lock composer.lock
+#   3. composer require <package>
+#   4. cp composer.json .composer-backup/composer.json
+#   5. cp composer.lock .composer-backup/composer.lock
+#   6. git checkout composer.json   # restore the stub
+#   7. git rm --cached composer.lock  # remove from git tracking again
+/composer.lock
+
 # package.json + package-lock.json are NOT tracked (kept in .npm-backup/
 # for local dev) to avoid Hostinger's npm auto-detect. They are not needed
 # at runtime since public/build/ is committed.
@@ -43,4 +57,5 @@ database/*.sqlite-journal
 
 # Build artifacts ARE committed so the repo is runnable without `npm run build`.
 # vendor/ IS committed so the repo is deployable without `composer install`.
-# This is intentional for Hostinger shared hosting where composer is unavailable.
+# This is intentional for Hostinger shared hosting where composer is unavailable
+# AND proc_open is disabled (so composer install would fail anyway).
