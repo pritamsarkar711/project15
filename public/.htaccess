@@ -1,3 +1,15 @@
+# This marker is also set here for installations whose document root points
+# directly at public/ (the root .htaccess is not evaluated in that layout).
+<IfModule mod_headers.c>
+    Header always set X-Huvanti-Deploy "2026-08-24-hostinger-launch-v2"
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    <Files "deployment.json">
+        Header always set Cache-Control "no-store, max-age=0"
+    </Files>
+</IfModule>
+
 <IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes

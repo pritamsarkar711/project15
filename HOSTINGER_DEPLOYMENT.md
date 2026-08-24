@@ -1,303 +1,281 @@
-# Huvanti — Hostinger Deployment Guide
+# Huvanti — Hostinger deployment and recovery
 
-This guide walks you through deploying Huvanti on Hostinger shared business hosting.
-After deployment you'll have a one-step web installer where you enter your MySQL
-database details + admin credentials, and the site is ready to use.
+Huvanti is packaged for Hostinger shared hosting without running Composer or npm
+on the server. The repository intentionally includes `vendor/` and
+`public/build/` and intentionally does **not** include `composer.json` or
+`composer.lock` at the repository root.
 
----
+Current deployment marker:
 
-## 🚨 EMERGENCY RECOVERY (blank HTTP 500 / "Class Illuminate\Foundation\Application not found")
-
-If your site is **down right now** — homepage shows a blank `HTTP ERROR 500` and/or
-`install.php` fails with `Class "Illuminate\Foundation\Application" not found` —
-follow these steps **in order**. Stop as soon as the homepage loads.
-
-> **Why this happens:** the Composer autoloader maps inside `vendor/composer/` got
-> damaged or `vendor/` was incompletely deployed, so PHP cannot find Laravel's
-> classes. The committed code detects and self-heals this automatically — **but
-> only if the current version of the files is actually on your server.** If you are
-> still seeing the raw error, your server is running an older copy of the code.
-
-### Step 0 — Diagnose in 30 seconds (upload one file)
-
-Upload the single **`doctor.php`** file (it's in the repo root) to `public_html/`
-via **hPanel → File Manager**, then open:
-
+```text
+2026-08-24-hostinger-launch-v2
 ```
+
+## Confirmed cause of the production failure
+
+The production installer that reported:
+
+```text
+Migration/setup failed: Class "Illuminate\Foundation\Application" not found
+.../public_html/install.php(210): require()
+```
+
+is not the installer on current `main`. It exactly matches obsolete branch
+`arena/01a03298-project15` at commit `ba441cfa24`.
+
+That old revision has a root `composer.json` deployment stub with autoload rules
+but **no Laravel dependencies**. Hostinger detects the file and runs Composer.
+Composer then regenerates `vendor/composer/autoload_*.php` from the empty
+require set, removing the `Illuminate\\` mapping even though the Laravel files are
+still on disk. The old installer loads that broken autoloader and requires
+`bootstrap/app.php` at line 210, where `Illuminate\Foundation\Application` can no
+longer be found.
+
+There are therefore two parts to the incident:
+
+1. Hostinger is deploying or serving the obsolete branch/wrong checkout.
+2. Composer has modified that checkout's generated autoloader maps.
+
+Changing database details cannot fix either condition.
+
+## Production recovery — do these steps in order
+
+### 1. Preserve server-owned data
+
+In hPanel **File Manager**, download or copy these before replacing files:
+
+- `public_html/.env`
+- `public_html/storage/app/public/` (uploaded media, if any)
+
+Do not publish `.env`, paste it into GitHub, or replace it with `.env.example`.
+
+### 2. Repair the current outage with one file (optional but fastest)
+
+Upload the current `doctor.php` to `public_html/` and visit:
+
+```text
 https://huvanti.com/doctor.php
 ```
 
-It shows a green/red health checklist pinpointing the exact problem and has
-one-click repair buttons. **Delete `doctor.php` when you're done** (it has a
-self-delete button).
+The doctor is genuinely standalone: it contains a compressed, checksummed copy
+of all 11 pristine Composer loader/map files. It can repair the obsolete
+checkout even though that checkout has no `bootstrap/autoload_backup/` folder.
 
-### Step 1 — Click "Restore the Composer autoloader"
+The page is locked. Unlock it with the complete `APP_KEY` value from
+`public_html/.env`. If `.env` does not exist, create
+`public_html/.doctor-key` in File Manager with a long random password, then use
+that password. Root dotfiles are denied by `.htaccess`.
 
-On `doctor.php` (or `install.php?repair=1`), click **Restore the Composer
-autoloader**. This copies the good maps from `bootstrap/autoload_backup/` back over
-`vendor/composer/`. Then reload the homepage. This alone fixes the issue in most cases.
+Click **Restore the Composer autoloader**. This is a temporary recovery; the
+obsolete branch must still be replaced or Hostinger can break it again.
 
-### Step 2 — If that didn't work, do a CLEAN re-deploy (most reliable)
+Delete `doctor.php` and `.doctor-key` when recovery is complete.
 
-The Git deploy tool sometimes serves a stale or partial copy. Do a fresh manual deploy:
+### 3. Correct Hostinger's Git deployment
 
-1. Download the repo as a ZIP: GitHub → `Code` → **Download ZIP** (or clone locally + zip).
-2. In **hPanel → File Manager**, go to `public_html/`.
-3. **Important:** back up your existing `.env` if it exists (it holds your DB
-   credentials) — copy it somewhere safe.
-4. Delete the old `vendor/` folder entirely (a half-deployed vendor is the usual culprit).
-5. Upload the ZIP to `public_html/`, right-click → **Extract**.
-6. If extraction created a subfolder (e.g. `project15-main/`), move its contents
-   up into `public_html/` directly so `install.php`, `vendor/`, `public/` are all
-   at the `public_html/` level.
-7. Restore your `.env` if you backed it up in step 3.
-8. Set folder permissions: `storage/` and `bootstrap/cache/` → **755** (or 775).
-9. Open `https://huvanti.com/` — it should load. If not, open `doctor.php` again.
+In **hPanel → Websites → huvanti.com → Git**:
 
-### Step 3 — Finish setup (if you never completed the installer)
+1. Disconnect/remove the old deployment integration if it is pinned to
+   `arena/01a03298-project15` or another old branch.
+2. Connect `pritamsarkar711/project15` again.
+3. Select branch **`main`** after the launch-fix pull request has been merged.
+4. Set the deployment directory to the domain's actual project root:
+   `public_html`.
+5. Do not configure a command that runs `composer`, `composer install`, npm, or
+   `php artisan optimize` before installation.
+6. Deploy/pull.
 
-If your database is empty / `.env` is missing, open:
+The expected layout is:
 
+```text
+public_html/
+├── .htaccess
+├── install.php
+├── doctor.php
+├── app/
+├── bootstrap/
+├── public/
+├── storage/
+└── vendor/
 ```
+
+There must not be an extra `project15-main/` directory between `public_html/`
+and these files.
+
+### 4. Remove stale root manifests
+
+After deploy, use File Manager to verify both of these are absent:
+
+```text
+public_html/composer.json
+public_html/composer.lock
+```
+
+The full manifests belong only under `.composer-backup/`. This check is
+especially important after a ZIP upload that was extracted over old files,
+because an overlay may leave the obsolete root `composer.json` behind.
+
+If the Git deployment cannot be trusted, use a clean directory deployment:
+
+1. Preserve `.env` and uploaded media as described above.
+2. Remove the old application files (or deploy into a clean `public_html`).
+3. Extract a ZIP of current `main` directly into `public_html/`.
+4. Restore `.env` and `storage/app/public/`.
+5. Confirm root `composer.json` is absent.
+
+Do not merely overwrite the old tree without deleting stale files.
+
+### 5. Verify the exact release before installing
+
+Open this cache-independent marker:
+
+```text
+https://huvanti.com/deployment.json
+```
+
+Expected JSON includes:
+
+```json
+"deployment": "2026-08-24-hostinger-launch-v2"
+```
+
+Responses also include this header:
+
+```text
+X-Huvanti-Deploy: 2026-08-24-hostinger-launch-v2
+```
+
+A command-line check is:
+
+```bash
+curl -fsS https://huvanti.com/deployment.json
+curl -fsSI https://huvanti.com/ | grep -i x-huvanti-deploy
+```
+
+Do not continue if the marker is missing. That means the domain is still
+serving another document root or revision.
+
+### 6. Configure Hostinger and run the installer
+
+In hPanel set:
+
+- PHP **8.3 or newer**
+- extensions: `pdo_mysql`, `openssl`, `mbstring`, `tokenizer`, `gd`,
+  `fileinfo`, `curl`
+- permissions: `storage/` and `bootstrap/cache/` writable by PHP (normally 755;
+  use 775 only if Hostinger's PHP user/group requires it)
+
+Create a MySQL database and user with all privileges, then visit:
+
+```text
 https://huvanti.com/install.php
 ```
 
-Fill in your MySQL details (from hPanel → MySQL Databases) + admin credentials and
-click **Install**. The current `install.php` self-heals the autoloader before doing
-anything, so the old "Class not found" crash can no longer happen during setup.
+The corrected installer:
 
-### Quick reference for the most common errors
+- identifies itself with the deployment marker;
+- checks both Composer runtime maps;
+- restores damaged maps before displaying the requirements form;
+- validates a CSRF token before accepting credentials;
+- writes `.env`, runs migrations and seeds in-process (no shell/`proc_open`);
+- creates the admin user and installation lock;
+- attempts to delete itself on success.
 
-| Symptom | Fix |
-|---------|-----|
-| `Class "Illuminate\Foundation\Application" not found` | Autoloader clobbered / vendor incomplete. `doctor.php` → **Restore autoloader**, or clean re-deploy (Step 2). |
-| Blank `HTTP ERROR 500` on every page | Same as above — the front controller can't boot Laravel. `doctor.php` tells you which red item is blocking it. |
-| `Composer detected issues in your platform … PHP version` | Set PHP **8.3** in hPanel → PHP Configuration. |
-| `storage/ not writable` | File Manager → `storage/` → Permissions → **755**, apply to subdirectories. |
-| `DB connection failed` | Check DB name/user/password in hPanel → MySQL Databases; user needs ALL PRIVILEGES. |
-| Works after fix, then breaks again later | Re-run Git → Deploy WITHOUT a post-deploy script that calls composer. The repo intentionally ships no root `composer.json`. |
+If the database contains tables from a partial installation, either use the
+same database and allow pending migrations to complete, or create a clean
+empty database. Do not drop production data unless it has been backed up and a
+clean reinstall is intentional.
 
----
+### 7. Post-install cleanup
 
-## TL;DR (quick path)
+- Delete `install.php` if self-deletion was denied by filesystem permissions.
+- Delete `doctor.php` and `.doctor-key`.
+- Confirm `storage/app/installed.lock` exists.
+- Visit `/`, `/manage`, and `/up`.
+- Confirm uploaded images load through `public/storage`.
 
-1. Push the repo to GitHub (already done at <https://github.com/pritamsarkar711/project15>).
-2. In Hostinger hPanel → Websites → your site → **Git** → connect the repo.
-3. Set **Branch** = `main`, **Document Root** = `public_html`, click **Deploy**.
-4. Once files are deployed, open **https://huvanti.com/install.php** in your browser.
-5. Fill in MySQL details + admin email + admin password → click **Install Huvanti**.
-6. Installer runs migrations, seeds demo posts, creates your admin user, deletes itself.
-7. Visit **https://huvanti.com/manage** → log in with your admin email + password.
+## Why the repository is packaged this way
 
-That's it. No SSH, no composer, no artisan needed.
+Hostinger's automated Composer step is not safe for this vendored shared-hosting
+artifact. The repository therefore uses all of the following together:
 
----
+- tracked `vendor/` with the complete Laravel dependency tree;
+- tracked `public/build/` with compiled frontend assets;
+- no root `composer.json` or `composer.lock`;
+- full development manifests under `.composer-backup/`;
+- `App\Application::getNamespace()` override so Laravel does not need a root
+  Composer manifest at runtime;
+- pristine generated loader files in `bootstrap/autoload_backup/`;
+- pre-bootstrap checks and automatic map restoration in `public/index.php` and
+  `install.php`;
+- an authenticated one-file `doctor.php` containing an embedded fallback;
+- a public deployment marker to detect stale revisions/document roots.
 
-## Why this approach
+These pieces are not interchangeable. In particular, committing `vendor/` does
+not help if Hostinger subsequently runs Composer and rewrites its generated
+maps.
 
-Hostinger shared hosting disables `proc_open` for security reasons, which means
-**Composer cannot run on the server** (it relies on `proc_open` to invoke subprocesses).
+## Document root and rewrite behavior
 
-To work around this we:
+For this installation workflow, keep the domain pointed at `public_html`. The
+root `.htaccess` forwards every normal request into `public/` while allowing
+only `install.php` and temporary `doctor.php` at project root.
 
-- **Commit the entire `vendor/` directory** to git. The repo is ~92 MB heavier but
-  the tradeoff is: zero composer step on the server.
-- **Ship WITHOUT a root `composer.json`.** Hostinger's Git auto-deploy detects
-  that file and runs `composer install` — which regenerates `vendor/composer/`
-  from whatever `composer.json` declares. A dependency-less composer.json once
-  stripped every framework mapping from the autoloader and took the whole site
-  down with a blank HTTP 500. No composer.json → Composer never runs → the
-  committed autoloader stays exactly as it is in git. Laravel's one runtime use
-  of composer.json (`Application::getNamespace`) is replaced by the override in
-  `app/Application.php`. The real composer.json/composer.lock live in
-  `.composer-backup/` for local development only.
-- **Bundle a self-contained `install.php`** at the project root. It writes `.env`,
-  runs migrations via `Artisan::call()` (in-process, no shell), seeds demo data,
-  and creates your admin user — all from the browser. It also hosts an emergency
-  **repair console** at `install.php?repair=1` (see troubleshooting below).
-- **Commit the compiled `public/build/` assets** so you don't need `npm run build`
-  on the server either.
-- **Keep pristine autoloader backups** in `bootstrap/autoload_backup/`. If
-  anything ever damages `vendor/composer/`, `public/index.php` restores them
-  automatically on the next request — and shows a readable diagnostic page
-  instead of a blank HTTP 500 if it can't.
+The corrected rules:
 
----
+- stop an internal path already beginning with `public/`, preventing repeated
+  `public/public/...` rewrites and HTTP 500 loops;
+- do not serve existing project-root files directly;
+- prevent access to application source, logs, manifests and configuration;
+- emit the deployment marker header.
 
-## Pre-deployment checklist (if you forked the repo)
+After installation, a custom document root of `public_html/public` is also a
+valid hardened layout, but root `install.php` and `doctor.php` are then not
+reachable. Do not switch layouts during recovery.
 
-If you forked the project, before deploying make sure the following are committed:
+## Updating dependencies locally
 
-- [ ] `vendor/` — Laravel's dependencies (committed, not gitignored)
-- [ ] `public/build/` — Vite-compiled CSS/JS (committed, not gitignored)
-- [ ] `install.php` — the web installer (committed at project root)
-- [ ] `.htaccess` — the root rewrite rules (committed at project root)
-- [ ] `storage/framework/{cache,sessions,views}/` directories with `.gitkeep` files
-- [ ] `bootstrap/cache/` directory
-
-Run this locally to regenerate if needed:
+Use PHP 8.3+ and Composer on a development machine:
 
 ```bash
-composer install --no-dev --prefer-dist
-npm install && npm run build
+cp .composer-backup/composer.json composer.json
+cp .composer-backup/composer.lock composer.lock
+composer install --no-dev --optimize-autoloader
+cp composer.json .composer-backup/composer.json
+cp composer.lock .composer-backup/composer.lock
+rm composer.json composer.lock
 ```
 
----
+Refresh the backup files as documented in
+`bootstrap/autoload_backup/README.md`, then regenerate the doctor's embedded
+bundle:
 
-## Step-by-step Hostinger deployment
+```bash
+python3 tools/build-doctor-bundle.py
+```
 
-### Step 1 — hPanel preparation
+Commit the updated `vendor/`, manifests, backup and `doctor.php` together. Never
+commit the restored manifests at repository root.
 
-1. Log into **hPanel** (Hostinger control panel).
-2. **Websites** → select your site (e.g. `huvanti.com`).
-3. **Advanced** → **PHP Configuration** → set PHP version to **8.3** (or 8.2+).
-4. In the same screen, ensure these extensions are enabled:
-   `pdo_mysql`, `openssl`, `mbstring`, `tokenizer`, `gd`, `fileinfo`, `curl`, `zip`.
-5. **Databases** → **MySQL Databases** → create a new database:
-   - Database name: e.g. `u123456789_huvanti`
-   - Username: e.g. `u123456789_admin`
-   - Password: (generate a strong one and save it)
-   - Assign the user to the database with **ALL PRIVILEGES**
+## Troubleshooting matrix
 
-### Step 2 — Connect Git & deploy
+| Symptom | Meaning | Action |
+|---|---|---|
+| Installer says PHP 8.1+ and fails at line 210 | Obsolete installer is still served | Correct branch/document root; verify `deployment.json` |
+| `Illuminate\Foundation\Application not found` | Composer maps lost `Illuminate\\`, or framework files are absent | Upload doctor and restore maps; if framework entry file is missing, clean-deploy `vendor/` |
+| `deployment.json` missing/500 | Wrong or stale deployment | Stop; correct Hostinger Git settings/document root |
+| Repaired site breaks after every deploy | Root Composer manifest or deploy Composer command still exists | Remove both and redeploy current `main` |
+| Too many internal redirects / immediate Apache 500 | Old recursive root rewrite rules | Deploy corrected `.htaccess` |
+| Requirements show PHP below 8.3 | Unsupported runtime | Select PHP 8.3+ in hPanel |
+| Storage/cache not writable | PHP cannot write runtime files | Correct ownership/permissions in File Manager |
+| MySQL connection fails | Credentials, host, user assignment or privileges are wrong | Verify in hPanel MySQL Databases |
+| Homepage fails after partial install | Database tables/session/cache may be incomplete | Unlock doctor, inspect DB status, run pending migrations |
 
-1. **hPanel** → **Websites** → your site → **Git** (or "Deploy from Git").
-2. Authorize your GitHub account if not already done.
-3. Select the repository: **pritamsarkar711/project15** (or your fork).
-4. Branch: **main**
-5. Document root: **public_html** (Hostinger's default for shared hosting).
-   - If your host plan lets you choose a custom document root, set it to
-     `public_html/public` instead, and skip the root `.htaccess` rewrite rules.
-6. Click **Deploy / Pull** — Hostinger clones the repo into `public_html/`.
+## Server requirements
 
-If you saw the earlier error `The Process class relies on proc_open` — that was
-Hostinger trying to run `composer install` after detecting a root
-`composer.json`. The repo no longer ships a root `composer.json` (and commits
-`vendor/` instead), so Composer never runs during deploy and the error is gone.
-
-### Step 3 — Run the web installer
-
-1. Open: **https://huvanti.com/install.php**
-2. The installer shows a requirements check at the top. All items should be green ✅.
-   - If `vendor/autoload.php` is missing: Git didn't deploy properly — re-pull.
-   - If a directory is not writable: use File Manager → right-click → Permissions → 755.
-3. Fill in the form:
-   - **MySQL**: host (`localhost`), port (`3306`), DB name, username, password
-     (from step 1).
-   - **Site URL**: `https://huvanti.com` (full URL with `https://`).
-   - **Site Name**: e.g. `Huvanti` or `My Blog`.
-   - **Admin Name**: e.g. `Pritam Sarkar`.
-   - **Admin Email**: e.g. `admin@huvanti.com` (your real email).
-   - **Admin Password**: choose a strong one (min 8 chars).
-4. Click **Install Huvanti →**.
-5. Wait 10–30 seconds. Migrations + seeders run, admin user is created.
-6. The installer shows a success page with links to your site + admin panel, and
-   **deletes itself** for security.
-
-### Step 4 — Verify
-
-1. Visit **https://huvanti.com/** — homepage should render with the hero, categories,
-   latest posts.
-2. Visit **https://huvanti.com/manage** — log in with your admin email + password.
-3. You should see the admin dashboard with stats (Posts, Views, Pending Comments,
-   Unread Messages) and the sidebar (Posts, Categories, Pages, Advertisements,
-   Comments, Messages, Profile, Settings, Security).
-
-### Step 5 — Post-install cleanup (optional but recommended)
-
-1. In hPanel → File Manager → check that `install.php` is gone. If it's still there
-   (server didn't allow self-delete), **delete it manually**.
-2. Verify `storage/app/installed.lock` exists — this prevents re-running the installer.
-3. Set up HTTPS if not already (hPanel → SSL → install free Let's Encrypt).
-4. (Optional) Set up cron for queue workers + scheduled tasks:
-   ```
-   * * * * * cd /home/u123456789/domains/huvanti.com/public_html && /usr/bin/php artisan schedule:run >> /dev/null 2>&1
-   ```
-
----
-
-## If the installer shows errors
-
-| Error | Fix |
-|-------|-----|
-| `vendor/autoload.php missing` | Re-deploy from git. The repo includes `vendor/` (~92 MB). |
-| `Migration/setup failed: Class "Illuminate\Foundation\Application" not found` | The Composer autoloader maps in `vendor/composer/` were damaged (Hostinger regenerating them) or `vendor/` was incompletely deployed. **Re-deploy from Git** so the current `install.php` (which detects and self-heals this automatically) is on the server, then retry the installer. If it still fails, open `install.php?repair=1` → **Restore autoloader**; if the checklist shows `Laravel framework files → missing`, delete `vendor/` in File Manager and Git → Deploy again. |
-| `storage/ not writable` | File Manager → right-click `storage/` → Permissions → set to 755 (or 775). Apply recursively. |
-| `bootstrap/cache/ not writable` | Same — set permissions to 755/775. |
-| `DB connection failed` | Verify DB host (`localhost`), DB name, username, password in hPanel → MySQL Databases. |
-| `Migration failed: SQLSTATE[42S01] Base table already exists` | Your DB already has data. Drop all tables in phpMyAdmin (or drop + recreate the database in hPanel) and re-run installer. |
-| `Migration failed: SQLSTATE[42000] Access denied` | Your DB user lacks privileges. In hPanel → MySQL → Users → edit user → check ALL PRIVILEGES. |
-| Blank white page after install | Check `storage/logs/laravel.log`. Most likely a permissions issue on `storage/`. |
-| `500` on homepage but admin works | Probably `php artisan storage:link` is missing. Run via File Manager → Terminal, or via cron: `php artisan storage:link`. |
-
----
-
-## If the live site shows a blank HTTP 500
-
-A blank "HTTP ERROR 500" (no Laravel error page) means PHP died **before**
-Laravel could boot — almost always a damaged Composer autoloader in
-`vendor/composer/`, historically caused by the host running `composer install`
-against a root `composer.json`. The repo now prevents and self-heals this:
-
-1. **First, just reload the homepage.** `public/index.php` checks the
-   autoloader on every request and, if the `Illuminate\` mappings are missing
-   from `vendor/composer/autoload_psr4.php` **or** `autoload_static.php`
-   (the authoritative map that actually feeds the runtime loader), restores
-   them automatically from `bootstrap/autoload_backup/`. One reload is
-   often the entire fix. `install.php` runs the same verify-and-heal before
-   loading the autoloader, so the installer can no longer die with
-   `Class "Illuminate\Foundation\Application" not found` either.
-2. **If it still fails, open the repair console:** `https://huvanti.com/install.php?repair=1`.
-   It runs on plain PHP (works even when Laravel can't boot) and offers:
-   - **Restore the Composer autoloader** — copies the pristine maps back over
-     the damaged ones.
-   - **Run pending migrations** — applies new DB schema after a code update.
-   The page also shows a red/green health checklist pinpointing the problem.
-3. **If the checklist says `vendor/laravel/framework/` is missing**, the
-   package files themselves were deleted. In hPanel → File Manager delete the
-   whole `vendor/` folder, then run **Git → Deploy** to restore the committed
-   copy.
-4. **If the checklist flags the PHP version**, set it to **8.3** in
-   hPanel → Websites → your site → Advanced → PHP Configuration.
-
-The site also renders a readable diagnostic page (instead of a blank 500)
-whenever Laravel fails to start, so the underlying error is always visible.
-
----
-
-## If Hostinger's "Git Deploy" tool keeps failing
-
-Hostinger's Git deploy tool runs `composer install` by default. If you cannot disable
-that step in the deploy settings, use **manual FTP upload** instead:
-
-1. Download the project as a ZIP from GitHub (or `git clone` locally then zip).
-2. hPanel → File Manager → upload the ZIP to `public_html/`.
-3. Right-click → Extract.
-4. Move all files from the extracted subfolder to `public_html/` directly.
-5. Open `https://huvanti.com/install.php`.
-
----
-
-## Server requirements (minimum)
-
-- PHP **8.2+** (8.3 recommended)
-- MySQL **5.7+** (or MariaDB 10.3+)
-- Extensions: `pdo_mysql`, `openssl`, `mbstring`, `tokenizer`, `gd`, `fileinfo`, `json`, `curl`
-- Writable: `storage/`, `bootstrap/cache/`, project root (for `.env` writing)
-- Apache with `mod_rewrite` (default on Hostinger) — or nginx with try_files
-
----
-
-## Default seeded content
-
-After install, your DB contains:
-
-- 1 admin user (the one you created via the installer)
-- ~10 sample posts across 6 categories (Technology, Health, Finance, Travel, Lifestyle, Education)
-- 6 categories with icons
-- 4 navigation items
-- 6 FAQ entries
-- 5 demo pages (About, Contact, Privacy Policy, Terms, FAQ)
-- 0 advertisements (placeholders deleted in round 3)
-
-Log in to `/manage` to edit/delete the demo content and start publishing your own.
+- PHP 8.3+
+- MySQL 5.7+ or compatible MariaDB
+- Apache/LiteSpeed rewrite support
+- PHP extensions listed above
+- writable `storage/`, `bootstrap/cache/`, and project root during initial `.env`
+  creation

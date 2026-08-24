@@ -13,8 +13,9 @@
 #
 # vendor/ IS committed (see note at the bottom of this file) so the site
 # works with zero composer steps. bootstrap/autoload_backup/ holds pristine
-# copies of the autoloader files that public/index.php + install.php?repair=1
-# restore automatically if anything ever damages vendor/composer/ again.
+# copies of the autoloader files that public/index.php + install.php restore
+# automatically if anything ever damages vendor/composer/ again; authenticated
+# doctor.php also embeds them for standalone recovery.
 #
 # The full composer.json + composer.lock live in .composer-backup/ for local
 # development. To add a package locally:
@@ -52,6 +53,8 @@
 npm-local-*
 composer.phar
 *.log
+__pycache__/
+*.py[cod]
 .DS_Store
 .idea
 .vscode

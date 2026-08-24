@@ -21,7 +21,7 @@ define('LARAVEL_START', microtime(true));
 //      README in that directory). Self-healing, zero interaction needed.
 //   2. If anything still fails before Laravel's exception handler can take
 //      over, renders a readable diagnostic page instead of a blank 500, with
-//      a checklist and a link to /install.php?repair=1.
+//      a checklist and a link to the authenticated /doctor.php.
 // ---------------------------------------------------------------------------
 
 // Determine if the application is in maintenance mode...
@@ -77,26 +77,41 @@ function huvanti_restore_autoloader_backup(): array
     $copied = [];
     $failed = [];
 
-    foreach (scandir($backupDir) ?: [] as $file) {
-        if ($file === '.' || $file === '..' || !str_ends_with($file, '.php')) {
+    $files = [
+        'ClassLoader.php', 'InstalledVersions.php',
+        'autoload_classmap.php', 'autoload_files.php', 'autoload_namespaces.php',
+        'autoload_psr4.php', 'autoload_real.php', 'autoload_static.php',
+        'installed.php', 'platform_check.php',
+        // Publish the entry point only after everything it requires is ready.
+        'autoload.php',
+    ];
+    foreach ($files as $file) {
+        if ($file === 'autoload.php' && $failed !== []) {
+            $failed[] = 'autoload.php (not published because a dependency failed)';
             continue;
         }
         $src = $backupDir.'/'.$file;
         $dst = $file === 'autoload.php'
             ? __DIR__.'/../vendor/autoload.php'
             : $composerDir.'/'.$file;
+        $content = @file_get_contents($src);
+        $temporary = $dst.'.restore-'.bin2hex(random_bytes(4)).'.tmp';
 
-        if (@copy($src, $dst)) {
+        if ($content !== false
+            && @file_put_contents($temporary, $content, LOCK_EX) === strlen($content)
+            && @rename($temporary, $dst)) {
             @chmod($dst, 0644);
-            // Make sure the next require() re-reads the restored file even on
-            // hosts that disable OPcache timestamp validation.
             if (function_exists('opcache_invalidate')) {
                 @opcache_invalidate($dst, true);
             }
             $copied[] = $file;
         } else {
+            @unlink($temporary);
             $failed[] = $file;
         }
+    }
+    if (function_exists('opcache_reset')) {
+        @opcache_reset();
     }
 
     return [$copied, $failed];
@@ -111,12 +126,19 @@ function huvanti_render_boot_failure_page(?Throwable $e, array $notes = []): voi
     if (!headers_sent()) {
         http_response_code(500);
         header('Content-Type: text/html; charset=utf-8');
-        header('X-Robots-Tag: noindex');
+        header('Cache-Control: no-store, max-age=0');
+        header('X-Robots-Tag: noindex, nofollow');
+        header('X-Content-Type-Options: nosniff');
+        header('X-Huvanti-Deploy: 2026-08-24-hostinger-launch-v2');
     }
 
     $h = static fn ($v): string => htmlspecialchars((string) $v, ENT_QUOTES, 'UTF-8');
 
     $checks = [
+        'Deployment release' => [
+            'ok' => true,
+            'value' => '2026-08-24-hostinger-launch-v2',
+        ],
         'PHP version' => [
             'ok' => PHP_VERSION_ID >= 80300,
             'value' => PHP_VERSION.(PHP_VERSION_ID >= 80300 ? '' : ' — Huvanti needs PHP 8.3+ (hPanel → PHP Configuration)'),
@@ -125,11 +147,11 @@ function huvanti_render_boot_failure_page(?Throwable $e, array $notes = []): voi
             'ok' => is_file(__DIR__.'/../vendor/autoload.php'),
             'value' => is_file(__DIR__.'/../vendor/autoload.php') ? 'present' : 'missing — re-deploy from Git',
         ],
-        'vendor/laravel/framework/' => [
-            'ok' => is_dir(__DIR__.'/../vendor/laravel/framework'),
-            'value' => is_dir(__DIR__.'/../vendor/laravel/framework')
+        'Laravel framework entry class' => [
+            'ok' => is_file(__DIR__.'/../vendor/laravel/framework/src/Illuminate/Foundation/Application.php'),
+            'value' => is_file(__DIR__.'/../vendor/laravel/framework/src/Illuminate/Foundation/Application.php')
                 ? 'present'
-                : 'deleted (composer uninstall damage) — delete vendor/ + bootstrap/cache/* via File Manager, then Git → Deploy',
+                : 'missing — preserve .env, delete vendor/, then deploy the current main branch',
         ],
         '.env file' => [
             'ok' => is_file(__DIR__.'/../.env'),
@@ -152,7 +174,7 @@ function huvanti_render_boot_failure_page(?Throwable $e, array $notes = []): voi
             'ok' => huvanti_autoloader_is_pristine(),
             'value' => huvanti_autoloader_is_pristine()
                 ? 'yes'
-                : 'no — reload this page (auto-restore) or use /install.php?repair=1',
+                : 'no — reload this page (auto-restore) or use authenticated /doctor.php',
         ],
     ];
 
@@ -172,12 +194,12 @@ function huvanti_render_boot_failure_page(?Throwable $e, array $notes = []): voi
         $notesHtml .= '</ul>';
     }
 
-    $errorBlock = '';
-    if ($e !== null) {
-        $errorBlock = '<details><summary>Error details</summary><pre>'
-            .$h(get_class($e).': '.$e->getMessage()."\n".'in '.$e->getFile().':'.$e->getLine()."\n\n".$e->getTraceAsString())
-            .'</pre></details>';
-    }
+    // Never expose exception messages, absolute paths, SQL or stack traces on
+    // the public error page. The full exception is written to the PHP error log
+    // by the outer catch; authenticated doctor.php provides deeper diagnostics.
+    $errorBlock = $e === null
+        ? ''
+        : '<p class="sub"><strong>Technical details were written to the server error log.</strong></p>';
 
     echo <<<HTML
 <!doctype html>
@@ -218,7 +240,7 @@ HTTP 500. Work through the checklist below — red items are the problem.</p>
 {$errorBlock}
 <table>{$rows}</table>
 {$notesHtml}
-<a class="btn" href="/install.php?repair=1">Open repair console</a>
+<a class="btn" href="/doctor.php">Open authenticated doctor</a>
 <a class="btn secondary" href="/">Retry homepage</a>
 </div>
 </body>
@@ -272,8 +294,8 @@ try {
         huvanti_render_boot_failure_page(new RuntimeException(
             'The autoloader maps are intact and the framework files exist, but Illuminate '
             .'classes still do not load — stale OPcache is the likely cause. Reload this '
-            .'page, or use /install.php?repair=1 → "Restore autoloader" (it also flushes '
-            .'the cached bytecode).'
+            .'page, or use authenticated /doctor.php → "Restore autoloader" (it also '
+            .'flushes the cached bytecode).'
         ));
         exit(1);
     }

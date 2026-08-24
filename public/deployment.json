@@ -1,0 +1,6 @@
+{
+    "application": "Huvanti",
+    "deployment": "2026-08-24-hostinger-launch-v2",
+    "php": ">=8.3",
+    "status": "release files present"
+}
