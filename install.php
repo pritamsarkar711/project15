@@ -102,6 +102,14 @@ input[type=password]{font-family:Roboto Mono,monospace;letter-spacing:0.02em}
 
 $lockFile = ROOT . '/storage/app/installed.lock';
 
+// Repair / upgrade console — always reachable (installed or not) via
+// install.php?repair=1. It works even when Laravel itself cannot boot
+// (broken autoloader), so it's the emergency hatch for HTTP 500 outages.
+if (isset($_GET['repair'])) {
+    echo huvanti_repair_console();
+    exit;
+}
+
 // Already installed?
 if (file_exists($lockFile)) {
     http_response_code(403);
@@ -109,6 +117,12 @@ if (file_exists($lockFile)) {
         <h1>Already installed</h1>
         <p class="sub">Huvanti is already set up on this server.</p>
         <div class="state state-ok">
+            <h2>Site showing an error?</h2>
+            <ul>
+                <li>Open the <a href="install.php?repair=1">repair console</a> —
+                    it fixes broken autoloaders and applies pending database
+                    migrations without SSH.</li>
+            </ul>
             <h2>To reinstall</h2>
             <ul>
                 <li>Delete <code>storage/app/installed.lock</code> via File Manager</li>
@@ -116,7 +130,8 @@ if (file_exists($lockFile)) {
                 <li>Reload this page</li>
             </ul>
         </div>
-        <a class="btn" href="/">Visit site</a>');
+        <a class="btn" href="/">Visit site</a>
+        <a class="btn" style="background:#fff;color:' . PRIMARY . ';border:1.5px solid ' . PRIMARY . '" href="install.php?repair=1">Open repair console</a>');
     exit;
 }
 
@@ -256,7 +271,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 function check_requirements(): array {
     return [
-        'PHP 8.1+' => ['ok' => version_compare(PHP_VERSION, '8.1.0', '>='), 'value' => PHP_VERSION],
+        'PHP 8.3+' => ['ok' => version_compare(PHP_VERSION, '8.3.0', '>='), 'value' => PHP_VERSION],
         'pdo_mysql' => ['ok' => extension_loaded('pdo_mysql'), 'value' => extension_loaded('pdo_mysql') ? 'yes' : 'no'],
         'openssl' => ['ok' => extension_loaded('openssl'), 'value' => extension_loaded('openssl') ? 'yes' : 'no'],
         'mbstring' => ['ok' => extension_loaded('mbstring'), 'value' => extension_loaded('mbstring') ? 'yes' : 'no'],
@@ -264,10 +279,165 @@ function check_requirements(): array {
         'gd' => ['ok' => extension_loaded('gd'), 'value' => extension_loaded('gd') ? 'yes' : 'no'],
         'fileinfo' => ['ok' => extension_loaded('fileinfo'), 'value' => extension_loaded('fileinfo') ? 'yes' : 'no'],
         'vendor/autoload.php' => ['ok' => file_exists(ROOT . '/vendor/autoload.php'), 'value' => file_exists(ROOT . '/vendor/autoload.php') ? 'ok' : 'missing'],
+        'autoload maps Illuminate' => ['ok' => huvanti_autoload_maps_ok(), 'value' => huvanti_autoload_maps_ok() ? 'ok' : 'clobbered — use repair console'],
+        'vendor/laravel/framework/' => ['ok' => is_dir(ROOT . '/vendor/laravel/framework'), 'value' => is_dir(ROOT . '/vendor/laravel/framework') ? 'ok' : 'missing'],
         'storage/ writable' => ['ok' => is_writable(ROOT . '/storage'), 'value' => is_writable(ROOT . '/storage') ? 'yes' : 'no'],
         'bootstrap/cache/ writable' => ['ok' => is_writable(ROOT . '/bootstrap/cache'), 'value' => is_writable(ROOT . '/bootstrap/cache') ? 'yes' : 'no'],
         'root writable (.env)' => ['ok' => is_writable(ROOT), 'value' => is_writable(ROOT) ? 'yes' : 'no'],
     ];
+}
+
+/**
+ * True when the on-disk autoloader still maps the framework namespaces.
+ * Inspects file content only (never requires it) so a clobbered autoloader
+ * can't cause side effects here.
+ */
+function huvanti_autoload_maps_ok(): bool {
+    $map = ROOT . '/vendor/composer/autoload_psr4.php';
+    if (!is_file($map)) {
+        return false;
+    }
+    $head = @file_get_contents($map, false, null, 0, 65536);
+    return $head !== false && str_contains($head, "'Illuminate\\\\'");
+}
+
+/**
+ * Copy pristine autoloader files from bootstrap/autoload_backup/ back over
+ * vendor/composer/ + vendor/autoload.php. Returns [copied[], failed[]].
+ */
+function huvanti_restore_autoload(): array {
+    $backupDir = ROOT . '/bootstrap/autoload_backup';
+    $composerDir = ROOT . '/vendor/composer';
+
+    if (!is_dir($backupDir)) {
+        return [[], ['bootstrap/autoload_backup/ is missing — re-deploy the repo from Git first']];
+    }
+    if (!is_dir(ROOT . '/vendor') && !@mkdir(ROOT . '/vendor', 0775, true)) {
+        return [[], ['cannot create vendor/']];
+    }
+    if (!is_dir($composerDir) && !@mkdir($composerDir, 0775, true)) {
+        return [[], ['cannot create vendor/composer/']];
+    }
+
+    $copied = [];
+    $failed = [];
+    foreach (scandir($backupDir) ?: [] as $file) {
+        if ($file === '.' || $file === '..' || !str_ends_with($file, '.php')) {
+            continue;
+        }
+        $dst = $file === 'autoload.php'
+            ? ROOT . '/vendor/autoload.php'
+            : $composerDir . '/' . $file;
+        if (@copy($backupDir . '/' . $file, $dst)) {
+            @chmod($dst, 0644);
+            $copied[] = $file;
+        } else {
+            $failed[] = $file;
+        }
+    }
+    return [$copied, $failed];
+}
+
+/**
+ * Emergency repair + upgrade console (install.php?repair=1). Standalone PHP —
+ * works even when the Laravel boot is broken. Actions:
+ *   - restore_autoload: overwrite vendor/composer maps from the backup copy
+ *   - migrate:          run pending DB migrations in-process via Artisan
+ */
+function huvanti_repair_console(): string {
+    $messages = [];
+    $errors = [];
+    $migLog = '';
+
+    if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
+        $action = $_POST['action'] ?? '';
+
+        if ($action === 'restore_autoload') {
+            [$copied, $failed] = huvanti_restore_autoload();
+            if ($failed) {
+                $errors[] = 'Autoloader restore failed: ' . implode(', ', $failed);
+            } else {
+                $messages[] = 'Autoloader restored (' . count($copied) . ' files copied from bootstrap/autoload_backup/). Reload the homepage — the site should boot again.';
+            }
+        }
+
+        if ($action === 'migrate') {
+            if (!file_exists(ROOT . '/.env')) {
+                $errors[] = '.env is missing — this server has not been installed yet. Reload install.php (without ?repair=1) and run the full installer.';
+            } else {
+                if (!huvanti_autoload_maps_ok()) {
+                    [, $failed] = huvanti_restore_autoload();
+                    if ($failed) {
+                        $errors[] = 'Autoloader is broken and auto-restore failed: ' . implode(', ', $failed);
+                    }
+                }
+                if (!$errors) {
+                    try {
+                        require ROOT . '/vendor/autoload.php';
+                        if (!class_exists(Illuminate\Foundation\Application::class)) {
+                            throw new RuntimeException('Laravel framework files are missing from vendor/ even though the maps look fine. Delete vendor/ via hPanel → File Manager, then Git → Deploy to restore the committed copy.');
+                        }
+                        $app = require ROOT . '/bootstrap/app.php';
+                        $app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
+                        Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+                        $migLog = Illuminate\Support\Facades\Artisan::output();
+                        $messages[] = 'Database schema upgraded — pending migrations applied.';
+                    } catch (Throwable $e) {
+                        $errors[] = 'Migration failed: ' . $e->getMessage();
+                    }
+                }
+            }
+        }
+    }
+
+    $reqs = check_requirements();
+    $reqRows = '';
+    foreach ($reqs as $label => $r) {
+        $cls = $r['ok'] ? 'ok' : 'bad';
+        $reqRows .= '<div class="row ' . $cls . '"><span>' . h($label) . '</span><span class="v">' . h($r['value']) . '</span></div>';
+    }
+
+    $errorsHtml = '';
+    if ($errors) {
+        $errorsHtml = '<div class="errors"><ul>';
+        foreach ($errors as $err) {
+            $errorsHtml .= '<li>' . nl2br(h($err)) . '</li>';
+        }
+        $errorsHtml .= '</ul></div>';
+    }
+
+    $messagesHtml = '';
+    foreach ($messages as $msg) {
+        $messagesHtml .= '<div class="state state-ok"><ul><li>' . nl2br(h($msg)) . '</li></ul></div>';
+    }
+
+    $migLogHtml = $migLog !== '' ? '<pre class="mig-log">' . h($migLog) . '</pre>' : '';
+
+    return view_page('Repair console', '
+        <h1>Repair console</h1>
+        <p class="sub">Emergency hatch for HTTP 500 outages — runs on plain PHP,
+        so it works even when Laravel cannot boot. It never deletes data and
+        never rewrites <code>.env</code>.</p>
+        ' . $errorsHtml . $messagesHtml . '
+        <div class="req">' . $reqRows . '</div>
+        <h2>1 · Restore the Composer autoloader</h2>
+        <p class="sub">Fixes blank HTTP 500s caused by the host\'s auto-deploy
+        regenerating <code>vendor/composer/</code> from a dependency-less
+        composer.json. Copies pristine maps back over the damaged ones.</p>
+        <form method="post">
+            <input type="hidden" name="action" value="restore_autoload">
+            <button class="btn" type="submit">Restore autoloader</button>
+        </form>
+        <h2>2 · Upgrade the database schema</h2>
+        <p class="sub">Runs any pending migrations (safe — already-applied
+        migrations are skipped). Do this after a code update if the admin
+        panel or new features throw database errors.</p>
+        <form method="post">
+            <input type="hidden" name="action" value="migrate">
+            <button class="btn" type="submit">Run pending migrations</button>
+        </form>
+        ' . $migLogHtml . '
+        <a class="btn" style="background:#fff;color:' . PRIMARY . ';border:1.5px solid ' . PRIMARY . ';margin-top:24px" href="/">Visit site</a>');
 }
 
 function h($s) { return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
