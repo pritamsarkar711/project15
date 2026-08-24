@@ -1,11 +1,14 @@
 <?php
 
-use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
 
-return Application::configure(basePath: dirname(__DIR__))
+// NOTE: App\Application (not Illuminate's) — its getNamespace() override
+// removes the runtime dependency on a root composer.json, which we omit on
+// purpose so Hostinger's Git auto-deploy never triggers `composer install`.
+// See app/Application.php for the full story.
+return \App\Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
         commands: __DIR__.'/../routes/console.php',

@@ -29,11 +29,25 @@ To work around this we:
 
 - **Commit the entire `vendor/` directory** to git. The repo is ~92 MB heavier but
   the tradeoff is: zero composer step on the server.
+- **Ship WITHOUT a root `composer.json`.** Hostinger's Git auto-deploy detects
+  that file and runs `composer install` — which regenerates `vendor/composer/`
+  from whatever `composer.json` declares. A dependency-less composer.json once
+  stripped every framework mapping from the autoloader and took the whole site
+  down with a blank HTTP 500. No composer.json → Composer never runs → the
+  committed autoloader stays exactly as it is in git. Laravel's one runtime use
+  of composer.json (`Application::getNamespace`) is replaced by the override in
+  `app/Application.php`. The real composer.json/composer.lock live in
+  `.composer-backup/` for local development only.
 - **Bundle a self-contained `install.php`** at the project root. It writes `.env`,
   runs migrations via `Artisan::call()` (in-process, no shell), seeds demo data,
-  and creates your admin user — all from the browser.
+  and creates your admin user — all from the browser. It also hosts an emergency
+  **repair console** at `install.php?repair=1` (see troubleshooting below).
 - **Commit the compiled `public/build/` assets** so you don't need `npm run build`
   on the server either.
+- **Keep pristine autoloader backups** in `bootstrap/autoload_backup/`. If
+  anything ever damages `vendor/composer/`, `public/index.php` restores them
+  automatically on the next request — and shows a readable diagnostic page
+  instead of a blank HTTP 500 if it can't.
 
 ---
 
@@ -84,8 +98,9 @@ npm install && npm run build
 6. Click **Deploy / Pull** — Hostinger clones the repo into `public_html/`.
 
 If you saw the earlier error `The Process class relies on proc_open` — that was
-Hostinger trying to run `composer install`. With `vendor/` now committed to git,
-composer is no longer needed, so the error will disappear on the next deploy.
+Hostinger trying to run `composer install` after detecting a root
+`composer.json`. The repo no longer ships a root `composer.json` (and commits
+`vendor/` instead), so Composer never runs during deploy and the error is gone.
 
 ### Step 3 — Run the web installer
 
@@ -140,6 +155,35 @@ composer is no longer needed, so the error will disappear on the next deploy.
 | `Migration failed: SQLSTATE[42000] Access denied` | Your DB user lacks privileges. In hPanel → MySQL → Users → edit user → check ALL PRIVILEGES. |
 | Blank white page after install | Check `storage/logs/laravel.log`. Most likely a permissions issue on `storage/`. |
 | `500` on homepage but admin works | Probably `php artisan storage:link` is missing. Run via File Manager → Terminal, or via cron: `php artisan storage:link`. |
+
+---
+
+## If the live site shows a blank HTTP 500
+
+A blank "HTTP ERROR 500" (no Laravel error page) means PHP died **before**
+Laravel could boot — almost always a damaged Composer autoloader in
+`vendor/composer/`, historically caused by the host running `composer install`
+against a root `composer.json`. The repo now prevents and self-heals this:
+
+1. **First, just reload the homepage.** `public/index.php` checks the
+   autoloader on every request and, if the `Illuminate\` mappings are missing,
+   restores them automatically from `bootstrap/autoload_backup/`. One reload is
+   often the entire fix.
+2. **If it still fails, open the repair console:** `https://huvanti.com/install.php?repair=1`.
+   It runs on plain PHP (works even when Laravel can't boot) and offers:
+   - **Restore the Composer autoloader** — copies the pristine maps back over
+     the damaged ones.
+   - **Run pending migrations** — applies new DB schema after a code update.
+   The page also shows a red/green health checklist pinpointing the problem.
+3. **If the checklist says `vendor/laravel/framework/` is missing**, the
+   package files themselves were deleted. In hPanel → File Manager delete the
+   whole `vendor/` folder, then run **Git → Deploy** to restore the committed
+   copy.
+4. **If the checklist flags the PHP version**, set it to **8.3** in
+   hPanel → Websites → your site → Advanced → PHP Configuration.
+
+The site also renders a readable diagnostic page (instead of a blank 500)
+whenever Laravel fails to start, so the underlying error is always visible.
 
 ---
 

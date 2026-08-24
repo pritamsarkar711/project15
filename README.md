@@ -36,6 +36,13 @@ Production-ready Laravel CMS for Hostinger custom PHP hosting. Converted from SG
 
 ## Local Development
 
+> `composer.json` / `composer.lock` are **not** in the repo root on purpose —
+> Hostinger's Git auto-deploy runs `composer install` whenever it sees one,
+> which once regenerated the committed autoloader and took the site down.
+> For local work, restore them first:
+> `cp .composer-backup/composer.json composer.json && cp .composer-backup/composer.lock composer.lock`
+> (and delete both from the root before pushing). See `.gitignore` for details.
+
 ```bash
 # PHP 8.3 + Composer
 php composer.phar install
