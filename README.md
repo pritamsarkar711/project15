@@ -54,21 +54,28 @@ php artisan storage:link
 npm install
 npm run build   # or npm run dev for HMR
 php artisan serve
-# Visit http://localhost:8000, admin at /manage/login (admin@huvanti.com / Huvanti@2026)
+# Visit http://localhost:8000; admin sign-in is at /manage/login
 ```
 
-## Deployment
+## Hostinger deployment
 
-See **HOSTINGER_DEPLOYMENT.md** for full Hostinger steps (MySQL, SSL, DocumentRoot, permissions, optimize).
+See **[HOSTINGER_DEPLOYMENT.md](HOSTINGER_DEPLOYMENT.md)**. This repository is a
+vendored shared-hosting artifact: deploy current `main` directly into
+`public_html` and **do not run Composer or npm on Hostinger**. A root
+`composer.json` from an obsolete deployment causes Hostinger to regenerate the
+autoloader without Laravel and produces `Class
+"Illuminate\\Foundation\\Application" not found`.
 
-Quick:
+After deployment, verify the release before running the installer:
+
 ```bash
-composer install --no-dev --optimize-autoloader
-npm run build
-php artisan migrate --force
-php artisan storage:link
-php artisan optimize
+curl -fsS https://huvanti.com/deployment.json
+# Must report: 2026-08-24-hostinger-launch-v2
 ```
+
+Then open `/install.php`. The installer performs migrations and creates the
+admin account without shell commands. Remove `install.php` and `doctor.php`
+afterward.
 
 ## Structure
 
@@ -80,9 +87,10 @@ php artisan optimize
 - `database/migrations` — all tables, `seeders/DatabaseSeeder.php` — demo data
 - `routes/web.php` — frontend + admin routes
 
-## Credentials
+## Administrator account
 
-- Admin: `admin@huvanti.com` / `Huvanti@2026` (change after first login)
+The production administrator email and password are created through
+`install.php`; no production credentials are stored in this README.
 
 ## License
 

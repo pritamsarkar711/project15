@@ -1,52 +1,44 @@
-# Hostinger Shared Hosting - Laravel root .htaccess
-# ----------------------------------------------------------------
-# If Hostinger lets you set the domain's document root to /public,
-#   you DON'T need this file - just point the domain to /public via
-#   hPanel → Websites → Domains → Manage → Document Root.
-# If your document root is stuck at the project root (public_html),
-#   this file forwards all web requests to /public/index.php, EXCEPT:
-#     - install.php (the web installer) runs directly from the root
-#     - existing real files (favicon, robots.txt, etc.) serve as-is
+# Huvanti on Hostinger when public_html is the project root
+# -----------------------------------------------------------------------------
+# The application code lives above public/ because Hostinger's Git deployment
+# checks out the repository directly into public_html. Only install.php and the
+# temporary emergency doctor are allowed to execute from that private root.
+# Everything else is forwarded into public/.
 
-# Prevent directory listing (no index file at project root = 403 otherwise).
 Options -Indexes
-
-# Prefer index.php / index.html when a directory is requested.
 DirectoryIndex index.php index.html
+
+# Fail closed rather than exposing the repository if rewriting is unavailable.
+<IfModule !mod_rewrite.c>
+    Require all denied
+</IfModule>
 
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
-    # 1. Let the web installer run directly from project root.
-    RewriteRule ^install\.php$ - [L]
+    # Standalone bootstrap/recovery endpoints. Delete both after installation.
+    RewriteRule ^(?:install|doctor)\.php$ - [L]
 
-    # 2. Real files at the project root serve as-is (robots.txt, favicon, etc.)
-    RewriteCond %{REQUEST_FILENAME} -f
-    RewriteRule ^ - [L]
+    # Per-directory rewrites can run again after the internal public/ rewrite.
+    # Stop here so /foo never becomes /public/public/... (an HTTP 500 loop).
+    # Use L rather than END so public/.htaccess can still route Laravel URLs.
+    RewriteRule ^public(?:/|$) - [L]
 
-    # 3. Everything else — including "/" and subdirectories — goes to
-    #    public/index.php (Laravel's front controller).
-    #    NOTE: we intentionally DO NOT bail on `-d` here. The project root
-    #    itself is a directory; if we let Apache list it, the visitor gets
-    #    a 403 (no index.php in project root). Forcing it through public/
-    #    makes "/" hit Laravel's router, which serves the homepage.
+    # Do NOT exempt existing project-root files. That would expose files such as
+    # storage/logs/laravel.log, source code, manifests and backup configuration.
+    # Static assets are served from public/ on the next rewrite pass.
     RewriteRule ^(.*)$ public/$1 [L]
 </IfModule>
 
-# Security headers for production
+# A unique, cache-independent signal that the corrected deployment is active.
 <IfModule mod_headers.c>
-    Header always set X-Content-Type-Options nosniff
-    Header always set X-Frame-Options SAMEORIGIN
-    Header always set X-XSS-Protection "1; mode=block"
+    Header always set X-Huvanti-Deploy "2026-08-24-hostinger-launch-v2"
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
     Header always set Referrer-Policy "strict-origin-when-cross-origin"
 </IfModule>
 
-# Protect sensitive files from direct HTTP access (Apache 2.4 syntax)
-<FilesMatch "^\.env|\.git|composer\.(json|lock)|package\.(json|lock)|vite\.config\.js|phpunit\.xml">
-    Require all denied
-</FilesMatch>
-
-# Block dotfiles (.git, .gitignore, .env, etc.) (Apache 2.4 syntax)
-<FilesMatch "^\.">
+# Defense in depth if rewriting is disabled or misconfigured.
+<FilesMatch "(^\.|\.env|\.log$|composer\.(json|lock)$|package\.(json|lock)$|vite\.config\.js$|phpunit\.xml$)">
     Require all denied
 </FilesMatch>

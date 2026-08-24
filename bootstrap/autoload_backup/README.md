@@ -19,8 +19,9 @@ runtime loader actually uses; checking only the psr4 map once let a damaged
 static map slip through and crash with `Class Illuminate\Foundation\Application
 not found`). If either file lost the `Illuminate\` mappings, the pristine
 copies are restored from `bootstrap/autoload_backup/` (cached OPcache
-bytecode is flushed too) and the boot continues. `install.php?repair=1`
-can run the same restore from a browser.
+bytecode is flushed too) and the boot continues. Authenticated `doctor.php`
+can run the same restore from a browser and also contains an embedded copy for
+one-file recovery of deployments old enough not to have this directory.
 
 ## Maintenance
 
@@ -35,6 +36,9 @@ cp vendor/composer/ClassLoader.php vendor/composer/InstalledVersions.php \
    vendor/composer/autoload_real.php vendor/composer/autoload_static.php \
    vendor/composer/installed.php vendor/composer/platform_check.php \
    bootstrap/autoload_backup/
+python3 tools/build-doctor-bundle.py
 ```
 
+The generator is deterministic and updates the compressed payload and SHA-256
+stored in `doctor.php`. Commit the backup and doctor changes together.
 `installed.json` is intentionally excluded — only the `composer` CLI uses it.

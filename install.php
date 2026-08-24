@@ -7,9 +7,35 @@
 
 declare(strict_types=1);
 error_reporting(E_ALL & ~E_DEPRECATED & ~E_NOTICE);
-ini_set('display_errors', '1');
+// Keep unhandled warnings, stack traces and absolute paths out of this public
+// response. Handled setup failures render below; full details go to PHP's log.
+ini_set('display_errors', '0');
+ini_set('log_errors', '1');
 
 const ROOT = __DIR__;
+const INSTALL_DEPLOYMENT = '2026-08-24-hostinger-launch-v2';
+
+header('Cache-Control: no-store, max-age=0');
+header('X-Robots-Tag: noindex, nofollow');
+header('X-Frame-Options: DENY');
+header('X-Content-Type-Options: nosniff');
+header('X-Huvanti-Deploy: ' . INSTALL_DEPLOYMENT);
+
+// Stateless double-submit CSRF protection works before Laravel or its session
+// database has been installed.
+$installerCsrf = is_string($_COOKIE['huvanti_installer_csrf'] ?? null)
+    ? $_COOKIE['huvanti_installer_csrf']
+    : '';
+if (!preg_match('/^[a-f0-9]{64}$/', $installerCsrf)) {
+    $installerCsrf = bin2hex(random_bytes(32));
+    setcookie('huvanti_installer_csrf', $installerCsrf, [
+        'expires' => 0,
+        'path' => '/',
+        'secure' => (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off'),
+        'httponly' => true,
+        'samesite' => 'Strict',
+    ]);
+}
 
 // Material Design 3 + shadcn palette (matches reference repo).
 const PRIMARY = '#1565C0';        // Blue 800
@@ -102,11 +128,12 @@ input[type=password]{font-family:Roboto Mono,monospace;letter-spacing:0.02em}
 
 $lockFile = ROOT . '/storage/app/installed.lock';
 
-// Repair / upgrade console — always reachable (installed or not) via
-// install.php?repair=1. It works even when Laravel itself cannot boot
-// (broken autoloader), so it's the emergency hatch for HTTP 500 outages.
+// Repair actions moved to the standalone doctor, which is authenticated and
+// includes its own recovery data. Keep this compatibility URL informational;
+// never expose migration or filesystem actions from the public installer.
 if (isset($_GET['repair'])) {
-    echo huvanti_repair_console();
+    http_response_code(303);
+    header('Location: doctor.php');
     exit;
 }
 
@@ -119,9 +146,9 @@ if (file_exists($lockFile)) {
         <div class="state state-ok">
             <h2>Site showing an error?</h2>
             <ul>
-                <li>Open the <a href="install.php?repair=1">repair console</a> —
+                <li>Open the authenticated <a href="doctor.php">Huvanti Doctor</a> —
                     it fixes broken autoloaders and applies pending database
-                    migrations without SSH.</li>
+                    migrations without SSH. Unlock it with APP_KEY from .env.</li>
             </ul>
             <h2>To reinstall</h2>
             <ul>
@@ -131,8 +158,16 @@ if (file_exists($lockFile)) {
             </ul>
         </div>
         <a class="btn" href="/">Visit site</a>
-        <a class="btn" style="background:#fff;color:' . PRIMARY . ';border:1.5px solid ' . PRIMARY . '" href="install.php?repair=1">Open repair console</a>');
+        <a class="btn" style="background:#fff;color:' . PRIMARY . ';border:1.5px solid ' . PRIMARY . '" href="doctor.php">Open Huvanti Doctor</a>');
     exit;
+}
+
+// Hostinger's obsolete deployment stub could regenerate only Composer's maps
+// while leaving Laravel's package files in place. Heal that exact failure on
+// first load so installation is not blocked behind a separate repair screen.
+if (huvanti_framework_files_ok()
+    && (!is_file(ROOT . '/vendor/autoload.php') || !huvanti_autoload_maps_ok())) {
+    huvanti_restore_autoload();
 }
 
 $reqs = check_requirements();
@@ -144,7 +179,10 @@ $migLog = '';
 $f = null;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (!$allReqPass) {
+    $postedCsrf = is_string($_POST['csrf'] ?? null) ? $_POST['csrf'] : '';
+    if ($postedCsrf === '' || !hash_equals($installerCsrf, $postedCsrf)) {
+        $errors[] = 'The installer security token expired. Reload this page and submit the form again.';
+    } elseif (!$allReqPass) {
         $errors[] = 'Fix the red items in the checklist first.';
     } else {
         $f = [
@@ -164,7 +202,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($f['admin_name'] === '') $errors[] = 'Admin name is required';
         if (!filter_var($f['admin_email'], FILTER_VALIDATE_EMAIL)) $errors[] = 'Admin email is invalid';
         if (strlen($f['admin_pass']) < 8) $errors[] = 'Admin password must be at least 8 characters';
-        if ($f['app_url'] === '' || !filter_var($f['app_url'], FILTER_VALIDATE_URL)) $errors[] = 'Site URL must be a full https:// URL';
+        if ($f['db_port'] < 1 || $f['db_port'] > 65535) $errors[] = 'Database port must be between 1 and 65535';
+        if (!preg_match('/^[A-Za-z0-9_.:\\[\\]-]+$/', $f['db_host'])) $errors[] = 'Database host contains invalid characters';
+        if (str_contains($f['db_name'], ';')) $errors[] = 'Database name contains invalid characters';
+        if ($f['app_url'] === ''
+            || !filter_var($f['app_url'], FILTER_VALIDATE_URL)
+            || strtolower((string) parse_url($f['app_url'], PHP_URL_SCHEME)) !== 'https') {
+            $errors[] = 'Site URL must be a full https:// URL';
+        }
+        foreach ($f as $name => $value) {
+            if (is_string($value) && preg_match('/[\\x00-\\x1F\\x7F]/', $value)) {
+                $errors[] = 'A submitted field contains an invalid control character (' . $name . ')';
+            }
+            if (is_string($value) && strlen($value) > 1000) {
+                $errors[] = 'A submitted field is too long (' . $name . ')';
+            }
+        }
 
         // Test DB connection BEFORE writing .env.
         $pdo = null;
@@ -185,7 +238,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!$errors) {
             $appKey = 'base64:' . base64_encode(random_bytes(32));
             $env = sprintf(
-                'APP_NAME="%s"' . "\n" .
+                'APP_NAME=%s' . "\n" .
                 'APP_ENV=production' . "\n" .
                 'APP_KEY=%s' . "\n" .
                 'APP_DEBUG=false' . "\n" .
@@ -209,13 +262,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'FILESYSTEM_DISK=public' . "\n" .
                 'QUEUE_CONNECTION=database' . "\n\n" .
                 'CACHE_STORE=database' . "\n\n" .
-                'VITE_APP_NAME="%s"' . "\n",
-                $f['app_name'], $appKey, $f['app_url'],
-                $f['db_host'], $f['db_port'], $f['db_name'], $f['db_user'], $f['db_pass'],
-                $f['app_name']
+                'VITE_APP_NAME=%s' . "\n",
+                huvanti_env_quote($f['app_name']), $appKey, huvanti_env_quote($f['app_url']),
+                huvanti_env_quote($f['db_host']), $f['db_port'], huvanti_env_quote($f['db_name']),
+                huvanti_env_quote($f['db_user']), huvanti_env_quote($f['db_pass']),
+                huvanti_env_quote($f['app_name'])
             );
-            if (file_put_contents(ROOT . '/.env', $env) === false) {
-                $errors[] = 'Cannot write .env file — make the project root writable (chmod 755).';
+            if (!huvanti_atomic_write(ROOT . '/.env', $env, 0600)) {
+                $errors[] = 'Cannot safely write .env — make the project root writable (chmod 755).';
             }
         }
 
@@ -261,19 +315,58 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt->execute(['site_name', $f['app_name']]);
                 $stmt->execute(['site_tagline', 'Explore Ideas. Inspire Life.']);
 
-                @file_put_contents($lockFile, date('c') . ' installed by ' . $f['admin_email']);
-                @chmod($lockFile, 0644);
+                if (!huvanti_atomic_write(
+                    $lockFile,
+                    date('c') . ' installed by ' . $f['admin_email'] . "\n",
+                    0644
+                )) {
+                    throw new RuntimeException('Setup finished, but the installer lock could not be written.');
+                }
                 @unlink(__FILE__);
                 $success = true;
             } catch (Throwable $e) {
-                $errors[] = 'Migration/setup failed: ' . $e->getMessage() . "\n" . $e->getTraceAsString();
+                error_log((string) $e);
+                $errors[] = 'Migration/setup failed (' . get_class($e) . '). Open the authenticated '
+                    . 'doctor.php for diagnostics. Full details were written to the server error log.';
             }
         }
     }
 }
 
+/** Atomically publish a sensitive installer file in its destination directory. */
+function huvanti_atomic_write(string $destination, string $content, int $mode): bool {
+    try {
+        $temporary = $destination . '.install-' . bin2hex(random_bytes(4)) . '.tmp';
+    } catch (Throwable $e) {
+        error_log((string) $e);
+        return false;
+    }
+    if (@file_put_contents($temporary, $content, LOCK_EX) !== strlen($content)) {
+        @unlink($temporary);
+        return false;
+    }
+    @chmod($temporary, $mode);
+    if (!@rename($temporary, $destination)) {
+        @unlink($temporary);
+        return false;
+    }
+    return true;
+}
+
+/** Quote a submitted value for phpdotenv without interpolation or comments. */
+function huvanti_env_quote(string $value): string {
+    // Validation above rejects line/control characters. Escaping in this order
+    // preserves literal backslashes, quotes and dollar signs in DB passwords.
+    return '"' . str_replace(
+        ['\\', '"', '$'],
+        ['\\\\', '\\"', '\\$'],
+        $value
+    ) . '"';
+}
+
 function check_requirements(): array {
     return [
+        'Deployment release' => ['ok' => true, 'value' => INSTALL_DEPLOYMENT],
         'PHP 8.3+' => ['ok' => version_compare(PHP_VERSION, '8.3.0', '>='), 'value' => PHP_VERSION],
         'pdo_mysql' => ['ok' => extension_loaded('pdo_mysql'), 'value' => extension_loaded('pdo_mysql') ? 'yes' : 'no'],
         'openssl' => ['ok' => extension_loaded('openssl'), 'value' => extension_loaded('openssl') ? 'yes' : 'no'],
@@ -282,7 +375,7 @@ function check_requirements(): array {
         'gd' => ['ok' => extension_loaded('gd'), 'value' => extension_loaded('gd') ? 'yes' : 'no'],
         'fileinfo' => ['ok' => extension_loaded('fileinfo'), 'value' => extension_loaded('fileinfo') ? 'yes' : 'no'],
         'vendor/autoload.php' => ['ok' => file_exists(ROOT . '/vendor/autoload.php'), 'value' => file_exists(ROOT . '/vendor/autoload.php') ? 'ok' : 'missing'],
-        'autoload maps Illuminate' => ['ok' => huvanti_autoload_maps_ok(), 'value' => huvanti_autoload_maps_ok() ? 'ok' : 'clobbered — use repair console'],
+        'autoload maps Illuminate' => ['ok' => huvanti_autoload_maps_ok(), 'value' => huvanti_autoload_maps_ok() ? 'ok' : 'clobbered — upload/open doctor.php'],
         'Laravel framework files' => ['ok' => huvanti_framework_files_ok(), 'value' => huvanti_framework_files_ok() ? 'ok' : 'missing — delete vendor/, Git → Deploy'],
         'storage/ writable' => ['ok' => is_writable(ROOT . '/storage'), 'value' => is_writable(ROOT . '/storage') ? 'yes' : 'no'],
         'bootstrap/cache/ writable' => ['ok' => is_writable(ROOT . '/bootstrap/cache'), 'value' => is_writable(ROOT . '/bootstrap/cache') ? 'yes' : 'no'],
@@ -356,22 +449,38 @@ function huvanti_restore_autoload(): array {
         return [[], ['cannot create vendor/composer/']];
     }
 
+    $files = [
+        'ClassLoader.php', 'InstalledVersions.php',
+        'autoload_classmap.php', 'autoload_files.php', 'autoload_namespaces.php',
+        'autoload_psr4.php', 'autoload_real.php', 'autoload_static.php',
+        'installed.php', 'platform_check.php',
+        'autoload.php', // publish the entry point last
+    ];
     $copied = [];
     $failed = [];
-    foreach (scandir($backupDir) ?: [] as $file) {
-        if ($file === '.' || $file === '..' || !str_ends_with($file, '.php')) {
+    foreach ($files as $file) {
+        if ($file === 'autoload.php' && $failed !== []) {
+            $failed[] = 'autoload.php (not published because a dependency failed)';
             continue;
         }
-        $dst = $file === 'autoload.php'
+        $destination = $file === 'autoload.php'
             ? ROOT . '/vendor/autoload.php'
             : $composerDir . '/' . $file;
-        if (@copy($backupDir . '/' . $file, $dst)) {
-            @chmod($dst, 0644);
-            huvanti_opcache_forget($dst);
+        $content = @file_get_contents($backupDir . '/' . $file);
+        $temporary = $destination . '.restore-' . bin2hex(random_bytes(4)) . '.tmp';
+        if ($content !== false
+            && @file_put_contents($temporary, $content, LOCK_EX) === strlen($content)
+            && @rename($temporary, $destination)) {
+            @chmod($destination, 0644);
+            huvanti_opcache_forget($destination);
             $copied[] = $file;
         } else {
+            @unlink($temporary);
             $failed[] = $file;
         }
+    }
+    if (function_exists('opcache_reset')) {
+        @opcache_reset();
     }
     return [$copied, $failed];
 }
@@ -399,7 +508,7 @@ function huvanti_boot_laravel() {
                 'The Composer autoloader in vendor/composer/ is damaged and the automatic '
                 . 'restore from bootstrap/autoload_backup/ failed ('
                 . ($failed !== [] ? implode(', ', $failed) : 'the restored maps still miss the Illuminate\\ mappings')
-                . '). Open install.php?repair=1 and run "Restore autoloader", or re-deploy from Git.'
+                . '). Upload/open doctor.php and run "Restore autoloader", or re-deploy the current main branch.'
             );
         }
     }
@@ -431,120 +540,12 @@ function huvanti_boot_laravel() {
         throw new RuntimeException(
             'The autoloader maps are intact and the framework files exist, but Illuminate '
             . 'classes still do not load — stale OPcache is the likely cause. Open '
-            . 'install.php?repair=1 and run "Restore autoloader" (it also flushes the cached '
-            . 'bytecode), or wait a minute and retry.'
+            . 'doctor.php and run "Restore autoloader" (it also flushes cached bytecode), '
+            . 'or wait a minute and retry.'
         );
     }
 
     return require ROOT . '/bootstrap/app.php';
-}
-
-/**
- * Emergency repair + upgrade console (install.php?repair=1). Standalone PHP —
- * works even when the Laravel boot is broken. Actions:
- *   - restore_autoload: overwrite vendor/composer maps from the backup copy
- *   - migrate:          run pending DB migrations in-process via Artisan
- */
-function huvanti_repair_console(): string {
-    $messages = [];
-    $errors = [];
-    $migLog = '';
-
-    if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
-        $action = $_POST['action'] ?? '';
-
-        if ($action === 'restore_autoload') {
-            [$copied, $failed] = huvanti_restore_autoload();
-            if ($failed) {
-                $errors[] = 'Autoloader restore failed: ' . implode(', ', $failed);
-            } elseif (!huvanti_autoload_maps_ok()) {
-                $errors[] = 'Autoloader files were copied but the maps still look wrong — re-deploy the repo from Git.';
-            } else {
-                $messages[] = 'Autoloader restored (' . count($copied) . ' files copied from bootstrap/autoload_backup/, cached OPcache bytecode flushed).';
-                if (!huvanti_framework_files_ok()) {
-                    $errors[] = 'Autoloader maps are fine, but the Laravel framework files are missing from vendor/. Delete vendor/ via hPanel → File Manager, then Git → Deploy to restore the committed copy.';
-                } else {
-                    $messages[] = 'Reload the homepage — the site should boot again.';
-                }
-            }
-        }
-
-        if ($action === 'migrate') {
-            if (!file_exists(ROOT . '/.env')) {
-                $errors[] = '.env is missing — this server has not been installed yet. Reload install.php (without ?repair=1) and run the full installer.';
-            } else {
-                if (!huvanti_autoload_maps_ok()) {
-                    [, $failed] = huvanti_restore_autoload();
-                    if ($failed) {
-                        $errors[] = 'Autoloader is broken and auto-restore failed: ' . implode(', ', $failed);
-                    }
-                }
-                if (!$errors) {
-                    try {
-                        // Same hardened boot as the installer: self-heals the
-                        // autoloader, defuses stale OPcache, and reports a
-                        // missing framework with actionable instructions.
-                        $app = huvanti_boot_laravel();
-                        $app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
-                        Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
-                        $migLog = Illuminate\Support\Facades\Artisan::output();
-                        $messages[] = 'Database schema upgraded — pending migrations applied.';
-                    } catch (Throwable $e) {
-                        $errors[] = 'Migration failed: ' . $e->getMessage();
-                    }
-                }
-            }
-        }
-    }
-
-    $reqs = check_requirements();
-    $reqRows = '';
-    foreach ($reqs as $label => $r) {
-        $cls = $r['ok'] ? 'ok' : 'bad';
-        $reqRows .= '<div class="row ' . $cls . '"><span>' . h($label) . '</span><span class="v">' . h($r['value']) . '</span></div>';
-    }
-
-    $errorsHtml = '';
-    if ($errors) {
-        $errorsHtml = '<div class="errors"><ul>';
-        foreach ($errors as $err) {
-            $errorsHtml .= '<li>' . nl2br(h($err)) . '</li>';
-        }
-        $errorsHtml .= '</ul></div>';
-    }
-
-    $messagesHtml = '';
-    foreach ($messages as $msg) {
-        $messagesHtml .= '<div class="state state-ok"><ul><li>' . nl2br(h($msg)) . '</li></ul></div>';
-    }
-
-    $migLogHtml = $migLog !== '' ? '<pre class="mig-log">' . h($migLog) . '</pre>' : '';
-
-    return view_page('Repair console', '
-        <h1>Repair console</h1>
-        <p class="sub">Emergency hatch for HTTP 500 outages — runs on plain PHP,
-        so it works even when Laravel cannot boot. It never deletes data and
-        never rewrites <code>.env</code>.</p>
-        ' . $errorsHtml . $messagesHtml . '
-        <div class="req">' . $reqRows . '</div>
-        <h2>1 · Restore the Composer autoloader</h2>
-        <p class="sub">Fixes blank HTTP 500s caused by the host\'s auto-deploy
-        regenerating <code>vendor/composer/</code> from a dependency-less
-        composer.json. Copies pristine maps back over the damaged ones.</p>
-        <form method="post">
-            <input type="hidden" name="action" value="restore_autoload">
-            <button class="btn" type="submit">Restore autoloader</button>
-        </form>
-        <h2>2 · Upgrade the database schema</h2>
-        <p class="sub">Runs any pending migrations (safe — already-applied
-        migrations are skipped). Do this after a code update if the admin
-        panel or new features throw database errors.</p>
-        <form method="post">
-            <input type="hidden" name="action" value="migrate">
-            <button class="btn" type="submit">Run pending migrations</button>
-        </form>
-        ' . $migLogHtml . '
-        <a class="btn" style="background:#fff;color:' . PRIMARY . ';border:1.5px solid ' . PRIMARY . ';margin-top:24px" href="/">Visit site</a>');
 }
 
 function h($s) { return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
@@ -558,7 +559,7 @@ function view_page($title, $body): string {
         . '<div class="page"><header class="brand">'
         . '<div class="brand-mark">H</div>'
         . '<div><div class="brand-name">Huvanti</div>'
-        . '<div class="brand-tag">Installer</div></div>'
+        . '<div class="brand-tag">Installer · ' . INSTALL_DEPLOYMENT . '</div></div>'
         . '</header><main class="card">' . $body . '</main>'
         . '<footer class="foot">© ' . date('Y') . ' Huvanti</footer></div></body></html>';
 }
@@ -578,7 +579,7 @@ function view_page($title, $body): string {
         <div class="brand-mark">H</div>
         <div>
             <div class="brand-name">Huvanti</div>
-            <div class="brand-tag">Installer</div>
+            <div class="brand-tag">Installer · <?= h(INSTALL_DEPLOYMENT) ?></div>
         </div>
     </header>
 
@@ -621,6 +622,7 @@ function view_page($title, $body): string {
         <?php endif; ?>
 
         <form method="post" action="">
+        <input type="hidden" name="csrf" value="<?= h($installerCsrf) ?>">
         <h2>Database</h2>
         <div class="grid">
             <div class="field">
@@ -641,7 +643,7 @@ function view_page($title, $body): string {
             </div>
             <div class="field" style="grid-column:1/-1">
                 <label for="db_pass">Password</label>
-                <input type="password" id="db_pass" name="db_pass" value="<?= h($_POST['db_pass'] ?? '') ?>">
+                <input type="password" id="db_pass" name="db_pass" value="" autocomplete="new-password">
             </div>
         </div>
 
