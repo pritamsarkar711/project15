@@ -35,9 +35,15 @@
             </a>
 
             <div class="pt-3 pb-1 px-3 text-[10px] font-bold tracking-[0.18em] text-slate-500 uppercase">Content</div>
-            <a href="{{ route('admin.posts.index') }}" class="flex items-center gap-3 px-3 py-2.5 transition {{ request()->routeIs('admin.posts*') ? 'bg-[#0C3B2E] text-white' : 'hover:bg-white/5 hover:text-white' }}">
+            <a href="{{ route('admin.posts.index') }}" class="flex items-center gap-3 px-3 py-2.5 transition {{ request()->routeIs('admin.posts.index') ? 'bg-[#0C3B2E] text-white' : 'hover:bg-white/5 hover:text-white' }}">
                 <svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2Z"/></svg>
                 Posts
+            </a>
+            <a href="{{ route('admin.posts.review-queue') }}" class="flex items-center gap-3 px-3 py-2.5 transition {{ request()->routeIs('admin.posts.review-queue') ? 'bg-[#0C3B2E] text-white' : 'hover:bg-white/5 hover:text-white' }}">
+                <svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                Review Queue
+                @php $pendingCount = \App\Models\Post::where('review_status', 'pending_review')->count(); @endphp
+                @if($pendingCount)<span class="ml-auto text-[11px] font-bold bg-amber-400 text-slate-900 px-2 py-0.5">{{ $pendingCount }}</span>@endif
             </a>
             <a href="{{ route('admin.categories.index') }}" class="flex items-center gap-3 px-3 py-2.5 transition {{ request()->routeIs('admin.categories*') ? 'bg-[#0C3B2E] text-white' : 'hover:bg-white/5 hover:text-white' }}">
                 <svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.84Z"/><path stroke-linecap="round" stroke-linejoin="round" d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path stroke-linecap="round" stroke-linejoin="round" d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/></svg>

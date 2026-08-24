@@ -194,4 +194,101 @@ class PostController extends Controller
         $post->save();
         return back()->with('success', 'Status updated to '.$post->status);
     }
+
+    // ----------------------------------------------------------------
+    //  Submission review workflow (multi-author posts)
+    // ----------------------------------------------------------------
+
+    /**
+     * List posts submitted by non-admin authors that are awaiting review.
+     * Tab = "pending" shows review_status='pending_review'.
+     * Tab = "returned" shows the ones the admin returned earlier.
+     */
+    public function reviewQueue(Request $request)
+    {
+        $tab = $request->input('tab', 'pending');
+        $query = Post::query()->with(['category', 'user']);
+        $query = match ($tab) {
+            'pending'   => $query->where('review_status', 'pending_review'),
+            'returned'  => $query->where('review_status', 'returned'),
+            'approved'  => $query->where('review_status', 'approved'),
+            default     => $query->whereIn('review_status', ['pending_review', 'returned']),
+        };
+        $posts = $query->latest()->paginate(15)->withQueryString();
+        $counts = [
+            'pending'   => Post::where('review_status', 'pending_review')->count(),
+            'returned'  => Post::where('review_status', 'returned')->count(),
+            'approved'  => Post::where('review_status', 'approved')->count(),
+        ];
+        return view('admin.posts.review-queue', compact('posts', 'counts', 'tab'));
+    }
+
+    /**
+     * Approve a submitted post — admin CAN modify content first (the form
+     * on the review page lets the admin edit title/excerpt/content/SEO),
+     * and then approve & publish in one click.
+     */
+    public function approve(Request $request, Post $post)
+    {
+        $request->validate([
+            'title'           => ['required', 'string', 'max:255'],
+            'excerpt'         => ['nullable', 'string', 'max:500'],
+            'content'         => ['required', 'string'],
+            'category_id'     => ['nullable', 'exists:categories,id'],
+            'is_featured'     => ['nullable', 'boolean'],
+            'is_affiliate'    => ['nullable', 'boolean'],
+            'allow_comments'  => ['nullable', 'boolean'],
+            'meta_title'      => ['nullable', 'string', 'max:255'],
+            'meta_description'=> ['nullable', 'string', 'max:500'],
+            'reviewer_note'   => ['nullable', 'string', 'max:500'],
+            'faqs'            => ['nullable', 'array'],
+            'faqs.*.question' => ['nullable', 'string', 'max:500'],
+            'faqs.*.answer'   => ['nullable', 'string', 'max:2000'],
+        ]);
+
+        // Apply admin's edits directly to the post.
+        $post->fill($request->only([
+            'title', 'excerpt', 'content', 'category_id',
+            'meta_title', 'meta_description',
+        ]));
+        $post->is_featured    = $request->boolean('is_featured');
+        $post->is_affiliate   = $request->boolean('is_affiliate');
+        $post->allow_comments = $request->boolean('allow_comments');
+        $post->reading_time   = max(1, ceil(str_word_count(strip_tags($request->content)) / 200));
+
+        $post->review_status  = 'approved';
+        $post->reviewed_at    = now();
+        $post->reviewer_id    = auth()->id();
+        $post->status         = 'published';
+        $post->published_at   = $post->published_at ?: now();
+
+        $post->save();
+        $this->syncFaqs($request, $post);
+
+        return redirect()->route('admin.posts.review-queue')
+            ->with('success', 'Post approved and published.');
+    }
+
+    /**
+     * Return a submitted post to the author for revision, with a short note
+     * explaining what needs to change. The post reverts to review_status='returned'
+     * and is removed from the admin queue.
+     */
+    public function return(Request $request, Post $post)
+    {
+        $validated = $request->validate([
+            'reviewer_note' => ['required', 'string', 'max:500'],
+        ], [
+            'reviewer_note.required' => 'You must explain what the author should change.',
+        ]);
+
+        $post->review_status = 'returned';
+        $post->reviewed_at = now();
+        $post->reviewer_id = auth()->id();
+        $post->reviewer_note = $validated['reviewer_note'];
+        $post->save();
+
+        return redirect()->route('admin.posts.review-queue')
+            ->with('success', 'Post returned to the author with your note.');
+    }
 }

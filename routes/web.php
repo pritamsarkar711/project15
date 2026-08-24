@@ -17,6 +17,8 @@ use App\Http\Controllers\Admin\CommentController as AdminCommentController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\NavigationController;
 use App\Http\Controllers\Admin\ProfileController;
+use App\Http\Controllers\Frontend\AuthController as FrontendAuthController;
+use App\Http\Controllers\Frontend\AuthorDashboardController;
 
 // Public storage fallback — stream files from storage/app/public when the
 // public/storage symlink isn't available (common on shared hosts where symlink()
@@ -74,6 +76,30 @@ Route::get('/cookie-policy', [PageController::class,'cookie'])->name('cookie');
 Route::get('/editorial-policy', [PageController::class,'editorial'])->name('editorial');
 Route::get('/page/{slug}', [PageController::class, 'show'])->name('page.show');
 
+// Frontend user auth (separate from /manage admin login)
+Route::get('/register', [FrontendAuthController::class, 'showRegisterForm'])->name('register')->middleware('guest');
+Route::post('/register', [FrontendAuthController::class, 'register'])->name('register.post')->middleware('guest');
+Route::get('/login', [FrontendAuthController::class, 'showLoginForm'])->name('login')->middleware('guest');
+Route::post('/login', [FrontendAuthController::class, 'login'])->name('login.post')->middleware('guest');
+Route::post('/logout', [FrontendAuthController::class, 'logout'])->name('logout')->middleware('auth');
+
+// Author dashboard — for registered users (authors)
+Route::prefix('author-dashboard')->name('author.')->middleware('auth')->group(function () {
+    Route::get('/', [AuthorDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/posts', [AuthorDashboardController::class, 'postsIndex'])->name('posts.index');
+    Route::get('/posts/create', [AuthorDashboardController::class, 'postsCreate'])->name('posts.create');
+    Route::post('/posts', [AuthorDashboardController::class, 'postsStore'])->name('posts.store');
+    Route::get('/posts/{id}/edit', [AuthorDashboardController::class, 'postsEdit'])->name('posts.edit');
+    Route::post('/posts/{id}', [AuthorDashboardController::class, 'postsUpdate'])->name('posts.update');
+    Route::post('/posts/{id}/submit', [AuthorDashboardController::class, 'postsSubmit'])->name('posts.submit');
+    Route::delete('/posts/{id}', [AuthorDashboardController::class, 'postsDestroy'])->name('posts.destroy');
+    Route::get('/profile', [AuthorDashboardController::class, 'profileEdit'])->name('profile.edit');
+    Route::post('/profile', [AuthorDashboardController::class, 'profileUpdate'])->name('profile.update');
+    Route::get('/monetization', [AuthorDashboardController::class, 'monetization'])->name('monetization');
+    Route::get('/posting-rules', [AuthorDashboardController::class, 'rules'])->name('rules');
+    Route::post('/account', [AuthorDashboardController::class, 'accountDelete'])->name('account.delete');
+});
+
 // SEO / dynamic text+xml endpoints (settings-driven)
 Route::get('/robots.txt', [SeoController::class, 'robots'])->name('seo.robots');
 Route::get('/ads.txt', [SeoController::class, 'ads'])->name('seo.ads');
@@ -95,6 +121,11 @@ Route::prefix('manage')->name('admin.')->group(function(){
         Route::post('posts/{post}/toggle', [PostController::class,'toggleStatus'])->name('posts.toggle');
         Route::post('posts/{post}/restore', [PostController::class,'restore'])->name('posts.restore');
         Route::post('posts/{post}/permanent', [PostController::class,'forceDelete'])->name('posts.destroy.permanent');
+
+        // Multi-author review queue (pending submissions)
+        Route::get('posts/review-queue', [PostController::class, 'reviewQueue'])->name('posts.review-queue');
+        Route::post('posts/{post}/approve', [PostController::class, 'approve'])->name('posts.approve');
+        Route::post('posts/{post}/return', [PostController::class, 'return'])->name('posts.return');
 
         // Categories
         Route::get('categories', [CategoryController::class,'index'])->name('categories.index');

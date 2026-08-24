@@ -13,15 +13,19 @@ class Post extends Model
     protected $fillable = [
         'title','slug','excerpt','content','featured_image','category_id','user_id',
         'author_name','author_bio','author_avatar','reading_time','status','published_at','scheduled_at',
-        'meta_title','meta_description','meta_keywords','views','is_featured','allow_comments'
+        'meta_title','meta_description','meta_keywords','views','is_featured','allow_comments',
+        'review_status','submitted_at','reviewed_at','reviewer_id','reviewer_note','is_affiliate'
     ];
 
     protected $casts = [
         'published_at' => 'datetime',
         'scheduled_at' => 'datetime',
         'deleted_at' => 'datetime',
+        'submitted_at' => 'datetime',
+        'reviewed_at' => 'datetime',
         'is_featured' => 'boolean',
         'allow_comments' => 'boolean',
+        'is_affiliate' => 'boolean',
     ];
 
     public function category()
@@ -32,6 +36,42 @@ class Post extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * The admin who last reviewed (approved / returned) this submission.
+     */
+    public function reviewer()
+    {
+        return $this->belongsTo(User::class, 'reviewer_id');
+    }
+
+    /**
+     * Scope: posts awaiting admin review (review_status = pending_review).
+     */
+    public function scopePendingReview($query)
+    {
+        return $query->where('review_status', 'pending_review');
+    }
+
+    /**
+     * Scope: posts authored by a given user (any review_status).
+     */
+    public function scopeByAuthor($query, int $userId)
+    {
+        return $query->where('user_id', $userId);
+    }
+
+    /**
+     * Has this author submitted a post in the last 24h? Enforces the
+     * daily-1-post limit for non-admin authors.
+     */
+    public static function authorSubmittedRecently(int $userId): bool
+    {
+        return static::where('user_id', $userId)
+            ->whereNotNull('submitted_at')
+            ->where('submitted_at', '>=', now()->subDay())
+            ->exists();
     }
 
     public function faqs()

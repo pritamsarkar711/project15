@@ -83,6 +83,17 @@
                         </div>
                     @endif
 
+                    @if($post->is_affiliate)
+                        <div class="mt-6 bg-amber-50 dark:bg-amber-500/10 border-l-4 border-amber-400 dark:border-amber-500 p-4">
+                            <div class="flex items-start gap-3">
+                                <svg class="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/></svg>
+                                <div class="text-sm text-amber-900 dark:text-amber-200 leading-relaxed">
+                                    <strong>Affiliate disclosure:</strong> Some links on this page may be affiliate links. If you buy through them, we may earn a small commission at no extra cost to you. We only recommend products we believe add real value. Read our <a href="{{ route('editorial') }}" class="underline">Editorial Policy</a> for details.
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
                     <div class="prose dark:prose-invert max-w-none mt-6">{!! $contentWithAnchors !!}</div>
                 </div>
             </article>
