@@ -1,1 +1,1 @@
-{"deployment":"2026-08-25-hero-green-search-icon-v18","date":"2026-08-25","note":"hero: flat green background (no gradient, no glows, no bottom fade), borderless square search bar, Health & Wellness icon switched to heart-pulse, compiled CSS rebuilt"}
+{"deployment":"2026-08-25-custom-rte-icon-patch-v19","date":"2026-08-25","note":"replaced 4.3MB CKEditor 5 with self-made lightweight rich text editor (huvanti-editor.js), Health & Wellness icon data-patch applied at runtime (migrations never run on Hostinger), feedback buttons now icons-only"}

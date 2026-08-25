@@ -55,11 +55,10 @@
     </div>
 </div>
 @push('scripts')
-<script src="{{ asset('js/ckeditor5-super-build.js') }}"></script>
-<script src="{{ asset('js/editor-init.js') }}"></script>
+<script src="{{ asset('js/huvanti-editor.js') }}"></script>
 <script>
-// Full CKEditor 5 editor (local super-build, no CDN dependency).
-initHuvantiEditor('#editor');
+// Self-made Huvanti rich text editor (single small file, no dependencies).
+huvantiEditorInit('#editor');
 </script>
 @endpush
 @endsection
