@@ -27,4 +27,24 @@ return \App\Application::configure(basePath: dirname(__DIR__))
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
         );
+
+        // Friendly handling of the 419 "Page Expired" error. On shared
+        // hosting the most common cause is a POST body larger than the
+        // php.ini post_max_size (e.g. a hero image upload): PHP silently
+        // drops the whole request, the CSRF token never arrives, and the
+        // admin sees a bare 419 page that explains nothing. Redirect back
+        // with a plain-language message instead.
+        $exceptions->renderable(function (\Illuminate\Session\TokenMismatchException $e, Request $request) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'Your session expired. Refresh the page and try again.',
+                ], 419);
+            }
+            return redirect()->back()->with(
+                'error',
+                'Your session expired before the form was submitted. This usually happens when an uploaded '
+                .'file is larger than the server accepts (images up to 4 MB are supported). '
+                .'Please refresh the page and try again with a smaller file.'
+            );
+        });
     })->create();

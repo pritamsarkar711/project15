@@ -13,7 +13,7 @@ class CommentController extends Controller
         $status = $request->input('status');
 
         // Top-level comments with their replies (one nesting level)
-        $query = Comment::with(['post', 'replies'])->whereNull('parent_id')->latest();
+        $query = Comment::with(['post' => fn ($q) => $q->withTrashed()])->whereNull('parent_id')->latest();
         if ($status && in_array($status, ['pending', 'approved', 'rejected', 'spam'])) {
             $query->where(function ($q) use ($status) {
                 $q->where('status', $status)
@@ -46,5 +46,28 @@ class CommentController extends Controller
         // Deleting a parent removes its replies (FK cascade)
         $comment->delete();
         return back()->with('success', 'Comment deleted');
+    }
+
+    /**
+     * Bulk delete: remove any number of selected comments (and their replies,
+     * via the FK cascade) in one action. Used by the checkboxes in the
+     * comments list.
+     */
+    public function bulkDestroy(Request $request)
+    {
+        $request->validate([
+            'ids'   => 'required|array|min:1',
+            'ids.*' => 'integer|exists:comments,id',
+        ]);
+
+        $count = Comment::whereIn('id', $request->input('ids'))->count();
+        Comment::whereIn('id', $request->input('ids'))->delete();
+
+        $message = $count === 1 ? '1 comment deleted' : $count.' comments deleted';
+        if ($request->input('ids') && count($request->input('ids')) > $count) {
+            $message .= ' (some were already removed)';
+        }
+
+        return back()->with('success', $message);
     }
 }

@@ -10,9 +10,9 @@
         </div>
         <h2 class="text-xl font-bold text-slate-900 dark:text-white mt-5">Monetization is coming soon</h2>
         <p class="text-sm text-slate-500 dark:text-slate-400 mt-2 leading-relaxed max-w-[420px] mx-auto">
-            Soon you'll be able to earn from your posts based on real reader views — no paywalls, no intrusive ads, just a fair revenue share. We're opening applications once the writer program exits beta.
+            Soon you'll be able to earn from your posts based on real reader views. No paywalls, no intrusive ads, just a fair revenue share. Applications open once the writer program exits beta.
         </p>
-        <div class="mt-5 text-xs text-slate-400">Track your total views from the dashboard — they count toward your future eligibility.</div>
+        <div class="mt-5 text-xs text-slate-400">Track your total views from the dashboard. They count toward your future eligibility.</div>
     </div>
 
     <div class="mt-6 grid grid-cols-2 gap-4">

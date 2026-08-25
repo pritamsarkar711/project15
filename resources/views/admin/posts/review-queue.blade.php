@@ -63,7 +63,7 @@
                             <div>
                                 <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Category</label>
                                 <select name="category_id" class="w-full h-10 px-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none text-sm text-slate-900 dark:text-white">
-                                    <option value="">— None —</option>
+                                    <option value="">None</option>
                                     @foreach(\App\Models\Category::orderBy('sort_order')->get() as $cat)
                                         <option value="{{ $cat->id }}" @selected($post->category_id == $cat->id)>{{ $cat->name }}</option>
                                     @endforeach
@@ -88,7 +88,7 @@
 
                     <form method="POST" action="{{ route('admin.posts.return', $post) }}" class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 space-y-3">
                         @csrf
-                        <label class="block text-xs font-medium text-amber-700 dark:text-amber-400">Note to author (required — be specific about what to change)</label>
+                        <label class="block text-xs font-medium text-amber-700 dark:text-amber-400">Note to author (required). Be specific about what to change.</label>
                         <textarea name="reviewer_note" rows="3" required maxlength="500" class="w-full p-2 bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/30 outline-none text-sm text-amber-900 dark:text-amber-100" placeholder="e.g. Intro is too generic, add a concrete example. The third section repeats points from the first.">{{ $post->reviewer_note ?? '' }}</textarea>
                         <button type="submit" class="h-10 px-4 bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold">Return to author</button>
                     </form>

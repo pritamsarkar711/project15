@@ -65,7 +65,7 @@ class ProfileController extends Controller
 
         if ($request->hasFile('avatar')) {
             if ($user->author_avatar_path) {
-                Storage::disk('public')->delete($user->author_avatar_path);
+                app(\App\Services\ImageService::class)->delete($user->author_avatar_path);
             }
             $user->author_avatar_path = app(ImageService::class)->optimizeAndStore($request->file('avatar'), 'uploads/avatars');
         }

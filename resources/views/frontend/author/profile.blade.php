@@ -1,10 +1,10 @@
 @extends('layouts.app')
 
-@section('title', $author->name . ' — Author at ' . (setting('site_name', 'Huvanti')))
+@section('title', $author->name . ' · Author at ' . (setting('site_name', 'Huvanti')))
 
 @section('meta-description')
 <meta name="description" content="{{ \Illuminate\Support\Str::limit(strip_tags($author->bio ?? 'Author at ' . setting('site_name', 'Huvanti')), 150) }}">
-<meta property="og:title" content="{{ $author->name }} — Author">
+<meta property="og:title" content="{{ $author->name }} · Author">
 <meta property="og:description" content="{{ \Illuminate\Support\Str::limit(strip_tags($author->bio ?? ''), 150) }}">
 @if($author->author_avatar_path)
 <meta property="og:image" content="{{ asset('storage/'.$author->author_avatar_path) }}">
@@ -42,11 +42,22 @@
                 <p class="text-sm text-slate-700 dark:text-slate-300 mt-3 leading-relaxed">{{ $author->bio }}</p>
                 @endif
 
-                {{-- Stats row --}}
-                <div class="flex items-center gap-5 mt-4 text-sm text-slate-600 dark:text-slate-400">
+                {{-- Stats row: visitor-visible numbers only (published posts,
+                     total likes / dislikes received, followers, following) --}}
+                <div class="flex flex-wrap items-center gap-x-6 gap-y-3 mt-4 text-sm text-slate-600 dark:text-slate-400">
                     <div>
-                        <span class="font-bold text-slate-900 dark:text-white">{{ number_format($author->posts()->count()) }}</span>
-                        <span class="ml-1">{{ str()->plural('Post', $author->posts()->count()) }}</span>
+                        <span class="font-bold text-slate-900 dark:text-white">{{ number_format($publishedCount) }}</span>
+                        <span class="ml-1">{{ str()->plural('Post', $publishedCount) }}</span>
+                    </div>
+                    <div class="inline-flex items-center gap-1.5">
+                        <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.633 10.25c.806 0 1.533-.446 2.031-1.08a9.041 9.041 0 0 1 2.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 0 0 .322-1.672V2.75a.75.75 0 0 1 .75-.75 2.25 2.25 0 0 1 2.25 2.25c0 1.152-.26 2.243-.723 3.218-.266.558.107 1.282.725 1.282h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 0 1-2.649 7.521c-.388.482-.997.75-1.604.75H13.48c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 0 0-1.423-.23H5.904m10.598-9.75H14.25M5.904 18.5c.083-.205.173-.405.27-.602.197-.394-.154-.8-.569-.8H2.75a.75.75 0 0 0-.75.75v6c0 .414.336.75.75.75h2.75a.75.75 0 0 0 .75-.75v-.916c0-.915.647-1.668 1.404-2.334Z"/></svg>
+                        <span class="font-bold text-slate-900 dark:text-white">{{ number_format($totalLikes) }}</span>
+                        <span class="ml-1">{{ str()->plural('Like', $totalLikes) }}</span>
+                    </div>
+                    <div class="inline-flex items-center gap-1.5">
+                        <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="transform:scale(-1)"><path stroke-linecap="round" stroke-linejoin="round" d="M6.633 10.25c.806 0 1.533-.446 2.031-1.08a9.041 9.041 0 0 1 2.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 0 0 .322-1.672V2.75a.75.75 0 0 1 .75-.75 2.25 2.25 0 0 1 2.25 2.25c0 1.152-.26 2.243-.723 3.218-.266.558.107 1.282.725 1.282h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 0 1-2.649 7.521c-.388.482-.997.75-1.604.75H13.48c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 0 0-1.423-.23H5.904m10.598-9.75H14.25M5.904 18.5c.083-.205.173-.405.27-.602.197-.394-.154-.8-.569-.8H2.75a.75.75 0 0 0-.75.75v6c0 .414.336.75.75.75h2.75a.75.75 0 0 0 .75-.75v-.916c0-.915.647-1.668 1.404-2.334Z"/></svg>
+                        <span class="font-bold text-slate-900 dark:text-white">{{ number_format($totalDislikes) }}</span>
+                        <span class="ml-1">{{ str()->plural('Dislike', $totalDislikes) }}</span>
                     </div>
                     <div>
                         <span class="font-bold text-slate-900 dark:text-white">{{ number_format($author->followers_count) }}</span>

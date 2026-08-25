@@ -52,22 +52,9 @@
     @stack('head')
 </head>
 <body class="bg-[#fafafa] dark:bg-[#121212] text-slate-800 dark:text-slate-100 antialiased overflow-x-hidden" style="font-family:{{ \App\Support\SiteFont::cssStack() }}">
-    {{-- Admin ⇄ User switch: persistent banner while the admin browses as a user.
-         Replaces the old cosmetic "?_huvanti_preview" banner — this is a real
-         session-based role switch, and only the actual admin ever sees it. --}}
-    @if(auth()->check() && auth()->user()->browsingAsUser())
-    <div class="fixed top-0 inset-x-0 z-[999] bg-amber-500 text-slate-900 text-center text-sm font-semibold py-2 px-4 flex items-center justify-center gap-3 flex-wrap">
-        <span class="inline-flex items-center gap-2">
-            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path stroke-linecap="round" stroke-linejoin="round" d="m16 11 2 2 4-4"/></svg>
-            User mode — you are browsing the site as a regular user
-        </span>
-        <form method="POST" action="{{ route('switch-back-to-admin') }}" class="inline">
-            @csrf
-            <button type="submit" class="underline font-bold hover:text-slate-800 cursor-pointer">Switch to Admin</button>
-        </form>
-    </div>
-    <div class="h-[36px]"></div>
-    @endif
+    {{-- Admin ⇄ User switch: silent. While the admin browses in user mode the
+         site header shows a small "Switch to Admin" button — no banner, no
+         extra text, the public design stays exactly as visitors see it. --}}
     <div class="min-h-screen flex flex-col w-full max-w-[100vw] overflow-x-hidden">
         @include('partials.header')
 

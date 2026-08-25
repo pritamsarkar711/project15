@@ -32,7 +32,7 @@
                     <input type="text" name="username" required value="{{ old('username') }}" minlength="3" maxlength="30" pattern="[a-zA-Z0-9._\-]+" autocomplete="off"
                         class="w-full h-11 px-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-[#0C3B2E] focus:ring-4 focus:ring-[#0C3B2E]/15 outline-none text-sm font-mono text-slate-900 dark:text-white"
                         placeholder="e.g. pritam.sarkar">
-                    <p class="text-xs text-amber-600 dark:text-amber-400 mt-1">⚠ Set this carefully — once chosen, it can never be changed. Lowercase letters, numbers, dot, underscore and hyphen only. Min 3, max 30.</p>
+                    <p class="text-xs text-amber-600 dark:text-amber-400 mt-1">Set this carefully: once chosen it can never be changed. Lowercase letters, numbers, dot, underscore and hyphen only. Min 3, max 30.</p>
                 @endif
             </div>
 

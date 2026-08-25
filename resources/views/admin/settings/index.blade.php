@@ -94,7 +94,7 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
             </div>
             <div>
                 <label class="text-sm font-medium">Subtitle</label>
-                <textarea name="hero_subtitle" rows="2" maxlength="500" class="mt-1 w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">{{ old('hero_subtitle', $settings['hero_subtitle']->value ?? 'Tech, health, finance, travel and more — one calm place to read.') }}</textarea>
+                <textarea name="hero_subtitle" rows="2" maxlength="500" class="mt-1 w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">{{ old('hero_subtitle', $settings['hero_subtitle']->value ?? 'Tech, health, finance, travel and more, all in one calm place to read.') }}</textarea>
             </div>
             <div>
                 <label class="text-sm font-medium">Search placeholder</label>
@@ -124,10 +124,12 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
                 <div>
                     <label class="text-sm font-medium">Preview</label>
                     @php $heroImg = $settings['hero_person_image']->value ?? null; @endphp
-                    <div class="mt-2 w-32 h-32 rounded-xl overflow-hidden bg-[#0C3B2E] flex items-center justify-center">
-                        <img src="{{ $heroImg ? asset('storage/'.$heroImg) : asset('images/hero-person-harry.png') }}" alt="" class="w-full h-full object-cover" loading="lazy" decoding="async" id="hero-preview-img">
+                    <div class="mt-2 w-32 h-32 rounded-xl overflow-hidden bg-[#0C3B2E] flex items-center justify-center relative">
+                        <img src="{{ $heroImg ? asset('storage/'.$heroImg) : asset('images/hero-person-harry.png') }}" alt="" class="w-full h-full object-cover" loading="lazy" decoding="async" id="hero-preview-img"
+                             onerror="this.style.display='none'; var h=document.getElementById('hero-load-hint'); if(h){h.classList.remove('hidden');}">
                     </div>
-                    <p class="mt-1.5 text-[11px] text-slate-400">Click Save to apply — the preview updates immediately after saving.</p>
+                    <p id="hero-load-hint" class="mt-1.5 text-[11px] text-red-500 hidden">Saved but the file is not reachable. Open /deploy.php once and check that public/storage is writable.</p>
+                    <p class="mt-1.5 text-[11px] text-slate-400">Click Save to apply. The preview shows the stored image.</p>
                 </div>
             </div>
         </div>
@@ -211,7 +213,7 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
                 </div>
                 <div>
                     <label class="text-sm font-medium">Password</label>
-                    <input type="password" name="mail_password" value="" placeholder="{{ $passwordIsSet ? '••••••••• (configured — leave blank to keep)' : 'Paste SMTP password' }}" autocomplete="new-password" class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-mono placeholder:font-sans">
+                    <input type="password" name="mail_password" value="" placeholder="{{ $passwordIsSet ? '••••••••• (configured, leave blank to keep)' : 'Paste SMTP password' }}" autocomplete="new-password" class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-mono placeholder:font-sans">
                     <label class="mt-2 inline-flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300 cursor-pointer">
                         <input type="checkbox" name="mail_remove_password" value="1" class="text-emerald-600">
                         Remove stored password
@@ -382,7 +384,14 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
             if (heroInput.files && heroInput.files[0]) {
                 var file = heroInput.files[0];
                 if (!file.type.startsWith('image/') || file.type === 'image/heic' || file.type === 'image/heif' || file.type === 'image/avif') {
-                    heroName.textContent = '⚠ "' + file.name + '" is not a supported format. Please use JPG, PNG, GIF, WebP or BMP.';
+                    heroName.textContent = '"' + file.name + '" is not a supported format. Please use JPG, PNG, GIF, WebP or BMP.';
+                    heroName.classList.remove('hidden', 'text-emerald-700', 'dark:text-emerald-300');
+                    heroName.classList.add('text-red-600', 'dark:text-red-400');
+                    heroInput.value = '';
+                    return;
+                }
+                if (file.size > 4 * 1024 * 1024) {
+                    heroName.textContent = '"' + file.name + '" is ' + (file.size / (1024 * 1024)).toFixed(1) + ' MB. Please pick an image smaller than 4 MB, then click Save.';
                     heroName.classList.remove('hidden', 'text-emerald-700', 'dark:text-emerald-300');
                     heroName.classList.add('text-red-600', 'dark:text-red-400');
                     heroInput.value = '';
@@ -390,7 +399,7 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
                 }
                 heroPreview.src = URL.createObjectURL(file);
                 if (heroName) {
-                    heroName.textContent = '✓ ' + file.name + ' selected — click Save to apply';
+                    heroName.textContent = file.name + ' selected. Click Save to apply.';
                     heroName.classList.remove('hidden', 'text-red-600', 'dark:text-red-400');
                     heroName.classList.add('text-emerald-700', 'dark:text-emerald-300');
                 }
@@ -408,7 +417,7 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
             if (file.type === 'image/svg+xml' || file.type === 'image/x-icon') {
                 // SVG/ICO: just confirm the pick (object URLs work for these too)
                 if (el && el.tagName === 'IMG') { el.src = URL.createObjectURL(file); }
-                else if (wrap) { wrap.innerHTML = '<span class="text-xs font-medium text-emerald-700 dark:text-emerald-300">✓ ' + file.name + ' selected — click Save</span>'; }
+                else if (wrap) { wrap.innerHTML = '<span class="text-xs font-medium text-emerald-700 dark:text-emerald-300">' + file.name + ' selected. Click Save.</span>'; }
                 return;
             }
             if (el && el.tagName === 'IMG') {
@@ -417,7 +426,7 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
                 wrap.innerHTML = '<img src="' + URL.createObjectURL(file) + '" class="h-7 w-auto" alt="">';
             }
             var label = input.parentElement.querySelector('span');
-            if (label) { label.textContent = '✓ ' + file.name; }
+            if (label) { label.textContent = file.name; }
         });
     });
 })();

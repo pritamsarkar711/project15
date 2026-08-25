@@ -25,7 +25,8 @@ class RoleSwitchController extends Controller
 {
     /**
      * Admin → User mode. Registered under /manage (admin middleware), so it
-     * is only reachable while in admin mode.
+     * is only reachable while in admin mode. Switches silently and lands on
+     * the user dashboard — exactly where a normal user starts.
      */
     public function switchToUser(Request $request)
     {
@@ -37,9 +38,10 @@ class RoleSwitchController extends Controller
 
         $request->session()->put('acting_role', 'user');
 
-        return redirect()
-            ->to('/')
-            ->with('success', 'You are now browsing as a regular user. Use "Switch to Admin" any time to return.');
+        // No flash message on purpose: the switch itself should be instant
+        // and silent. The user panel and site header show a small
+        // "Switch to Admin" button whenever the admin is in user mode.
+        return redirect()->route('author.dashboard');
     }
 
     /**
@@ -57,8 +59,7 @@ class RoleSwitchController extends Controller
 
         $request->session()->forget('acting_role');
 
-        return redirect()
-            ->route('admin.dashboard')
-            ->with('success', 'Welcome back to admin mode.');
+        // Silent switch back — the admin dashboard speaks for itself.
+        return redirect()->route('admin.dashboard');
     }
 }
