@@ -22,4 +22,5 @@ class PageController extends Controller
     public function terms(){ $page = Page::where('slug','terms-conditions')->firstOrFail(); return view('frontend.pages.show', compact('page')); }
     public function cookie(){ $page = Page::where('slug','cookie-policy')->firstOrFail(); return view('frontend.pages.show', compact('page')); }
     public function editorial(){ $page = Page::where('slug','editorial-policy')->firstOrFail(); return view('frontend.pages.show', compact('page')); }
+    public function disclaimer(){ $page = Page::where('slug','disclaimer')->firstOrFail(); return view('frontend.pages.show', compact('page')); }
 }

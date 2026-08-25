@@ -57,6 +57,10 @@ Route::post('/blog/{slug}/comment', [BlogController::class, 'storeComment'])->na
 // Logged-in users only; guests are sent to login first.
 Route::post('/blog/{slug}/react', [BlogController::class, 'react'])->name('blog.react')->middleware('auth');
 
+// Affiliate / external link click tracking (fired by JS when a visitor
+// clicks an outbound link inside a post). Guests included, no auth needed.
+Route::post('/blog/{slug}/click', [BlogController::class, 'trackClick'])->name('blog.click');
+
 Route::get('/category/{slug}', [BlogController::class, 'category'])->name('category.show');
 
 // Author profile (public). Pattern enforces URL-safe usernames only,
@@ -80,6 +84,7 @@ Route::get('/privacy-policy', [PageController::class,'privacy'])->name('privacy'
 Route::get('/terms-conditions', [PageController::class,'terms'])->name('terms');
 Route::get('/cookie-policy', [PageController::class,'cookie'])->name('cookie');
 Route::get('/editorial-policy', [PageController::class,'editorial'])->name('editorial');
+Route::get('/disclaimer', [PageController::class,'disclaimer'])->name('disclaimer');
 Route::get('/page/{slug}', [PageController::class, 'show'])->name('page.show');
 
 // Frontend user auth (separate from /manage admin login)
@@ -114,7 +119,7 @@ Route::prefix('author-dashboard')->name('author.')->middleware('auth')->group(fu
     Route::delete('/posts/{id}', [AuthorDashboardController::class, 'postsDestroy'])->name('posts.destroy');
     Route::get('/profile', [AuthorDashboardController::class, 'profileEdit'])->name('profile.edit');
     Route::post('/profile', [AuthorDashboardController::class, 'profileUpdate'])->name('profile.update');
-    Route::get('/monetization', [AuthorDashboardController::class, 'monetization'])->name('monetization');
+    Route::get('/revenue', [AuthorDashboardController::class, 'revenue'])->name('revenue');
     Route::get('/posting-rules', [AuthorDashboardController::class, 'rules'])->name('rules');
     Route::post('/account', [AuthorDashboardController::class, 'accountDelete'])->name('account.delete');
 });

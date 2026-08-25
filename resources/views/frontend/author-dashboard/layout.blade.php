@@ -63,9 +63,9 @@
                 <svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Zm6-10.125a1.875 1.875 0 1 1-3.75 0 1.875 1.875 0 0 1 3.75 0Zm1.294 6.336a6.721 6.721 0 0 1-3.17.789 6.721 6.721 0 0 1-3.168-.789 3.376 3.376 0 0 1 6.338 0Z"/></svg>
                 Profile
             </a>
-            <a href="{{ route('author.monetization') }}" class="flex items-center gap-3 px-3 py-2.5 transition {{ request()->routeIs('author.monetization') ? 'bg-[#0C3B2E] text-white' : 'hover:bg-white/5 hover:text-white' }}">
+            <a href="{{ route('author.revenue') }}" class="flex items-center gap-3 px-3 py-2.5 transition {{ request()->routeIs('author.revenue') ? 'bg-[#0C3B2E] text-white' : 'hover:bg-white/5 hover:text-white' }}">
                 <svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
-                Monetization
+                Revenue
                 <span class="ml-auto text-[10px] font-semibold bg-amber-400 text-slate-900 px-1.5 py-0.5">SOON</span>
             </a>
         </nav>
@@ -144,7 +144,7 @@
             @yield('content')
         </main>
 
-        <footer class="px-6 py-3 text-center text-[11px] font-medium tracking-wide text-slate-400 dark:text-slate-600 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">Author Panel</footer>
+        <footer class="px-6 py-3 text-center text-[11px] font-medium tracking-wide text-slate-400 dark:text-slate-600 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">© {{ date('Y') }} {{ setting('site_name', 'Huvanti') }}</footer>
     </div>
 
     {{-- Back-to-top FAB, same as the admin panel --}}

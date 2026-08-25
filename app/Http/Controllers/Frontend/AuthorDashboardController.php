@@ -98,12 +98,12 @@ class AuthorDashboardController extends Controller
             'title'           => ['required', 'string', 'max:255'],
             'excerpt'         => ['nullable', 'string', 'max:500'],
             'content'         => ['required', 'string', 'min:120'],
-            'category_id'     => ['nullable', 'exists:categories,id'],
+            'category_id'     => ['required', 'exists:categories,id'],
             'featured_image'  => ['nullable', 'image', 'max:4096'],
             'is_affiliate'    => ['nullable', 'boolean'],
-            'meta_title'      => ['nullable', 'string', 'max:255'],
-            'meta_description'=> ['nullable', 'string', 'max:500'],
-            'faqs'            => ['nullable', 'array'],
+            'meta_title'      => ['required', 'string', 'max:255'],
+            'meta_description'=> ['required', 'string', 'max:500'],
+            'faqs'            => ['required', 'array', 'min:1'],
             'faqs.*.question' => ['nullable', 'string', 'max:500'],
             'faqs.*.answer'   => ['nullable', 'string', 'max:2000'],
             'action'          => ['required', 'in:save_draft,submit'],
@@ -117,6 +117,15 @@ class AuthorDashboardController extends Controller
             ])->withInput();
         }
 
+
+        // FAQ requirement: at least one COMPLETE question + answer pair.
+        $hasCompleteFaq = collect($request->input('faqs', []))
+            ->contains(fn ($f) => !empty($f['question']) && !empty($f['answer']));
+        if (! $hasCompleteFaq) {
+            return back()->withErrors([
+                'faqs' => 'Add at least one FAQ with both a question and an answer.',
+            ])->withInput();
+        }
         $user = Auth::user();
         if ($data['action'] === 'submit' && Post::authorSubmittedRecently($user->id)) {
             return back()->withErrors([
@@ -191,12 +200,12 @@ class AuthorDashboardController extends Controller
             'title'           => ['required', 'string', 'max:255'],
             'excerpt'         => ['nullable', 'string', 'max:500'],
             'content'         => ['required', 'string', 'min:120'],
-            'category_id'     => ['nullable', 'exists:categories,id'],
+            'category_id'     => ['required', 'exists:categories,id'],
             'featured_image'  => ['nullable', 'image', 'max:4096'],
             'is_affiliate'    => ['nullable', 'boolean'],
-            'meta_title'      => ['nullable', 'string', 'max:255'],
-            'meta_description'=> ['nullable', 'string', 'max:500'],
-            'faqs'            => ['nullable', 'array'],
+            'meta_title'      => ['required', 'string', 'max:255'],
+            'meta_description'=> ['required', 'string', 'max:500'],
+            'faqs'            => ['required', 'array', 'min:1'],
             'faqs.*.question' => ['nullable', 'string', 'max:500'],
             'faqs.*.answer'   => ['nullable', 'string', 'max:2000'],
             'action'          => ['required', 'in:save_draft,submit'],
@@ -245,6 +254,15 @@ class AuthorDashboardController extends Controller
         }
 
         $post->save();
+
+        // FAQ requirement: at least one COMPLETE question + answer pair.
+        $hasCompleteFaq = collect($request->input('faqs', []))
+            ->contains(fn ($f) => !empty($f['question']) && !empty($f['answer']));
+        if (! $hasCompleteFaq) {
+            return back()->withErrors([
+                'faqs' => 'Add at least one FAQ with both a question and an answer.',
+            ])->withInput();
+        }
         $this->syncFaqs($request, $post);
 
         if ($data['action'] === 'submit') {
@@ -322,7 +340,7 @@ class AuthorDashboardController extends Controller
 
         $rules = [
             'name'             => ['required', 'string', 'max:60', 'regex:/^[\p{L}\p{M}\s.\-]+$/u'],
-            'bio'              => ['nullable', 'string', 'max:600'],
+            'bio'              => ['required', 'string', 'min:30', 'max:600'],
             'avatar'           => ['nullable', 'image', 'max:4096'],
             'role_title'       => ['nullable', 'string', 'max:60'],
             'portfolio_url'    => ['nullable', 'url', 'max:255'],
@@ -357,10 +375,18 @@ class AuthorDashboardController extends Controller
         }
 
         if ($request->hasFile('avatar')) {
-            $path = app(ImageService::class)
-                ->optimizeAndStore($request->file('avatar'), 'uploads/avatars');
-            $user->author_avatar_path = $path;
-            $user->avatar = $path;
+            try {
+                $imageService = app(ImageService::class);
+                // Remove the previous avatar from both storage locations.
+                $imageService->delete($user->author_avatar_path);
+                $path = $imageService->optimizeAndStore($request->file('avatar'), 'uploads/avatars');
+                $user->author_avatar_path = $path;
+                $user->avatar = $path;
+            } catch (\Throwable $e) {
+                // Save the rest of the profile, but tell the author what
+                // happened to the photo instead of a 500 page.
+                return back()->with('error', 'The photo could not be saved. ' . $e->getMessage());
+            }
         }
 
         $user->save();
@@ -368,9 +394,37 @@ class AuthorDashboardController extends Controller
         return back()->with('success', 'Profile saved.');
     }
 
-    public function monetization()
+    public function revenue()
     {
-        return view('frontend.author-dashboard.monetization');
+        $user = Auth::user();
+
+        // The revenue program is off by default; the admin turns it on from
+        // Settings in the admin panel.
+        $revenueEnabled = setting('revenue_enabled', '0') === '1';
+
+        // Affiliate performance: clicks on outbound links inside the author's
+        // affiliate posts, and the click rate against post views.
+        try {
+            $affiliatePostIds = Post::byAuthor($user->id)->where('is_affiliate', true)->pluck('id');
+            $affiliateClicks = \App\Models\AffiliateClick::whereIn('post_id', $affiliatePostIds)->count();
+            $affiliateViews = (int) Post::byAuthor($user->id)->where('is_affiliate', true)->sum('views');
+        } catch (\Throwable $e) {
+            $affiliatePostIds = collect();
+            $affiliateClicks = 0;
+            $affiliateViews = 0;
+        }
+
+        $clickRate = $affiliateViews > 0 ? round(($affiliateClicks / $affiliateViews) * 100, 1) : 0.0;
+
+        $stats = [
+            'total_views'    => (int) Post::byAuthor($user->id)->sum('views'),
+            'published'      => Post::byAuthor($user->id)->where('review_status', 'approved')->count(),
+            'affiliate_posts' => $affiliatePostIds->count(),
+            'affiliate_clicks' => $affiliateClicks,
+            'click_rate'     => $clickRate,
+        ];
+
+        return view('frontend.author-dashboard.revenue', compact('revenueEnabled', 'stats'));
     }
 
     public function rules()

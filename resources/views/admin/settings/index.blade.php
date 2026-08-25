@@ -153,6 +153,19 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
             </div>
             <p class="text-xs text-slate-500 mt-2">Manage ads on the <a href="{{ route('admin.ads.index') }}" class="text-emerald-700 dark:text-emerald-300 hover:underline">Advertisements →</a> page.</p>
         </div>
+
+        <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-4">
+            <div class="flex items-center justify-between gap-4 flex-wrap">
+                <div>
+                    <h3 class="font-semibold">Revenue program</h3>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Shows the Revenue page to authors with link click tracking. Keep it off while the site grows.</p>
+                </div>
+                <label class="inline-flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" name="revenue_enabled" value="1" {{ old('revenue_enabled', $settings['revenue_enabled']->value ?? '0') === '1' ? 'checked' : '' }} class="w-5 h-5 text-emerald-600">
+                    <span class="text-sm font-semibold {{ ($settings['revenue_enabled']->value ?? '0') === '1' ? 'text-emerald-700 dark:text-emerald-300' : 'text-slate-500 dark:text-slate-400' }}">{{ ($settings['revenue_enabled']->value ?? '0') === '1' ? 'Enabled' : 'Disabled' }}</span>
+                </label>
+            </div>
+        </div>
         <button type="submit" class="h-11 px-6 bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold transition">Save Ad Settings</button>
     </form>
 

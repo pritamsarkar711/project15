@@ -102,11 +102,52 @@
 </form>
 
 @push('scripts')
-<script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>
+<script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/super-build/ckeditor.js"></script>
 <script>
-    ClassicEditor.create(document.querySelector('#editor'), {
-        toolbar: ['heading','|','bold','italic','link','bulletedList','numberedList','blockQuote','insertTable','mediaEmbed','|','undo','redo']
-    }).catch(e=>console.error(e));
+// Full CKEditor 5 toolbar: headings, formatting, fonts, colors, lists,
+// alignment, links, tables, media, images (base64), code blocks, find and
+// replace, source editing and more.
+(function(){
+    var CK = window.CKEDITOR || {};
+    var Editor = CK.ClassicEditor;
+    if (!Editor) { console.warn('CKEditor failed to load'); return; }
+    var base64 = null;
+    try {
+        base64 = (CK.upload && CK.upload.Base64UploadAdapter)
+            || (window.CKEditor5 && window.CKEditor5.upload && window.CKEditor5.upload.Base64UploadAdapter);
+    } catch (e) {}
+    var config = {
+        toolbar: {
+            items: [
+                'heading', '|',
+                'bold', 'italic', 'underline', 'strikethrough', '|',
+                'fontSize', 'fontFamily', 'fontColor', 'fontBackgroundColor', '|',
+                'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent', 'alignment', '|',
+                'link', 'blockQuote', 'insertTable', 'mediaEmbed', 'insertImage', 'horizontalLine', 'specialCharacters', 'codeBlock', '|',
+                'findAndReplace', 'selectAll', 'removeFormat', 'sourceEditing', '|',
+                'undo', 'redo'
+            ]
+        },
+        image: {
+            toolbar: ['imageTextAlternative', 'toggleImageCaption', 'imageStyle:inline', 'imageStyle:block', 'imageStyle:side']
+        },
+        table: {
+            contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells', 'tableProperties', 'tableCellProperties']
+        },
+        heading: {
+            options: [
+                { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
+                { model: 'heading1', view: 'h2', title: 'Heading 1', class: 'ck-heading_heading1' },
+                { model: 'heading2', view: 'h3', title: 'Heading 2', class: 'ck-heading_heading2' },
+                { model: 'heading3', view: 'h4', title: 'Heading 3', class: 'ck-heading_heading3' }
+            ]
+        }
+    };
+    if (base64) { config.extraPlugins = [base64]; }
+    Editor.create(document.querySelector('#editor'), config).catch(function(e){ console.error(e); });
+})();
+</script>
+<script>
     let faqIdx = {{ count(old('faqs', $post->faqs)) + 1 }};
     function addFaq(){
         const c = document.getElementById('faqs');

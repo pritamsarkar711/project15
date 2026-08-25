@@ -132,7 +132,7 @@ if (!is_link($symlinkLink) && !is_dir($symlinkLink)) {
 
 // 5. Write deploy version file (triggers auto-clear on next request too)
 $versionFile = ROOT . '/storage/framework/.huvanti_deploy_version';
-@file_put_contents($versionFile, 'v15-2026-08-25-mobile-errors', LOCK_EX);
+@file_put_contents($versionFile, 'v16-2026-08-25-ads-badges-editor', LOCK_EX);
 
 // 6. Run pending migrations (requires Laravel to boot).
 //    `migrate --force` is IDEMPOTENT — when nothing is pending Laravel replies

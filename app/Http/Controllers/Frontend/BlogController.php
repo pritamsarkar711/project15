@@ -37,6 +37,8 @@ class BlogController extends Controller
         // increment views
         $post->increment('views');
         $related = Post::published()->where('category_id',$post->category_id)->where('id','!=',$post->id)->inRandomOrder()->take(3)->get();
+        // Popular posts for the sidebar (most viewed across the whole site).
+        $popular = Post::published()->where('id','!=',$post->id)->orderByDesc('views')->take(3)->get();
         $toc = $post->table_of_contents;
         // Extract headings for TOC rendering with ids injection
         $contentWithAnchors = $this->injectAnchors($post->content, $toc);
@@ -69,7 +71,7 @@ class BlogController extends Controller
             ? auth()->user()->following()->where('followee_id', $post->user->id)->exists()
             : false;
 
-        return view('frontend.blog.show', compact('post','related','toc','contentWithAnchors','likesCount','dislikesCount','myReaction','followingAuthor'));
+        return view('frontend.blog.show', compact('post','related','popular','toc','contentWithAnchors','likesCount','dislikesCount','myReaction','followingAuthor'));
     }
 
     /**
@@ -103,6 +105,31 @@ class BlogController extends Controller
     }
 
     /**
+     * Track a click on an outbound (affiliate / external) link inside a post.
+     * Called by JS on the post page. Stores only hashed identifiers, no raw
+     * URL or IP, and is fully failure-tolerant: tracking problems never
+     * affect the visitor.
+     */
+    public function trackClick(Request $request, $slug)
+    {
+        try {
+            $post = Post::published()->where('slug', $slug)->first();
+            if (!$post) {
+                return response()->json(['ok' => false], 404);
+            }
+            \App\Models\AffiliateClick::create([
+                'post_id' => $post->id,
+                'user_id' => auth()->id(),
+                'url_hash' => hash('sha256', (string) $request->input('url', '')),
+                'ip_hash' => hash('sha256', $request->ip() ?? ''),
+            ]);
+        } catch (\Throwable $e) {
+            // Never surface tracking errors to the visitor.
+        }
+        return response()->json(['ok' => true]);
+    }
+
+    /**
      * Insert an in-article ad after every N paragraphs in the post content.
      * The ad HTML is wrapped so it cannot break surrounding paragraphs.
      * If no active in-article ad exists or its code is empty, content is returned unchanged.
@@ -117,7 +144,11 @@ class BlogController extends Controller
         $parts = preg_split('/(<\/p>)/i', $content, -1, PREG_SPLIT_DELIM_CAPTURE);
         if (count($parts) < 3) return $content;
 
-        $adBlock = '<div class="ad-in-article my-8 p-4 bg-slate-50 dark:bg-[#1f1f1f] text-center border border-slate-200 dark:border-slate-800">'.$code.'</div>';
+        // Insert in-article ads after every N paragraphs in the post content.
+        // The wrapper carries NO background or border on purpose: when the ad
+        // network serves an empty unit (site not yet approved, no fill), the
+        // slot collapses invisibly instead of showing an ugly blank box.
+        $adBlock = '<div class="ad-slot my-8 text-center" style="min-height:0">'.$code.'</div>';
         $out = '';
         $paragraphsSinceAd = 0;
         $i = 0;
