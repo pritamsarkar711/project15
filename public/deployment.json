@@ -1,1 +1,1 @@
-{"deployment":"2026-08-25-nav-legal-faq-v22","date":"2026-08-25","note":"drawer scroll lock with iOS fix + overscroll contain, search overlay min-w-0 + shared scroll lock, legal pages rewritten concise without dashes, FAQ details/summary single-open + missing FAQ auto generation"}
+{"deployment":"2026-08-25-editor-icons-v23","date":"2026-08-25","note":"editor: Google Sans added, format/size/line-height now icon compact (H1/H2/ S M L etc), table header vs body fix, line height persists per block, color picker closes, deep audit fixes"}

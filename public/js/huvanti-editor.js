@@ -140,11 +140,11 @@
         '.huv-rte.dragover{outline:2px dashed #10b981;outline-offset:-2px;}'
     ].join('\n');
 
-    var FONTS = ['Default', 'Arial, Helvetica, sans-serif', 'Georgia, serif', '"Times New Roman", Times, serif', '"Courier New", monospace', 'Verdana, Geneva, sans-serif', '"Trebuchet MS", sans-serif', '"Work Sans", Arial, sans-serif'];
+    var FONTS = ['Default', '"Google Sans", Roboto, Arial, sans-serif', 'Arial, Helvetica, sans-serif', 'Georgia, serif', '"Times New Roman", Times, serif', '"Courier New", monospace', 'Verdana, Geneva, sans-serif', '"Trebuchet MS", sans-serif', '"Work Sans", Arial, sans-serif'];
     var LINE_HEIGHTS = ['Default', '1', '1.2', '1.5', '1.7', '2', '2.5'];
     var SIZES = [
-        { label: 'Small', v: '2' }, { label: 'Normal', v: '3' }, { label: 'Medium', v: '4' },
-        { label: 'Large', v: '5' }, { label: 'Huge', v: '6' }, { label: 'X-Large', v: '7' }
+        { label: 'S', v: '2', title: 'Small' }, { label: 'N', v: '3', title: 'Normal' }, { label: 'M', v: '4', title: 'Medium' },
+        { label: 'L', v: '5', title: 'Large' }, { label: 'XL', v: '6', title: 'Huge' }, { label: '2XL', v: '7', title: 'Extra large' }
     ];
     var COLORS = ['#0f172a', '#334155', '#64748b', '#dc2626', '#ea580c', '#d97706', '#16a34a', '#059669', '#0891b2', '#2563eb', '#7c3aed', '#db2777', '#ffffff', '#f1f5f9', '#fef3c7', '#d1fae5'];
     var CHARS = ['\u00A9', '\u00AE', '\u2122', '\u2192', '\u2190', '\u2191', '\u2193', '\u2022', '\u2026', '\u2018', '\u2019', '\u201C', '\u201D', '\u2013', '\u2014', '\u00D7', '\u00F7', '\u2260', '\u2264', '\u2265', '\u00B0', '\u00B1', '\u221E', '\u20AC', '\u00A3', '\u00A5', '\u20B9', '\u0024', '\u03B1', '\u03B2', '\u03C0', '\u221A'];
@@ -332,19 +332,19 @@
         btn('redo', 'redo', 'Redo (Ctrl+Y)', function () { cmd('redo'); });
         sep();
         select('block', 'Format block', [
-            { label: 'Paragraph', v: 'p' }, { label: 'Heading 1', v: 'h1' }, { label: 'Heading 2', v: 'h2' },
-            { label: 'Heading 3', v: 'h3' }, { label: 'Heading 4', v: 'h4' },
-            { label: 'Quote', v: 'blockquote' }, { label: 'Code block', v: 'pre' }
+            { label: '¶ P', v: 'p' }, { label: 'H1', v: 'h1' }, { label: 'H2', v: 'h2' },
+            { label: 'H3', v: 'h3' }, { label: 'H4', v: 'h4' },
+            { label: '❝ Quote', v: 'blockquote' }, { label: '</> Code', v: 'pre' }
         ], function (v) {
             content.focus();
             document.execCommand('formatBlock', false, v === 'pre' ? 'pre' : v);
             sync(); updateStates();
         });
-        select('font', 'Font family', FONTS.map(function (f) { return { label: f.split(',')[0].replace(/"/g, ''), v: f }; }), function (v) {
+        select('font', 'Font family', FONTS.map(function (f) { return { label: f === 'Default' ? 'Default' : f.split(',')[0].replace(/"/g, '').replace('Google Sans','Google Sans'), v: f }; }), function (v) {
             if (v === 'Default') { cmd('removeFormat'); return; }
             cmd('fontName', v);
         });
-        select('size', 'Font size', SIZES, function (v) { cmd('fontSize', v); });
+        select('size', 'Size', SIZES, function (v) { cmd('fontSize', v); });
         sep();
         btn('bold', 'bold', 'Bold (Ctrl+B)', function () { cmd('bold'); });
         btn('italic', 'italic', 'Italic (Ctrl+I)', function () { cmd('italic'); });
@@ -373,11 +373,12 @@
             var html = '<div class="huv-rte-pop-grid">' + COLORS.map(function (c) {
                 return '<button type="button" class="huv-rte-swatch" data-color="' + c + '" style="background:' + c + '" title="' + c + '"></button>';
             }).join('') + '</div>' +
-                '<label class="huv-rte-label" style="margin-top:10px">Custom: <input type="color" class="huv-rte-custom" value="#059669" style="width:40px;height:26px;border:0;background:none;padding:0;cursor:pointer"></label>';
+                '<label class="huv-rte-label" style="margin-top:10px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 0-9 5 10 10 0 0 1 9-5z"/></svg> <input type="color" class="huv-rte-custom" value="#059669" style="width:40px;height:26px;border:0;background:none;padding:0;cursor:pointer"></label>';
             pop(anchor, wrap, html, function (p) {
                 p.querySelectorAll('.huv-rte-swatch').forEach(function (sw) {
                     sw.addEventListener('click', function () { closeAllPops(wrap); cmd('foreColor', sw.getAttribute('data-color')); });
                 });
+                p.querySelector('.huv-rte-custom').addEventListener('change', function () { closeAllPops(wrap); cmd('foreColor', this.value); });
                 p.querySelector('.huv-rte-custom').addEventListener('input', function () { cmd('foreColor', this.value); });
             });
         });
@@ -478,7 +479,7 @@
                         var t = '<table><tbody>';
                         for (var i = 0; i < r; i++) {
                             t += '<tr>';
-                            for (var j = 0; j < c; j++) t += '<th>Heading</th>';
+                            for (var j = 0; j < c; j++) t += (i === 0 ? '<th>Heading</th>' : '<td>Cell</td>');
                             t += '</tr>';
                         }
                         t += '</tbody></table><p><br></p>';
@@ -579,9 +580,23 @@
                 p.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeAllPops(wrap); });
             });
         });
-        select('lh', 'Line height', LINE_HEIGHTS.map(function (h) { return { label: h === 'Default' ? 'Line height' : h, v: h }; }), function (v) {
-            if (v === 'Default') { content.style.lineHeight = ''; }
-            else { content.style.lineHeight = v; }
+        select('lh', 'Line height', LINE_HEIGHTS.map(function (h) { return { label: h === 'Default' ? '↕' : h, v: h }; }), function (v) {
+            restoreRange();
+            var blocks = content.querySelectorAll('p, h1, h2, h3, h4, li, blockquote, pre');
+            if (blocks.length === 0) blocks = [content];
+            var sel = window.getSelection();
+            var targetBlocks = [];
+            if (sel && sel.rangeCount && !sel.isCollapsed && content.contains(sel.anchorNode)) {
+                blocks.forEach(function(b){ if (sel.containsNode(b, true) || b.contains(sel.anchorNode)) targetBlocks.push(b); });
+                if (targetBlocks.length === 0 && sel.anchorNode) {
+                    var anc = sel.anchorNode.nodeType === 3 ? sel.anchorNode.parentNode : sel.anchorNode;
+                    var blk = anc.closest ? anc.closest('p, h1, h2, h3, h4, li, blockquote, pre') : null;
+                    if (blk && content.contains(blk)) targetBlocks = [blk];
+                }
+            }
+            if (targetBlocks.length === 0) targetBlocks = Array.prototype.slice.call(blocks);
+            targetBlocks.forEach(function(b){ b.style.lineHeight = (v === 'Default' ? '' : v); if (!b.style.lineHeight) b.removeAttribute('style'); });
+            if (targetBlocks.indexOf(content) === -1) content.style.lineHeight = '';
             sync();
         });
         btn('codeBlock', 'code', 'Code block', function () {
@@ -595,6 +610,7 @@
             cmd('removeFormat');
             content.focus();
             document.execCommand('unlink');
+            content.querySelectorAll('[style*="line-height"]').forEach(function(el){ el.style.lineHeight=''; if(!el.getAttribute('style')) el.removeAttribute('style'); });
             content.style.lineHeight = '';
             sync();
         });
@@ -763,6 +779,13 @@
         if (!el || el.tagName !== 'TEXTAREA') return null;
         if (el.dataset.huvantiRte === '1') return null;
         el.dataset.huvantiRte = '1';
+        if (!document.querySelector('link[data-huv-google-sans]')) {
+            var gs = document.createElement('link');
+            gs.rel = 'stylesheet';
+            gs.href = 'https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Google+Sans+Text:wght@400;500&display=swap';
+            gs.setAttribute('data-huv-google-sans','1');
+            document.head.appendChild(gs);
+        }
         return new HuvantiEditor(el, options || {});
     };
 
