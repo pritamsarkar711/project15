@@ -79,6 +79,9 @@ class SettingController extends Controller
         // Checkbox toggle: if absent, the user unchecked it → store '0'.
         Setting::set('social_enabled', $request->boolean('social_enabled') ? '1' : '0');
 
+        // Flush ALL settings cache so every page picks up every change immediately.
+        Setting::flushAllCache();
+
         if ($request->hasFile('site_logo_file')) {
             $path = app(ImageService::class)->optimizeAndStore($request->file('site_logo_file'), 'uploads/settings');
             Setting::set('site_logo', '/storage/'.$path);

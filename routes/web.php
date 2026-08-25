@@ -41,7 +41,7 @@ Route::get('/storage/{path}', function ($path) {
     }
 
     return response()->file($realTarget, [
-        'Cache-Control' => 'public, max-age=31536000, immutable',
+        'Cache-Control' => 'public, max-age=3600',
     ]);
 })->where('path', '.*');
 

@@ -28,7 +28,7 @@ define('LARAVEL_START', microtime(true));
 // ---------------------------------------------------------------------------
 
 // Bump this string when you want to force a cache clear on every server.
-define('HUVANTI_DEPLOY_VERSION', 'v10-2026-08-25');
+define('HUVANTI_DEPLOY_VERSION', 'v11-2026-08-25');
 
 // Determine if the application is in maintenance mode...
 if (file_exists($maintenance = __DIR__.'/../storage/framework/maintenance.php')) {
@@ -317,10 +317,19 @@ try {
     $versionFile = __DIR__.'/../storage/framework/.huvanti_deploy_version';
     $storedVersion = @file_get_contents($versionFile);
     if (trim($storedVersion) !== HUVANTI_DEPLOY_VERSION) {
+        // Clear compiled Blade views
         $viewCacheDir = __DIR__.'/../storage/framework/views';
+        $cleared = 0;
         if (is_dir($viewCacheDir)) {
             foreach (glob($viewCacheDir.'/*.php') as $cachedFile) {
-                @unlink($cachedFile);
+                if (@unlink($cachedFile)) $cleared++;
+            }
+        }
+        // Clear application cache (includes settings cache)
+        $appCacheDir = __DIR__.'/../storage/framework/cache/data';
+        if (is_dir($appCacheDir)) {
+            foreach (glob($appCacheDir.'/*') as $f) {
+                @unlink($f);
             }
         }
         @file_put_contents($versionFile, HUVANTI_DEPLOY_VERSION, LOCK_EX);

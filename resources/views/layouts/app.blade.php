@@ -49,6 +49,14 @@
     @stack('head')
 </head>
 <body class="bg-[#fafafa] dark:bg-[#121212] text-slate-800 dark:text-slate-100 antialiased overflow-x-hidden" style="font-family:{{ \App\Support\SiteFont::cssStack() }}">
+    @if(request('_huvanti_preview'))
+    <div class="fixed top-0 inset-x-0 z-[999] bg-amber-500 text-slate-900 text-center text-sm font-semibold py-2 px-4 flex items-center justify-center gap-3">
+        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+        Preview Mode — You are viewing the site as a regular user
+        <a href="/manage" class="underline font-bold hover:text-slate-800">Back to Admin</a>
+    </div>
+    <div class="h-[36px]"></div>
+    @endif
     <div class="min-h-screen flex flex-col w-full max-w-[100vw] overflow-x-hidden">
         @include('partials.header')
 

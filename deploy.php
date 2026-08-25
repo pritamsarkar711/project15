@@ -107,19 +107,32 @@ if (is_dir($viewCacheDir)) {
 }
 $actions[] = "<span style=\"color:#00897B\">View cache cleared</span> ($viewCount compiled templates deleted)";
 
-// 3. Clear config, route, event caches
+// 3. Clear ALL application cache (settings, config, everything)
 $cacheDir = ROOT . '/storage/framework/cache';
 $cacheCount = 0;
-if (is_dir($cacheDir)) {
+if (is_dir($cacheDir . '/data')) {
     foreach (glob($cacheDir . '/data/*') as $f) {
         if (is_file($f) && @unlink($f)) $cacheCount++;
     }
 }
-$actions[] = "<span style=\"color:#00897B\">Application cache cleared</span> ($cacheCount files)";
+$actions[] = "<span style=\"color:#00897B\">Application cache cleared</span> ($cacheCount files — includes settings cache)";
 
-// 4. Write deploy version file (triggers auto-clear on next request too)
+// 4. Create storage symlink (public/storage → storage/app/public)
+$symlinkTarget = ROOT . '/storage/app/public';
+$symlinkLink = ROOT . '/public/storage';
+if (!is_link($symlinkLink) && !is_dir($symlinkLink)) {
+    if (function_exists('symlink') && @symlink($symlinkTarget, $symlinkLink)) {
+        $actions[] = '<span style="color:#00897B">Storage symlink created</span>';
+    } else {
+        $actions[] = '<span style="color:#F57C00">Storage symlink skipped</span> (symlink disabled — PHP fallback route handles /storage/*)';
+    }
+} else {
+    $actions[] = '<span style="color:#6E6D78">Storage symlink exists</span>';
+}
+
+// 5. Write deploy version file (triggers auto-clear on next request too)
 $versionFile = ROOT . '/storage/framework/.huvanti_deploy_version';
-@file_put_contents($versionFile, 'v10-2026-08-25', LOCK_EX);
+@file_put_contents($versionFile, 'v11-2026-08-25', LOCK_EX);
 
 // 5. Run pending migrations (requires Laravel to boot)
 $migrationOutput = '';
