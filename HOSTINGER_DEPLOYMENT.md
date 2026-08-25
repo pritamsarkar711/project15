@@ -8,7 +8,7 @@ on the server. The repository intentionally includes `vendor/` and
 Current deployment marker:
 
 ```text
-2026-08-25-css-rebuild-hero-badges-v17
+2026-08-25-hero-green-search-icon-v18
 ```
 
 ## "I pushed to GitHub but my site didn't change" — read this first
