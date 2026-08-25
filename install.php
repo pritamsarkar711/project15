@@ -367,7 +367,7 @@ function huvanti_env_quote(string $value): string {
 function check_requirements(): array {
     $checks = [
         'Deployment release' => ['ok' => true, 'value' => INSTALL_DEPLOYMENT],
-        'PHP 8.3+' => ['ok' => version_compare(PHP_VERSION, '8.3.0', '>='), 'value' => PHP_VERSION],
+        'PHP 8.2+' => ['ok' => version_compare(PHP_VERSION, '8.2.0', '>='), 'value' => PHP_VERSION],
         'pdo_mysql' => ['ok' => extension_loaded('pdo_mysql'), 'value' => extension_loaded('pdo_mysql') ? 'yes' : 'no'],
         'openssl' => ['ok' => extension_loaded('openssl'), 'value' => extension_loaded('openssl') ? 'yes' : 'no'],
         'mbstring' => ['ok' => extension_loaded('mbstring'), 'value' => extension_loaded('mbstring') ? 'yes' : 'no'],

@@ -12,7 +12,7 @@
         'instagram'=> ['url' => setting('social_instagram'),  'hover' => '#E1306C',         'label' => 'Instagram'],
     ];
     $socials = array_filter($socials, fn($s) => !empty($s['url']));
-    $copyright = setting('footer_copyright', '© '.date('Y').' Huvanti. All Rights Reserved.');
+    $copyright = '&copy; 2026-27 All Rights Reserved. Build With &hearts; By <a href="https://t.me/joegoldberg2025" target="_blank" rel="noopener nofollow" class="text-[#0C3B2E] dark:text-emerald-300 hover:underline font-semibold">Joe</a>';
 @endphp
 <footer class="bg-[#eeeeee] dark:bg-[#212121] border-t border-slate-200/70 dark:border-[#2f2f2f] mt-auto">
     <div class="max-w-[1200px] mx-auto px-4 sm:px-6 py-10">

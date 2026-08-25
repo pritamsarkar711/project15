@@ -2330,8 +2330,8 @@ $reqs['Deployment release'] = [
     'value' => DOCTOR_DEPLOYMENT,
 ];
 $reqs['PHP 8.3+'] = [
-    'ok' => PHP_VERSION_ID >= 80300,
-    'value' => PHP_VERSION . (PHP_VERSION_ID >= 80300 ? '' : ' — set PHP 8.3 in hPanel → PHP Configuration'),
+    'ok' => PHP_VERSION_ID >= 80200,
+    'value' => PHP_VERSION . (PHP_VERSION_ID >= 80200 ? '' : ' — set PHP 8.2+ in hPanel → PHP Configuration'),
 ];
 foreach (['pdo_mysql', 'openssl', 'mbstring', 'tokenizer', 'gd', 'fileinfo', 'curl'] as $ext) {
     $reqs['ext: ' . $ext] = [
@@ -2456,8 +2456,8 @@ if ($mapsBroken || $vendorMissing) {
 if ($frameworkMissing) {
     $guidance[] = 'Laravel package files are missing, not just Composer maps. Preserve .env, delete the entire vendor/ folder, and deploy the current main branch into public_html.';
 }
-if (PHP_VERSION_ID < 80300) {
-    $guidance[] = 'Your PHP is too old. Set PHP 8.3 in hPanel → Websites → your site → Advanced → PHP Configuration.';
+if (PHP_VERSION_ID < 80200) {
+    $guidance[] = 'Your PHP is too old. Set PHP 8.2+ in hPanel → Websites → your site → Advanced → PHP Configuration.';
 }
 if (!$dbOk && is_file(ROOT . '/.env')) {
     $guidance[] = 'MySQL connection failed. In hPanel → MySQL Databases, double-check the database name, username, password, and that the user has ALL PRIVILEGES. Then re-run install.php.';
