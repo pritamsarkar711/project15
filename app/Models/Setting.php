@@ -31,22 +31,31 @@ class Setting extends Model
         return static::updateOrCreate(['key'=>$key], ['value'=>$value,'type'=>$type,'group'=>$group]);
     }
 
-    /** Flush ALL cached settings — call after bulk updates. */
+    /**
+     * Flush ALL cached settings — call after bulk updates.
+     *
+     * The previous implementation tried to glob cache files on disk, which is a
+     * silent no-op on the database cache driver (the default here) AND on the
+     * file driver (keys are stored as sha1 hashes, so "setting_*" never matches).
+     * Result: stale settings for up to 30s — or longer when OPcache served old
+     * compiled views. This version forgets every known key from the DB and then
+     * flushes the whole cache store as a safety net (the app only caches
+     * settings, so a full flush is safe).
+     */
     public static function flushAllCache()
     {
-        // Forget individual setting keys (common pattern: "setting_xxx")
+        // 1. Forget each known setting key (works on every cache driver).
         try {
-            $store = Cache::getStore();
-            if (method_exists($store, 'getDirectory')) {
-                $dir = $store->getDirectory();
-                foreach (glob($dir . '/setting_*') as $f) {
-                    @unlink($f);
-                }
+            foreach (static::query()->pluck('key') as $key) {
+                Cache::forget("setting_{$key}");
             }
         } catch (\Throwable $e) {
-            // Fallback: just clear the entire cache
-            try { Cache::flush(); } catch (\Throwable $e2) {}
+            // DB unreachable (e.g. during install) — per-key forget in set()
+            // has already run for anything modified this request.
         }
+
+        // 2. Safety net: drop anything else the current driver may hold.
+        try { Cache::flush(); } catch (\Throwable $e) {}
     }
 
     protected static function booted()

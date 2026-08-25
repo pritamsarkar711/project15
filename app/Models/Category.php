@@ -49,6 +49,24 @@ class Category extends Model
         return $this->hasMany(Post::class)->where('status','published');
     }
 
+    /**
+     * Scope: categories that are visible on the public site.
+     *
+     * A category is "live" when:
+     *   1. it is enabled in the admin panel (is_active), AND
+     *   2. it has at least one PUBLISHED post (published now, not scheduled
+     *      in the future, not soft-deleted).
+     *
+     * This keeps empty categories hidden from visitors until the first post
+     * goes live under them — exactly how the menu/footer/homepage should
+     * behave. The admin panel always shows every category regardless.
+     */
+    public function scopeLive($query)
+    {
+        return $query->where('is_active', true)
+            ->whereHas('posts', fn ($q) => $q->published());
+    }
+
     protected static function booted()
     {
         static::creating(function ($category) {

@@ -132,9 +132,13 @@ if (!is_link($symlinkLink) && !is_dir($symlinkLink)) {
 
 // 5. Write deploy version file (triggers auto-clear on next request too)
 $versionFile = ROOT . '/storage/framework/.huvanti_deploy_version';
-@file_put_contents($versionFile, 'v12-2026-08-25-fix-cache', LOCK_EX);
+@file_put_contents($versionFile, 'v13-2026-08-25-audit-fixes', LOCK_EX);
 
-// 5. Run pending migrations (requires Laravel to boot)
+// 6. Run pending migrations (requires Laravel to boot).
+//    `migrate --force` is IDEMPOTENT — when nothing is pending Laravel replies
+//    "Nothing to migrate" and no SQL runs, so we ALWAYS call it. (The previous
+//    logic only migrated when the review_status column was missing, which
+//    silently skipped every later migration — e.g. the new categories.)
 $migrationOutput = '';
 try {
     require ROOT . '/vendor/autoload.php';
@@ -142,21 +146,12 @@ try {
     $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
     $kernel->bootstrap();
 
-    // Check if review_status column exists
-    try {
-        $hasReviewStatus = \Illuminate\Support\Facades\Schema::hasColumn('posts', 'review_status');
-        if (!$hasReviewStatus) {
-            \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
-            $migrationOutput = \Illuminate\Support\Facades\Artisan::output();
-            $actions[] = "<span style=\"color:#00897B\">Migrations ran</span> (pending migrations executed)";
-        } else {
-            $actions[] = "<span style=\"color:#6E6D78\">Database up to date</span> (no pending migrations)";
-        }
-    } catch (\Throwable $e) {
-        // If Schema check fails, try running migrations anyway
-        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
-        $migrationOutput = \Illuminate\Support\Facades\Artisan::output();
-        $actions[] = "<span style=\"color:#00897B\">Migrations attempted</span>";
+    \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+    $migrationOutput = trim(\Illuminate\Support\Facades\Artisan::output());
+    if ($migrationOutput === '' || str_contains($migrationOutput, 'Nothing to migrate')) {
+        $actions[] = "<span style=\"color:#6E6D78\">Database up to date</span> (no pending migrations)";
+    } else {
+        $actions[] = "<span style=\"color:#00897B\">Migrations ran</span> (" . htmlspecialchars($migrationOutput) . ")";
     }
 
     // Also clear config and route cache via Artisan

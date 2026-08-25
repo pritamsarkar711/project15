@@ -1,5 +1,6 @@
 @php
-    $footerCategories = \App\Models\Category::where('is_active', true)->orderBy('sort_order')->take(6)->get();
+    // Only categories with at least one published post appear in the footer.
+    $footerCategories = \App\Models\Category::live()->orderBy('sort_order')->take(6)->get();
     $socialEnabled = setting('social_enabled', '1') === '1';
     // Social URLs — admin-editable via Settings → General. Empty = icon hidden.
     $socials = [

@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\CommentController as AdminCommentController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\NavigationController;
 use App\Http\Controllers\Admin\ProfileController;
+use App\Http\Controllers\Admin\RoleSwitchController;
 use App\Http\Controllers\Frontend\AuthController as FrontendAuthController;
 use App\Http\Controllers\Frontend\AuthorDashboardController;
 
@@ -83,6 +84,12 @@ Route::get('/login', [FrontendAuthController::class, 'showLoginForm'])->name('lo
 Route::post('/login', [FrontendAuthController::class, 'login'])->name('login.post')->middleware('guest');
 Route::post('/logout', [FrontendAuthController::class, 'logout'])->name('logout')->middleware('auth');
 
+// Admin ⇄ User switch: "switch back to admin" lives OUTSIDE /manage so it stays
+// reachable while the admin is browsing the site in user mode. Only the real
+// admin account can ever use it (checked in the controller).
+Route::post('/switch-back-to-admin', [RoleSwitchController::class, 'switchBackToAdmin'])
+    ->middleware('auth')->name('switch-back-to-admin');
+
 // Password reset (frontend users — uses Huvanti-branded ResetPassword
 // notification that points to /reset-password/{token} instead of /manage).
 Route::get('/forgot-password', [FrontendAuthController::class, 'showForgotPasswordForm'])->name('password.request')->middleware('guest');
@@ -123,21 +130,29 @@ Route::prefix('manage')->name('admin.')->group(function(){
         Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
 
-        // Posts
-        Route::resource('posts', PostController::class);
+        // Multi-author review queue (pending submissions).
+        // ⚠️ MUST be registered BEFORE the posts resource: Route::resource()
+        // creates GET posts/{post}, which would otherwise capture
+        // /manage/posts/review-queue as {post}='review-queue' and crash with
+        // "Method PostController::show() does not exist" (HTTP 500).
+        Route::get('posts/review-queue', [PostController::class, 'reviewQueue'])->name('posts.review-queue');
+        Route::post('posts/{post}/approve', [PostController::class, 'approve'])->name('posts.approve');
+        Route::post('posts/{post}/return', [PostController::class, 'return'])->name('posts.return');
+
+        // Posts (no public "show" page inside the admin panel)
+        Route::resource('posts', PostController::class)->except(['show']);
         Route::post('posts/{post}/toggle', [PostController::class,'toggleStatus'])->name('posts.toggle');
         Route::post('posts/{post}/restore', [PostController::class,'restore'])->name('posts.restore');
         Route::post('posts/{post}/permanent', [PostController::class,'forceDelete'])->name('posts.destroy.permanent');
 
-        // Multi-author review queue (pending submissions)
-        Route::get('posts/review-queue', [PostController::class, 'reviewQueue'])->name('posts.review-queue');
-        Route::post('posts/{post}/approve', [PostController::class, 'approve'])->name('posts.approve');
-        Route::post('posts/{post}/return', [PostController::class, 'return'])->name('posts.return');
+        // Admin ⇄ User role switch (admin only). See RoleSwitchController.
+        Route::post('switch-role', [RoleSwitchController::class, 'switchToUser'])->name('switch-role');
 
         // Categories
         Route::get('categories', [CategoryController::class,'index'])->name('categories.index');
         Route::get('categories/create', [CategoryController::class,'create'])->name('categories.create');
         Route::post('categories', [CategoryController::class,'store'])->name('categories.store');
+        Route::post('categories/{category}/toggle', [CategoryController::class,'toggle'])->name('categories.toggle');
         Route::get('categories/{category}/edit', [CategoryController::class,'edit'])->name('categories.edit');
         Route::put('categories/{category}', [CategoryController::class,'update'])->name('categories.update');
         Route::delete('categories/{category}', [CategoryController::class,'destroy'])->name('categories.destroy');

@@ -24,7 +24,8 @@ class BlogController extends Controller
             });
         }
         $posts = $query->latest('published_at')->paginate(12)->withQueryString();
-        $categories = Category::where('is_active',true)->orderBy('sort_order')->get();
+        // Filter dropdown: only live categories (active + has published posts)
+        $categories = Category::live()->orderBy('sort_order')->get();
         $featured = Post::published()->where('is_featured',true)->latest()->take(3)->get();
         return view('frontend.blog.index', compact('posts','categories','featured'));
     }
@@ -90,7 +91,8 @@ class BlogController extends Controller
 
     public function category($slug)
     {
-        $category = Category::where('slug',$slug)->firstOrFail();
+        // Inactive categories are hidden from the public site entirely.
+        $category = Category::where('slug',$slug)->where('is_active',true)->firstOrFail();
         $posts = Post::published()->where('category_id',$category->id)->latest('published_at')->paginate(12);
         return view('frontend.category.show', compact('category','posts'));
     }

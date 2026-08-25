@@ -1,5 +1,8 @@
 @php
-    $categories = \App\Models\Category::where('is_active',true)->orderBy('sort_order')->take(6)->get();
+    // Categories shown in the menu must be ACTIVE and have at least one
+    // published post — empty categories stay hidden from visitors until a
+    // post goes live under them (admin can always see them in the panel).
+    $categories = \App\Models\Category::live()->orderBy('sort_order')->take(6)->get();
 @endphp
 <header class="sticky top-0 z-40 bg-white/95 dark:bg-[#1e1e1e]/95 backdrop-blur shadow-[0_2px_4px_rgba(0,0,0,0.08)] dark:shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
     <div class="max-w-[1200px] mx-auto px-4 sm:px-6">
@@ -51,9 +54,22 @@
                     <svg class="w-5 h-5 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
                 </button>
                 @if(auth()->check())
-                    <a href="{{ auth()->user()->role === 'admin' ? route('admin.dashboard') : route('author.dashboard') }}" class="hidden sm:inline-flex items-center h-9 px-3 text-xs font-semibold bg-[#0C3B2E] hover:bg-[#072A20] text-white">
-                        {{ auth()->user()->role === 'admin' ? 'Admin' : 'Dashboard' }}
-                    </a>
+                    @if(auth()->user()->browsingAsUser())
+                        {{-- Admin in user mode: one-click switch back to the admin panel --}}
+                        <form method="POST" action="{{ route('switch-back-to-admin') }}" class="hidden sm:block">
+                            @csrf
+                            <button type="submit" class="inline-flex items-center h-9 px-3 text-xs font-semibold bg-amber-500 hover:bg-amber-400 text-slate-900 transition cursor-pointer">
+                                Switch to Admin
+                            </button>
+                        </form>
+                        <a href="{{ route('author.dashboard') }}" class="hidden sm:inline-flex items-center h-9 px-3 text-xs font-semibold bg-[#0C3B2E] hover:bg-[#072A20] text-white">
+                            Dashboard
+                        </a>
+                    @else
+                        <a href="{{ auth()->user()->role === 'admin' ? route('admin.dashboard') : route('author.dashboard') }}" class="hidden sm:inline-flex items-center h-9 px-3 text-xs font-semibold bg-[#0C3B2E] hover:bg-[#072A20] text-white">
+                            {{ auth()->user()->role === 'admin' ? 'Admin' : 'Dashboard' }}
+                        </a>
+                    @endif
                 @else
                     <a href="{{ route('login') }}" class="hidden sm:inline-flex items-center h-9 px-3 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#2a2a2a]">Sign in</a>
                     <a href="{{ route('register') }}" class="hidden sm:inline-flex items-center h-9 px-3 text-xs font-semibold bg-[#0C3B2E] hover:bg-[#072A20] text-white">Sign up</a>
@@ -104,10 +120,24 @@
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m22 7-8.5 5.5a4 4 0 0 1-3 0L2 7"/><rect width="20" height="14" x="2" y="5" rx="2"/></svg> Contact
                 </a>
                 @if(auth()->check())
-                    <a href="{{ auth()->user()->role === 'admin' ? route('admin.dashboard') : route('author.dashboard') }}" class="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-50 dark:hover:bg-[#2a2a2a] text-white font-semibold bg-[#0C3B2E]">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7h18M3 12h18M3 17h18"/></svg>
-                        {{ auth()->user()->role === 'admin' ? 'Admin Panel' : 'My Dashboard' }}
-                    </a>
+                    @if(auth()->user()->browsingAsUser())
+                        <form method="POST" action="{{ route('switch-back-to-admin') }}">
+                            @csrf
+                            <button type="submit" class="w-full flex items-center gap-3 px-3 py-2.5 text-slate-900 font-semibold bg-amber-400 hover:bg-amber-300 transition cursor-pointer">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2zm10-10V7a4 4 0 0 0-8 0v4h8z"/></svg>
+                                Switch to Admin
+                            </button>
+                        </form>
+                        <a href="{{ route('author.dashboard') }}" class="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-50 dark:hover:bg-[#2a2a2a] text-white font-semibold bg-[#0C3B2E]">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7h18M3 12h18M3 17h18"/></svg>
+                            My Dashboard
+                        </a>
+                    @else
+                        <a href="{{ auth()->user()->role === 'admin' ? route('admin.dashboard') : route('author.dashboard') }}" class="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-50 dark:hover:bg-[#2a2a2a] text-white font-semibold bg-[#0C3B2E]">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7h18M3 12h18M3 17h18"/></svg>
+                            {{ auth()->user()->role === 'admin' ? 'Admin Panel' : 'My Dashboard' }}
+                        </a>
+                    @endif
                     <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-50 dark:hover:bg-[#2a2a2a] text-slate-700 dark:text-slate-300 font-medium">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
                         Sign out

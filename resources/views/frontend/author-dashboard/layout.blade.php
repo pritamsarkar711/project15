@@ -15,10 +15,9 @@
             }catch(e){}
         })();
     </script>
-    <style>body{font-family:{{ \App\Support\SiteFont::cssStack() }}}</style>
     @stack('head')
 </head>
-<body class="min-h-screen bg-slate-100 dark:bg-[#0f172a] text-slate-900 dark:text-slate-100 flex overflow-x-hidden">
+<body class="min-h-screen bg-slate-100 dark:bg-[#0f172a] text-slate-900 dark:text-slate-100 flex overflow-x-hidden" style="font-family:{{ \App\Support\SiteFont::cssStack() }}">
     <aside class="fixed inset-y-0 left-0 w-[250px] bg-slate-900 dark:bg-slate-950 text-slate-300 flex flex-col z-40 transform lg:translate-x-0 -translate-x-full transition-transform duration-300 overflow-y-auto border-r border-black/30">
         <div class="h-[64px] flex items-center gap-3 px-5 border-b border-white/10 shrink-0">
             <div class="w-9 h-9 bg-[#0C3B2E] flex items-center justify-center font-extrabold text-white">H</div>
@@ -84,7 +83,19 @@
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
             </button>
             <h1 class="font-bold text-slate-900 dark:text-white text-lg sm:text-xl">@yield('title', 'Dashboard')</h1>
-            @stack('header-actions')
+            <div class="ml-auto flex items-center gap-2">
+                {{-- Admin browsing in user mode: one-click return to the admin panel --}}
+                @if(auth()->check() && auth()->user()->browsingAsUser())
+                    <form method="POST" action="{{ route('switch-back-to-admin') }}">
+                        @csrf
+                        <button type="submit" class="inline-flex items-center gap-2 h-9 px-4 text-sm font-semibold text-white bg-[#0C3B2E] hover:bg-[#072A20] transition cursor-pointer">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2zm10-10V7a4 4 0 0 0-8 0v4h8z"/></svg>
+                            Switch to Admin
+                        </button>
+                    </form>
+                @endif
+                @stack('header-actions')
+            </div>
         </header>
 
         @if(session('success'))

@@ -23,7 +23,10 @@ class HomeController extends Controller
         // __PHP_Incomplete_Class, which breaks `$cat->slug` access in views.
         // The queries below are already eager-loaded, so direct retrieval is
         // fast enough for a small/medium SQLite-backed blog.
-        $categories = Category::where('is_active', true)
+        //
+        // "Live" categories = enabled in admin AND have at least one published
+        // post — empty categories stay hidden until their first post goes live.
+        $categories = Category::live()
             ->orderBy('sort_order')
             ->withCount('posts')
             ->get();
@@ -61,7 +64,7 @@ class HomeController extends Controller
         $posts = Post::published()->where(function($query) use ($q){
             $query->where('title','like',"%{$q}%")->orWhere('excerpt','like',"%{$q}%")->orWhere('content','like',"%{$q}%");
         })->with('category')->latest()->paginate(9);
-        $categories = Category::where('is_active', true)->orderBy('sort_order')->get();
+        $categories = Category::live()->orderBy('sort_order')->get();
         return view('frontend.search', compact('posts','q','categories'));
     }
 }
