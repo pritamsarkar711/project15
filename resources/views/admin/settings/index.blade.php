@@ -15,7 +15,7 @@
 </div>
 
 @if(request('tab') === 'integrations')
-    <form method="POST" action="{{ route('admin.settings.update') }}" class="space-y-5 max-w-3xl">
+    <form method="POST" action="{{ route('admin.settings.update') }}" class="space-y-5 w-full">
         @csrf
         <input type="hidden" name="tab" value="integrations">
         <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-4">
@@ -59,7 +59,7 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
     </form>
 
 @elseif(request('tab') === 'appearance')
-    <form method="POST" action="{{ route('admin.settings.update') }}" class="space-y-5 max-w-3xl">
+    <form method="POST" action="{{ route('admin.settings.update') }}" class="space-y-5 w-full">
         @csrf
         <input type="hidden" name="tab" value="appearance">
         <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-4">
@@ -77,7 +77,7 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
     </form>
 
 @elseif(request('tab') === 'hero')
-    <form method="POST" action="{{ route('admin.settings.update') }}" enctype="multipart/form-data" class="space-y-5 max-w-3xl">
+    <form method="POST" action="{{ route('admin.settings.update') }}" enctype="multipart/form-data" class="space-y-5 w-full">
         @csrf
         <input type="hidden" name="tab" value="hero">
         <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-4">
@@ -141,7 +141,7 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
     </form>
 
 @elseif(request('tab') === 'ads')
-    <form method="POST" action="{{ route('admin.settings.update') }}" class="space-y-5 max-w-3xl">
+    <form method="POST" action="{{ route('admin.settings.update') }}" class="space-y-5 w-full">
         @csrf
         <input type="hidden" name="tab" value="ads">
         {{-- Show ads on site: the master switch. Ads stay completely hidden
@@ -208,7 +208,7 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
         $passwordIsSet = !empty($settings['mail_password']->value);
     @endphp
 
-    <form method="POST" action="{{ route('admin.settings.smtp.update') }}" class="space-y-5 max-w-3xl">
+    <form method="POST" action="{{ route('admin.settings.smtp.update') }}" class="space-y-5 w-full">
         @csrf
 
         <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-4">
@@ -280,7 +280,7 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
     </form>
 
     {{-- Test email form — separate POST so it doesn't conflict with the save form. --}}
-    <form method="POST" action="{{ route('admin.settings.test-email') }}" class="border border-dashed border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 p-6 space-y-4 max-w-3xl">
+    <form method="POST" action="{{ route('admin.settings.test-email') }}" class="border border-dashed border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 p-6 space-y-4 w-full">
         @csrf
         <h3 class="font-semibold">Test Email</h3>
         <div class="flex gap-3">
@@ -290,7 +290,7 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
     </form>
 
 @else
-    <form method="POST" action="{{ route('admin.settings.update') }}" enctype="multipart/form-data" class="space-y-5 max-w-3xl">
+    <form method="POST" action="{{ route('admin.settings.update') }}" enctype="multipart/form-data" class="space-y-5 w-full">
         @csrf
         <input type="hidden" name="tab" value="general">
         <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-4">

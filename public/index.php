@@ -28,7 +28,7 @@ define('LARAVEL_START', microtime(true));
 // ---------------------------------------------------------------------------
 
 // Bump this string when you want to force a cache clear on every server.
-define('HUVANTI_DEPLOY_VERSION', 'v20-2026-08-25-hero-mobile-rules-editor-v2');
+define('HUVANTI_DEPLOY_VERSION', 'v21-2026-08-25-admin-blog-polish');
 
 // Determine if the application is in maintenance mode...
 if (file_exists($maintenance = __DIR__.'/../storage/framework/maintenance.php')) {
@@ -345,7 +345,6 @@ try {
             $db = $app->make('db');
             $db->table('categories')
                 ->where('slug', 'health-wellness')
-                ->where('icon', '!=', 'heart-pulse')
                 ->update(['icon' => 'heart-pulse']);
             $taken = $db->table('users')->where('username', 'joe-goldberg')->exists();
             if (!$taken) {

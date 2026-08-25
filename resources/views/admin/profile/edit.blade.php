@@ -7,7 +7,7 @@
 @endsection
 
 @section('content')
-<div class="max-w-2xl space-y-6">
+<div class="w-full space-y-6">
     {{-- Author profile --}}
     <form method="POST" action="{{ route('admin.profile.update') }}" enctype="multipart/form-data" class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-5">
         @csrf

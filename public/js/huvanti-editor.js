@@ -34,6 +34,7 @@
         codeInline: '<polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/><rect x="10" y="8" width="4" height="8" rx="1" fill="currentColor" opacity="0.35"/>',
         sup: '<path d="M6 16v-8l6 3.5Z"/><path d="M18 12h-2l-1-4 2-1 1 1.5-1 1.5 1 1.5-1 .5Z"/>',
         sub: '<path d="M6 8v8l6-3.5Z"/><path d="M18 16h-2l-1 4 2 1 1-1.5-1-1.5 1-1.5-1-.5Z"/>',
+        selectAll: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 9h8"/><path d="M8 12h8"/><path d="M8 15h5"/>',
         ul: '<line x1="8" x2="21" y1="6" y2="6"/><line x1="8" x2="21" y1="12" y2="12"/><line x1="8" x2="21" y1="18" y2="18"/><line x1="3" x2="3.01" y1="6" y2="6"/><line x1="3" x2="3.01" y1="12" y2="12"/><line x1="3" x2="3.01" y1="18" y2="18"/>',
         ol: '<line x1="10" x2="21" y1="6" y2="6"/><line x1="10" x2="21" y1="12" y2="12"/><line x1="10" x2="21" y1="18" y2="18"/><path d="M4 6h1v4"/><path d="M4 10h2"/><path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/>',
         indent: '<polyline points="3 8 7 12 3 16"/><line x1="21" x2="11" y1="12" y2="12"/><line x1="21" x2="11" y1="6" y2="6"/><line x1="21" x2="11" y1="18" y2="18"/><line x1="3" x2="11" y1="4" y2="4"/><line x1="3" x2="11" y1="20" y2="20"/>',
@@ -589,6 +590,7 @@
             var text = sel && sel.toString() ? sel.toString() : '';
             insertHTML('<pre><code>' + (text || '// code').replace(/</g, '&lt;') + '</code></pre><p><br></p>');
         });
+        btn('selectAll', 'selectAll', 'Select all (Ctrl+A)', function () { content.focus(); document.execCommand('selectAll'); });
         btn('removeFormat', 'eraser', 'Clear formatting', function () {
             cmd('removeFormat');
             content.focus();
