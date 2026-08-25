@@ -28,7 +28,7 @@ define('LARAVEL_START', microtime(true));
 // ---------------------------------------------------------------------------
 
 // Bump this string when you want to force a cache clear on every server.
-define('HUVANTI_DEPLOY_VERSION', 'v18-2026-08-25-hero-green-search-icon');
+define('HUVANTI_DEPLOY_VERSION', 'v19-2026-08-25-custom-rte-icon-patch');
 
 // Determine if the application is in maintenance mode...
 if (file_exists($maintenance = __DIR__.'/../storage/framework/maintenance.php')) {
@@ -335,6 +335,21 @@ try {
         @file_put_contents($versionFile, HUVANTI_DEPLOY_VERSION, LOCK_EX);
         if (function_exists('opcache_reset')) {
             @opcache_reset();
+        }
+
+        // --- Data patches (run once per deploy version change) ---------------
+        // Hostinger never runs `php artisan migrate`, so small data fixes are
+        // applied here instead. Each patch is idempotent and wrapped in
+        // try/catch so a missing table can never break the boot.
+        try {
+            $db = $app->make('db');
+            // Health & Wellness icon: heart with pulse line.
+            $db->table('categories')
+                ->where('slug', 'health-wellness')
+                ->where('icon', '!=', 'heart-pulse')
+                ->update(['icon' => 'heart-pulse']);
+        } catch (\Throwable $dataPatchError) {
+            error_log('[huvanti] data patch skipped: '.$dataPatchError->getMessage());
         }
     }
 

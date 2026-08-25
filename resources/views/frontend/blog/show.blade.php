@@ -162,7 +162,6 @@
                 <input type="hidden" name="reaction" value="like">
                 <button type="submit" title="{{ $myReaction === 'like' ? 'Remove your like' : 'Like this post' }}" class="inline-flex items-center gap-2 h-11 px-5 rounded-full text-sm font-bold transition cursor-pointer border {{ $myReaction === 'like' ? 'bg-emerald-600 border-emerald-600 text-white shadow-sm' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-emerald-400 hover:text-emerald-600 dark:hover:text-emerald-300' }}">
                     <svg class="w-[18px] h-[18px]" fill="{{ $myReaction === 'like' ? 'currentColor' : 'none' }}" stroke="currentColor" stroke-width="{{ $myReaction === 'like' ? '0' : '2' }}" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"/></svg>
-                    Helpful
                     <span class="ml-1 px-2 py-0.5 rounded-full text-xs font-bold {{ $myReaction === 'like' ? 'bg-white/20 text-white' : 'bg-emerald-50 dark:bg-emerald-400/10 text-emerald-700 dark:text-emerald-300' }}">{{ number_format($likesCount) }}</span>
                 </button>
             </form>
@@ -171,19 +170,16 @@
                 <input type="hidden" name="reaction" value="dislike">
                 <button type="submit" title="{{ $myReaction === 'dislike' ? 'Remove your dislike' : 'Dislike this post' }}" class="inline-flex items-center gap-2 h-11 px-5 rounded-full text-sm font-bold transition cursor-pointer border {{ $myReaction === 'dislike' ? 'bg-rose-600 border-rose-600 text-white shadow-sm' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-rose-400 hover:text-rose-600 dark:hover:text-rose-300' }}">
                     <svg class="w-[18px] h-[18px]" fill="{{ $myReaction === 'dislike' ? 'currentColor' : 'none' }}" stroke="currentColor" stroke-width="{{ $myReaction === 'dislike' ? '0' : '2' }}" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 14V2"/><path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z"/></svg>
-                    Not for me
                     <span class="ml-1 px-2 py-0.5 rounded-full text-xs font-bold {{ $myReaction === 'dislike' ? 'bg-white/20 text-white' : 'bg-rose-50 dark:bg-rose-400/10 text-rose-600 dark:text-rose-300' }}">{{ number_format($dislikesCount) }}</span>
                 </button>
             </form>
         @else
             <a href="{{ route('login') }}" title="Sign in to react" class="inline-flex items-center gap-2 h-11 px-5 rounded-full text-sm font-bold transition border bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-emerald-400 hover:text-emerald-600 dark:hover:text-emerald-300">
                 <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"/></svg>
-                Helpful
                 <span class="ml-1 px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-50 dark:bg-emerald-400/10 text-emerald-700 dark:text-emerald-300">{{ number_format($likesCount) }}</span>
             </a>
             <a href="{{ route('login') }}" title="Sign in to react" class="inline-flex items-center gap-2 h-11 px-5 rounded-full text-sm font-bold transition border bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-rose-400 hover:text-rose-600 dark:hover:text-rose-300">
                 <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 14V2"/><path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z"/></svg>
-                Not for me
                 <span class="ml-1 px-2 py-0.5 rounded-full text-xs font-bold bg-rose-50 dark:bg-rose-400/10 text-rose-600 dark:text-rose-300">{{ number_format($dislikesCount) }}</span>
             </a>
         @endauth

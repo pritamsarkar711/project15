@@ -144,21 +144,19 @@
 </form>
 
 @push('scripts')
-{{-- Local CKEditor 5 super-build: no CDN dependency, always loads --}}
-<script src="{{ asset('js/ckeditor5-super-build.js') }}"></script>
-<script src="{{ asset('js/editor-init.js') }}"></script>
+{{-- Self-made Huvanti rich text editor: single small file, no dependencies --}}
+<script src="{{ asset('js/huvanti-editor.js') }}"></script>
 <script>
-// Full CKEditor 5 editor for the author post form.
+// Huvanti rich text editor for the author post form.
 (function(){
-    initHuvantiEditor('#editor');
+    huvantiEditorInit('#editor');
 
     // Friendly validation for the content (the textarea itself must stay
     // non-required so the browser never blocks on the hidden field).
     var form = document.querySelector('#editor') ? document.querySelector('#editor').closest('form') : null;
     if (form) {
         form.addEventListener('submit', function(e){
-            var editor = window.huvantiEditor;
-            var val = editor ? editor.getData() : (document.querySelector('#editor') ? document.querySelector('#editor').value : '');
+            var val = document.querySelector('#editor') ? document.querySelector('#editor').value : '';
             var submitting = !e.submitter || e.submitter.value !== 'save_draft';
             if (submitting && val.replace(/<[^>]*>/g, '').trim().length < 10) {
                 e.preventDefault();
