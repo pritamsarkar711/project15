@@ -183,13 +183,6 @@
 
         <footer class="px-6 py-3 text-center text-[11px] font-medium tracking-wide text-slate-400 dark:text-slate-600 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">
             Admin
-            @php
-                // Build marker: compare with public/deployment.json on GitHub —
-                // if these differ, the live server is NOT running the latest
-                // code (open https://your-domain/deployment.json to check).
-                try { $build = @json_decode(@file_get_contents(public_path('deployment.json')), true); } catch (\Throwable $e) { $build = null; }
-            @endphp
-            @if(!empty($build['deployment']))<span class="mx-1.5 text-slate-300 dark:text-slate-700">·</span>build {{ $build['deployment'] }}@endif
         </footer>
     </div>
 

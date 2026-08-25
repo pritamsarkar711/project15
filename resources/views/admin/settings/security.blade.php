@@ -8,7 +8,7 @@
 @endsection
 
 @section('content')
-<div class="max-w-2xl">
+<div class="w-full">
     <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
         <h3 class="font-semibold">Two-Factor Authentication</h3>
 
