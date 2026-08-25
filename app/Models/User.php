@@ -53,6 +53,59 @@ class User extends Authenticatable
     }
 
     /**
+     * Count of PUBLISHED posts by this author (used for badges and stats).
+     */
+    public function publishedPostsCount(): int
+    {
+        try {
+            return (int) $this->publishedPosts()->count();
+        } catch (\Throwable $e) {
+            return 0;
+        }
+    }
+
+    /**
+     * Achievement badge shown next to the author's name.
+     *
+     *   admin  → purple badge  (site administrator)
+     *   top    → yellow badge  (100+ published posts, authors only)
+     *   author → green badge   (10+ published posts, authors only)
+     *   null   → no badge yet
+     */
+    public function badgeType(): ?string
+    {
+        if ($this->role === 'admin') {
+            return 'admin';
+        }
+        $count = $this->publishedPostsCount();
+        if ($count >= 100) {
+            return 'top';
+        }
+        if ($count >= 10) {
+            return 'author';
+        }
+        return null;
+    }
+
+    /**
+     * Reusable badge markup used on author profiles and post author boxes.
+     * Returns an empty string when the author has no badge.
+     */
+    public function badgeHtml(): string
+    {
+        $type = $this->badgeType();
+        if ($type === null) {
+            return '';
+        }
+
+        return match ($type) {
+            'admin'  => '<span class="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-600 text-white" title="Site administrator"><svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 1l2.23 4.55L17 6.36l-3.5 3.42.83 4.87L10 12.27l-4.33 2.38.83-4.87L3 6.36l4.77-1.81L10 1z" clip-rule="evenodd"/></svg>Admin</span>',
+            'top'    => '<span class="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-400 text-slate-900" title="Top author, 100+ published posts"><svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M10 1l2.5 5.2 5.5.8-4 3.9.9 5.6L10 13.8 5.1 16.5 6 10.9 2 7l5.5-.8L10 1z"/></svg>Top Author</span>',
+            default  => '<span class="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500 text-white" title="Author, 10+ published posts"><svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M13.6 2.7a2.2 2.2 0 1 1 3.1 3.1l-8 8-4.2 1.1 1.1-4.2 8-8z"/></svg>Author</span>',
+        };
+    }
+
+    /**
      * Is this admin currently browsing in "user mode"?
      *
      * Admins can temporarily switch their own session to user mode so they

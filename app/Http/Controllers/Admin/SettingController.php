@@ -71,6 +71,8 @@ class SettingController extends Controller
             'social_whatsapp' => 'nullable|string|max:255',
             'social_youtube' => 'nullable|string|max:255',
             'social_instagram' => 'nullable|string|max:255',
+            // Revenue program switch (author panel)
+            'revenue_enabled' => 'nullable|in:1',
             // Integrations / SEO
             'ga_measurement_id' => 'nullable|string|max:32',
             'search_console_token' => 'nullable|string|max:255',
@@ -115,6 +117,13 @@ class SettingController extends Controller
         // footer social links every time another tab was saved.)
         if ($request->input('tab') === 'general' || $request->has('site_name')) {
             Setting::set('social_enabled', $request->boolean('social_enabled') ? '1' : '0');
+        }
+
+        // Revenue program switch — ONLY when the Ads tab form was submitted
+        // (the General / Hero / Appearance forms don't contain this checkbox).
+        if ($request->input('tab') === 'ads') {
+            Setting::set('revenue_enabled', $request->boolean('revenue_enabled') ? '1' : '0');
+            Setting::flushAllCache();
         }
 
         // Flush ALL settings cache so every page picks up every change immediately.

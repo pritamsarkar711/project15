@@ -77,6 +77,7 @@
                     <a href="{{ route('terms') }}" class="inline-flex items-center gap-2.5 text-slate-600 dark:text-slate-400 hover:text-[#0C3B2E] dark:hover:text-emerald-300 transition"><span class="w-1.5 h-1.5 bg-[#0C3B2E] dark:bg-emerald-300 shrink-0"></span>Terms</a>
                     <a href="{{ route('cookie') }}" class="inline-flex items-center gap-2.5 text-slate-600 dark:text-slate-400 hover:text-[#0C3B2E] dark:hover:text-emerald-300 transition"><span class="w-1.5 h-1.5 bg-[#0C3B2E] dark:bg-emerald-300 shrink-0"></span>Cookies</a>
                     <a href="{{ route('editorial') }}" class="inline-flex items-center gap-2.5 text-slate-600 dark:text-slate-400 hover:text-[#0C3B2E] dark:hover:text-emerald-300 transition"><span class="w-1.5 h-1.5 bg-[#0C3B2E] dark:bg-emerald-300 shrink-0"></span>Editorial</a>
+                    <a href="{{ route('disclaimer') }}" class="inline-flex items-center gap-2.5 text-slate-600 dark:text-slate-400 hover:text-[#0C3B2E] dark:hover:text-emerald-300 transition"><span class="w-1.5 h-1.5 bg-[#0C3B2E] dark:bg-emerald-300 shrink-0"></span>Disclaimer</a>
                 </div>
             </div>
         </div>

@@ -64,11 +64,9 @@
                 </div>
                 <div class="text-sm">
                     @if($stats['can_submit'])
-                        <p class="font-semibold text-slate-900 dark:text-white">You can submit 1 post for review today</p>
-                        <p class="text-slate-500 dark:text-slate-400 mt-0.5">Submissions are limited to one per 24 hours. Drafts are unlimited.</p>
+                        <p class="font-semibold text-slate-900 dark:text-white">You can submit 1 post today</p>
                     @else
-                        <p class="font-semibold text-slate-900 dark:text-white">Daily submission used</p>
-                        <p class="text-slate-500 dark:text-slate-400 mt-0.5">Your next submission opens <strong>{{ $stats['next_submit_at']?->format('M d, H:i') }}</strong>.</p>
+                        <p class="font-semibold text-slate-900 dark:text-white">Next submission {{ $stats['next_submit_at']?->format('M d, H:i') }}</p>
                     @endif
                 </div>
             </div>
@@ -118,11 +116,10 @@
                 Writing Tips
             </h3>
             <ul class="mt-3 space-y-2 text-sm text-slate-600 dark:text-slate-400">
-                <li class="flex gap-2"><span class="text-emerald-600 dark:text-emerald-300 font-bold">1</span> Write at least 300 words before submitting.</li>
-                <li class="flex gap-2"><span class="text-emerald-600 dark:text-emerald-300 font-bold">2</span> Add a featured image to stand out.</li>
-                <li class="flex gap-2"><span class="text-emerald-600 dark:text-emerald-300 font-bold">3</span> Answer real reader questions, not filler.</li>
+                <li class="flex gap-2"><span class="text-emerald-600 dark:text-emerald-300 font-bold">1</span> Write at least 300 words.</li>
+                <li class="flex gap-2"><span class="text-emerald-600 dark:text-emerald-300 font-bold">2</span> Add a featured image.</li>
+                <li class="flex gap-2"><span class="text-emerald-600 dark:text-emerald-300 font-bold">3</span> Answer a real reader question.</li>
             </ul>
-            <a href="{{ route('author.rules') }}" class="mt-4 inline-flex text-xs font-semibold text-emerald-700 dark:text-emerald-300 hover:underline">Read all posting rules</a>
         </div>
     </div>
 </div>
