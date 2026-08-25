@@ -7,6 +7,10 @@
     $authorBio = $post->user->bio ?? $post->author_bio ?? 'Editor at Huvanti';
     $authorAvatar = $post->user->author_avatar_path ? asset('storage/'.$post->user->author_avatar_path) : ($post->author_avatar ?: 'https://i.pravatar.cc/100?img=15');
     $topComments = $post->approvedComments->whereNull('parent_id');
+    // Author profile URL: clicking the author's name or photo (byline above
+    // the content AND the author box below it) opens their public profile,
+    // where visitors can follow / unfollow them.
+    $authorProfileUrl = $post->user?->username ? route('author.profile', $post->user->username) : null;
 @endphp
 <div class="max-w-[1200px] mx-auto px-4 sm:px-6 py-6">
     <nav class="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-2 flex-wrap mb-4" aria-label="Breadcrumb">
@@ -38,11 +42,13 @@
                     @if($post->excerpt)<p class="text-[15px] leading-relaxed text-slate-600 dark:text-slate-400 mt-3">{{ $post->excerpt }}</p>@endif
 
                     <div class="flex flex-wrap items-center gap-3 mt-6 p-4 bg-emerald-50/80 dark:bg-[#2a2a2a]/60 border border-emerald-100 dark:border-[#383838]">
-                        <img src="{{ $authorAvatar }}" alt="{{ $authorName }}" class="w-10 h-10 object-cover border border-white dark:border-[#383838] shadow-sm" loading="lazy" decoding="async">
-                        <div class="flex-1 min-w-0">
-                            <div class="text-sm font-semibold text-slate-900 dark:text-white">{{ $authorName }}</div>
-                            <div class="text-xs text-slate-600 dark:text-slate-400 line-clamp-1">{{ $authorBio }}</div>
-                        </div>
+                        @if($authorProfileUrl)<a href="{{ $authorProfileUrl }}" class="flex items-center gap-3 group" aria-label="View author profile">@else<div class="flex items-center gap-3">@endif
+                            <img src="{{ $authorAvatar }}" alt="{{ $authorName }}" class="w-10 h-10 object-cover border border-white dark:border-[#383838] shadow-sm {{ $authorProfileUrl ? 'group-hover:ring-2 group-hover:ring-[#0C3B2E] dark:group-hover:ring-emerald-400 transition' : '' }}" loading="lazy" decoding="async">
+                            <div class="flex-1 min-w-0">
+                                <div class="text-sm font-semibold text-slate-900 dark:text-white {{ $authorProfileUrl ? 'group-hover:text-[#0C3B2E] dark:group-hover:text-emerald-300 transition' : '' }}">{{ $authorName }}</div>
+                                <div class="text-xs text-slate-600 dark:text-slate-400 line-clamp-1">{{ $authorBio }}</div>
+                            </div>
+                        @if($authorProfileUrl)</a>@else</div>@endif
                         <div class="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400 flex-wrap">
                             <span class="inline-flex items-center gap-1.5 bg-white dark:bg-[#1e1e1e] border border-slate-200 dark:border-[#383838] px-2.5 py-1"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 2v4"/><path stroke-linecap="round" stroke-linejoin="round" d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18"/></svg> {{ $post->published_at?->format('M d, Y') }}</span>
                             <span class="inline-flex items-center gap-1.5 bg-white dark:bg-[#1e1e1e] border border-slate-200 dark:border-[#383838] px-2.5 py-1"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2"/></svg> {{ $post->reading_time }} min read</span>
@@ -121,6 +127,53 @@
             </div>
             @endif
 
+            {{-- Did you like this post? Like / Dislike reactions, shown right
+                 after the content + FAQ. Clicking the active button removes
+                 your reaction; the other button switches it. --}}
+            <div class="card-elev p-6 text-center">
+                <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center justify-center gap-2">
+                    <span class="w-8 h-8 bg-emerald-50 dark:bg-emerald-400/10 flex items-center justify-center">
+                        <svg class="w-4 h-4 text-[#0C3B2E] dark:text-emerald-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.633 10.25c.806 0 1.533-.446 2.031-1.08a9.041 9.041 0 0 1 2.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 0 0 .322-1.672V2.75a.75.75 0 0 1 .75-.75 2.25 2.25 0 0 1 2.25 2.25c0 1.152-.26 2.243-.723 3.218-.266.558.107 1.282.725 1.282h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 0 1-2.649 7.521c-.388.482-.997.75-1.604.75H13.48c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 0 0-1.423-.23H5.904m10.598-9.75H14.25M5.904 18.5c.083-.205.173-.405.27-.602.197-.394-.154-.8-.569-.8H2.75a.75.75 0 0 0-.75.75v6c0 .414.336.75.75.75h2.75a.75.75 0 0 0 .75-.75v-.916c0-.915.647-1.668 1.404-2.334Z"/></svg>
+                    </span>
+                    Did you like this post?
+                </h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1.5">Your feedback helps the author write better content.</p>
+                <div class="flex items-center justify-center gap-3 mt-5 flex-wrap">
+                    @auth
+                        <form method="POST" action="{{ route('blog.react', $post->slug) }}" class="inline">
+                            @csrf
+                            <input type="hidden" name="reaction" value="like">
+                            <button type="submit" title="{{ $myReaction === 'like' ? 'Click again to remove your like' : 'Like this post' }}" class="inline-flex items-center gap-2 h-11 px-6 text-sm font-semibold border transition cursor-pointer {{ $myReaction === 'like' ? 'bg-[#0C3B2E] text-white border-[#0C3B2E]' : 'bg-white dark:bg-[#2a2a2a] text-slate-700 dark:text-slate-200 border-slate-200 dark:border-[#383838] hover:border-[#0C3B2E] dark:hover:border-emerald-400 hover:text-[#0C3B2E] dark:hover:text-emerald-300' }}">
+                                <svg class="w-5 h-5" fill="{{ $myReaction === 'like' ? 'currentColor' : 'none' }}" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.633 10.25c.806 0 1.533-.446 2.031-1.08a9.041 9.041 0 0 1 2.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 0 0 .322-1.672V2.75a.75.75 0 0 1 .75-.75 2.25 2.25 0 0 1 2.25 2.25c0 1.152-.26 2.243-.723 3.218-.266.558.107 1.282.725 1.282h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 0 1-2.649 7.521c-.388.482-.997.75-1.604.75H13.48c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 0 0-1.423-.23H5.904m10.598-9.75H14.25M5.904 18.5c.083-.205.173-.405.27-.602.197-.394-.154-.8-.569-.8H2.75a.75.75 0 0 0-.75.75v6c0 .414.336.75.75.75h2.75a.75.75 0 0 0 .75-.75v-.916c0-.915.647-1.668 1.404-2.334Z"/></svg>
+                                Like
+                                <span class="text-xs font-bold {{ $myReaction === 'like' ? 'text-white/80' : 'text-emerald-700 dark:text-emerald-300' }}">{{ number_format($likesCount) }}</span>
+                            </button>
+                        </form>
+                        <form method="POST" action="{{ route('blog.react', $post->slug) }}" class="inline">
+                            @csrf
+                            <input type="hidden" name="reaction" value="dislike">
+                            <button type="submit" title="{{ $myReaction === 'dislike' ? 'Click again to remove your dislike' : 'Dislike this post' }}" class="inline-flex items-center gap-2 h-11 px-6 text-sm font-semibold border transition cursor-pointer {{ $myReaction === 'dislike' ? 'bg-red-600 text-white border-red-600' : 'bg-white dark:bg-[#2a2a2a] text-slate-700 dark:text-slate-200 border-slate-200 dark:border-[#383838] hover:border-red-400 hover:text-red-600' }}">
+                                <svg class="w-5 h-5" fill="{{ $myReaction === 'dislike' ? 'currentColor' : 'none' }}" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="transform:scale(-1)"><path stroke-linecap="round" stroke-linejoin="round" d="M6.633 10.25c.806 0 1.533-.446 2.031-1.08a9.041 9.041 0 0 1 2.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 0 0 .322-1.672V2.75a.75.75 0 0 1 .75-.75 2.25 2.25 0 0 1 2.25 2.25c0 1.152-.26 2.243-.723 3.218-.266.558.107 1.282.725 1.282h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 0 1-2.649 7.521c-.388.482-.997.75-1.604.75H13.48c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 0 0-1.423-.23H5.904m10.598-9.75H14.25M5.904 18.5c.083-.205.173-.405.27-.602.197-.394-.154-.8-.569-.8H2.75a.75.75 0 0 0-.75.75v6c0 .414.336.75.75.75h2.75a.75.75 0 0 0 .75-.75v-.916c0-.915.647-1.668 1.404-2.334Z"/></svg>
+                                Dislike
+                                <span class="text-xs font-bold {{ $myReaction === 'dislike' ? 'text-white/80' : 'text-red-600' }}">{{ number_format($dislikesCount) }}</span>
+                            </button>
+                        </form>
+                    @else
+                        <a href="{{ route('login') }}" class="inline-flex items-center gap-2 h-11 px-6 text-sm font-semibold bg-white dark:bg-[#2a2a2a] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#383838] hover:border-[#0C3B2E] dark:hover:border-emerald-400 hover:text-[#0C3B2E] dark:hover:text-emerald-300 transition">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.633 10.25c.806 0 1.533-.446 2.031-1.08a9.041 9.041 0 0 1 2.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 0 0 .322-1.672V2.75a.75.75 0 0 1 .75-.75 2.25 2.25 0 0 1 2.25 2.25c0 1.152-.26 2.243-.723 3.218-.266.558.107 1.282.725 1.282h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 0 1-2.649 7.521c-.388.482-.997.75-1.604.75H13.48c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 0 0-1.423-.23H5.904m10.598-9.75H14.25M5.904 18.5c.083-.205.173-.405.27-.602.197-.394-.154-.8-.569-.8H2.75a.75.75 0 0 0-.75.75v6c0 .414.336.75.75.75h2.75a.75.75 0 0 0 .75-.75v-.916c0-.915.647-1.668 1.404-2.334Z"/></svg>
+                            Like
+                            <span class="text-xs font-bold text-emerald-700 dark:text-emerald-300">{{ number_format($likesCount) }}</span>
+                        </a>
+                        <a href="{{ route('login') }}" class="inline-flex items-center gap-2 h-11 px-6 text-sm font-semibold bg-white dark:bg-[#2a2a2a] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#383838] hover:border-red-400 hover:text-red-600 transition">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="transform:scale(-1)"><path stroke-linecap="round" stroke-linejoin="round" d="M6.633 10.25c.806 0 1.533-.446 2.031-1.08a9.041 9.041 0 0 1 2.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 0 0 .322-1.672V2.75a.75.75 0 0 1 .75-.75 2.25 2.25 0 0 1 2.25 2.25c0 1.152-.26 2.243-.723 3.218-.266.558.107 1.282.725 1.282h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 0 1-2.649 7.521c-.388.482-.997.75-1.604.75H13.48c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 0 0-1.423-.23H5.904m10.598-9.75H14.25M5.904 18.5c.083-.205.173-.405.27-.602.197-.394-.154-.8-.569-.8H2.75a.75.75 0 0 0-.75.75v6c0 .414.336.75.75.75h2.75a.75.75 0 0 0 .75-.75v-.916c0-.915.647-1.668 1.404-2.334Z"/></svg>
+                            Dislike
+                            <span class="text-xs font-bold text-red-600">{{ number_format($dislikesCount) }}</span>
+                        </a>
+                        <p class="w-full text-xs text-slate-400 dark:text-slate-500 mt-1">Sign in to leave your reaction</p>
+                    @endauth
+                </div>
+            </div>
+
             {{-- Author bio separate container (user profile driven) --}}
             @php
                 $author = $post->user;
@@ -136,7 +189,9 @@
                     About the Author
                 </h3>
                 <div class="flex gap-4">
-                    <img src="{{ $authorAvatar }}" alt="{{ $authorName }}" class="w-14 h-14 rounded-full object-cover border-2 border-emerald-100 dark:border-[#383838] shadow-sm shrink-0" loading="lazy" decoding="async">
+                    @if($authorProfileUrl)<a href="{{ $authorProfileUrl }}" class="shrink-0 group" aria-label="View author profile">@endif
+                        <img src="{{ $authorAvatar }}" alt="{{ $authorName }}" class="w-14 h-14 rounded-full object-cover border-2 border-emerald-100 dark:border-[#383838] shadow-sm {{ $authorProfileUrl ? 'group-hover:ring-2 group-hover:ring-[#0C3B2E] dark:group-hover:ring-emerald-400 transition' : '' }}" loading="lazy" decoding="async">
+                    @if($authorProfileUrl)</a>@endif
                     <div class="flex-1 min-w-0">
                         <div class="flex items-center gap-1.5 flex-wrap">
                             @if($authorUsername)
@@ -152,6 +207,24 @@
                             @endif
                         </div>
                         <div class="text-sm text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">{{ $authorBio }}</div>
+                        <div class="flex items-center gap-2 mt-3 flex-wrap">
+                            @if($authorProfileUrl)
+                                <a href="{{ $authorProfileUrl }}" class="inline-flex items-center gap-1.5 h-9 px-4 text-xs font-semibold bg-[#0C3B2E] hover:bg-[#072A20] text-white transition">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"/></svg>
+                                    View profile
+                                </a>
+                            @endif
+                            {{-- Follow / unfollow straight from the post --}}
+                            @if(auth()->check() && $post->user && auth()->id() !== $post->user->id)
+                                <form method="POST" action="{{ route('author.follow', $post->user->username) }}" class="inline">
+                                    @csrf
+                                    <button type="submit" class="inline-flex items-center gap-1.5 h-9 px-4 text-xs font-semibold border transition cursor-pointer {{ $followingAuthor ? 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700' : 'bg-white dark:bg-[#2a2a2a] text-[#0C3B2E] dark:text-emerald-300 border-[#0C3B2E] dark:border-emerald-400/40 hover:bg-[#0C3B2E]/5 dark:hover:bg-emerald-400/10' }}">
+                                        <svg class="w-3.5 h-3.5" fill="{{ $followingAuthor ? 'currentColor' : 'none' }}" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z"/></svg>
+                                        {{ $followingAuthor ? 'Following' : 'Follow' }}
+                                    </button>
+                                </form>
+                            @endif
+                        </div>
                         @if(count($authorSocials) > 0)
                         <div class="flex items-center gap-2 mt-3">
                             @foreach($authorSocials as $s)
@@ -254,7 +327,10 @@
                     Categories
                 </h3>
                 <div class="space-y-1">
-                    @foreach(\App\Models\Category::where('is_active',true)->orderBy('sort_order')->get() as $cat)
+                    {{-- Live categories only (active + has published posts), with
+                         published-post counts. Avoids empty category links and
+                         the N+1 query the old ->posts->count() caused. --}}
+                    @foreach(\App\Models\Category::live()->withCount(['posts as published_posts_count' => fn ($q) => $q->published()])->orderBy('sort_order')->get() as $cat)
                         <a href="{{ route('category.show',$cat->slug) }}" class="flex items-center justify-between p-2 hover:bg-slate-50 dark:hover:bg-[#2a2a2a] transition group">
                             <span class="flex items-center gap-2.5 text-slate-700 dark:text-slate-300">
                                 <span class="w-8 h-8 bg-emerald-50 dark:bg-emerald-400/10 flex items-center justify-center text-[#0C3B2E] dark:text-emerald-300 shrink-0">
@@ -262,7 +338,7 @@
                                 </span>
                                 <span class="text-sm font-medium group-hover:text-[#0C3B2E] dark:group-hover:text-emerald-300">{{ $cat->name }}</span>
                             </span>
-                            <span class="text-xs bg-slate-100 dark:bg-[#2a2a2a] text-slate-600 dark:text-slate-400 px-2 py-0.5">{{ $cat->posts->count() }}</span>
+                            <span class="text-xs bg-slate-100 dark:bg-[#2a2a2a] text-slate-600 dark:text-slate-400 px-2 py-0.5">{{ $cat->published_posts_count }}</span>
                         </a>
                     @endforeach
                 </div>

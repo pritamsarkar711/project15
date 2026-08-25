@@ -52,6 +52,11 @@ Route::get('/search', [HomeController::class, 'search'])->name('search');
 Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
 Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
 Route::post('/blog/{slug}/comment', [BlogController::class, 'storeComment'])->name('blog.comment.store');
+
+// Post reactions ("Did you like this post?" like / dislike buttons).
+// Logged-in users only; guests are sent to login first.
+Route::post('/blog/{slug}/react', [BlogController::class, 'react'])->name('blog.react')->middleware('auth');
+
 Route::get('/category/{slug}', [BlogController::class, 'category'])->name('category.show');
 
 // Author profile (public). Pattern enforces URL-safe usernames only,
@@ -175,6 +180,7 @@ Route::prefix('manage')->name('admin.')->group(function(){
         Route::post('contacts/{contact}/read', [AdminContactController::class,'markRead'])->name('contacts.read');
 
         // Comments
+        Route::post('comments/bulk-delete', [AdminCommentController::class,'bulkDestroy'])->name('comments.bulk-delete');
         Route::get('comments', [AdminCommentController::class,'index'])->name('comments.index');
         Route::patch('comments/{comment}/status', [AdminCommentController::class,'updateStatus'])->name('comments.status');
         Route::delete('comments/{comment}', [AdminCommentController::class,'destroy'])->name('comments.destroy');

@@ -4,7 +4,7 @@
 @php
     $heroPhrase1 = setting('hero_phrase_1', 'Explore Ideas.');
     $heroPhrase2 = setting('hero_phrase_2', 'Inspire Life.');
-    $heroSubtitle = setting('hero_subtitle', 'Tech, health, finance, travel and more — one calm place to read.');
+    $heroSubtitle = setting('hero_subtitle', 'Tech, health, finance, travel and more, all in one calm place to read.');
     $heroSearchPlaceholder = setting('hero_search_placeholder', 'Search articles, topics, ideas...');
     $heroImgSetting = setting('hero_person_image');
     $heroImgUrl = $heroImgSetting ? asset('storage/'.$heroImgSetting) : asset('images/hero-person-harry.png');

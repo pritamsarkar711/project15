@@ -8,7 +8,7 @@ on the server. The repository intentionally includes `vendor/` and
 Current deployment marker:
 
 ```text
-2026-08-25-audit-fixes-v13
+2026-08-25-panel-reactions-v14
 ```
 
 ## "I pushed to GitHub but my site didn't change" — read this first
@@ -68,6 +68,15 @@ It automatically:
 Press `Ctrl + Shift + R` (Windows) or `Cmd + Shift + R` (Mac). Browsers cache
 CSS/JS/images aggressively; a normal refresh can keep showing the old design
 even when the server is already updated.
+
+### deploy.php was returning 404 (fixed)
+
+The root .htaccess only exempted install.php and doctor.php from the rewrite
+into public/. Opening /deploy.php therefore 404'd and none of its steps (cache
+clear, migrations, storage symlink) could ever run. deploy.php is now exempted
+as well, so the URL works. As an extra safety net, the admin dashboard now
+applies pending database migrations automatically the first time it loads
+after a deploy.
 
 ## Confirmed cause of the production failure
 

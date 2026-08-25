@@ -7,14 +7,29 @@
 @endsection
 
 @section('content')
-<div class="flex flex-wrap items-center gap-1.5 mb-5">
-    @php $tabs = ['all'=>'All','pending'=>'Pending','approved'=>'Approved','rejected'=>'Rejected','spam'=>'Spam']; @endphp
-    @foreach($tabs as $key => $label)
-        <a href="{{ route('admin.comments.index', $key !== 'all' ? ['status'=>$key] : []) }}"
-           class="h-9 px-4 inline-flex items-center gap-2 text-sm font-medium border transition {{ (request('status')==$key || (!request('status') && $key=='all')) ? 'bg-[#0C3B2E] text-white border-[#0C3B2E]' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800' }}">
-            {{ $label }} <span class="text-xs opacity-70">{{ $counts[$key] }}</span>
-        </a>
-    @endforeach
+<div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+    <div class="flex flex-wrap items-center gap-1.5">
+        @php $tabs = ['all'=>'All','pending'=>'Pending','approved'=>'Approved','rejected'=>'Rejected','spam'=>'Spam']; @endphp
+        @foreach($tabs as $key => $label)
+            <a href="{{ route('admin.comments.index', $key !== 'all' ? ['status'=>$key] : []) }}"
+               class="h-9 px-4 inline-flex items-center gap-2 text-sm font-medium border transition {{ (request('status')==$key || (!request('status') && $key=='all')) ? 'bg-[#0C3B2E] text-white border-[#0C3B2E]' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800' }}">
+                {{ $label }} <span class="text-xs opacity-70">{{ $counts[$key] }}</span>
+            </a>
+        @endforeach
+    </div>
+    {{-- Bulk delete bar: select comments with the checkboxes, then remove
+         them all at once. --}}
+    <form method="POST" action="{{ route('admin.comments.bulk-delete') }}" id="bulk-delete-form"
+          onsubmit="return confirm('Delete all selected comments (their replies are removed too)?')">
+        @csrf
+        <label class="inline-flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-300 cursor-pointer mr-2">
+            <input type="checkbox" id="select-all-comments" class="w-4 h-4 text-emerald-600 border-slate-300 dark:border-slate-600">
+            Select all
+        </label>
+        <button type="submit" id="bulk-delete-btn" disabled class="h-9 px-4 text-sm font-semibold text-red-600 dark:text-red-400 border border-red-200 dark:border-red-500/30 bg-red-50 dark:bg-red-500/10 hover:bg-red-100 dark:hover:bg-red-500/20 transition disabled:opacity-40 disabled:cursor-not-allowed">
+            Delete selected (<span id="bulk-count">0</span>)
+        </button>
+    </form>
 </div>
 
 <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden">
@@ -23,7 +38,8 @@
             <div class="p-4 sm:p-5">
                 <div class="flex flex-wrap items-start justify-between gap-3">
                     <div class="min-w-0 flex-1">
-                        <div class="flex items-center gap-2">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <input type="checkbox" name="ids[]" value="{{ $c->id }}" form="bulk-delete-form" class="bulk-comment-check w-4 h-4 shrink-0 text-emerald-600 border-slate-300 dark:border-slate-600" aria-label="Select comment">
                             <span class="text-sm font-semibold">{{ $c->name }}</span>
                             <span class="text-xs text-slate-500 dark:text-slate-400">{{ $c->email }}</span>
                             <span class="text-[11px] font-semibold px-2 py-0.5 {{ $c->status=='pending' ? 'bg-amber-100 text-amber-700 dark:bg-amber-400/10 dark:text-amber-300' : ($c->status=='approved' ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300') }}">{{ $c->status }}</span>
@@ -31,7 +47,18 @@
                         <div class="text-sm text-slate-600 dark:text-slate-300 mt-1">{{ $c->content }}</div>
                         <div class="text-xs text-slate-400 dark:text-slate-500 mt-1">
                             {{ $c->created_at->diffForHumans() }} · on
-                            <a href="{{ route('blog.show', $c->post->slug) }}" target="_blank" class="text-emerald-700 dark:text-emerald-300 hover:underline">{{ Str::limit($c->post->title, 50) }}</a>
+                            {{-- Null-safe + status-aware post link: the old link 404'd when
+                                 the post was a draft or deleted. --}}
+                            @if($c->post)
+                                @if($c->post->status === 'published' && !$c->post->trashed())
+                                    <a href="{{ route('blog.show', $c->post->slug) }}" target="_blank" class="text-emerald-700 dark:text-emerald-300 hover:underline">{{ Str::limit($c->post->title, 50) }}</a>
+                                @else
+                                    <span class="font-medium">{{ Str::limit($c->post->title, 50) }}</span>
+                                    <span class="text-[10px] font-bold uppercase px-1.5 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400" title="The post is not publicly visible">{{ $c->post->trashed() ? 'deleted' : $c->post->status }}</span>
+                                @endif
+                            @else
+                                <span class="italic text-slate-400 dark:text-slate-500">post removed</span>
+                            @endif
                         </div>
                     </div>
                     <div class="flex items-center gap-1 shrink-0">
@@ -92,4 +119,46 @@
     </div>
     <div class="p-4 border-t border-slate-100 dark:border-slate-800">{{ $comments->links() }}</div>
 </div>
+
+{{-- Bulk-selection JS: keeps the "Delete selected (N)" counter in sync --}}
+@push('scripts')
+<script>
+(function () {
+    const form = document.getElementById('bulk-delete-form');
+    const btn = document.getElementById('bulk-delete-btn');
+    const counter = document.getElementById('bulk-count');
+    const selectAll = document.getElementById('select-all-comments');
+    if (!form || !btn || !counter) return;
+
+    function refresh() {
+        const checked = document.querySelectorAll('.bulk-comment-check:checked').length;
+        counter.textContent = checked;
+        btn.disabled = checked === 0;
+        if (selectAll) {
+            const all = document.querySelectorAll('.bulk-comment-check');
+            selectAll.checked = all.length > 0 && checked === all.length;
+        }
+    }
+
+    document.querySelectorAll('.bulk-comment-check').forEach((cb) => {
+        cb.addEventListener('change', refresh);
+    });
+
+    if (selectAll) {
+        selectAll.addEventListener('change', () => {
+            document.querySelectorAll('.bulk-comment-check').forEach((cb) => {
+                cb.checked = selectAll.checked;
+            });
+            refresh();
+        });
+    }
+
+    form.addEventListener('submit', (e) => {
+        if (document.querySelectorAll('.bulk-comment-check:checked').length === 0) {
+            e.preventDefault();
+        }
+    });
+})();
+</script>
+@endpush
 @endsection

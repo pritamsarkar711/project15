@@ -32,7 +32,7 @@
         <div>
             <label class="block text-sm font-semibold text-slate-900 dark:text-white mb-1.5">Category</label>
             <select name="category_id" class="w-full h-11 px-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-[#0C3B2E] focus:ring-4 focus:ring-[#0C3B2E]/15 outline-none text-sm text-slate-900 dark:text-white">
-                <option value="">— None —</option>
+                <option value="">None</option>
                 @foreach($categories as $cat)
                     <option value="{{ $cat->id }}" @selected(old('category_id', $isEdit ? $post->category_id : '') == $cat->id)>{{ $cat->name }}</option>
                 @endforeach
@@ -46,7 +46,7 @@
             @if($isEdit && $post->featured_image)
                 <div class="mt-2 flex items-center gap-2">
                     <img src="{{ str_starts_with($post->featured_image, 'http') ? $post->featured_image : '/storage/'.$post->featured_image }}" class="w-14 h-14 object-cover" alt="" loading="lazy">
-                    <span class="text-xs text-slate-500">Current — upload a new file to replace.</span>
+                    <span class="text-xs text-slate-500">Current. Upload a new file to replace it.</span>
                 </div>
             @endif
         </div>
@@ -100,7 +100,7 @@
     {{-- Actions --}}
     @if($isEdit && ($post->review_status === 'pending_review' || $post->review_status === 'approved'))
         <div class="bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 p-4 text-sm text-slate-600 dark:text-slate-400">
-            This post is currently <strong>{{ $post->review_status === 'approved' ? 'published' : 'in review' }}</strong> — it's locked for editing. Wait for the admin decision before making changes.
+            This post is currently <strong>{{ $post->review_status === 'approved' ? 'published' : 'in review' }}</strong>, so it is locked for editing. Wait for the admin decision before making changes.
         </div>
     @else
         @php
@@ -125,7 +125,7 @@
             <button type="submit" name="action" value="submit" @disabled(! $canSubmit) class="h-11 px-5 bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed">
                 {{ $isEdit && $post->review_status === 'returned' ? 'Re-submit for review' : 'Submit for review' }}
             </button>
-            <a href="{{ route('author.rules') }}" class="ml-auto text-xs text-slate-500 hover:text-[#0C3B2E] dark:hover:text-emerald-300">Read the posting rules first →</a>
+            <a href="{{ route('author.rules') }}" class="ml-auto text-xs text-slate-500 hover:text-[#0C3B2E] dark:hover:text-emerald-300">Read the posting rules first</a>
         </div>
     @endif
 </form>

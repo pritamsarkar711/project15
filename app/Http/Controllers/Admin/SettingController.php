@@ -80,7 +80,10 @@ class SettingController extends Controller
             'llms_txt_content' => 'nullable|string|max:20000',
             // Uploads — extensions must match ImageService's capabilities.
             // (HEIC/AVIF are rejected up-front with a clear message instead of
-            // crashing with a 500 halfway through the save.)
+            // crashing with a 500 halfway through the save.) The size caps are
+            // deliberately modest so uploads stay below typical shared-hosting
+            // post_max_size limits (a larger POST is dropped by PHP before
+            // Laravel ever sees it, which used to look like "save did nothing").
             'hero_person_image_file' => 'nullable|file|mimes:jpg,jpeg,png,gif,webp,bmp|max:4096',
             'site_logo_light_file'   => 'nullable|file|mimes:jpg,jpeg,png,gif,webp,bmp,svg|max:2048',
             'site_logo_dark_file'    => 'nullable|file|mimes:jpg,jpeg,png,gif,webp,bmp,svg|max:2048',
@@ -124,32 +127,37 @@ class SettingController extends Controller
         // error message instead of a 500 server error.
         // ------------------------------------------------------------------
         try {
+            $imageService = app(ImageService::class);
+
             // Branding uploads: logo (light mode), logo (dark mode), favicon.
             // SVG logos and .ico favicons are stored as-is (no re-encoding);
             // raster images are optimised + converted to WebP.
             foreach (['site_logo_light', 'site_logo_dark', 'site_favicon'] as $fileKey) {
                 if ($request->hasFile($fileKey.'_file')) {
                     $old = Setting::where('key', $fileKey)->value('value');
-                    if ($old) { \Illuminate\Support\Facades\Storage::disk('public')->delete($old); }
-                    $path = app(ImageService::class)->optimizeAndStore(
+                    $imageService->delete($old);
+                    $path = $imageService->optimizeAndStore(
                         $request->file($fileKey.'_file'), 'uploads/settings', true
                     );
                     Setting::set($fileKey, $path);
+                    Setting::flushAllCache();
                 }
             }
 
             // Hero person image upload (auto-optimised via ImageService).
             if ($request->boolean('hero_remove_image')) {
                 $old = Setting::where('key', 'hero_person_image')->value('value');
-                if ($old) { \Illuminate\Support\Facades\Storage::disk('public')->delete($old); }
+                $imageService->delete($old);
                 Setting::set('hero_person_image', '');
+                Setting::flushAllCache();
             } elseif ($request->hasFile('hero_person_image_file')) {
                 $old = Setting::where('key', 'hero_person_image')->value('value');
-                if ($old) { \Illuminate\Support\Facades\Storage::disk('public')->delete($old); }
-                $path = app(ImageService::class)->optimizeAndStore(
+                $imageService->delete($old);
+                $path = $imageService->optimizeAndStore(
                     $request->file('hero_person_image_file'), 'uploads/hero'
                 );
                 Setting::set('hero_person_image', $path);
+                Setting::flushAllCache();
             }
         } catch (\Throwable $e) {
             // Something was wrong with the uploaded file. Everything else has
@@ -306,7 +314,7 @@ class SettingController extends Controller
                 function (Message $message) use ($validated) {
                     $message
                         ->to($validated['test_email_to'])
-                        ->subject('Huvanti SMTP test — ' . now()->format('Y-m-d H:i'));
+                        ->subject('SMTP test ' . now()->format('Y-m-d H:i'));
                 }
             );
 

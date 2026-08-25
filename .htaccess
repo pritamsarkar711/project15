@@ -16,8 +16,12 @@ DirectoryIndex index.php index.html
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
-    # Standalone bootstrap/recovery endpoints. Delete both after installation.
-    RewriteRule ^(?:install|doctor)\.php$ - [L]
+    # Standalone bootstrap/recovery endpoints. Delete after installation.
+    # deploy.php MUST be listed here: without the exemption the root rewrite
+    # forwards /deploy.php into public/ where it does not exist, so opening
+    # https://your-domain/deploy.php returned a 404 and the deploy steps
+    # (cache clear + migrations) could never run.
+    RewriteRule ^(?:install|doctor|deploy)\.php$ - [L]
 
     # Per-directory rewrites can run again after the internal public/ rewrite.
     # Stop here so /foo never becomes /public/public/... (an HTTP 500 loop).
@@ -32,7 +36,7 @@ DirectoryIndex index.php index.html
 
 # A unique, cache-independent signal that the corrected deployment is active.
 <IfModule mod_headers.c>
-    Header always set X-Huvanti-Deploy "2026-08-25-hostinger-launch-v3"
+    Header always set X-Huvanti-Deploy "2026-08-25-panel-reactions-v14"
     Header always set X-Content-Type-Options "nosniff"
     Header always set X-Frame-Options "SAMEORIGIN"
     Header always set Referrer-Policy "strict-origin-when-cross-origin"

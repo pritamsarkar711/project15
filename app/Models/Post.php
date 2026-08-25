@@ -79,6 +79,25 @@ class Post extends Model
         return $this->hasMany(Faq::class)->orderBy('sort_order');
     }
 
+    // -----------------------------------------------------------------
+    // Reactions (like / dislike) shown after the post content and FAQ.
+    // -----------------------------------------------------------------
+
+    public function reactions()
+    {
+        return $this->hasMany(PostReaction::class);
+    }
+
+    public function likes()
+    {
+        return $this->hasMany(PostReaction::class)->where('reaction', 'like');
+    }
+
+    public function dislikes()
+    {
+        return $this->hasMany(PostReaction::class)->where('reaction', 'dislike');
+    }
+
     public function comments()
     {
         return $this->hasMany(Comment::class);

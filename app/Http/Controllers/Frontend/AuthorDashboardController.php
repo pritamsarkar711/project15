@@ -238,7 +238,7 @@ class AuthorDashboardController extends Controller
 
         if ($request->hasFile('featured_image')) {
             if ($post->featured_image && !str_starts_with($post->featured_image, 'http')) {
-                Storage::disk('public')->delete($post->featured_image);
+                app(\App\Services\ImageService::class)->delete($post->featured_image);
             }
             $post->featured_image = app(ImageService::class)
                 ->optimizeAndStore($request->file('featured_image'), 'uploads/posts');
@@ -301,7 +301,7 @@ class AuthorDashboardController extends Controller
         }
 
         if ($post->featured_image && !str_starts_with($post->featured_image, 'http')) {
-            Storage::disk('public')->delete($post->featured_image);
+            app(\App\Services\ImageService::class)->delete($post->featured_image);
         }
         $post->faqs()->delete();
         $post->forceDelete();

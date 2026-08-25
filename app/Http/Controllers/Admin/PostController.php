@@ -131,7 +131,7 @@ class PostController extends Controller
         $data['allow_comments'] = $request->boolean('allow_comments');
         if ($request->hasFile('featured_image')) {
             if ($post->featured_image && !str_starts_with($post->featured_image, 'http')) {
-                Storage::disk('public')->delete($post->featured_image);
+                app(\App\Services\ImageService::class)->delete($post->featured_image);
             }
             $data['featured_image'] = app(ImageService::class)->optimizeAndStore($request->file('featured_image'), 'uploads/posts');
         } elseif ($request->filled('featured_image_url')) {
@@ -182,7 +182,7 @@ class PostController extends Controller
     {
         $post = Post::onlyTrashed()->findOrFail($id);
         if ($post->featured_image && !str_starts_with($post->featured_image, 'http')) {
-            Storage::disk('public')->delete($post->featured_image);
+            app(\App\Services\ImageService::class)->delete($post->featured_image);
         }
         $post->forceDelete();
         return back()->with('success', 'Post permanently deleted');

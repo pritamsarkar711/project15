@@ -79,7 +79,7 @@ class CategoryController extends Controller
         $category->is_active = !$category->is_active;
         $category->save();
         return back()->with('success', $category->is_active
-            ? "\"{$category->name}\" is now enabled" . ($category->posts()->where('status', 'published')->exists() ? ' and visible on the site.' : ' — it becomes visible once it has at least one published post.')
+            ? "\"{$category->name}\" is now enabled" . ($category->posts()->where('status', 'published')->exists() ? ' and visible on the site.' : '. It becomes visible once it has at least one published post.')
             : "\"{$category->name}\" is now hidden from the site.");
     }
 

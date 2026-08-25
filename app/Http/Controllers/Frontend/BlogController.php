@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Comment;
 use App\Models\Post;
+use App\Models\PostReaction;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -44,7 +45,47 @@ class BlogController extends Controller
         if ($adFrequency < 1) $adFrequency = 2;
         $inArticleAd = \App\Models\Advertisement::active()->position('in_article')->first();
         $contentWithAnchors = $this->injectInArticleAds($contentWithAnchors, $adFrequency, $inArticleAd);
-        return view('frontend.blog.show', compact('post','related','toc','contentWithAnchors'));
+
+        // Reactions ("Did you like this post?" section after content + FAQ)
+        $likesCount = $post->likes()->count();
+        $dislikesCount = $post->dislikes()->count();
+        $myReaction = auth()->check()
+            ? $post->reactions()->where('user_id', auth()->id())->value('reaction')
+            : null;
+
+        // Does the current viewer follow this post's author? (Follow button
+        // in the author box below the content.)
+        $followingAuthor = auth()->check() && $post->user
+            ? auth()->user()->following()->where('followee_id', $post->user->id)->exists()
+            : false;
+
+        return view('frontend.blog.show', compact('post','related','toc','contentWithAnchors','likesCount','dislikesCount','myReaction','followingAuthor'));
+    }
+
+    /**
+     * Toggle the viewer's like / dislike reaction on a post.
+     *   - same button clicked again  → reaction removed
+     *   - other button clicked       → reaction switched
+     */
+    public function react(Request $request, $slug)
+    {
+        $post = Post::published()->where('slug', $slug)->firstOrFail();
+        $request->validate(['reaction' => 'required|in:like,dislike']);
+
+        $existing = PostReaction::where('post_id', $post->id)
+            ->where('user_id', auth()->id())
+            ->first();
+
+        if ($existing && $existing->reaction === $request->reaction) {
+            $existing->delete();              // clicked the same button again → remove
+        } else {
+            PostReaction::updateOrCreate(
+                ['post_id' => $post->id, 'user_id' => auth()->id()],
+                ['reaction' => $request->reaction]
+            );
+        }
+
+        return back();
     }
 
     /**
@@ -112,7 +153,16 @@ class BlogController extends Controller
             ? $author->followers()->where('follower_id', auth()->id())->exists()
             : false;
 
-        return view('frontend.author.profile', compact('author', 'posts', 'socials', 'isFollowing'));
+        // Visitor-visible stats: published posts only (drafts are private),
+        // plus the total likes / dislikes this author's content received.
+        $publishedIds = $author->publishedPosts()->pluck('id');
+        $totalLikes = PostReaction::whereIn('post_id', $publishedIds)->where('reaction', 'like')->count();
+        $totalDislikes = PostReaction::whereIn('post_id', $publishedIds)->where('reaction', 'dislike')->count();
+        $publishedCount = $publishedIds->count();
+
+        return view('frontend.author.profile', compact(
+            'author', 'posts', 'socials', 'isFollowing', 'totalLikes', 'totalDislikes', 'publishedCount'
+        ));
     }
 
     /**
