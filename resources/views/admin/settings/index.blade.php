@@ -116,8 +116,12 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
                         </div>
                     </label>
                     <p class="mt-2 text-xs font-medium text-emerald-700 dark:text-emerald-300 hidden" id="hero-file-name"></p>
-                    <label class="mt-3 inline-flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300 cursor-pointer">
-                        <input type="checkbox" name="hero_remove_image" value="1" class="text-emerald-600">
+                    <label class="mt-3 inline-flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300 cursor-pointer">
+                        <span class="relative inline-flex shrink-0">
+                            <input type="checkbox" name="hero_remove_image" value="1" class="peer sr-only">
+                            <span class="block w-11 h-6 rounded-full bg-slate-200 dark:bg-slate-700 peer-checked:bg-[#0C3B2E] transition-colors"></span>
+                            <span class="pointer-events-none absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform peer-checked:translate-x-5"></span>
+                        </span>
                         Remove image (use default)
                     </label>
                 </div>
@@ -129,7 +133,6 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
                              onerror="this.style.display='none'; var h=document.getElementById('hero-load-hint'); if(h){h.classList.remove('hidden');}">
                     </div>
                     <p id="hero-load-hint" class="mt-1.5 text-[11px] text-red-500 hidden">Saved but the file is not reachable. Open /deploy.php once and check that public/storage is writable.</p>
-                    <p class="mt-1.5 text-[11px] text-slate-400">Click Save to apply. The preview shows the stored image.</p>
                 </div>
             </div>
         </div>
@@ -147,10 +150,13 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
             <div class="flex items-center justify-between gap-4 flex-wrap">
                 <div>
                     <h3 class="font-semibold">Show ads on site</h3>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Keep off until AdSense or AdX approves the site. When off, no ad box appears anywhere.</p>
                 </div>
                 <label class="inline-flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" name="ads_enabled" value="1" {{ old('ads_enabled', $settings['ads_enabled']->value ?? '0') === '1' ? 'checked' : '' }} class="w-5 h-5 text-emerald-600">
+                    <span class="relative inline-flex shrink-0">
+                        <input type="checkbox" name="ads_enabled" value="1" {{ old('ads_enabled', $settings['ads_enabled']->value ?? '0') === '1' ? 'checked' : '' }} class="peer sr-only">
+                        <span class="block w-11 h-6 rounded-full bg-slate-200 dark:bg-slate-700 peer-checked:bg-[#0C3B2E] transition-colors"></span>
+                        <span class="pointer-events-none absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform peer-checked:translate-x-5"></span>
+                    </span>
                     <span class="text-sm font-semibold {{ ($settings['ads_enabled']->value ?? '0') === '1' ? 'text-emerald-700 dark:text-emerald-300' : 'text-slate-500 dark:text-slate-400' }}">{{ ($settings['ads_enabled']->value ?? '0') === '1' ? 'Enabled' : 'Disabled' }}</span>
                 </label>
             </div>
@@ -173,10 +179,13 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
             <div class="flex items-center justify-between gap-4 flex-wrap">
                 <div>
                     <h3 class="font-semibold">Revenue program</h3>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Shows the Revenue page to authors with link click tracking. Keep it off while the site grows.</p>
                 </div>
                 <label class="inline-flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" name="revenue_enabled" value="1" {{ old('revenue_enabled', $settings['revenue_enabled']->value ?? '0') === '1' ? 'checked' : '' }} class="w-5 h-5 text-emerald-600">
+                    <span class="relative inline-flex shrink-0">
+                        <input type="checkbox" name="revenue_enabled" value="1" {{ old('revenue_enabled', $settings['revenue_enabled']->value ?? '0') === '1' ? 'checked' : '' }} class="peer sr-only">
+                        <span class="block w-11 h-6 rounded-full bg-slate-200 dark:bg-slate-700 peer-checked:bg-[#0C3B2E] transition-colors"></span>
+                        <span class="pointer-events-none absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform peer-checked:translate-x-5"></span>
+                    </span>
                     <span class="text-sm font-semibold {{ ($settings['revenue_enabled']->value ?? '0') === '1' ? 'text-emerald-700 dark:text-emerald-300' : 'text-slate-500 dark:text-slate-400' }}">{{ ($settings['revenue_enabled']->value ?? '0') === '1' ? 'Enabled' : 'Disabled' }}</span>
                 </label>
             </div>

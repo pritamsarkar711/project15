@@ -28,7 +28,7 @@ define('LARAVEL_START', microtime(true));
 // ---------------------------------------------------------------------------
 
 // Bump this string when you want to force a cache clear on every server.
-define('HUVANTI_DEPLOY_VERSION', 'v19-2026-08-25-custom-rte-icon-patch');
+define('HUVANTI_DEPLOY_VERSION', 'v20-2026-08-25-hero-mobile-rules-editor-v2');
 
 // Determine if the application is in maintenance mode...
 if (file_exists($maintenance = __DIR__.'/../storage/framework/maintenance.php')) {
@@ -343,11 +343,24 @@ try {
         // try/catch so a missing table can never break the boot.
         try {
             $db = $app->make('db');
-            // Health & Wellness icon: heart with pulse line.
             $db->table('categories')
                 ->where('slug', 'health-wellness')
                 ->where('icon', '!=', 'heart-pulse')
                 ->update(['icon' => 'heart-pulse']);
+            $taken = $db->table('users')->where('username', 'joe-goldberg')->exists();
+            if (!$taken) {
+                $db->table('users')
+                    ->where('username', 'pritam-sarkar')
+                    ->orWhere('username', 'pritam.sarkar')
+                    ->update(['username' => 'joe-goldberg']);
+                $db->table('users')
+                    ->whereNull('username')
+                    ->where('email', 'like', '%pritam%')
+                    ->update(['username' => 'joe-goldberg']);
+            }
+            $db->table('users')
+                ->where('name', 'Pritam Sarkar')
+                ->update(['name' => 'Joe Goldberg']);
         } catch (\Throwable $dataPatchError) {
             error_log('[huvanti] data patch skipped: '.$dataPatchError->getMessage());
         }

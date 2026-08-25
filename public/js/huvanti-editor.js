@@ -7,11 +7,12 @@
  *
  * Features (TinyMCE/CKEditor-style toolbar):
  *   undo/redo | format block (P/H1-H4/quote/pre) | font family | font size |
- *   bold/italic/underline/strikethrough | text color / highlight |
- *   lists (bullet, numbered) | indent/outdent | align L/C/R/J |
- *   link insert/remove | image upload + paste + drag-drop (base64) |
- *   table insert | horizontal line | special characters | code block |
- *   clear formatting | source (HTML) view | fullscreen | word count
+ *   bold/italic/underline/strikethrough/code | text color / highlight |
+ *   sup/sub | lists (bullet, numbered) | indent/outdent | align L/C/R/J |
+ *   link | image upload+paste+drag (base64) | table grid | hr |
+ *   special chars | emoji picker | find and replace | code block |
+ *   line height | clear formatting | source view | fullscreen | word count |
+ *   keyboard shortcuts | autosave to localStorage
  *
  * Usage:
  *   huvantiEditorInit('#editor');            // textarea selector
@@ -30,6 +31,9 @@
         italic: '<line x1="19" x2="10" y1="4" y2="4"/><line x1="14" x2="5" y1="20" y2="20"/><line x1="15" x2="9" y1="4" y2="20"/>',
         underline: '<path d="M6 4v6a6 6 0 0 0 12 0V4"/><line x1="4" x2="20" y1="20" y2="20"/>',
         strike: '<path d="M16 4H9a3 3 0 0 0-2.83 4"/><path d="M14 12a4 4 0 0 1 0 8H6"/><line x1="4" x2="20" y1="12" y2="12"/>',
+        codeInline: '<polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/><rect x="10" y="8" width="4" height="8" rx="1" fill="currentColor" opacity="0.35"/>',
+        sup: '<path d="M6 16v-8l6 3.5Z"/><path d="M18 12h-2l-1-4 2-1 1 1.5-1 1.5 1 1.5-1 .5Z"/>',
+        sub: '<path d="M6 8v8l6-3.5Z"/><path d="M18 16h-2l-1 4 2 1 1-1.5-1-1.5 1-1.5-1-.5Z"/>',
         ul: '<line x1="8" x2="21" y1="6" y2="6"/><line x1="8" x2="21" y1="12" y2="12"/><line x1="8" x2="21" y1="18" y2="18"/><line x1="3" x2="3.01" y1="6" y2="6"/><line x1="3" x2="3.01" y1="12" y2="12"/><line x1="3" x2="3.01" y1="18" y2="18"/>',
         ol: '<line x1="10" x2="21" y1="6" y2="6"/><line x1="10" x2="21" y1="12" y2="12"/><line x1="10" x2="21" y1="18" y2="18"/><path d="M4 6h1v4"/><path d="M4 10h2"/><path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/>',
         indent: '<polyline points="3 8 7 12 3 16"/><line x1="21" x2="11" y1="12" y2="12"/><line x1="21" x2="11" y1="6" y2="6"/><line x1="21" x2="11" y1="18" y2="18"/><line x1="3" x2="11" y1="4" y2="4"/><line x1="3" x2="11" y1="20" y2="20"/>',
@@ -49,6 +53,8 @@
         expand: '<path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/>',
         shrink: '<path d="M4 14h6v6"/><path d="M20 10h-6V4"/><path d="M14 10l7-7"/><path d="M3 21l7-7"/>',
         smile: '<circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" x2="9.01" y1="9" y2="9"/><line x1="15" x2="15.01" y1="9" y2="9"/>',
+        find: '<circle cx="11" cy="11" r="7"/><path d="M21 21l-3.5-3.5"/><path d="M8 11h6"/>',
+        emoji: '<circle cx="12" cy="12" r="10"/><path d="M8 14c1.5 1.5 4.5 1.5 6 0"/><path d="M9 9h.01"/><path d="M15 9h.01"/>',
         palette: '<circle cx="12" cy="12" r="10"/><circle cx="8" cy="10" r="1"/><circle cx="12" cy="7" r="1"/><circle cx="16" cy="10" r="1"/><circle cx="12" cy="16" r="1"/>'
     };
 
@@ -59,7 +65,7 @@
     var STYLES = [
         '.huv-rte{border:1px solid #cbd5e1;background:#fff;}',
         '.dark .huv-rte{border-color:#334155;background:#1e293b;}',
-        '.huv-rte-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:2px;padding:6px;border-bottom:1px solid #e2e8f0;background:#f8fafc;position:relative;z-index:30;}',
+        '.huv-rte-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:2px;padding:6px;border-bottom:1px solid #e2e8f0;background:#f8fafc;position:sticky;top:0;z-index:30;}',
         '.dark .huv-rte-toolbar{border-color:#334155;background:#0f172a;}',
         '.huv-rte-sep{width:1px;align-self:stretch;margin:2px 4px;background:#cbd5e1;}',
         '.dark .huv-rte-sep{background:#334155;}',
@@ -108,6 +114,11 @@
         '.huv-rte-char{width:28px;height:28px;border:1px solid #e2e8f0;border-radius:4px;background:#fff;cursor:pointer;font-size:15px;color:#334155;}',
         '.dark .huv-rte-char{background:#0f172a;border-color:#334155;color:#e2e8f0;}',
         '.huv-rte-char:hover{background:#d1fae5;}',
+        '.huv-rte-emoji{width:32px;height:32px;border:0;border-radius:6px;background:#fff;cursor:pointer;font-size:18px;display:inline-flex;align-items:center;justify-content:center;}',
+        '.dark .huv-rte-emoji{background:#0f172a;}',
+        '.huv-rte-emoji:hover{background:#d1fae5;}',
+        '.huv-rte-findmark{background:#fef08a;color:#422006;padding:1px 2px;border-radius:3px;}',
+        '.huv-rte-findmark.active{background:#0C3B2E;color:#fff;}',
         '.huv-rte-field{width:100%;box-sizing:border-box;margin-bottom:8px;padding:7px 9px;border:1px solid #cbd5e1;border-radius:6px;font-size:13px;background:#fff;color:#0f172a;}',
         '.dark .huv-rte-field{background:#0f172a;color:#e2e8f0;border-color:#475569;}',
         '.huv-rte-label{display:flex;align-items:center;gap:6px;font-size:13px;margin-bottom:8px;color:inherit;}',
@@ -129,12 +140,15 @@
     ].join('\n');
 
     var FONTS = ['Default', 'Arial, Helvetica, sans-serif', 'Georgia, serif', '"Times New Roman", Times, serif', '"Courier New", monospace', 'Verdana, Geneva, sans-serif', '"Trebuchet MS", sans-serif', '"Work Sans", Arial, sans-serif'];
+    var LINE_HEIGHTS = ['Default', '1', '1.2', '1.5', '1.7', '2', '2.5'];
     var SIZES = [
         { label: 'Small', v: '2' }, { label: 'Normal', v: '3' }, { label: 'Medium', v: '4' },
         { label: 'Large', v: '5' }, { label: 'Huge', v: '6' }, { label: 'X-Large', v: '7' }
     ];
     var COLORS = ['#0f172a', '#334155', '#64748b', '#dc2626', '#ea580c', '#d97706', '#16a34a', '#059669', '#0891b2', '#2563eb', '#7c3aed', '#db2777', '#ffffff', '#f1f5f9', '#fef3c7', '#d1fae5'];
     var CHARS = ['\u00A9', '\u00AE', '\u2122', '\u2192', '\u2190', '\u2191', '\u2193', '\u2022', '\u2026', '\u2018', '\u2019', '\u201C', '\u201D', '\u2013', '\u2014', '\u00D7', '\u00F7', '\u2260', '\u2264', '\u2265', '\u00B0', '\u00B1', '\u221E', '\u20AC', '\u00A3', '\u00A5', '\u20B9', '\u0024', '\u03B1', '\u03B2', '\u03C0', '\u221A'];
+    var EMOJIS = ['\uD83D\uDE00','\uD83D\uDE02','\uD83D\uDE0D','\uD83D\uDC4D','\uD83D\uDC4F','\u2764\uFE0F','\uD83D\uDD25','\u2B50','\u2705','\u274C','\uD83D\uDCA1','\uD83D\uDE80','\uD83C\uDF89','\uD83D\uDCD6','\uD83D\uDCC5','\uD83D\uDCE2','\u26A0\uFE0F','\uD83D\uDCAC','\uD83D\uDCDA','\uD83C\uDFAF','\uD83E\uDD1D','\uD83D\uDE4F','\u2728','\uD83D\uDC99','\uD83D\uDFE2','\uD83D\uDFE1','\uD83D\uDCF8','\uD83C\uDF0D','\uD83D\uDCBB','\uD83D\uDD0D','\u270F\uFE0F','\uD83D\uDCC4'];
+    var AUTOSAVE_KEY_PREFIX = 'huv-rte-autosave-';
 
     function closeAllPops(root) {
         root.querySelectorAll('.huv-rte-pop').forEach(function (p) { p.remove(); });
@@ -335,6 +349,23 @@
         btn('italic', 'italic', 'Italic (Ctrl+I)', function () { cmd('italic'); });
         btn('underline', 'underline', 'Underline (Ctrl+U)', function () { cmd('underline'); });
         btn('strike', 'strike', 'Strikethrough', function () { cmd('strikeThrough'); });
+        btn('inlineCode', 'codeInline', 'Inline code', function () {
+            restoreRange();
+            var sel = window.getSelection();
+            var text = sel && sel.toString() ? sel.toString() : '';
+            if (text) {
+                insertHTML('<code>' + text.replace(/</g, '&lt;') + '</code>');
+            } else {
+                var code = document.createElement('code');
+                code.textContent = 'code';
+                code.style.background = '#f1f5f9';
+                code.style.padding = '1px 5px';
+                code.style.borderRadius = '4px';
+                insertHTML(code.outerHTML + '&nbsp;');
+            }
+        });
+        btn('sup', 'sup', 'Superscript', function () { cmd('superscript'); });
+        btn('sub', 'sub', 'Subscript', function () { cmd('subscript'); });
         sep();
         btn('foreColor', 'palette', 'Text color', function () {
             var anchor = this;
@@ -468,6 +499,90 @@
                 });
             });
         });
+        btn('emoji', 'emoji', 'Emoji', function () {
+            var anchor = this;
+            var html = '<div class="huv-rte-pop-grid" style="grid-template-columns:repeat(8,32px)">' + EMOJIS.map(function (e) {
+                return '<button type="button" class="huv-rte-emoji">' + e + '</button>';
+            }).join('') + '</div>';
+            pop(anchor, wrap, html, function (p) {
+                p.querySelectorAll('.huv-rte-emoji').forEach(function (b) {
+                    b.addEventListener('click', function () { closeAllPops(wrap); insertHTML(b.textContent); });
+                });
+            });
+        });
+        btn('find', 'find', 'Find and replace (Ctrl+F)', function () {
+            var anchor = this;
+            var html =
+                '<input type="text" class="huv-rte-field" data-role="find" placeholder="Find\u2026">' +
+                '<input type="text" class="huv-rte-field" data-role="replace" placeholder="Replace with">' +
+                '<div class="huv-rte-row">' +
+                '<button type="button" class="huv-rte-btn-ghost" data-role="next">Next</button>' +
+                '<button type="button" class="huv-rte-btn-ghost" data-role="all">Replace all</button>' +
+                '<button type="button" class="huv-rte-btn-primary" data-role="one">Replace</button></div>';
+            pop(anchor, wrap, html, function (p) {
+                var findEl = p.querySelector('[data-role="find"]');
+                var repEl = p.querySelector('[data-role="replace"]');
+                var marks = [];
+                var idx = -1;
+                function clear() { content.querySelectorAll('.huv-rte-findmark').forEach(function (m) { var t = document.createTextNode(m.textContent); m.parentNode.replaceChild(t, m); }); content.normalize(); marks = []; idx = -1; }
+                function doFind() {
+                    clear();
+                    var q = findEl.value;
+                    if (!q) return;
+                    var walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT, null);
+                    var nodes = [];
+                    while (walker.nextNode()) nodes.push(walker.currentNode);
+                    nodes.forEach(function (tn) {
+                        var text = tn.nodeValue;
+                        var pos = text.toLowerCase().indexOf(q.toLowerCase());
+                        if (pos === -1) return;
+                        var frag = document.createDocumentFragment();
+                        var last = 0;
+                        while (pos !== -1) {
+                            frag.appendChild(document.createTextNode(text.slice(last, pos)));
+                            var mark = document.createElement('mark');
+                            mark.className = 'huv-rte-findmark';
+                            mark.textContent = text.slice(pos, pos + q.length);
+                            frag.appendChild(mark);
+                            marks.push(mark);
+                            last = pos + q.length;
+                            pos = text.toLowerCase().indexOf(q.toLowerCase(), last);
+                        }
+                        frag.appendChild(document.createTextNode(text.slice(last)));
+                        tn.parentNode.replaceChild(frag, tn);
+                    });
+                }
+                findEl.addEventListener('input', doFind);
+                p.querySelector('[data-role="next"]').addEventListener('click', function () {
+                    if (!marks.length) doFind();
+                    if (!marks.length) return;
+                    if (idx >= 0) marks[idx].classList.remove('active');
+                    idx = (idx + 1) % marks.length;
+                    marks[idx].classList.add('active');
+                    marks[idx].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                });
+                p.querySelector('[data-role="one"]').addEventListener('click', function () {
+                    if (idx >= 0 && marks[idx]) {
+                        marks[idx].textContent = repEl.value;
+                        marks[idx].classList.remove('active');
+                        marks[idx].outerHTML = marks[idx].textContent;
+                        marks.splice(idx, 1); idx--;
+                        sync();
+                    }
+                });
+                p.querySelector('[data-role="all"]').addEventListener('click', function () {
+                    marks.forEach(function (m) { m.textContent = repEl.value; m.outerHTML = m.textContent; });
+                    marks = []; idx = -1; sync();
+                });
+                findEl.focus();
+                p.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeAllPops(wrap); });
+            });
+        });
+        select('lh', 'Line height', LINE_HEIGHTS.map(function (h) { return { label: h === 'Default' ? 'Line height' : h, v: h }; }), function (v) {
+            if (v === 'Default') { content.style.lineHeight = ''; }
+            else { content.style.lineHeight = v; }
+            sync();
+        });
         btn('codeBlock', 'code', 'Code block', function () {
             content.focus();
             var sel = window.getSelection();
@@ -478,6 +593,7 @@
             cmd('removeFormat');
             content.focus();
             document.execCommand('unlink');
+            content.style.lineHeight = '';
             sync();
         });
         sep();
@@ -495,7 +611,11 @@
             document.body.style.overflow = on ? 'hidden' : '';
         });
 
-        status.innerHTML = '<span class="huv-rte-wc"></span><span>Huvanti Editor</span>';
+        status.innerHTML = '<span class="huv-rte-wc"></span><span>Huvanti Editor · <a href="#" data-role="help" style="color:inherit;text-decoration:underline">Shortcuts</a></span>';
+        status.querySelector('[data-role="help"]').addEventListener('click', function (e) {
+            e.preventDefault();
+            alert('Shortcuts:\nCtrl+B  Bold\nCtrl+I  Italic\nCtrl+U  Underline\nCtrl+K  Link\nCtrl+F  Find and replace\nCtrl+Z  Undo\nCtrl+Y  Redo\nTab     Indent  ·  Shift+Tab Outdent');
+        });
         updateCount();
 
         // ---------------- events ----------------
@@ -517,12 +637,14 @@
                 else if (k === 'i') { e.preventDefault(); cmd('italic'); }
                 else if (k === 'u') { e.preventDefault(); cmd('underline'); }
                 else if (k === 'k') { e.preventDefault(); var b = toolbar.querySelector('[data-cmd="link"]'); if (b) b.click(); }
+                else if (k === 'f') { e.preventDefault(); var b = toolbar.querySelector('[data-cmd="find"]'); if (b) b.click(); }
                 else if (k === 'y') { e.preventDefault(); cmd('redo'); }
             }
             if (e.key === 'Tab') {
                 e.preventDefault();
                 cmd(e.shiftKey ? 'outdent' : 'indent');
             }
+            if (e.key === 'Escape') closeAllPops(wrap);
         });
 
         // Paste: sanitize dangerous markup, keep formatting.
@@ -580,8 +702,21 @@
             updateCount();
         });
 
-        // Sync on submit (safety net besides live sync).
+        // Autosave every 3s to localStorage (recovered on reload).
         var form = textarea.closest('form');
+        var autosaveKey = AUTOSAVE_KEY_PREFIX + (textarea.getAttribute('name') || textarea.id || 'editor');
+        var draft = null;
+        try { draft = localStorage.getItem(autosaveKey); } catch (e) {}
+        if (draft && !textarea.value.trim() && !content.textContent.trim()) {
+            content.innerHTML = sanitizeHTML(draft);
+            sync();
+        }
+        setInterval(function () {
+            try { localStorage.setItem(autosaveKey, wrap.classList.contains('src') ? srcArea.value : content.innerHTML); } catch (e) {}
+        }, 3000);
+        if (form) form.addEventListener('submit', function () { try { localStorage.removeItem(autosaveKey); } catch (e) {} });
+
+        // Sync on submit (safety net besides live sync).
         if (form) {
             form.addEventListener('submit', function () {
                 if (wrap.classList.contains('src')) { content.innerHTML = sanitizeHTML(srcArea.value); }
