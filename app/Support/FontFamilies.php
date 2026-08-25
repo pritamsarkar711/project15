@@ -96,6 +96,11 @@ class FontFamilies
                 'css'    => "'Space Grotesk', ui-sans-serif, system-ui, sans-serif",
                 'google' => 'Space+Grotesk:wght@400;500;600;700',
             ],
+            'google-sans' => [
+                'label'  => 'Google Sans',
+                'css'    => "'Google Sans', 'Product Sans', Roboto, ui-sans-serif, system-ui, sans-serif",
+                'google' => 'Google+Sans:wght@400;500;700;800',
+            ],
         ];
     }
 
