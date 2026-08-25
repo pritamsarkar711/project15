@@ -89,7 +89,7 @@
 --}}
 <div id="mobile-drawer" class="fixed inset-0 z-50 hidden lg:hidden" aria-hidden="true">
         <div id="mobile-backdrop" class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"></div>
-        <div class="absolute left-0 top-0 bottom-0 w-[280px] bg-white dark:bg-[#1e1e1e] shadow-2xl overflow-y-auto">
+        <div id="mobile-panel" class="absolute left-0 top-0 bottom-0 w-[280px] max-w-[85vw] bg-white dark:bg-[#1e1e1e] shadow-2xl overflow-y-auto overscroll-contain">
             <div class="h-16 px-4 flex items-center justify-between border-b border-slate-200 dark:border-[#2f2f2f]">
                 <a href="/" class="flex items-center">
                     @include('partials.logo', ['class' => 'h-7', 'textClass' => 'text-[19px]'])
@@ -179,29 +179,65 @@
         });
     }
     const drawer = document.getElementById('mobile-drawer');
+    const panel = document.getElementById('mobile-panel');
     const openBtn = document.getElementById('mobile-menu-btn');
     const closeBtn = document.getElementById('mobile-close');
     const backdrop = document.getElementById('mobile-backdrop');
+    let scrollY = 0;
+    function lockScroll(){
+        scrollY = window.scrollY;
+        document.documentElement.style.overflow = 'hidden';
+        document.body.style.position = 'fixed';
+        document.body.style.top = `-${scrollY}px`;
+        document.body.style.left = '0';
+        document.body.style.right = '0';
+        document.body.style.width = '100%';
+    }
+    function unlockScroll(){
+        document.documentElement.style.overflow = '';
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.left = '';
+        document.body.style.right = '';
+        document.body.style.width = '';
+        window.scrollTo(0, scrollY);
+    }
     if (drawer && openBtn) {
         function openDrawer(){
             drawer.classList.remove('hidden');
             drawer.setAttribute('aria-hidden', 'false');
             openBtn.setAttribute('aria-expanded', 'true');
-            document.body.style.overflow = 'hidden';
+            lockScroll();
         }
         function closeDrawer(){
             drawer.classList.add('hidden');
             drawer.setAttribute('aria-hidden', 'true');
             if (openBtn) openBtn.setAttribute('aria-expanded', 'false');
-            document.body.style.overflow = '';
+            if (!document.getElementById('search-overlay') || document.getElementById('search-overlay').classList.contains('hidden-overlay')) {
+                unlockScroll();
+            }
         }
         window.closeDrawer = closeDrawer;
         openBtn.addEventListener('click', openDrawer);
         if (closeBtn) closeBtn.addEventListener('click', closeDrawer);
         if (backdrop) backdrop.addEventListener('click', closeDrawer);
-        // Close on Escape for keyboard users
+        if (panel) {
+            let startY = 0;
+            panel.addEventListener('touchstart', e=>{ startY = e.touches[0].clientY; }, {passive:true});
+            panel.addEventListener('touchmove', e=>{
+                const el = panel;
+                const atTop = el.scrollTop <= 0;
+                const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 1;
+                const goingUp = e.touches[0].clientY > startY;
+                const goingDown = e.touches[0].clientY < startY;
+                if ((atTop && goingUp) || (atBottom && goingDown)) e.preventDefault();
+            }, {passive:false});
+        }
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && !drawer.classList.contains('hidden')) closeDrawer();
+        });
+        window.addEventListener('resize', ()=>{
+            if (window.innerWidth >= 1024 && !drawer.classList.contains('hidden')) closeDrawer();
         });
     }
 })();

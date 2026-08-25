@@ -1,1 +1,1 @@
-{"deployment":"2026-08-25-admin-blog-polish-v21","date":"2026-08-25","note":"admin build text removed, blog header author name only, admin full width, copy link purple circle, affiliate no radius, FAQ icon+accordion fix, Health Wellness heart-pulse unconditional patch, editor selectAll added"}
+{"deployment":"2026-08-25-nav-legal-faq-v22","date":"2026-08-25","note":"drawer scroll lock with iOS fix + overscroll contain, search overlay min-w-0 + shared scroll lock, legal pages rewritten concise without dashes, FAQ details/summary single-open + missing FAQ auto generation"}
