@@ -9,24 +9,15 @@
     $heroImgSetting = setting('hero_person_image');
     $heroImgUrl = $heroImgSetting ? asset('storage/'.$heroImgSetting) : asset('images/hero-person-harry.png');
 @endphp
-<section class="relative overflow-hidden bg-gradient-to-br from-[#0C3B2E] via-[#0E4534] to-[#072A20] dark:from-[#07231B] dark:via-[#0A2F24] dark:to-[#051A14] text-white">
-    {{-- Soft decorative glows: give the band depth so the hero image blends
-         into the background instead of sitting on a flat color block. --}}
-    <div class="absolute -top-32 -right-32 w-[420px] h-[420px] bg-emerald-400/10 rounded-full blur-3xl pointer-events-none" aria-hidden="true"></div>
-    <div class="absolute -bottom-40 -left-24 w-[420px] h-[420px] bg-emerald-300/10 rounded-full blur-3xl pointer-events-none" aria-hidden="true"></div>
-    {{-- Bottom edge fade into the page so there is no hard seam between the
-         green band and the white/dark page background below it. --}}
-    <div class="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-b from-transparent to-[#fafafa] dark:to-[#121212] pointer-events-none" aria-hidden="true"></div>
+<section class="relative overflow-hidden bg-[#0C3B2E] dark:bg-[#07231B] text-white">
     <div class="max-w-[1200px] mx-auto px-4 sm:px-6 relative">
         <div class="grid lg:grid-cols-2 gap-10 lg:gap-8 items-center py-14 lg:py-24">
             <!-- Left: hero image -->
             <div class="flex items-center justify-center lg:justify-start relative order-1">
-                <div class="relative">
-                    {{-- Soft glow instead of a hard drop shadow: no harsh edges,
-                         no clashing shadows, blends with any uploaded image. --}}
-                    <div class="absolute -inset-5 sm:-inset-6 bg-emerald-400/15 rounded-[2.25rem] blur-2xl pointer-events-none" aria-hidden="true"></div>
-                    <img src="{{ $heroImgUrl }}" alt="Featured" class="relative w-[300px] sm:w-[400px] lg:w-[460px] h-auto rounded-[1.75rem] object-cover ring-1 ring-white/15" loading="eager" decoding="async" onerror="this.parentElement.style.display='none'">
-                </div>
+                {{-- No glow, no ring, no rounded frame: the cut-out person sits
+                     directly on the flat green band, so there are no overlay
+                     patches, no lighting mismatch and no hard edges around it. --}}
+                <img src="{{ $heroImgUrl }}" alt="Featured" class="w-[300px] sm:w-[400px] lg:w-[460px] h-auto object-contain" loading="eager" decoding="async" onerror="this.style.display='none'">
             </div>
 
             <!-- Right: text -->
@@ -40,9 +31,9 @@
                 </h1>
                 <p class="mt-4 text-[17px] sm:text-[18px] leading-relaxed text-white/85 max-w-[520px] font-medium">{{ $heroSubtitle }}</p>
                 <form action="{{ route('search') }}" method="GET" class="mt-6 max-w-[520px]">
-                    <div class="flex items-center bg-white p-1.5 pl-5 shadow-[0_10px_30px_rgba(0,0,0,0.25)] rounded-full">
+                    <div class="flex items-center bg-white p-1.5 pl-5 shadow-[0_10px_30px_rgba(0,0,0,0.25)]">
                         <input type="text" name="q" value="{{ request('q') }}" placeholder="{{ $heroSearchPlaceholder }}" class="flex-1 h-11 bg-transparent text-slate-900 border-0 outline-none text-[15px] placeholder:text-slate-400 min-w-0" aria-label="Search articles">
-                        <button type="submit" class="h-11 px-6 sm:px-7 shrink-0 bg-[#0C3B2E] hover:bg-[#072A20] text-white text-sm font-semibold transition rounded-full">Search</button>
+                        <button type="submit" class="h-11 px-6 sm:px-7 shrink-0 bg-[#0C3B2E] hover:bg-[#072A20] text-white text-sm font-semibold transition">Search</button>
                     </div>
                 </form>
             </div>

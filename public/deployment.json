@@ -1,1 +1,1 @@
-{"deployment":"2026-08-25-css-rebuild-hero-badges-v17","date":"2026-08-25","note":"compiled CSS rebuilt (fixes white hero, invisible badges/disclosure in light mode), verified badges everywhere, local CKEditor super-build with submit fix, merged posting rules, ads hidden until enabled, tags, editorial policy"}
+{"deployment":"2026-08-25-hero-green-search-icon-v18","date":"2026-08-25","note":"hero: flat green background (no gradient, no glows, no bottom fade), borderless square search bar, Health & Wellness icon switched to heart-pulse, compiled CSS rebuilt"}
