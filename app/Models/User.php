@@ -42,6 +42,51 @@ class User extends Authenticatable
         return $this->hasMany(Post::class);
     }
 
+    // -----------------------------------------------------------------
+    // Role helpers + Admin ⇄ User switch
+    // -----------------------------------------------------------------
+
+    /** The real, database-stored role ('admin' | 'author' | 'reader'). */
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    /**
+     * Is this admin currently browsing in "user mode"?
+     *
+     * Admins can temporarily switch their own session to user mode so they
+     * can see the site + author dashboard exactly like a regular user would
+     * (great for verifying changes). While active, /manage is blocked and the
+     * frontend shows a "Switch back to Admin" button. Only the real admin
+     * account can enter or leave this mode — a normal user NEVER gains admin
+     * privileges from it.
+     */
+    public function browsingAsUser(): bool
+    {
+        if ($this->role !== 'admin') {
+            return false;
+        }
+        try {
+            return session('acting_role') === 'user';
+        } catch (\Throwable $e) {
+            return false;
+        }
+    }
+
+    /**
+     * The role this user is currently ACTING as. Admins in user mode act as
+     * 'author' (the normal logged-in experience); everyone else acts as their
+     * stored role. Use this for UI decisions (which dashboard button to show).
+     */
+    public function actingRole(): string
+    {
+        if ($this->browsingAsUser()) {
+            return 'author';
+        }
+        return $this->role ?? 'reader';
+    }
+
     /**
      * Send the frontend password reset notification (Huvanti-branded email
      * that points to /reset-password/{token} instead of /manage).

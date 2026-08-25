@@ -27,10 +27,13 @@
     @if(setting('ahrefs_verification_token'))<meta name="ahrefs-site-verification" content="{{ setting('ahrefs_verification_token') }}">@endif
     @php
         // Derive favicon MIME from extension (don't hardcode image/png since
-        // ImageService now converts uploads to WebP, and admins may upload .ico).
+        // ImageService now converts uploads to WebP, and admins may upload .ico/.svg).
+        // A version hash is appended so browsers immediately pick up a newly
+        // uploaded favicon instead of serving their hard-cached copy.
         $favSetting = setting('site_favicon');
-        $favUrl = $favSetting ? asset('storage/'.$favSetting) : asset('images/favicon.png');
-        $favMime = match (strtolower(pathinfo(parse_url($favUrl, PHP_URL_PATH), PATHINFO_EXTENSION))) {
+        $favUrl = ($favSetting ? asset('storage/'.$favSetting) : asset('images/favicon.png'))
+            . '?v=' . substr(md5((string) $favSetting), 0, 8);
+        $favMime = match (strtolower(pathinfo(parse_url($favSetting ?: 'favicon.png', PHP_URL_PATH) ?: '', PATHINFO_EXTENSION))) {
             'webp' => 'image/webp',
             'ico'  => 'image/x-icon',
             'gif'  => 'image/gif',
@@ -49,11 +52,19 @@
     @stack('head')
 </head>
 <body class="bg-[#fafafa] dark:bg-[#121212] text-slate-800 dark:text-slate-100 antialiased overflow-x-hidden" style="font-family:{{ \App\Support\SiteFont::cssStack() }}">
-    @if(request('_huvanti_preview'))
-    <div class="fixed top-0 inset-x-0 z-[999] bg-amber-500 text-slate-900 text-center text-sm font-semibold py-2 px-4 flex items-center justify-center gap-3">
-        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-        Preview Mode — You are viewing the site as a regular user
-        <a href="/manage" class="underline font-bold hover:text-slate-800">Back to Admin</a>
+    {{-- Admin ⇄ User switch: persistent banner while the admin browses as a user.
+         Replaces the old cosmetic "?_huvanti_preview" banner — this is a real
+         session-based role switch, and only the actual admin ever sees it. --}}
+    @if(auth()->check() && auth()->user()->browsingAsUser())
+    <div class="fixed top-0 inset-x-0 z-[999] bg-amber-500 text-slate-900 text-center text-sm font-semibold py-2 px-4 flex items-center justify-center gap-3 flex-wrap">
+        <span class="inline-flex items-center gap-2">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path stroke-linecap="round" stroke-linejoin="round" d="m16 11 2 2 4-4"/></svg>
+            User mode — you are browsing the site as a regular user
+        </span>
+        <form method="POST" action="{{ route('switch-back-to-admin') }}" class="inline">
+            @csrf
+            <button type="submit" class="underline font-bold hover:text-slate-800 cursor-pointer">Switch to Admin</button>
+        </form>
     </div>
     <div class="h-[36px]"></div>
     @endif

@@ -49,8 +49,16 @@ class RelativeAssetUrlGenerator extends UrlGenerator
     {
         $url = parent::format($root, $path, $route);
 
-        // Already absolute, protocol-relative, fragment, or empty → leave alone
-        if ($url === '' || $url[0] === '/' || $url[0] === '#' || preg_match('~^[a-z]+://|^//~i', $url)) {
+        // Empty result == the site root ("/"). Returning '' here produced
+        // href="" links (e.g. url('/') in "View Site"), which the browser
+        // resolves to the CURRENT page — the admin clicked "View Site" and
+        // stayed on the admin panel. Always emit the explicit root path.
+        if ($url === '') {
+            return '/';
+        }
+
+        // Already absolute, protocol-relative, or fragment → leave alone
+        if ($url[0] === '/' || $url[0] === '#' || preg_match('~^[a-z]+://|^//~i', $url)) {
             return $url;
         }
 

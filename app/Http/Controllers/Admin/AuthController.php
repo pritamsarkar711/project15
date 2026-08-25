@@ -51,6 +51,10 @@ class AuthController extends Controller
         Auth::login($user, $request->boolean('remember'));
         $request->session()->regenerate();
 
+        // A fresh admin login always starts in admin mode (never carry over
+        // a stale "browsing as user" switch from a previous session).
+        $request->session()->forget('acting_role');
+
         return redirect()->intended(route('admin.dashboard'))->with('success', 'Welcome back!');
     }
 

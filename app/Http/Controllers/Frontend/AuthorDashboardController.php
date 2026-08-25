@@ -88,7 +88,7 @@ class AuthorDashboardController extends Controller
 
     public function postsCreate()
     {
-        $categories = Category::orderBy('sort_order')->get();
+        $categories = Category::where('is_active', true)->orderBy('sort_order')->get();
         return view('frontend.author-dashboard.posts-create', compact('categories'));
     }
 
@@ -164,7 +164,12 @@ class AuthorDashboardController extends Controller
     {
         $post = $this->loadOwnPost($id);
         $post->load('faqs');
-        $categories = Category::orderBy('sort_order')->get();
+        // Active categories + the post's own (possibly disabled) category, so
+        // editing never silently reassigns the category.
+        $categories = Category::where('is_active', true)->orderBy('sort_order')->get();
+        if ($post->category_id && !$categories->contains('id', $post->category_id) && $post->category) {
+            $categories->prepend($post->category);
+        }
         return view('frontend.author-dashboard.posts-edit', compact('post', 'categories'));
     }
 

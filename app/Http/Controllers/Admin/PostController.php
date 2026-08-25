@@ -45,13 +45,13 @@ class PostController extends Controller
             'trash'     => Post::onlyTrashed()->count(),
         ];
 
-        $categories = Category::orderBy('sort_order')->get();
+        $categories = Category::where('is_active', true)->orderBy('sort_order')->get();
         return view('admin.posts.index', compact('posts', 'categories', 'counts', 'tab'));
     }
 
     public function create()
     {
-        $categories = Category::orderBy('sort_order')->get();
+        $categories = Category::where('is_active', true)->orderBy('sort_order')->get();
         return view('admin.posts.create', compact('categories'));
     }
 
@@ -112,7 +112,12 @@ class PostController extends Controller
     public function edit(Post $post)
     {
         $post->load('faqs');
-        $categories = Category::orderBy('sort_order')->get();
+        // Active categories + the post's own (possibly disabled) category, so
+        // editing never silently reassigns the category.
+        $categories = Category::where('is_active', true)->orderBy('sort_order')->get();
+        if ($post->category_id && !$categories->contains('id', $post->category_id) && $post->category) {
+            $categories->prepend($post->category);
+        }
         return view('admin.posts.edit', compact('post', 'categories'));
     }
 

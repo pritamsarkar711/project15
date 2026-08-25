@@ -40,6 +40,18 @@ class DatabaseSeeder extends Seeder
             ['name'=>'Travel','slug'=>'travel','description'=>'Destinations guides and travel tips','color'=>'#0f5132','icon'=>'plane'],
             ['name'=>'Lifestyle','slug'=>'lifestyle','description'=>'Culture food and everyday inspiration','color'=>'#164e3b','icon'=>'sparkles'],
             ['name'=>'Education','slug'=>'education','description'=>'Learning career and skill development','color'=>'#1a3a2a','icon'=>'book'],
+            // Additional categories (kept in sync with the
+            // 2026_08_25_000001_add_more_categories migration for live sites)
+            ['name'=>'Business','slug'=>'business','description'=>'Entrepreneurship startups marketing and business strategy','color'=>'#0C3B2E','icon'=>'briefcase'],
+            ['name'=>'Entertainment','slug'=>'entertainment','description'=>'Movies music celebrities and pop culture','color'=>'#0C3B2E','icon'=>'film'],
+            ['name'=>'Sports','slug'=>'sports','description'=>'Match analysis fitness tips and sports news','color'=>'#0C3B2E','icon'=>'dumbbell'],
+            ['name'=>'Food & Recipes','slug'=>'food-recipes','description'=>'Cooking guides restaurant reviews and kitchen tips','color'=>'#0C3B2E','icon'=>'utensils'],
+            ['name'=>'Science','slug'=>'science','description'=>'Discoveries research and how the universe works','color'=>'#0C3B2E','icon'=>'flask-conical'],
+            ['name'=>'Gaming','slug'=>'gaming','description'=>'Game reviews esports and gaming hardware','color'=>'#0C3B2E','icon'=>'tv'],
+            ['name'=>'Automotive','slug'=>'automotive','description'=>'Car reviews maintenance tips and industry news','color'=>'#0C3B2E','icon'=>'car'],
+            ['name'=>'World News','slug'=>'world-news','description'=>'Breaking headlines and global affairs explained','color'=>'#0C3B2E','icon'=>'globe'],
+            ['name'=>'Home & DIY','slug'=>'home-diy','description'=>'Interior ideas improvement projects and how-to guides','color'=>'#0C3B2E','icon'=>'puzzle'],
+            ['name'=>'Personal Growth','slug'=>'personal-growth','description'=>'Productivity habits and building a better you','color'=>'#0C3B2E','icon'=>'lightbulb'],
         ];
         foreach($categories as $i=>$c){
             Category::firstOrCreate(['slug'=>$c['slug']], array_merge($c, ['sort_order'=>$i]));

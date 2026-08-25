@@ -66,7 +66,9 @@ class SeoController extends Controller
         foreach (Post::published()->latest()->get() as $post) {
             $entries[] = ['loc' => url('/blog/'.$post->slug), 'lastmod' => $post->updated_at];
         }
-        foreach (Category::where('is_active', true)->get() as $category) {
+        // Only live categories (active + has published posts) belong in the
+        // sitemap — empty category pages return "no posts" to crawlers.
+        foreach (Category::live()->get() as $category) {
             $entries[] = ['loc' => url('/category/'.$category->slug), 'lastmod' => $category->updated_at];
         }
         foreach (Page::where('status', 'published')->get() as $page) {

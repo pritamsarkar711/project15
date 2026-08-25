@@ -17,6 +17,7 @@
 @if(request('tab') === 'integrations')
     <form method="POST" action="{{ route('admin.settings.update') }}" class="space-y-5 max-w-3xl">
         @csrf
+        <input type="hidden" name="tab" value="integrations">
         <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-4">
             <h3 class="font-semibold">Analytics & Verification</h3>
             <div class="grid sm:grid-cols-2 gap-4">
@@ -60,6 +61,7 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
 @elseif(request('tab') === 'appearance')
     <form method="POST" action="{{ route('admin.settings.update') }}" class="space-y-5 max-w-3xl">
         @csrf
+        <input type="hidden" name="tab" value="appearance">
         <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-4">
             <h3 class="font-semibold">Site Font</h3>
             <div>
@@ -77,6 +79,7 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
 @elseif(request('tab') === 'hero')
     <form method="POST" action="{{ route('admin.settings.update') }}" enctype="multipart/form-data" class="space-y-5 max-w-3xl">
         @csrf
+        <input type="hidden" name="tab" value="hero">
         <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-4">
             <h3 class="font-semibold">Hero Headline</h3>
             <div class="grid sm:grid-cols-2 gap-4">
@@ -104,24 +107,27 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
             <div class="grid sm:grid-cols-2 gap-5 items-start">
                 <div>
                     <label class="text-sm font-medium">Upload</label>
-                    <label class="mt-2 flex items-center justify-center h-24 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg cursor-pointer hover:border-[#0C3B2E] hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
-                        <input type="file" name="hero_person_image_file" accept="image/png,image/jpeg,image/webp" class="hidden">
-                        <div class="text-center">
+                    <label for="hero_person_image_file" class="mt-2 flex items-center justify-center h-24 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg cursor-pointer hover:border-[#0C3B2E] hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
+                        <input type="file" name="hero_person_image_file" id="hero_person_image_file" accept="image/jpeg,image/png,image/gif,image/webp,image/bmp" class="hidden">
+                        <div class="text-center" id="hero-upload-hint">
                             <svg class="w-6 h-6 mx-auto text-slate-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg>
                             <p class="text-xs text-slate-500 mt-1">Click to upload</p>
+                            <p class="text-[10px] text-slate-400 mt-0.5">JPG, PNG, GIF, WebP or BMP · max 4 MB</p>
                         </div>
                     </label>
+                    <p class="mt-2 text-xs font-medium text-emerald-700 dark:text-emerald-300 hidden" id="hero-file-name"></p>
                     <label class="mt-3 inline-flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300 cursor-pointer">
                         <input type="checkbox" name="hero_remove_image" value="1" class="text-emerald-600">
                         Remove image (use default)
                     </label>
                 </div>
                 <div>
-                    <label class="text-sm font-medium">Current</label>
+                    <label class="text-sm font-medium">Preview</label>
                     @php $heroImg = $settings['hero_person_image']->value ?? null; @endphp
                     <div class="mt-2 w-32 h-32 rounded-xl overflow-hidden bg-[#0C3B2E] flex items-center justify-center">
-                        <img src="{{ $heroImg ? asset('storage/'.$heroImg) : asset('images/hero-person-harry.png') }}" alt="" class="w-full h-full object-cover" loading="lazy" decoding="async">
+                        <img src="{{ $heroImg ? asset('storage/'.$heroImg) : asset('images/hero-person-harry.png') }}" alt="" class="w-full h-full object-cover" loading="lazy" decoding="async" id="hero-preview-img">
                     </div>
+                    <p class="mt-1.5 text-[11px] text-slate-400">Click Save to apply — the preview updates immediately after saving.</p>
                 </div>
             </div>
         </div>
@@ -132,6 +138,7 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
 @elseif(request('tab') === 'ads')
     <form method="POST" action="{{ route('admin.settings.update') }}" class="space-y-5 max-w-3xl">
         @csrf
+        <input type="hidden" name="tab" value="ads">
         <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-4">
             <div>
                 <h3 class="font-semibold">Ad Frequency</h3>
@@ -246,6 +253,7 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
 @else
     <form method="POST" action="{{ route('admin.settings.update') }}" enctype="multipart/form-data" class="space-y-5 max-w-3xl">
         @csrf
+        <input type="hidden" name="tab" value="general">
         <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-4">
             <h3 class="font-semibold">Site</h3>
             <div class="grid sm:grid-cols-2 gap-4">
@@ -312,38 +320,44 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
             <div class="grid sm:grid-cols-3 gap-5">
                 <div>
                     <label class="text-sm font-medium">Logo · Light</label>
-                    @if(!empty($settings['site_logo_light']->value))
-                        <div class="mt-2 h-9 flex items-center bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2">
-                            <img src="{{ asset('storage/'.$settings['site_logo_light']->value) }}" class="h-7 w-auto" alt="" loading="lazy" decoding="async">
-                        </div>
-                    @endif
+                    <div class="mt-2 h-9 flex items-center bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2" id="logo-light-preview-wrap">
+                        @if(!empty($settings['site_logo_light']->value))
+                            <img src="{{ asset('storage/'.$settings['site_logo_light']->value) }}" class="h-7 w-auto" alt="" loading="lazy" decoding="async" id="logo-light-preview">
+                        @else
+                            <span class="text-xs text-slate-400" id="logo-light-preview">No logo uploaded yet</span>
+                        @endif
+                    </div>
                     <label class="mt-2 flex items-center justify-center h-16 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg cursor-pointer hover:border-[#0C3B2E] hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
-                        <input type="file" name="site_logo_light_file" accept="image/png,image/jpeg,image/webp,image/svg+xml" class="hidden">
-                        <span class="text-xs text-slate-500">Upload</span>
+                        <input type="file" name="site_logo_light_file" accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml" class="hidden" data-preview="logo-light">
+                        <span class="text-xs text-slate-500">Upload (JPG/PNG/WebP/SVG)</span>
                     </label>
                 </div>
                 <div>
                     <label class="text-sm font-medium">Logo · Dark</label>
-                    @if(!empty($settings['site_logo_dark']->value))
-                        <div class="mt-2 h-9 flex items-center bg-slate-900 border border-slate-700 px-2">
-                            <img src="{{ asset('storage/'.$settings['site_logo_dark']->value) }}" class="h-7 w-auto" alt="" loading="lazy" decoding="async">
-                        </div>
-                    @endif
+                    <div class="mt-2 h-9 flex items-center bg-slate-900 border border-slate-700 px-2" id="logo-dark-preview-wrap">
+                        @if(!empty($settings['site_logo_dark']->value))
+                            <img src="{{ asset('storage/'.$settings['site_logo_dark']->value) }}" class="h-7 w-auto" alt="" loading="lazy" decoding="async" id="logo-dark-preview">
+                        @else
+                            <span class="text-xs text-slate-500" id="logo-dark-preview">No logo uploaded yet</span>
+                        @endif
+                    </div>
                     <label class="mt-2 flex items-center justify-center h-16 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg cursor-pointer hover:border-[#0C3B2E] hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
-                        <input type="file" name="site_logo_dark_file" accept="image/png,image/jpeg,image/webp,image/svg+xml" class="hidden">
-                        <span class="text-xs text-slate-500">Upload</span>
+                        <input type="file" name="site_logo_dark_file" accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml" class="hidden" data-preview="logo-dark">
+                        <span class="text-xs text-slate-500">Upload (JPG/PNG/WebP/SVG)</span>
                     </label>
                 </div>
                 <div>
                     <label class="text-sm font-medium">Favicon</label>
-                    @if(!empty($settings['site_favicon']->value))
-                        <div class="mt-2 w-9 h-9 flex items-center justify-center">
-                            <img src="{{ asset('storage/'.$settings['site_favicon']->value) }}" class="w-8 h-8 object-contain" alt="" loading="lazy" decoding="async">
-                        </div>
-                    @endif
+                    <div class="mt-2 w-9 h-9 flex items-center justify-center">
+                        @if(!empty($settings['site_favicon']->value))
+                            <img src="{{ asset('storage/'.$settings['site_favicon']->value) }}" class="w-8 h-8 object-contain" alt="" loading="lazy" decoding="async" id="favicon-preview">
+                        @else
+                            <img src="{{ asset('images/favicon.png') }}" class="w-8 h-8 object-contain" alt="" id="favicon-preview">
+                        @endif
+                    </div>
                     <label class="mt-2 flex items-center justify-center h-16 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg cursor-pointer hover:border-[#0C3B2E] hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
-                        <input type="file" name="site_favicon_file" accept="image/png,image/jpeg,image/webp,image/x-icon" class="hidden">
-                        <span class="text-xs text-slate-500">Upload</span>
+                        <input type="file" name="site_favicon_file" accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml,image/x-icon" class="hidden" data-preview="favicon">
+                        <span class="text-xs text-slate-500">Upload (PNG/JPG/SVG/ICO)</span>
                     </label>
                 </div>
             </div>
@@ -352,4 +366,60 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
         <button type="submit" class="h-11 px-6 bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold transition">Save</button>
     </form>
 @endif
+
+{{-- Live upload previews: show the selected image BEFORE saving, so the admin
+     immediately sees what the hero image / logo / favicon will look like.
+     After Save, the controller redirects back to the same tab and the
+     "Preview" boxes show the freshly stored image. --}}
+<script>
+(function () {
+    // Hero image preview
+    var heroInput = document.getElementById('hero_person_image_file');
+    var heroPreview = document.getElementById('hero-preview-img');
+    var heroName = document.getElementById('hero-file-name');
+    if (heroInput && heroPreview) {
+        heroInput.addEventListener('change', function () {
+            if (heroInput.files && heroInput.files[0]) {
+                var file = heroInput.files[0];
+                if (!file.type.startsWith('image/') || file.type === 'image/heic' || file.type === 'image/heif' || file.type === 'image/avif') {
+                    heroName.textContent = '⚠ "' + file.name + '" is not a supported format. Please use JPG, PNG, GIF, WebP or BMP.';
+                    heroName.classList.remove('hidden', 'text-emerald-700', 'dark:text-emerald-300');
+                    heroName.classList.add('text-red-600', 'dark:text-red-400');
+                    heroInput.value = '';
+                    return;
+                }
+                heroPreview.src = URL.createObjectURL(file);
+                if (heroName) {
+                    heroName.textContent = '✓ ' + file.name + ' selected — click Save to apply';
+                    heroName.classList.remove('hidden', 'text-red-600', 'dark:text-red-400');
+                    heroName.classList.add('text-emerald-700', 'dark:text-emerald-300');
+                }
+            }
+        });
+    }
+
+    // Logo / favicon previews (inputs marked with data-preview)
+    document.querySelectorAll('input[type="file"][data-preview]').forEach(function (input) {
+        input.addEventListener('change', function () {
+            if (!input.files || !input.files[0]) return;
+            var file = input.files[0];
+            var el = document.getElementById(input.dataset.preview + '-preview');
+            var wrap = document.getElementById(input.dataset.preview + '-preview-wrap');
+            if (file.type === 'image/svg+xml' || file.type === 'image/x-icon') {
+                // SVG/ICO: just confirm the pick (object URLs work for these too)
+                if (el && el.tagName === 'IMG') { el.src = URL.createObjectURL(file); }
+                else if (wrap) { wrap.innerHTML = '<span class="text-xs font-medium text-emerald-700 dark:text-emerald-300">✓ ' + file.name + ' selected — click Save</span>'; }
+                return;
+            }
+            if (el && el.tagName === 'IMG') {
+                el.src = URL.createObjectURL(file);
+            } else if (wrap) {
+                wrap.innerHTML = '<img src="' + URL.createObjectURL(file) + '" class="h-7 w-auto" alt="">';
+            }
+            var label = input.parentElement.querySelector('span');
+            if (label) { label.textContent = '✓ ' + file.name; }
+        });
+    });
+})();
+</script>
 @endsection

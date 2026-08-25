@@ -15,20 +15,39 @@ class ImageService
     public const MAX_WIDTH = 1600;
     public const QUALITY = 78;
 
+    /** Raster formats GD can decode + re-encode. */
     protected const ALLOWED_MIMES = ['image/jpeg','image/png','image/gif','image/webp','image/bmp'];
 
+    /** Vector / icon formats GD cannot process — stored as-is. */
+    protected const RAW_MIMES = ['image/svg+xml','image/x-icon','image/vnd.microsoft.icon'];
+
     /**
+     * Validate, optimise and store an uploaded image on the public disk.
+     *
+     * @param bool $allowVector When true, SVG / ICO files are accepted and
+     *                          stored without re-encoding (GD can't process
+     *                          them). Used for logos & favicons, where SVG is
+     *                          the natural format. SVGs are sanitised first.
      * @return string relative path on public disk, e.g. "uploads/posts/65f1a2b3c4d5e.webp"
-     * @throws \InvalidArgumentException
+     * @throws \InvalidArgumentException with a user-friendly message
      */
-    public function optimizeAndStore(UploadedFile $file, string $dir = 'uploads'): string
+    public function optimizeAndStore(UploadedFile $file, string $dir = 'uploads', bool $allowVector = false): string
     {
         if (!$file->isValid()) {
             throw new \InvalidArgumentException('Invalid file upload.');
         }
         $mime = $file->getMimeType();
+
+        // SVG / ICO — keep original bytes (already tiny), after sanitising SVGs.
+        if ($allowVector && in_array($mime, self::RAW_MIMES, true)) {
+            return $this->storeRaw($file, $dir);
+        }
+
         if (!in_array($mime, self::ALLOWED_MIMES, true)) {
-            throw new \InvalidArgumentException('Unsupported image type. Allowed: JPG, PNG, GIF, WebP, BMP.');
+            $allowed = 'JPG, PNG, GIF, WebP, BMP' . ($allowVector ? ', SVG, ICO' : '');
+            throw new \InvalidArgumentException(
+                'Unsupported image type "' . $mime . '". Allowed: ' . $allowed . '.'
+            );
         }
 
         $path = $file->getRealPath();
@@ -76,6 +95,35 @@ class ImageService
                 @unlink($tmp);
             }
         }
+
+        return $relative;
+    }
+
+    /**
+     * Store SVG / ICO uploads untouched (GD cannot re-encode them, and they
+     * are already compact). SVG content is sanitised to strip scripts and
+     * event handlers before it is written to disk.
+     */
+    protected function storeRaw(UploadedFile $file, string $dir): string
+    {
+        $contents = file_get_contents($file->getRealPath());
+        if ($contents === false || $contents === '') {
+            throw new \InvalidArgumentException('The uploaded file could not be read.');
+        }
+
+        $ext = strtolower($file->getClientOriginalExtension() ?: '');
+        $ext = preg_replace('/[^a-z0-9]/', '', $ext) ?: 'bin';
+
+        if ($ext === 'svg') {
+            // Strip <script> blocks, inline event handlers and javascript: URLs.
+            $contents = preg_replace('#<script(\s[^>]*)?>.*?</script>#is', '', $contents) ?? $contents;
+            $contents = preg_replace('/\son\w+\s*=\s*("[^"]*"|\'[^\']*\'|[^\s>]+)/i', '', $contents) ?? $contents;
+            $contents = preg_replace('/javascript\s*:/i', '', $contents) ?? $contents;
+        }
+
+        $relative = trim($dir, '/') . '/' . uniqid('', true) . '.' . $ext;
+        Storage::disk('public')->makeDirectory(trim($dir, '/'));
+        Storage::disk('public')->put($relative, $contents);
 
         return $relative;
     }

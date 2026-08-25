@@ -8,8 +8,66 @@ on the server. The repository intentionally includes `vendor/` and
 Current deployment marker:
 
 ```text
-2026-08-24-hostinger-launch-v2
+2026-08-25-audit-fixes-v13
 ```
+
+## "I pushed to GitHub but my site didn't change" — read this first
+
+Pushing to GitHub does **not** update the files on Hostinger by itself. The two
+are only connected if the hPanel **Git deployment** integration is configured,
+and it must point at the right branch. This is the #1 reason changes "don't
+reflect" on the live site.
+
+### Step 1 — Check what the live server is actually running
+
+Open this URL in your browser:
+
+```text
+https://huvanti.com/deployment.json
+```
+
+Compare the `deployment` value with the latest marker in `public/deployment.json`
+on GitHub `main`. **If they differ, the server never received your push** — no
+amount of cache clearing will help until the files actually arrive.
+
+The same build marker is shown in the admin panel footer (bottom right of every
+admin page).
+
+### Step 2 — Fix the Git deployment in hPanel
+
+1. Log in to **hPanel → Websites → huvanti.com → Git** (Git Deployment).
+2. Check which **branch** is selected. It must be **`main`** (an old
+   `arena/...` branch was confirmed to be served during a previous incident).
+3. Check which **directory** it deploys to. It must be the same folder your
+   live site is served from (`public_html` or the subfolder configured for the
+   domain).
+4. Click **Pull latest** (or "Update from Git") — Hostinger pulls the newest
+   commit from GitHub and copies the files over.
+5. Hostinger's Git integration usually auto-pulls after each push, but on some
+   plans you must press **Pull latest** manually. If there is no Git section at
+   all, your plan uses manual deploys — use FTP/File Manager or follow the
+   recovery steps below.
+
+### Step 3 — Finish the deploy (clear caches + run migrations)
+
+After the new files are on the server, open this once in your browser:
+
+```text
+https://huvanti.com/deploy.php
+```
+
+It automatically:
+
+- clears compiled Blade views and OPcache,
+- clears the application cache (settings),
+- runs **pending database migrations** (idempotent — safe to run any time),
+- recreates the `public/storage` symlink if possible.
+
+### Step 4 — Hard-refresh the browser
+
+Press `Ctrl + Shift + R` (Windows) or `Cmd + Shift + R` (Mac). Browsers cache
+CSS/JS/images aggressively; a normal refresh can keep showing the old design
+even when the server is already updated.
 
 ## Confirmed cause of the production failure
 

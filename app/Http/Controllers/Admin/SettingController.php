@@ -43,6 +43,10 @@ class SettingController extends Controller
     public function update(Request $request)
     {
         $request->validate([
+            // Hidden marker telling us which tab submitted the form, so we can
+            // (a) scope checkbox handling to the General tab and
+            // (b) redirect back to the same tab after saving.
+            'tab' => 'nullable|string|max:32',
             'site_name' => 'nullable|string|max:100',
             'site_tagline' => 'nullable|string|max:255',
             'site_description' => 'nullable|string|max:500',
@@ -74,11 +78,18 @@ class SettingController extends Controller
             'ads_txt_content' => 'nullable|string|max:20000',
             'robots_txt_content' => 'nullable|string|max:20000',
             'llms_txt_content' => 'nullable|string|max:20000',
+            // Uploads — extensions must match ImageService's capabilities.
+            // (HEIC/AVIF are rejected up-front with a clear message instead of
+            // crashing with a 500 halfway through the save.)
+            'hero_person_image_file' => 'nullable|file|mimes:jpg,jpeg,png,gif,webp,bmp|max:4096',
+            'site_logo_light_file'   => 'nullable|file|mimes:jpg,jpeg,png,gif,webp,bmp,svg|max:2048',
+            'site_logo_dark_file'    => 'nullable|file|mimes:jpg,jpeg,png,gif,webp,bmp,svg|max:2048',
+            'site_favicon_file'      => 'nullable|file|mimes:jpg,jpeg,png,gif,webp,bmp,svg,ico|max:1024',
         ]);
 
         $keys = [
             'site_name', 'site_tagline', 'site_description', 'site_keywords', 'contact_email',
-            'footer_copyright', 'site_logo',
+            'footer_copyright',
             'site_font_family',
             'hero_phrase_1', 'hero_phrase_2', 'hero_subtitle', 'hero_search_placeholder',
             'ad_paragraph_frequency',
@@ -94,44 +105,58 @@ class SettingController extends Controller
                 Setting::set($key, (string) $request->input($key));
             }
         }
-        // Checkbox toggle: if absent, the user unchecked it → store '0'.
-        Setting::set('social_enabled', $request->boolean('social_enabled') ? '1' : '0');
+
+        // Checkbox toggle — ONLY when the General tab form was submitted.
+        // (The Appearance/Hero/Ads/Integrations forms don't contain this
+        // checkbox; storing '0' unconditionally used to silently disable the
+        // footer social links every time another tab was saved.)
+        if ($request->input('tab') === 'general' || $request->has('site_name')) {
+            Setting::set('social_enabled', $request->boolean('social_enabled') ? '1' : '0');
+        }
 
         // Flush ALL settings cache so every page picks up every change immediately.
         Setting::flushAllCache();
 
-        if ($request->hasFile('site_logo_file')) {
-            $path = app(ImageService::class)->optimizeAndStore($request->file('site_logo_file'), 'uploads/settings');
-            Setting::set('site_logo', '/storage/'.$path);
-        }
+        $tab = $request->input('tab') ?: 'general';
 
-        // Branding uploads: logo (light mode), logo (dark mode), favicon.
-        // Each upload:
-        //   1. validates file is a real image and within size limit
-        //   2. deletes the previously stored file (housekeeping)
-        //   3. optimizes (resize + WebP conversion via ImageService)
-        //   4. stores the new relative path on the public disk
-        foreach (['site_logo_light', 'site_logo_dark', 'site_favicon'] as $fileKey) {
-            if ($request->hasFile($fileKey.'_file')) {
-                $request->validate([$fileKey.'_file' => 'image|max:2048']);
-                $old = Setting::where('key', $fileKey)->value('value');
-                if ($old) { \Illuminate\Support\Facades\Storage::disk('public')->delete($old); }
-                $path = app(ImageService::class)->optimizeAndStore($request->file($fileKey.'_file'), 'uploads/settings');
-                Setting::set($fileKey, $path);
+        // ------------------------------------------------------------------
+        // Image uploads. Each one is wrapped so a bad file returns a friendly
+        // error message instead of a 500 server error.
+        // ------------------------------------------------------------------
+        try {
+            // Branding uploads: logo (light mode), logo (dark mode), favicon.
+            // SVG logos and .ico favicons are stored as-is (no re-encoding);
+            // raster images are optimised + converted to WebP.
+            foreach (['site_logo_light', 'site_logo_dark', 'site_favicon'] as $fileKey) {
+                if ($request->hasFile($fileKey.'_file')) {
+                    $old = Setting::where('key', $fileKey)->value('value');
+                    if ($old) { \Illuminate\Support\Facades\Storage::disk('public')->delete($old); }
+                    $path = app(ImageService::class)->optimizeAndStore(
+                        $request->file($fileKey.'_file'), 'uploads/settings', true
+                    );
+                    Setting::set($fileKey, $path);
+                }
             }
-        }
 
-        // Hero person image upload (auto-optimised via ImageService).
-        if ($request->boolean('hero_remove_image')) {
-            $old = Setting::where('key', 'hero_person_image')->value('value');
-            if ($old) { \Illuminate\Support\Facades\Storage::disk('public')->delete($old); }
-            Setting::set('hero_person_image', '');
-        } elseif ($request->hasFile('hero_person_image_file')) {
-            $request->validate(['hero_person_image_file' => 'image|max:4096']);
-            $old = Setting::where('key', 'hero_person_image')->value('value');
-            if ($old) { \Illuminate\Support\Facades\Storage::disk('public')->delete($old); }
-            $path = app(ImageService::class)->optimizeAndStore($request->file('hero_person_image_file'), 'uploads/hero');
-            Setting::set('hero_person_image', $path);
+            // Hero person image upload (auto-optimised via ImageService).
+            if ($request->boolean('hero_remove_image')) {
+                $old = Setting::where('key', 'hero_person_image')->value('value');
+                if ($old) { \Illuminate\Support\Facades\Storage::disk('public')->delete($old); }
+                Setting::set('hero_person_image', '');
+            } elseif ($request->hasFile('hero_person_image_file')) {
+                $old = Setting::where('key', 'hero_person_image')->value('value');
+                if ($old) { \Illuminate\Support\Facades\Storage::disk('public')->delete($old); }
+                $path = app(ImageService::class)->optimizeAndStore(
+                    $request->file('hero_person_image_file'), 'uploads/hero'
+                );
+                Setting::set('hero_person_image', $path);
+            }
+        } catch (\Throwable $e) {
+            // Something was wrong with the uploaded file. Everything else has
+            // already been saved — show a clear error for the upload itself.
+            return redirect()
+                ->route('admin.settings.index', ['tab' => $tab])
+                ->with('error', 'Upload failed: ' . $e->getMessage());
         }
 
         // *** CRITICAL: Clear compiled Blade views + OPcache ***
@@ -141,7 +166,9 @@ class SettingController extends Controller
         // enough — the Blade template itself is cached at the PHP opcode level.
         $this->clearCompiledViews();
 
-        return back()->with('success', 'Settings updated');
+        return redirect()
+            ->route('admin.settings.index', ['tab' => $tab])
+            ->with('success', 'Settings updated');
     }
 
     // ---------------------------------------------------------------------

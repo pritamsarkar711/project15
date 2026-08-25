@@ -11,7 +11,9 @@ class CategoryController extends Controller
 {
     public function index()
     {
-        $categories = Category::withCount('posts')->orderBy('sort_order')->get();
+        // published_posts_count powers the "live on site" indicator: a category
+        // is only visible to visitors when it is active AND has ≥1 published post.
+        $categories = Category::withCount('posts')->withCount(['posts as published_posts_count' => fn ($q) => $q->published()])->orderBy('sort_order')->get();
         return view('admin.categories.index', compact('categories'));
     }
 
@@ -66,6 +68,19 @@ class CategoryController extends Controller
         }
         $category->delete();
         return back()->with('success', 'Category deleted');
+    }
+
+    /**
+     * Quick enable / disable toggle from the categories list.
+     * Disabled categories disappear from the public site immediately.
+     */
+    public function toggle(Category $category)
+    {
+        $category->is_active = !$category->is_active;
+        $category->save();
+        return back()->with('success', $category->is_active
+            ? "\"{$category->name}\" is now enabled" . ($category->posts()->where('status', 'published')->exists() ? ' and visible on the site.' : ' — it becomes visible once it has at least one published post.')
+            : "\"{$category->name}\" is now hidden from the site.");
     }
 
     public function reorder(Request $request)
