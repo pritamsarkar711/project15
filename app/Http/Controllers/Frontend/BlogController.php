@@ -46,12 +46,22 @@ class BlogController extends Controller
         $inArticleAd = \App\Models\Advertisement::active()->position('in_article')->first();
         $contentWithAnchors = $this->injectInArticleAds($contentWithAnchors, $adFrequency, $inArticleAd);
 
-        // Reactions ("Did you like this post?" section after content + FAQ)
-        $likesCount = $post->likes()->count();
-        $dislikesCount = $post->dislikes()->count();
-        $myReaction = auth()->check()
-            ? $post->reactions()->where('user_id', auth()->id())->value('reaction')
-            : null;
+        // Reactions ("Did you like this post?" section after content + FAQ).
+        // Defensive: if the post_reactions table has not been created yet (the
+        // migration runs automatically, but a very fresh deploy may serve one
+        // request before it finishes), fall back to zeros instead of throwing
+        // a 500 error on every post page.
+        try {
+            $likesCount = $post->likes()->count();
+            $dislikesCount = $post->dislikes()->count();
+            $myReaction = auth()->check()
+                ? $post->reactions()->where('user_id', auth()->id())->value('reaction')
+                : null;
+        } catch (\Throwable $e) {
+            $likesCount = 0;
+            $dislikesCount = 0;
+            $myReaction = null;
+        }
 
         // Does the current viewer follow this post's author? (Follow button
         // in the author box below the content.)
@@ -72,17 +82,21 @@ class BlogController extends Controller
         $post = Post::published()->where('slug', $slug)->firstOrFail();
         $request->validate(['reaction' => 'required|in:like,dislike']);
 
-        $existing = PostReaction::where('post_id', $post->id)
-            ->where('user_id', auth()->id())
-            ->first();
+        try {
+            $existing = PostReaction::where('post_id', $post->id)
+                ->where('user_id', auth()->id())
+                ->first();
 
-        if ($existing && $existing->reaction === $request->reaction) {
-            $existing->delete();              // clicked the same button again → remove
-        } else {
-            PostReaction::updateOrCreate(
-                ['post_id' => $post->id, 'user_id' => auth()->id()],
-                ['reaction' => $request->reaction]
-            );
+            if ($existing && $existing->reaction === $request->reaction) {
+                $existing->delete();              // clicked the same button again → remove
+            } else {
+                PostReaction::updateOrCreate(
+                    ['post_id' => $post->id, 'user_id' => auth()->id()],
+                    ['reaction' => $request->reaction]
+                );
+            }
+        } catch (\Throwable $e) {
+            // Table not created yet (migration pending) — ignore gracefully.
         }
 
         return back();
@@ -155,9 +169,15 @@ class BlogController extends Controller
 
         // Visitor-visible stats: published posts only (drafts are private),
         // plus the total likes / dislikes this author's content received.
+        // Defensive: same missing-table guard as in show().
         $publishedIds = $author->publishedPosts()->pluck('id');
-        $totalLikes = PostReaction::whereIn('post_id', $publishedIds)->where('reaction', 'like')->count();
-        $totalDislikes = PostReaction::whereIn('post_id', $publishedIds)->where('reaction', 'dislike')->count();
+        try {
+            $totalLikes = PostReaction::whereIn('post_id', $publishedIds)->where('reaction', 'like')->count();
+            $totalDislikes = PostReaction::whereIn('post_id', $publishedIds)->where('reaction', 'dislike')->count();
+        } catch (\Throwable $e) {
+            $totalLikes = 0;
+            $totalDislikes = 0;
+        }
         $publishedCount = $publishedIds->count();
 
         return view('frontend.author.profile', compact(

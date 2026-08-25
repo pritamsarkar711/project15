@@ -8,7 +8,7 @@
     <div class="max-w-[1200px] mx-auto px-4 sm:px-6">
         <div class="flex items-center h-16 gap-3">
             <!-- Mobile menu -->
-            <button id="mobile-menu-btn" class="w-10 h-10 flex items-center justify-center lg:hidden text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#2a2a2a] transition" aria-label="Open menu">
+            <button id="mobile-menu-btn" class="w-10 h-10 flex items-center justify-center lg:hidden text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#2a2a2a] transition" aria-label="Open menu" aria-controls="mobile-drawer" aria-expanded="false">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
             </button>
 
@@ -25,7 +25,7 @@
                         Categories
                         <svg class="w-4 h-4 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     </button>
-                    <div id="categories-menu" class="hidden absolute left-0 top-full mt-2 w-[480px] card-elev ! shadow-[0_8px_30px_rgba(0,0,0,0.16)] dark:shadow-black/50 p-2 z-50">
+                    <div id="categories-menu" class="hidden absolute left-0 top-full mt-2 w-[480px] max-w-[calc(100vw-2rem)] card-elev shadow-[0_8px_30px_rgba(0,0,0,0.16)] dark:shadow-black/50 p-2 z-50">
                         <div class="grid grid-cols-2 gap-1">
                             @foreach($categories as $cat)
                                 <a href="{{ route('category.show',$cat->slug) }}" class="flex items-center gap-3 p-2.5 hover:bg-slate-50 dark:hover:bg-[#2a2a2a] transition">
@@ -77,9 +77,17 @@
             </div>
         </div>
     </div>
+</header>
 
-    <!-- Mobile Drawer (repo pattern: 280px) -->
-    <div id="mobile-drawer" class="fixed inset-0 z-50 hidden lg:hidden">
+{{--
+    Mobile Drawer.
+    ⚠️ MUST live OUTSIDE the <header> element: the header uses backdrop-blur,
+    and a backdrop-filter on an ancestor creates a new containing block for
+    position:fixed children. Inside the header, this drawer's "fixed inset-0"
+    was constrained to the 64px header bar, so opening the menu on mobile
+    showed a tiny broken strip instead of a full-screen drawer.
+--}}
+<div id="mobile-drawer" class="fixed inset-0 z-50 hidden lg:hidden" aria-hidden="true">
         <div id="mobile-backdrop" class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"></div>
         <div class="absolute left-0 top-0 bottom-0 w-[280px] bg-white dark:bg-[#1e1e1e] shadow-2xl overflow-y-auto">
             <div class="h-16 px-4 flex items-center justify-between border-b border-slate-200 dark:border-[#2f2f2f]">
@@ -156,13 +164,12 @@
             </nav>
         </div>
     </div>
-</header>
 
 <script>
 (function(){
     const btn = document.getElementById('categories-btn');
     const menu = document.getElementById('categories-menu');
-    if(btn && menu){
+    if (btn && menu) {
         btn.addEventListener('click', (e)=>{
             e.stopPropagation();
             menu.classList.toggle('hidden');
@@ -175,11 +182,27 @@
     const openBtn = document.getElementById('mobile-menu-btn');
     const closeBtn = document.getElementById('mobile-close');
     const backdrop = document.getElementById('mobile-backdrop');
-    function openDrawer(){ drawer.classList.remove('hidden'); document.body.style.overflow='hidden'; }
-    function closeDrawer(){ drawer.classList.add('hidden'); document.body.style.overflow=''; }
-    window.closeDrawer = closeDrawer;
-    openBtn && openBtn.addEventListener('click', openDrawer);
-    closeBtn && closeBtn.addEventListener('click', closeDrawer);
-    backdrop && backdrop.addEventListener('click', closeDrawer);
+    if (drawer && openBtn) {
+        function openDrawer(){
+            drawer.classList.remove('hidden');
+            drawer.setAttribute('aria-hidden', 'false');
+            openBtn.setAttribute('aria-expanded', 'true');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeDrawer(){
+            drawer.classList.add('hidden');
+            drawer.setAttribute('aria-hidden', 'true');
+            if (openBtn) openBtn.setAttribute('aria-expanded', 'false');
+            document.body.style.overflow = '';
+        }
+        window.closeDrawer = closeDrawer;
+        openBtn.addEventListener('click', openDrawer);
+        if (closeBtn) closeBtn.addEventListener('click', closeDrawer);
+        if (backdrop) backdrop.addEventListener('click', closeDrawer);
+        // Close on Escape for keyboard users
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !drawer.classList.contains('hidden')) closeDrawer();
+        });
+    }
 })();
 </script>

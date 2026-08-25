@@ -47,4 +47,42 @@ return \App\Application::configure(basePath: dirname(__DIR__))
                 .'Please refresh the page and try again with a smaller file.'
             );
         });
+
+        // Broken / not-found links never show a dead 404 page: visitors are
+        // sent straight back to the homepage with a short note. (Admin URLs
+        // fall back to the admin login instead.) Actual broken links inside
+        // the site should of course still be fixed at the source — this is
+        // the safety net for everything else (old bookmarks, mistyped URLs,
+        // deleted posts shared on social media, ...).
+        $exceptions->renderable(function (\Symfony\Component\HttpKernel\Exception\NotFoundHttpException $e, Request $request) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'The page you were looking for could not be found.'], 404);
+            }
+            if ($request->is('manage/*')) {
+                return redirect()->route('admin.login')
+                    ->with('error', 'The admin page you were looking for could not be found.');
+            }
+            return redirect()->to('/')
+                ->with('error', 'The page you were looking for could not be found.');
+        });
+
+        // 403 (no permission, e.g. an author opening /manage): back to the
+        // homepage with a short note instead of a bare error page.
+        $exceptions->renderable(function (\Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException $e, Request $request) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'You do not have permission to view that page.'], 403);
+            }
+            return redirect()->to('/')
+                ->with('error', 'You do not have permission to view that page.');
+        });
+
+        // 405 (wrong HTTP method on a known URL): treat like a not-found and
+        // send the visitor to the homepage.
+        $exceptions->renderable(function (\Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException $e, Request $request) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Method not allowed.'], 405);
+            }
+            return redirect()->to('/')
+                ->with('error', 'That request could not be processed.');
+        });
     })->create();
