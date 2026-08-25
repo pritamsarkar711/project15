@@ -140,8 +140,8 @@ function huvanti_render_boot_failure_page(?Throwable $e, array $notes = []): voi
             'value' => '2026-08-25-hostinger-launch-v3',
         ],
         'PHP version' => [
-            'ok' => PHP_VERSION_ID >= 80300,
-            'value' => PHP_VERSION.(PHP_VERSION_ID >= 80300 ? '' : ' — Huvanti needs PHP 8.3+ (hPanel → PHP Configuration)'),
+            'ok' => PHP_VERSION_ID >= 80200,
+            'value' => PHP_VERSION.(PHP_VERSION_ID >= 80200 ? '' : ' — Huvanti needs PHP 8.2+ (hPanel → PHP Configuration)'),
         ],
         'vendor/autoload.php' => [
             'ok' => is_file(__DIR__.'/../vendor/autoload.php'),

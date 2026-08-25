@@ -7,7 +7,7 @@
     $heroSubtitle = setting('hero_subtitle', 'Tech, health, finance, travel and more — one calm place to read.');
     $heroSearchPlaceholder = setting('hero_search_placeholder', 'Search articles, topics, ideas...');
     $heroImgSetting = setting('hero_person_image');
-    $heroImgUrl = $heroImgSetting ? asset('storage/'.$heroImgSetting) : asset('images/hero-person.png');
+    $heroImgUrl = $heroImgSetting ? asset('storage/'.$heroImgSetting) : asset('images/hero-person-harry.png');
 @endphp
 <!-- Hero: solid deep green. Image LEFT in a circular frame (works with any
      image, transparent OR solid-bg), text RIGHT. Short subtitle, no overflow. -->
@@ -29,7 +29,7 @@
                 <h1 class="text-[34px] sm:text-[42px] lg:text-[48px] font-extrabold leading-[1.15] tracking-tight min-h-[2.4em] sm:min-h-[2.2em]">
                     <span id="typing-text" class="typing-text"></span><span class="typing-cursor" aria-hidden="true"></span>
                 </h1>
-                <p class="mt-4 text-[15px] sm:text-[16px] leading-relaxed text-white/75 max-w-[520px]">{{ $heroSubtitle }}</p>
+                <p class="mt-4 text-[17px] sm:text-[18px] leading-relaxed text-white/85 max-w-[520px] font-medium">{{ $heroSubtitle }}</p>
                 <form action="{{ route('search') }}" method="GET" class="mt-6 max-w-[520px]">
                     <div class="flex items-center bg-white p-1.5 pl-5 shadow-[0_10px_30px_rgba(0,0,0,0.25)]">
                         <input type="text" name="q" value="{{ request('q') }}" placeholder="{{ $heroSearchPlaceholder }}" class="flex-1 h-11 bg-transparent text-slate-900 border-0 outline-none text-[15px] placeholder:text-slate-400 min-w-0" aria-label="Search articles">
