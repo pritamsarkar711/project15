@@ -129,6 +129,10 @@
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 3h6m0 0v6m0-6L10 14M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
                     View Site
                 </a>
+                <a href="{{ url('/') }}" class="inline-flex items-center gap-2 h-9 px-4 text-sm font-semibold text-[#0C3B2E] dark:text-emerald-300 border border-[#0C3B2E] dark:border-emerald-500/40 hover:bg-[#0C3B2E]/5 dark:hover:bg-emerald-500/10 transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                    Preview as User
+                </a>
             </div>
         </header>
 
@@ -155,7 +159,7 @@
             @yield('content')
         </main>
 
-        <footer class="px-6 py-3 text-center text-[11px] text-slate-400 dark:text-slate-600 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">Huvanti CMS</footer>
+        <footer class="px-6 py-3 text-center text-[11px] font-medium tracking-wide text-slate-400 dark:text-slate-600 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">Huvanti CMS</footer>
     </div>
 
     {{-- Back-to-top FAB — appears after scrolling, MUI-style --}}

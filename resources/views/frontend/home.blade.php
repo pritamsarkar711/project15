@@ -9,19 +9,12 @@
     $heroImgSetting = setting('hero_person_image');
     $heroImgUrl = $heroImgSetting ? asset('storage/'.$heroImgSetting) : asset('images/hero-person-harry.png');
 @endphp
-<!-- Hero: solid deep green. Image LEFT in a circular frame (works with any
-     image, transparent OR solid-bg), text RIGHT. Short subtitle, no overflow. -->
 <section class="relative overflow-hidden bg-[#0C3B2E] dark:bg-[#07231B] text-white">
     <div class="max-w-[1200px] mx-auto px-4 sm:px-6">
         <div class="grid lg:grid-cols-2 gap-8 lg:gap-4 items-center py-10 lg:py-14">
-            <!-- Left: circular framed image (constrains height + works with any image) -->
+            <!-- Left: hero image -->
             <div class="flex items-center justify-center lg:justify-start relative order-1">
-                <div class="relative w-[260px] h-[260px] sm:w-[320px] sm:h-[320px] lg:w-[380px] lg:h-[380px] rounded-full overflow-hidden ring-4 ring-white/10 shadow-[0_18px_36px_rgba(0,0,0,0.35)] bg-white/5">
-                    <img src="{{ $heroImgUrl }}" alt="Featured illustration" class="absolute inset-0 w-full h-full object-cover" loading="eager" decoding="async" onerror="this.style.display='none';document.getElementById('hero-fallback').style.display='flex'">
-                    <div id="hero-fallback" class="hidden absolute inset-0 items-center justify-center text-white/40 text-sm">
-                        <svg class="w-12 h-12" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.25a3.375 3.375 0 0 1 4.929 0l2.733 2.733m-5.94-3.06 2.366-2.366a3.375 3.375 0 0 1 4.773 0l4.586 4.586M3 4.5h18M3 9h18M3 19.5h18"/></svg>
-                    </div>
-                </div>
+                <img src="{{ $heroImgUrl }}" alt="Featured" class="w-[280px] sm:w-[340px] lg:w-[400px] h-auto rounded-2xl shadow-[0_18px_36px_rgba(0,0,0,0.35)] object-contain" loading="eager" decoding="async" onerror="this.style.display='none'">
             </div>
 
             <!-- Right: text -->

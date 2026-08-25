@@ -26,7 +26,7 @@
                     <div class="flex-1 min-w-0">
                         <div class="flex items-center gap-2 flex-wrap">
                             <span class="text-xs font-semibold text-slate-500">{{ $post->user?->username ?? 'admin' }}</span>
-                            @if($post->user && $post->user->is_verified)
+                            @if($post->user && ($post->user->is_verified ?? false))
                                 <svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.267 3.455a3 3 0 001.968-.523 3 3 0 003.527 0 3 3 0 001.968.523 3 3 0 003.002 3.002c0 .665.21 1.286.523 1.968a3 3 0 000 3.527 3 3 0 00-.523 1.968 3 3 0 00-3.002 3.002 3 3 0 00-1.968-.523 3 3 0 00-3.527 0 3 3 0 00-1.968.523 3 3 0 00-3.002-3.002 3 3 0 00.523-1.968 3 3 0 000-3.527 3 3 0 00-.523-1.968A3 3 0 006.267 3.455zM9.5 13.5l3 3 5-6" clip-rule="evenodd"/></svg>
                             @endif
                             @if($post->is_affiliate)<span class="inline-flex items-center px-2 py-0.5 text-[11px] font-semibold bg-purple-100 text-purple-700 dark:bg-purple-500/20 dark:text-purple-300">Affiliate</span>@endif

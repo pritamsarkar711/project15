@@ -69,7 +69,6 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
                         <option value="{{ $key }}" {{ old('site_font_family', $settings['site_font_family']->value ?? 'work-sans') === $key ? 'selected' : '' }} style="font-family:{{ $fonts[$key]['css'] }}">{{ $label }}</option>
                     @endforeach
                 </select>
-                <p class="text-xs text-slate-500 mt-1">Applies to entire site — frontend &amp; admin.</p>
             </div>
         </div>
         <button type="submit" class="h-11 px-6 bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold transition">Save</button>
@@ -80,14 +79,13 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
         @csrf
         <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-4">
             <h3 class="font-semibold">Hero Headline</h3>
-            <p class="text-xs text-slate-500 dark:text-slate-400">Two phrases that alternate with a typing effect.</p>
             <div class="grid sm:grid-cols-2 gap-4">
                 <div>
-                    <label class="text-sm font-medium">Phrase 1</label>
+                    <label class="text-sm font-medium">Part 1</label>
                     <input type="text" name="hero_phrase_1" value="{{ old('hero_phrase_1', $settings['hero_phrase_1']->value ?? 'Explore Ideas.') }}" maxlength="80" class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
                 </div>
                 <div>
-                    <label class="text-sm font-medium">Phrase 2</label>
+                    <label class="text-sm font-medium">Part 2</label>
                     <input type="text" name="hero_phrase_2" value="{{ old('hero_phrase_2', $settings['hero_phrase_2']->value ?? 'Inspire Life.') }}" maxlength="80" class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
                 </div>
             </div>
@@ -103,11 +101,16 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
 
         <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-4">
             <h3 class="font-semibold">Hero Image</h3>
-            <p class="text-xs text-slate-500 dark:text-slate-400">Displayed in a circular frame. Auto-optimized (WebP, max 1600px wide).</p>
             <div class="grid sm:grid-cols-2 gap-5 items-start">
                 <div>
                     <label class="text-sm font-medium">Upload</label>
-                    <input type="file" name="hero_person_image_file" accept="image/png,image/jpeg,image/webp" class="mt-2 w-full text-sm">
+                    <label class="mt-2 flex items-center justify-center h-24 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg cursor-pointer hover:border-[#0C3B2E] hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
+                        <input type="file" name="hero_person_image_file" accept="image/png,image/jpeg,image/webp" class="hidden">
+                        <div class="text-center">
+                            <svg class="w-6 h-6 mx-auto text-slate-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg>
+                            <p class="text-xs text-slate-500 mt-1">Click to upload</p>
+                        </div>
+                    </label>
                     <label class="mt-3 inline-flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300 cursor-pointer">
                         <input type="checkbox" name="hero_remove_image" value="1" class="text-emerald-600">
                         Remove image (use default)
@@ -116,8 +119,8 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
                 <div>
                     <label class="text-sm font-medium">Current</label>
                     @php $heroImg = $settings['hero_person_image']->value ?? null; @endphp
-                    <div class="mt-2 w-32 h-32 rounded-full overflow-hidden bg-[#0C3B2E] flex items-center justify-center">
-                        <img src="{{ $heroImg ? asset('storage/'.$heroImg) : asset('images/hero-person.png') }}" alt="" class="w-full h-full object-cover" loading="lazy" decoding="async">
+                    <div class="mt-2 w-32 h-32 rounded-xl overflow-hidden bg-[#0C3B2E] flex items-center justify-center">
+                        <img src="{{ $heroImg ? asset('storage/'.$heroImg) : asset('images/hero-person-harry.png') }}" alt="" class="w-full h-full object-cover" loading="lazy" decoding="async">
                     </div>
                 </div>
             </div>
@@ -131,39 +134,27 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
         @csrf
         <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-4">
             <div>
-                <h3 class="font-semibold">In-Article Ad Frequency</h3>
-                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Controls how often an in-article ad is inserted inside blog post content. The ad is shown after every N paragraphs (where N is the value below).</p>
+                <h3 class="font-semibold">Ad Frequency</h3>
             </div>
             <div class="grid sm:grid-cols-2 gap-4 items-center">
                 <div>
                     <label class="text-sm font-medium">Insert ad every N paragraphs</label>
                     <input type="number" name="ad_paragraph_frequency" min="1" max="10" value="{{ old('ad_paragraph_frequency', $settings['ad_paragraph_frequency']->value ?? '2') }}" class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
-                    <p class="text-xs text-slate-500 mt-1">Recommended: 2 (one ad after every 2 paragraphs). Range 1–10.</p>
-                </div>
-                <div class="text-xs text-slate-500 dark:text-slate-400 space-y-1">
-                    <p><strong class="text-slate-700 dark:text-slate-300">Positions available:</strong></p>
-                    <p>• <code>header</code> — above the homepage hero/categories</p>
-                    <p>• <code>sidebar</code> — blog sidebar widget</p>
-                    <p>• <code>in_article</code> — inside blog post content (every N paragraphs)</p>
-                    <p>• <code>footer</code> — above the global footer</p>
                 </div>
             </div>
-            <p class="text-xs text-slate-500 mt-2 pt-3 border-t border-slate-200 dark:border-slate-700">Manage individual ads (code, position, scheduling) on the <a href="{{ route('admin.ads.index') }}" class="text-emerald-700 dark:text-emerald-300 hover:underline">Advertisements →</a> page.</p>
+            <p class="text-xs text-slate-500 mt-2">Manage ads on the <a href="{{ route('admin.ads.index') }}" class="text-emerald-700 dark:text-emerald-300 hover:underline">Advertisements →</a> page.</p>
         </div>
         <button type="submit" class="h-11 px-6 bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold transition">Save Ad Settings</button>
     </form>
 
 @elseif(request('tab') === 'email')
     @php
-        // Read all mail_* settings in one shot for the form. Defaults fall
-        // back to current runtime config so the form is never empty even on
-        // a fresh install (before admin configures SMTP).
         $mailSettings = [
             'mail_mailer'       => $settings['mail_mailer']->value ?? config('mail.default'),
             'mail_host'         => $settings['mail_host']->value ?? config('mail.mailers.smtp.host'),
             'mail_port'         => $settings['mail_port']->value ?? config('mail.mailers.smtp.port'),
             'mail_username'     => $settings['mail_username']->value ?? config('mail.mailers.smtp.username'),
-            'mail_password'     => $settings['mail_password']->value ?? '', // never echo env-stored password
+            'mail_password'     => $settings['mail_password']->value ?? '',
             'mail_encryption'   => $settings['mail_encryption']->value ?? (string) (config('mail.mailers.smtp.scheme') ?? 'tls'),
             'mail_from_address' => $settings['mail_from_address']->value ?? config('mail.from.address'),
             'mail_from_name'    => $settings['mail_from_name']->value ?? config('mail.from.name'),
@@ -179,11 +170,11 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
             <div>
                 <label class="text-sm font-medium">Default mailer</label>
                 <select name="mail_mailer" class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
-                    @foreach(['smtp' => 'SMTP (recommended)', 'log' => 'Log file (dev / debug — emails written to laravel.log)', 'sendmail' => 'Sendmail (server MTA)', 'array' => 'Array (no actual delivery — for tests)'] as $value => $label)
+                    @foreach(['smtp' => 'SMTP', 'log' => 'Log file', 'sendmail' => 'Sendmail', 'array' => 'Array (test)'] as $value => $label)
                         <option value="{{ $value }}" {{ old('mail_mailer', $mailSettings['mail_mailer']) === $value ? 'selected' : '' }}>{{ $label }}</option>
                     @endforeach
                 </select>
-                <p class="text-xs text-slate-500 mt-1">When <code>log</code> is selected, every email Huvanti sends (password resets, post-submission notifications) is appended to <code>storage/logs/laravel.log</code> instead of being delivered. Useful for testing without SMTP credentials.</p>
+
             </div>
         </div>
 
@@ -197,12 +188,12 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
                 <div>
                     <label class="text-sm font-medium">Port</label>
                     <input type="number" name="mail_port" min="1" max="65535" value="{{ old('mail_port', $mailSettings['mail_port']) }}" placeholder="587" class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-mono placeholder:font-sans">
-                    <p class="text-xs text-slate-500 mt-1">Common: 587 (TLS), 465 (SSL), 25 (none).</p>
+
                 </div>
                 <div>
                     <label class="text-sm font-medium">Encryption</label>
                     <select name="mail_encryption" class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
-                        @foreach(['tls' => 'TLS (recommended, port 587)', 'ssl' => 'SSL (port 465)', 'none' => 'None / plaintext (port 25 — insecure)'] as $value => $label)
+                        @foreach(['tls' => 'TLS (port 587)', 'ssl' => 'SSL (port 465)', 'none' => 'None (port 25)'] as $value => $label)
                             <option value="{{ $value === 'none' ? 'none' : $value }}" {{ old('mail_encryption', $mailSettings['mail_encryption']) === $value ? 'selected' : '' }}>{{ $label }}</option>
                         @endforeach
                     </select>
@@ -221,13 +212,12 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
                 </div>
             </div>
             <p class="text-xs text-slate-500 mt-1 pt-2 border-t border-slate-200 dark:border-slate-700">
-                For Gmail / Google Workspace, use an <a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noopener" class="text-emerald-700 dark:text-emerald-300 hover:underline">App Password</a> (not your account password). For Outlook / Microsoft 365, use the SMTP <code>user@domain</code> and password directly.
+                Gmail: use an <a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noopener" class="text-emerald-700 dark:text-emerald-300 hover:underline">App Password</a>.
             </p>
         </div>
 
         <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-4">
             <h3 class="font-semibold">From Address</h3>
-            <p class="text-xs text-slate-500 dark:text-slate-400">The address that appears in the <code>From:</code> header of every email Huvanti sends.</p>
             <div class="grid sm:grid-cols-2 gap-4">
                 <div>
                     <label class="text-sm font-medium">Email</label>
@@ -246,8 +236,7 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
     {{-- Test email form — separate POST so it doesn't conflict with the save form. --}}
     <form method="POST" action="{{ route('admin.settings.test-email') }}" class="border border-dashed border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 p-6 space-y-4 max-w-3xl">
         @csrf
-        <h3 class="font-semibold">Send a test email</h3>
-        <p class="text-xs text-slate-500 dark:text-slate-400">Verifies the SMTP settings above are correct. Sends a plain-text email to the address you type. The SMTP rejection reason (if any) is surfaced as a flash message.</p>
+        <h3 class="font-semibold">Test Email</h3>
         <div class="flex gap-3">
             <input type="email" name="test_email_to" value="" required placeholder="you@example.com" class="flex-1 h-10 px-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
             <button type="submit" class="h-10 px-5 bg-slate-700 dark:bg-slate-700 hover:bg-slate-800 dark:hover:bg-slate-600 text-white font-medium text-sm transition">Send test</button>
@@ -291,13 +280,12 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
 
         <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-4">
             <div class="flex items-center justify-between">
-                <h3 class="font-semibold">Footer social media</h3>
+                <h3 class="font-semibold">Social Links</h3>
                 <label class="inline-flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300 cursor-pointer">
                     <input type="checkbox" name="social_enabled" value="1" {{ old('social_enabled', $settings['social_enabled']->value ?? '1') === '1' ? 'checked' : '' }} class="text-emerald-600">
                     Show in footer
                 </label>
             </div>
-            <p class="text-xs text-slate-500 dark:text-slate-400">Leave blank to hide an icon.</p>
             <div class="grid sm:grid-cols-2 gap-3">
                 @php
                     $socialFields = [
@@ -329,7 +317,10 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
                             <img src="{{ asset('storage/'.$settings['site_logo_light']->value) }}" class="h-7 w-auto" alt="" loading="lazy" decoding="async">
                         </div>
                     @endif
-                    <input type="file" name="site_logo_light_file" accept="image/png,image/jpeg,image/webp,image/svg+xml" class="mt-2 w-full text-xs">
+                    <label class="mt-2 flex items-center justify-center h-16 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg cursor-pointer hover:border-[#0C3B2E] hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
+                        <input type="file" name="site_logo_light_file" accept="image/png,image/jpeg,image/webp,image/svg+xml" class="hidden">
+                        <span class="text-xs text-slate-500">Upload</span>
+                    </label>
                 </div>
                 <div>
                     <label class="text-sm font-medium">Logo · Dark</label>
@@ -338,7 +329,10 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
                             <img src="{{ asset('storage/'.$settings['site_logo_dark']->value) }}" class="h-7 w-auto" alt="" loading="lazy" decoding="async">
                         </div>
                     @endif
-                    <input type="file" name="site_logo_dark_file" accept="image/png,image/jpeg,image/webp,image/svg+xml" class="mt-2 w-full text-xs">
+                    <label class="mt-2 flex items-center justify-center h-16 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg cursor-pointer hover:border-[#0C3B2E] hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
+                        <input type="file" name="site_logo_dark_file" accept="image/png,image/jpeg,image/webp,image/svg+xml" class="hidden">
+                        <span class="text-xs text-slate-500">Upload</span>
+                    </label>
                 </div>
                 <div>
                     <label class="text-sm font-medium">Favicon</label>
@@ -347,7 +341,10 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
                             <img src="{{ asset('storage/'.$settings['site_favicon']->value) }}" class="w-8 h-8 object-contain" alt="" loading="lazy" decoding="async">
                         </div>
                     @endif
-                    <input type="file" name="site_favicon_file" accept="image/png,image/jpeg,image/webp,image/x-icon" class="mt-2 w-full text-xs">
+                    <label class="mt-2 flex items-center justify-center h-16 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg cursor-pointer hover:border-[#0C3B2E] hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
+                        <input type="file" name="site_favicon_file" accept="image/png,image/jpeg,image/webp,image/x-icon" class="hidden">
+                        <span class="text-xs text-slate-500">Upload</span>
+                    </label>
                 </div>
             </div>
         </div>
