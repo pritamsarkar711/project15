@@ -22,7 +22,13 @@ define('LARAVEL_START', microtime(true));
 //   2. If anything still fails before Laravel's exception handler can take
 //      over, renders a readable diagnostic page instead of a blank 500, with
 //      a checklist and a link to the authenticated /doctor.php.
+//   3. After Laravel boots, auto-clears compiled Blade views when the deploy
+//      version changes (after a Git pull on Hostinger). This ensures UI
+//      changes are visible immediately without SSH or manual cache clear.
 // ---------------------------------------------------------------------------
+
+// Bump this string when you want to force a cache clear on every server.
+define('HUVANTI_DEPLOY_VERSION', 'v10-2026-08-25');
 
 // Determine if the application is in maintenance mode...
 if (file_exists($maintenance = __DIR__.'/../storage/framework/maintenance.php')) {
@@ -303,6 +309,25 @@ try {
     // Bootstrap Laravel and handle the request...
     /** @var Application $app */
     $app = require_once __DIR__.'/../bootstrap/app.php';
+
+    // --- Auto-clear compiled views when deploy version changes ---
+    // After a Git pull on Hostinger, the Blade view cache (storage/framework/views/)
+    // still holds the OLD compiled templates, so the site looks unchanged.
+    // This check detects a version change and wipes the cache automatically.
+    $versionFile = __DIR__.'/../storage/framework/.huvanti_deploy_version';
+    $storedVersion = @file_get_contents($versionFile);
+    if (trim($storedVersion) !== HUVANTI_DEPLOY_VERSION) {
+        $viewCacheDir = __DIR__.'/../storage/framework/views';
+        if (is_dir($viewCacheDir)) {
+            foreach (glob($viewCacheDir.'/*.php') as $cachedFile) {
+                @unlink($cachedFile);
+            }
+        }
+        @file_put_contents($versionFile, HUVANTI_DEPLOY_VERSION, LOCK_EX);
+        if (function_exists('opcache_reset')) {
+            @opcache_reset();
+        }
+    }
 
     $app->handleRequest(Request::capture());
 } catch (Throwable $e) {

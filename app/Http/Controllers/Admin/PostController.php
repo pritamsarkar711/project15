@@ -206,6 +206,22 @@ class PostController extends Controller
      */
     public function reviewQueue(Request $request)
     {
+        // Guard: if the review_status column doesn't exist yet (migration
+        // not run), redirect to a helpful message instead of a 500 error.
+        try {
+            if (!\Illuminate\Support\Facades\Schema::hasColumn('posts', 'review_status')) {
+                return redirect()->route('admin.dashboard')
+                    ->with('error', 'The review workflow table is not set up yet. Run deploy.php or visit doctor.php to apply pending migrations.');
+            }
+        } catch (\Throwable $e) {
+            // If even Schema check fails, show the queue as empty.
+            return view('admin.posts.review-queue', [
+                'posts' => new \Illuminate\Pagination\LengthAwarePaginator([], 0, 15),
+                'counts' => ['pending' => 0, 'returned' => 0, 'approved' => 0],
+                'tab' => $request->input('tab', 'pending'),
+            ]);
+        }
+
         $tab = $request->input('tab', 'pending');
         $query = Post::query()->with(['category', 'user']);
         $query = match ($tab) {
