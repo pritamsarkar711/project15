@@ -11,17 +11,19 @@
 @endphp
 <section class="relative overflow-hidden bg-[#0C3B2E] dark:bg-[#07231B] text-white">
     <div class="max-w-[1200px] mx-auto px-4 sm:px-6 relative">
-        <div class="grid lg:grid-cols-2 gap-10 lg:gap-8 items-center py-14 lg:py-24">
-            <!-- Left: hero image -->
-            <div class="flex items-center justify-center lg:justify-start relative order-1">
-                {{-- No glow, no ring, no rounded frame: the cut-out person sits
-                     directly on the flat green band, so there are no overlay
-                     patches, no lighting mismatch and no hard edges around it. --}}
-                <img src="{{ $heroImgUrl }}" alt="Featured" class="w-[300px] sm:w-[400px] lg:w-[460px] h-auto object-contain" loading="eager" decoding="async" onerror="this.style.display='none'">
+        <div class="grid lg:grid-cols-2 gap-0 lg:gap-8 items-end">
+            <!-- Left: hero image — hidden on mobile, grounded on desktop -->
+            <div class="hidden lg:flex items-end justify-center lg:justify-start relative order-1 self-end">
+                <div class="relative flex items-end">
+                    {{-- Yellow organic shape behind the person --}}
+                    <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-[44%] w-[340px] h-[340px] lg:w-[400px] lg:h-[400px] bg-[#FDE68A] rounded-[2.5rem] rotate-3 pointer-events-none" aria-hidden="true"></div>
+                    <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-[44%] w-[340px] h-[340px] lg:w-[400px] lg:h-[400px] bg-[#FACC15]/70 rounded-[2.5rem] -rotate-2 pointer-events-none" aria-hidden="true" style="border-radius:42% 58% 55% 45% / 44% 38% 62% 56%"></div>
+                    <img src="{{ $heroImgUrl }}" alt="Featured" class="relative block w-[420px] lg:w-[460px] h-[420px] lg:h-[480px] object-cover object-top translate-y-3 pointer-events-none select-none" loading="eager" decoding="async" onerror="this.style.display='none'">
+                </div>
             </div>
 
             <!-- Right: text -->
-            <div class="order-2 lg:pl-6">
+            <div class="order-2 lg:pl-6 py-12 sm:py-14 lg:py-20 min-w-0">
                 <span class="inline-flex items-center gap-2 text-xs font-semibold tracking-wide uppercase bg-white/10 text-emerald-100 px-3 py-1.5 rounded-full mb-4">
                     <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 4.9 5.4.8-3.9 3.8.9 5.4L12 14.4l-4.8 2.5.9-5.4L4.2 7.7l5.4-.8L12 2z"/></svg>
                     Fresh reads every week
@@ -30,9 +32,9 @@
                     <span id="typing-text" class="typing-text"></span><span class="typing-cursor" aria-hidden="true"></span>
                 </h1>
                 <p class="mt-4 text-[17px] sm:text-[18px] leading-relaxed text-white/85 max-w-[520px] font-medium">{{ $heroSubtitle }}</p>
-                <form action="{{ route('search') }}" method="GET" class="mt-6 max-w-[520px]">
-                    <div class="flex items-center bg-white p-1.5 pl-5 shadow-[0_10px_30px_rgba(0,0,0,0.25)]">
-                        <input type="text" name="q" value="{{ request('q') }}" placeholder="{{ $heroSearchPlaceholder }}" class="flex-1 h-11 bg-transparent text-slate-900 border-0 outline-none text-[15px] placeholder:text-slate-400 min-w-0" aria-label="Search articles">
+                <form action="{{ route('search') }}" method="GET" class="mt-6 w-full max-w-[520px] min-w-0">
+                    <div class="flex items-center w-full min-w-0 bg-white p-1.5 pl-5 shadow-[0_10px_30px_rgba(0,0,0,0.25)] overflow-hidden">
+                        <input type="text" name="q" value="{{ request('q') }}" placeholder="{{ $heroSearchPlaceholder }}" class="flex-1 min-w-0 h-11 bg-transparent text-slate-900 border-0 outline-none text-[15px] placeholder:text-slate-400" aria-label="Search articles">
                         <button type="submit" class="h-11 px-6 sm:px-7 shrink-0 bg-[#0C3B2E] hover:bg-[#072A20] text-white text-sm font-semibold transition">Search</button>
                     </div>
                 </form>

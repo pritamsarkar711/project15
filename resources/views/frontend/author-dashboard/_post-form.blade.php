@@ -36,7 +36,6 @@
                     <label class="text-sm font-medium text-slate-900 dark:text-white">Tags</label>
                     <input type="text" name="meta_keywords" value="{{ old('meta_keywords', $isEdit ? $post->meta_keywords : '') }}" maxlength="255" placeholder="budget travel, packing list, europe"
                         class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white">
-                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1.5">Separate tags with commas.</p>
                 </div>
 
                 <div class="mt-4">
@@ -47,7 +46,6 @@
                          server both still validate the content. --}}
                     <textarea id="editor" name="content" rows="14" class="mt-1 w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm min-h-[360px] text-slate-900 dark:text-white">{{ old('content', $isEdit ? $post->content : '') }}</textarea>
                     <p id="editor-error" class="hidden text-xs text-red-600 dark:text-red-400 mt-1.5">Please write the post content first.</p>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1.5">Minimum 300 words to submit for review.</p>
                 </div>
             </div>
 
@@ -124,11 +122,14 @@
             {{-- Affiliate toggle --}}
             <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
                 <h3 class="font-semibold mb-3 text-slate-900 dark:text-white">Affiliate Links</h3>
-                <label class="flex items-start gap-3 cursor-pointer">
-                    <input type="checkbox" name="is_affiliate" value="1" @checked(old('is_affiliate', $isEdit && $post->is_affiliate)) class="mt-0.5 w-5 h-5 text-[#0C3B2E]">
-                    <span class="text-sm text-slate-600 dark:text-slate-400">This post contains affiliate links</span>
+                <label class="flex items-center justify-between gap-4 cursor-pointer">
+                    <span class="text-sm text-slate-700 dark:text-slate-300">This post contains affiliate links</span>
+                    <span class="relative inline-flex shrink-0">
+                        <input type="checkbox" name="is_affiliate" value="1" @checked(old('is_affiliate', $isEdit && $post->is_affiliate)) class="peer sr-only">
+                        <span class="block w-11 h-6 rounded-full bg-slate-200 dark:bg-slate-700 peer-checked:bg-[#0C3B2E] transition-colors"></span>
+                        <span class="pointer-events-none absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform peer-checked:translate-x-5"></span>
+                    </span>
                 </label>
-                <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">A disclosure notice is added to the published post automatically.</p>
             </div>
 
             {{-- SEO: required section, always visible --}}
