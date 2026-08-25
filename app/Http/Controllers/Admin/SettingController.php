@@ -22,6 +22,24 @@ class SettingController extends Controller
         return view('admin.settings.index', compact('settings', 'fontOptions', 'fonts'));
     }
 
+    /**
+     * Clear all compiled Blade views so every layout/view recompiles on next request.
+     * On shared hosting with OPcache, stale compiled views are the #1 reason
+     * settings changes (font, hero image, logo, etc.) don't appear visually.
+     */
+    private function clearCompiledViews(): void
+    {
+        $dir = storage_path('framework/views');
+        if (!is_dir($dir)) return;
+        foreach (glob($dir . '/*.php') as $file) {
+            @unlink($file);
+        }
+        // Bust OPcache so PHP re-reads the fresh compiled views
+        if (function_exists('opcache_reset')) {
+            @opcache_reset();
+        }
+    }
+
     public function update(Request $request)
     {
         $request->validate([
@@ -104,9 +122,6 @@ class SettingController extends Controller
         }
 
         // Hero person image upload (auto-optimised via ImageService).
-        // The hero is rendered in a circular frame, so ANY image (transparent
-        // PNG, JPG with solid bg, etc.) now looks correct — no need for the
-        // GD transparency edge-artifact dance.
         if ($request->boolean('hero_remove_image')) {
             $old = Setting::where('key', 'hero_person_image')->value('value');
             if ($old) { \Illuminate\Support\Facades\Storage::disk('public')->delete($old); }
@@ -118,6 +133,13 @@ class SettingController extends Controller
             $path = app(ImageService::class)->optimizeAndStore($request->file('hero_person_image_file'), 'uploads/hero');
             Setting::set('hero_person_image', $path);
         }
+
+        // *** CRITICAL: Clear compiled Blade views + OPcache ***
+        // Without this, settings changes (font, hero image, logo, etc.)
+        // remain invisible on shared hosting because OPcache serves stale
+        // compiled Blade templates. The settings cache (30s TTL) is not
+        // enough — the Blade template itself is cached at the PHP opcode level.
+        $this->clearCompiledViews();
 
         return back()->with('success', 'Settings updated');
     }
@@ -159,6 +181,7 @@ class SettingController extends Controller
         $user->two_factor_enabled = true;
         $user->save();
         session()->forget('2fa_setup_secret');
+        $this->clearCompiledViews();
         return redirect()->route('admin.settings.security')->with('success', 'Two-factor authentication enabled.');
     }
 
@@ -218,6 +241,10 @@ class SettingController extends Controller
             Setting::set('mail_password', (string) $request->input('mail_password'), 'text', 'email');
         }
         // else: keep existing.
+
+        // Flush settings cache + compiled views so changes are immediate
+        Setting::flushAllCache();
+        $this->clearCompiledViews();
 
         return redirect()
             ->route('admin.settings.index', ['tab' => 'email'])

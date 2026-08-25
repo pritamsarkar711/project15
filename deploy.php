@@ -132,7 +132,7 @@ if (!is_link($symlinkLink) && !is_dir($symlinkLink)) {
 
 // 5. Write deploy version file (triggers auto-clear on next request too)
 $versionFile = ROOT . '/storage/framework/.huvanti_deploy_version';
-@file_put_contents($versionFile, 'v11-2026-08-25', LOCK_EX);
+@file_put_contents($versionFile, 'v12-2026-08-25-fix-cache', LOCK_EX);
 
 // 5. Run pending migrations (requires Laravel to boot)
 $migrationOutput = '';

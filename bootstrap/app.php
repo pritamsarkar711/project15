@@ -19,6 +19,9 @@ return \App\Application::configure(basePath: dirname(__DIR__))
             'admin' => \App\Http\Middleware\IsAdmin::class,
             'author' => \App\Http\Middleware\IsAuthor::class,
         ]);
+        // Auto-clear compiled Blade views after every admin write (POST/PUT/PATCH/DELETE)
+        // so changes are instantly visible on shared hosting with OPcache.
+        $middleware->append(\App\Http\Middleware\ClearViewCacheAfterWrite::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
