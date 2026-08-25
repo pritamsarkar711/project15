@@ -55,7 +55,11 @@
     </div>
 </div>
 @push('scripts')
-<script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>
-<script>ClassicEditor.create(document.querySelector('#editor'), {toolbar:['heading','|','bold','italic','link','bulletedList','numberedList','blockQuote','insertTable','undo','redo']}).catch(e=>console.error(e));</script>
+<script src="{{ asset('js/ckeditor5-super-build.js') }}"></script>
+<script src="{{ asset('js/editor-init.js') }}"></script>
+<script>
+// Full CKEditor 5 editor (local super-build, no CDN dependency).
+initHuvantiEditor('#editor');
+</script>
 @endpush
 @endsection

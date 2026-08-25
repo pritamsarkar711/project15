@@ -103,6 +103,7 @@ class AuthorDashboardController extends Controller
             'is_affiliate'    => ['nullable', 'boolean'],
             'meta_title'      => ['required', 'string', 'max:255'],
             'meta_description'=> ['required', 'string', 'max:500'],
+            'meta_keywords'   => ['nullable', 'string', 'max:255'],
             'faqs'            => ['required', 'array', 'min:1'],
             'faqs.*.question' => ['nullable', 'string', 'max:500'],
             'faqs.*.answer'   => ['nullable', 'string', 'max:2000'],
@@ -146,6 +147,7 @@ class AuthorDashboardController extends Controller
         $post->reading_time = max(1, ceil($wordCount / 200));
         $post->meta_title = $data['meta_title'] ?? null;
         $post->meta_description = $data['meta_description'] ?? null;
+        $post->meta_keywords = $data['meta_keywords'] ?? null;
         $post->is_affiliate = $request->boolean('is_affiliate');
         $post->status = 'draft';
         $post->review_status = $data['action'] === 'submit' ? 'pending_review' : 'draft';
@@ -205,6 +207,7 @@ class AuthorDashboardController extends Controller
             'is_affiliate'    => ['nullable', 'boolean'],
             'meta_title'      => ['required', 'string', 'max:255'],
             'meta_description'=> ['required', 'string', 'max:500'],
+            'meta_keywords'   => ['nullable', 'string', 'max:255'],
             'faqs'            => ['required', 'array', 'min:1'],
             'faqs.*.question' => ['nullable', 'string', 'max:500'],
             'faqs.*.answer'   => ['nullable', 'string', 'max:2000'],
@@ -242,6 +245,7 @@ class AuthorDashboardController extends Controller
         $post->category_id = $data['category_id'] ?? null;
         $post->meta_title = $data['meta_title'] ?? null;
         $post->meta_description = $data['meta_description'] ?? null;
+        $post->meta_keywords = $data['meta_keywords'] ?? null;
         $post->is_affiliate = $request->boolean('is_affiliate');
         $post->reading_time = max(1, ceil($wordCount / 200));
 

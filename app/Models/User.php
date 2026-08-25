@@ -88,8 +88,10 @@ class User extends Authenticatable
     }
 
     /**
-     * Reusable badge markup used on author profiles and post author boxes.
-     * Returns an empty string when the author has no badge.
+     * Reusable verified badge markup shown next to the author's name
+     * everywhere a name appears (post bylines, author boxes, profiles,
+     * panel sidebars). Solid checkmark seal, readable in light AND dark
+     * mode. Returns an empty string when the author has no badge.
      */
     public function badgeHtml(): string
     {
@@ -98,10 +100,16 @@ class User extends Authenticatable
             return '';
         }
 
+        // Verified checkmark seal (same shape for every level, color differs).
+        $seal = '<svg class="w-3 h-3 shrink-0" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M8.603 3.799A4.49 4.49 0 0 1 12 2.25c1.357 0 2.573.6 3.397 1.549a4.49 4.49 0 0 1 3.498 1.307 4.491 4.491 0 0 1 1.307 3.497A4.49 4.49 0 0 1 21.75 12a4.49 4.49 0 0 1-1.549 3.397 4.491 4.491 0 0 1-1.307 3.497 4.491 4.491 0 0 1-3.497 1.307A4.49 4.49 0 0 1 12 21.75a4.49 4.49 0 0 1-3.397-1.549 4.49 4.49 0 0 1-3.498-1.306 4.491 4.491 0 0 1-1.307-3.498A4.49 4.49 0 0 1 2.25 12c0-1.357.6-2.573 1.549-3.397a4.49 4.49 0 0 1 1.307-3.497 4.49 4.49 0 0 1 3.497-1.307Zm7.007 6.387a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clip-rule="evenodd"/></svg>';
+
         return match ($type) {
-            'admin'  => '<span class="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-600 text-white" title="Site administrator"><svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 1l2.23 4.55L17 6.36l-3.5 3.42.83 4.87L10 12.27l-4.33 2.38.83-4.87L3 6.36l4.77-1.81L10 1z" clip-rule="evenodd"/></svg>Admin</span>',
-            'top'    => '<span class="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-400 text-slate-900" title="Top author, 100+ published posts"><svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M10 1l2.5 5.2 5.5.8-4 3.9.9 5.6L10 13.8 5.1 16.5 6 10.9 2 7l5.5-.8L10 1z"/></svg>Top Author</span>',
-            default  => '<span class="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500 text-white" title="Author, 10+ published posts"><svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M13.6 2.7a2.2 2.2 0 1 1 3.1 3.1l-8 8-4.2 1.1 1.1-4.2 8-8z"/></svg>Author</span>',
+            // Admin: purple verified badge.
+            'admin'  => '<span class="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-600 text-white" title="Verified site administrator">'.$seal.'Admin</span>',
+            // 100+ published posts: yellow badge (authors only).
+            'top'    => '<span class="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-400 text-slate-900" title="Top author, 100+ published posts">'.$seal.'Top Author</span>',
+            // 10+ published posts: green badge (authors only).
+            default  => '<span class="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500 text-white" title="Verified author, 10+ published posts">'.$seal.'Author</span>',
         };
     }
 

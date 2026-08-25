@@ -4,7 +4,7 @@
 @php
     $heroPhrase1 = setting('hero_phrase_1', 'Explore Ideas.');
     $heroPhrase2 = setting('hero_phrase_2', 'Inspire Life.');
-    $heroSubtitle = setting('hero_subtitle', 'Tech, health, finance, travel and more, all in one calm place to read.');
+    $heroSubtitle = setting('hero_subtitle', 'Tech, health, money, travel and more. Clear thinking, zero noise.');
     $heroSearchPlaceholder = setting('hero_search_placeholder', 'Search articles, topics, ideas...');
     $heroImgSetting = setting('hero_person_image');
     $heroImgUrl = $heroImgSetting ? asset('storage/'.$heroImgSetting) : asset('images/hero-person-harry.png');
@@ -14,8 +14,11 @@
          into the background instead of sitting on a flat color block. --}}
     <div class="absolute -top-32 -right-32 w-[420px] h-[420px] bg-emerald-400/10 rounded-full blur-3xl pointer-events-none" aria-hidden="true"></div>
     <div class="absolute -bottom-40 -left-24 w-[420px] h-[420px] bg-emerald-300/10 rounded-full blur-3xl pointer-events-none" aria-hidden="true"></div>
+    {{-- Bottom edge fade into the page so there is no hard seam between the
+         green band and the white/dark page background below it. --}}
+    <div class="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-b from-transparent to-[#fafafa] dark:to-[#121212] pointer-events-none" aria-hidden="true"></div>
     <div class="max-w-[1200px] mx-auto px-4 sm:px-6 relative">
-        <div class="grid lg:grid-cols-2 gap-10 lg:gap-8 items-center py-12 lg:py-20">
+        <div class="grid lg:grid-cols-2 gap-10 lg:gap-8 items-center py-14 lg:py-24">
             <!-- Left: hero image -->
             <div class="flex items-center justify-center lg:justify-start relative order-1">
                 <div class="relative">
@@ -28,14 +31,18 @@
 
             <!-- Right: text -->
             <div class="order-2 lg:pl-6">
+                <span class="inline-flex items-center gap-2 text-xs font-semibold tracking-wide uppercase bg-white/10 text-emerald-100 px-3 py-1.5 rounded-full mb-4">
+                    <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 4.9 5.4.8-3.9 3.8.9 5.4L12 14.4l-4.8 2.5.9-5.4L4.2 7.7l5.4-.8L12 2z"/></svg>
+                    Fresh reads every week
+                </span>
                 <h1 class="text-[34px] sm:text-[42px] lg:text-[48px] font-extrabold leading-[1.15] tracking-tight min-h-[2.4em] sm:min-h-[2.2em]">
                     <span id="typing-text" class="typing-text"></span><span class="typing-cursor" aria-hidden="true"></span>
                 </h1>
                 <p class="mt-4 text-[17px] sm:text-[18px] leading-relaxed text-white/85 max-w-[520px] font-medium">{{ $heroSubtitle }}</p>
                 <form action="{{ route('search') }}" method="GET" class="mt-6 max-w-[520px]">
-                    <div class="flex items-center bg-white p-1.5 pl-5 shadow-[0_10px_30px_rgba(0,0,0,0.25)]">
+                    <div class="flex items-center bg-white p-1.5 pl-5 shadow-[0_10px_30px_rgba(0,0,0,0.25)] rounded-full">
                         <input type="text" name="q" value="{{ request('q') }}" placeholder="{{ $heroSearchPlaceholder }}" class="flex-1 h-11 bg-transparent text-slate-900 border-0 outline-none text-[15px] placeholder:text-slate-400 min-w-0" aria-label="Search articles">
-                        <button type="submit" class="h-11 px-6 sm:px-7 shrink-0 bg-[#0C3B2E] hover:bg-[#072A20] text-white text-sm font-semibold transition">Search</button>
+                        <button type="submit" class="h-11 px-6 sm:px-7 shrink-0 bg-[#0C3B2E] hover:bg-[#072A20] text-white text-sm font-semibold transition rounded-full">Search</button>
                     </div>
                 </form>
             </div>
@@ -43,7 +50,13 @@
     </div>
 </section>
 
-@php $headerAd = \App\Models\Advertisement::active()->position('header')->first(); @endphp
+@php
+    // Ads render only when the admin has switched them on (Settings, Ads tab).
+    // Until then no ad slot, box or label appears anywhere on the site.
+    // Strict '1' comparison: a stored '0' must stay falsy.
+    $adsEnabled = setting('ads_enabled') === '1';
+    $headerAd = $adsEnabled ? \App\Models\Advertisement::active()->position('header')->first() : null;
+@endphp
 @if($headerAd && trim(strip_tags($headerAd->code ?? '')) !== '')
     {{-- Blank/unfilled ad slots collapse invisibly (same JS pattern as blog posts)
          so the homepage never shows an empty labeled box. --}}

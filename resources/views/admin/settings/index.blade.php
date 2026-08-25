@@ -141,6 +141,21 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
     <form method="POST" action="{{ route('admin.settings.update') }}" class="space-y-5 max-w-3xl">
         @csrf
         <input type="hidden" name="tab" value="ads">
+        {{-- Show ads on site: the master switch. Ads stay completely hidden
+             (no boxes, no labels, no empty slots) until this is on. --}}
+        <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-4">
+            <div class="flex items-center justify-between gap-4 flex-wrap">
+                <div>
+                    <h3 class="font-semibold">Show ads on site</h3>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Keep off until AdSense or AdX approves the site. When off, no ad box appears anywhere.</p>
+                </div>
+                <label class="inline-flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" name="ads_enabled" value="1" {{ old('ads_enabled', $settings['ads_enabled']->value ?? '0') === '1' ? 'checked' : '' }} class="w-5 h-5 text-emerald-600">
+                    <span class="text-sm font-semibold {{ ($settings['ads_enabled']->value ?? '0') === '1' ? 'text-emerald-700 dark:text-emerald-300' : 'text-slate-500 dark:text-slate-400' }}">{{ ($settings['ads_enabled']->value ?? '0') === '1' ? 'Enabled' : 'Disabled' }}</span>
+                </label>
+            </div>
+        </div>
+
         <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-4">
             <div>
                 <h3 class="font-semibold">Ad Frequency</h3>
@@ -151,7 +166,7 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
                     <input type="number" name="ad_paragraph_frequency" min="1" max="10" value="{{ old('ad_paragraph_frequency', $settings['ad_paragraph_frequency']->value ?? '2') }}" class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
                 </div>
             </div>
-            <p class="text-xs text-slate-500 mt-2">Manage ads on the <a href="{{ route('admin.ads.index') }}" class="text-emerald-700 dark:text-emerald-300 hover:underline">Advertisements →</a> page.</p>
+            <p class="text-xs text-slate-500 mt-2">Manage ads on the <a href="{{ route('admin.ads.index') }}" class="text-emerald-700 dark:text-emerald-300 hover:underline">Advertisements page</a>.</p>
         </div>
 
         <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-4">

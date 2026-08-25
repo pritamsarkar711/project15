@@ -8,7 +8,7 @@ on the server. The repository intentionally includes `vendor/` and
 Current deployment marker:
 
 ```text
-2026-08-25-ads-badges-editor-v16
+2026-08-25-css-rebuild-hero-badges-v17
 ```
 
 ## "I pushed to GitHub but my site didn't change" — read this first
@@ -346,3 +346,34 @@ commit the restored manifests at repository root.
 - PHP extensions listed above
 - writable `storage/`, `bootstrap/cache/`, and project root during initial `.env`
   creation
+
+## IMPORTANT: Tailwind classes in Blade views need a CSS rebuild
+
+The site ships a pre-compiled stylesheet in `public/build/assets/app-*.css`.
+Hostinger never runs `npm run build`, so **any new Tailwind class added to a
+Blade view without rebuilding will silently do nothing on the live site**.
+
+This exact bug shipped in build v16: the hero gradient, the purple verified
+badge and the affiliate disclosure background were added to views but not to
+the compiled CSS, so light mode showed a white hero and invisible badges.
+
+Rules for anyone editing views:
+
+1. Reusing classes that already exist in the compiled CSS is always safe.
+2. After adding ANY new `bg-*`, `text-*`, `rounded-*`, `from-[...]` or similar
+   class to a view, the CSS must be rebuilt locally:
+   - `cp .npm-backup/package.json .npm-backup/package-lock.json .` (repo root)
+   - `npm install`
+   - `npm run build`
+   - commit the changed files in `public/build/` (the new hashed CSS and
+     `manifest.json`). `package.json` is gitignored and stays local.
+3. Deploy as usual (hPanel Git pull). No server-side step is needed.
+
+Quick check that a class exists in the shipped CSS:
+
+```bash
+rg -F 'class-name' public/build/assets/app-*.css
+```
+
+Remember CSS class selectors are escaped (for example `.from-\[\#0C3B2E\]`),
+so search for a distinctive fragment like the hex color instead.

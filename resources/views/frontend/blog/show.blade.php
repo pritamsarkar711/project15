@@ -45,7 +45,13 @@
                         @if($authorProfileUrl)<a href="{{ $authorProfileUrl }}" class="flex items-center gap-3 group" aria-label="View author profile">@else<div class="flex items-center gap-3">@endif
                             <img src="{{ $authorAvatar }}" alt="{{ $authorName }}" class="w-10 h-10 object-cover border border-white dark:border-[#383838] shadow-sm {{ $authorProfileUrl ? 'group-hover:ring-2 group-hover:ring-[#0C3B2E] dark:group-hover:ring-emerald-400 transition' : '' }}" loading="lazy" decoding="async">
                             <div class="flex-1 min-w-0">
-                                <div class="text-sm font-semibold text-slate-900 dark:text-white {{ $authorProfileUrl ? 'group-hover:text-[#0C3B2E] dark:group-hover:text-emerald-300 transition' : '' }}">{{ $authorName }}</div>
+                                <div class="flex items-center gap-1.5 flex-wrap {{ $authorProfileUrl ? 'group-hover:text-[#0C3B2E] dark:group-hover:text-emerald-300 transition' : '' }}">
+                                    <span class="text-sm font-semibold text-slate-900 dark:text-white">{{ $authorName }}</span>
+                                    {{-- Verified badge right next to the name --}}
+                                    @if($post->user)
+                                        {!! $post->user->badgeHtml() !!}
+                                    @endif
+                                </div>
                                 <div class="text-xs text-slate-600 dark:text-slate-400 line-clamp-1">{{ $authorBio }}</div>
                             </div>
                         @if($authorProfileUrl)</a>@else</div>@endif
@@ -90,17 +96,33 @@
                     @endif
 
                     @if($post->is_affiliate)
-                        <div class="mt-6 bg-purple-600 text-white p-4">
+                        <div class="mt-6 bg-purple-600 text-white p-4 rounded-xl">
                             <div class="flex items-start gap-3">
-                                <svg class="w-5 h-5 shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244"/></svg>
+                                <span class="w-9 h-9 bg-white/15 flex items-center justify-center shrink-0 rounded-full">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><path d="m15 9-6 6"/><circle cx="9.5" cy="9.5" r=".5" fill="currentColor"/><circle cx="14.5" cy="14.5" r=".5" fill="currentColor"/></svg>
+                                </span>
                                 <div class="text-sm leading-relaxed">
-                                    <strong>Affiliate disclosure:</strong> Some links on this page are affiliate links. If you buy through them, we may earn a small commission at no extra cost to you. We only recommend products we believe add real value. Read our <a href="{{ route('editorial') }}" class="underline font-semibold">Editorial Policy</a> for details.
+                                    <strong>Affiliate disclosure:</strong> Some links on this page are affiliate links. If you buy through them, we may earn a small commission at no extra cost to you. Read our <a href="{{ route('editorial') }}" class="underline font-semibold hover:text-emerald-100">full disclosure</a>.
                                 </div>
                             </div>
                         </div>
                     @endif
 
                     <div class="prose dark:prose-invert max-w-none mt-6">{!! $contentWithAnchors !!}</div>
+
+                    {{-- Tags (meta keywords shown as chips) --}}
+                    @php
+                        $tags = array_values(array_filter(array_map('trim', explode(',', (string) $post->meta_keywords)), fn ($t) => $t !== ''));
+                        $tags = array_slice($tags, 0, 8);
+                    @endphp
+                    @if(count($tags) > 0)
+                        <div class="flex items-center gap-2 flex-wrap mt-6 pt-5 border-t border-slate-100 dark:border-[#383838]">
+                            <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Tags</span>
+                            @foreach($tags as $tag)
+                                <a href="{{ route('search', ['q' => $tag]) }}" class="text-xs font-medium bg-slate-100 dark:bg-[#2a2a2a] text-slate-700 dark:text-slate-300 px-3 py-1.5 rounded-full hover:bg-emerald-50 dark:hover:bg-emerald-400/10 hover:text-emerald-700 dark:hover:text-emerald-300 transition"># {{ $tag }}</a>
+                            @endforeach
+                        </div>
+                    @endif
                 </div>
             </article>
 
@@ -127,37 +149,42 @@
             </div>
             @endif
 
-            {{-- Did you like this post? Like / Dislike reactions, shown right
-     after the content + FAQ. Clicking the active button removes
-     your reaction; the other button switches it. --}}
+            {{-- Was this helpful? Like / Dislike reactions, shown right
+                 after the content + FAQ. Clicking the active button removes
+                 your reaction; the other button switches it. --}}
 <div class="card-elev py-8 text-center">
-    <h3 class="text-base font-bold text-slate-900 dark:text-white">Did you like this post?</h3>
-    <div class="flex items-center justify-center gap-3 mt-4">
+    <h3 class="text-base font-bold text-slate-900 dark:text-white">Was this helpful?</h3>
+    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Your feedback helps other readers.</p>
+    <div class="flex items-center justify-center gap-3 mt-5">
         @auth
             <form method="POST" action="{{ route('blog.react', $post->slug) }}" class="inline">
                 @csrf
                 <input type="hidden" name="reaction" value="like">
-                <button type="submit" title="{{ $myReaction === 'like' ? 'Remove your like' : 'Like this post' }}" class="inline-flex items-center gap-2 h-11 px-6 rounded-full text-sm font-bold transition cursor-pointer {{ $myReaction === 'like' ? 'bg-emerald-600 text-white shadow-sm' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-emerald-100 dark:hover:bg-emerald-500/15 hover:text-emerald-700 dark:hover:text-emerald-300' }}">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 16 16"><path d="M8.864.046C7.908-.193 7.02.53 6.956 1.466c-.072 1.051-.23 2.242-.348 2.894-.08.44-.48.766-.9.766H2.5A2.5 2.5 0 0 0 0 7.625v7.5A2.5 2.5 0 0 0 2.5 17.5h6.75c1.67 0 3.199-.783 4.166-2.065l3.845-5.11c.363-.482.486-1.108.326-1.692a2.06 2.06 0 0 0-1.982-1.453h-2.442l.52-3.06c.117-.688-.087-1.394-.554-1.907A2.06 2.06 0 0 0 12.15 1.5c-.49 0-.96.175-1.33.49L8.864.046ZM3.5 8.75a.75.75 0 0 1 .75.75v5.5a.75.75 0 0 1-1.5 0v-5.5a.75.75 0 0 1 .75-.75Z"/></svg>
-                    {{ number_format($likesCount) }}
+                <button type="submit" title="{{ $myReaction === 'like' ? 'Remove your like' : 'Like this post' }}" class="inline-flex items-center gap-2 h-11 px-5 rounded-full text-sm font-bold transition cursor-pointer border {{ $myReaction === 'like' ? 'bg-emerald-600 border-emerald-600 text-white shadow-sm' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-emerald-400 hover:text-emerald-600 dark:hover:text-emerald-300' }}">
+                    <svg class="w-[18px] h-[18px]" fill="{{ $myReaction === 'like' ? 'currentColor' : 'none' }}" stroke="currentColor" stroke-width="{{ $myReaction === 'like' ? '0' : '2' }}" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"/></svg>
+                    Helpful
+                    <span class="ml-1 px-2 py-0.5 rounded-full text-xs font-bold {{ $myReaction === 'like' ? 'bg-white/20 text-white' : 'bg-emerald-50 dark:bg-emerald-400/10 text-emerald-700 dark:text-emerald-300' }}">{{ number_format($likesCount) }}</span>
                 </button>
             </form>
             <form method="POST" action="{{ route('blog.react', $post->slug) }}" class="inline">
                 @csrf
                 <input type="hidden" name="reaction" value="dislike">
-                <button type="submit" title="{{ $myReaction === 'dislike' ? 'Remove your dislike' : 'Dislike this post' }}" class="inline-flex items-center gap-2 h-11 px-6 rounded-full text-sm font-bold transition cursor-pointer {{ $myReaction === 'dislike' ? 'bg-red-600 text-white shadow-sm' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-red-100 dark:hover:bg-red-500/15 hover:text-red-600 dark:hover:text-red-400' }}">
-                    <svg class="w-4 h-4" style="transform:rotate(180deg)" fill="currentColor" viewBox="0 0 16 16"><path d="M8.864.046C7.908-.193 7.02.53 6.956 1.466c-.072 1.051-.23 2.242-.348 2.894-.08.44-.48.766-.9.766H2.5A2.5 2.5 0 0 0 0 7.625v7.5A2.5 2.5 0 0 0 2.5 17.5h6.75c1.67 0 3.199-.783 4.166-2.065l3.845-5.11c.363-.482.486-1.108.326-1.692a2.06 2.06 0 0 0-1.982-1.453h-2.442l.52-3.06c.117-.688-.087-1.394-.554-1.907A2.06 2.06 0 0 0 12.15 1.5c-.49 0-.96.175-1.33.49L8.864.046ZM3.5 8.75a.75.75 0 0 1 .75.75v5.5a.75.75 0 0 1-1.5 0v-5.5a.75.75 0 0 1 .75-.75Z"/></svg>
-                    {{ number_format($dislikesCount) }}
+                <button type="submit" title="{{ $myReaction === 'dislike' ? 'Remove your dislike' : 'Dislike this post' }}" class="inline-flex items-center gap-2 h-11 px-5 rounded-full text-sm font-bold transition cursor-pointer border {{ $myReaction === 'dislike' ? 'bg-rose-600 border-rose-600 text-white shadow-sm' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-rose-400 hover:text-rose-600 dark:hover:text-rose-300' }}">
+                    <svg class="w-[18px] h-[18px]" fill="{{ $myReaction === 'dislike' ? 'currentColor' : 'none' }}" stroke="currentColor" stroke-width="{{ $myReaction === 'dislike' ? '0' : '2' }}" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 14V2"/><path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z"/></svg>
+                    Not for me
+                    <span class="ml-1 px-2 py-0.5 rounded-full text-xs font-bold {{ $myReaction === 'dislike' ? 'bg-white/20 text-white' : 'bg-rose-50 dark:bg-rose-400/10 text-rose-600 dark:text-rose-300' }}">{{ number_format($dislikesCount) }}</span>
                 </button>
             </form>
         @else
-            <a href="{{ route('login') }}" title="Sign in to react" class="inline-flex items-center gap-2 h-11 px-6 rounded-full text-sm font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-emerald-100 dark:hover:bg-emerald-500/15 hover:text-emerald-700 dark:hover:text-emerald-300 transition">
-                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 16 16"><path d="M8.864.046C7.908-.193 7.02.53 6.956 1.466c-.072 1.051-.23 2.242-.348 2.894-.08.44-.48.766-.9.766H2.5A2.5 2.5 0 0 0 0 7.625v7.5A2.5 2.5 0 0 0 2.5 17.5h6.75c1.67 0 3.199-.783 4.166-2.065l3.845-5.11c.363-.482.486-1.108.326-1.692a2.06 2.06 0 0 0-1.982-1.453h-2.442l.52-3.06c.117-.688-.087-1.394-.554-1.907A2.06 2.06 0 0 0 12.15 1.5c-.49 0-.96.175-1.33.49L8.864.046ZM3.5 8.75a.75.75 0 0 1 .75.75v5.5a.75.75 0 0 1-1.5 0v-5.5a.75.75 0 0 1 .75-.75Z"/></svg>
-                {{ number_format($likesCount) }}
+            <a href="{{ route('login') }}" title="Sign in to react" class="inline-flex items-center gap-2 h-11 px-5 rounded-full text-sm font-bold transition border bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-emerald-400 hover:text-emerald-600 dark:hover:text-emerald-300">
+                <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"/></svg>
+                Helpful
+                <span class="ml-1 px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-50 dark:bg-emerald-400/10 text-emerald-700 dark:text-emerald-300">{{ number_format($likesCount) }}</span>
             </a>
-            <a href="{{ route('login') }}" title="Sign in to react" class="inline-flex items-center gap-2 h-11 px-6 rounded-full text-sm font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-red-100 dark:hover:bg-red-500/15 hover:text-red-600 dark:hover:text-red-400 transition">
-                <svg class="w-4 h-4" style="transform:rotate(180deg)" fill="currentColor" viewBox="0 0 16 16"><path d="M8.864.046C7.908-.193 7.02.53 6.956 1.466c-.072 1.051-.23 2.242-.348 2.894-.08.44-.48.766-.9.766H2.5A2.5 2.5 0 0 0 0 7.625v7.5A2.5 2.5 0 0 0 2.5 17.5h6.75c1.67 0 3.199-.783 4.166-2.065l3.845-5.11c.363-.482.486-1.108.326-1.692a2.06 2.06 0 0 0-1.982-1.453h-2.442l.52-3.06c.117-.688-.087-1.394-.554-1.907A2.06 2.06 0 0 0 12.15 1.5c-.49 0-.96.175-1.33.49L8.864.046ZM3.5 8.75a.75.75 0 0 1 .75.75v5.5a.75.75 0 0 1-1.5 0v-5.5a.75.75 0 0 1 .75-.75Z"/></svg>
-                {{ number_format($dislikesCount) }}
+            <a href="{{ route('login') }}" title="Sign in to react" class="inline-flex items-center gap-2 h-11 px-5 rounded-full text-sm font-bold transition border bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-rose-400 hover:text-rose-600 dark:hover:text-rose-300">
+                <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 14V2"/><path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z"/></svg>
+                Not for me
+                <span class="ml-1 px-2 py-0.5 rounded-full text-xs font-bold bg-rose-50 dark:bg-rose-400/10 text-rose-600 dark:text-rose-300">{{ number_format($dislikesCount) }}</span>
             </a>
         @endauth
     </div>
@@ -350,10 +377,11 @@
                     @endforeach
                 </div>
             </div>
-            @php $ad = \App\Models\Advertisement::active()->position('sidebar')->first(); @endphp
+            {{-- Sidebar ad: renders only when ads are switched on in admin
+                 settings AND the ad actually has code. No empty boxes, ever. --}}
+            @php $ad = setting('ads_enabled') === '1' ? \App\Models\Advertisement::active()->position('sidebar')->first() : null; @endphp
             @if($ad && trim(strip_tags($ad->code ?? '')) !== '')
-                {{-- Blank/unfilled ad slots collapse invisibly (JS below) so the sidebar never shows an empty labeled box. --}}
-                <div class="card-elev p-3 ad-slot-wrap"><div class="text-xs font-semibold tracking-wide text-slate-400 dark:text-slate-500 uppercase text-center mb-2">Advertisement</div>{!! $ad->code !!}</div>
+                <div class="card-elev p-3 ad-slot-wrap"><div class="ad-slot-label text-xs font-semibold tracking-wide text-slate-400 dark:text-slate-500 uppercase text-center mb-2">Advertisement</div>{!! $ad->code !!}</div>
             @endif
         </aside>
     </div>
@@ -380,16 +408,25 @@ function cancelReply(){
 }
 // Hide blank/unfilled ad slots: when an ad network serves nothing (site not
 // approved yet, no fill), the slot collapses invisibly instead of showing an
-// ugly empty box. Checks size after load and again after ads render.
+// ugly empty box. The "Advertisement" label itself never counts as content,
+// so a labeled but unfilled slot still collapses.
 (function(){
     function collapseEmptyAdSlots(){
         document.querySelectorAll('.ad-slot, .ad-slot-wrap').forEach(function(el){
             if (el.dataset.adChecked) return;
-            // visible height with no real content -> hide
-            var hasContent = el.innerText && el.innerText.trim().length > 2;
-            var imgs = el.querySelectorAll('img, iframe, ins');
+            // text WITHOUT the label: an unfilled slot has nothing else
+            var text = (el.innerText || '').replace(/advertisement/gi, '').trim();
+            var hasContent = text.length > 2;
+            var media = el.querySelectorAll('img, iframe, ins');
             var visibleMedia = false;
-            imgs.forEach(function(m){ if (m.getBoundingClientRect().height > 4) visibleMedia = true; });
+            media.forEach(function(m){ if (m.getBoundingClientRect().height > 4) visibleMedia = true; });
+            // any real sized child content (e.g. ad text served late)
+            if (!visibleMedia) {
+                el.querySelectorAll('a, span, div').forEach(function(n){
+                    var r = n.getBoundingClientRect();
+                    if (r.height > 30 && (n.textContent || '').trim().length > 3) visibleMedia = true;
+                });
+            }
             if (!hasContent && !visibleMedia) {
                 el.style.display = 'none';
                 el.dataset.adChecked = '1';

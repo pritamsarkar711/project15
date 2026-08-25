@@ -1,1 +1,1 @@
-{"deployment":"2026-08-25-ads-badges-editor-v16","date":"2026-08-25","note":"blank ads fix, badges, CKEditor full, hero redesign, revenue page, AdSense pages"}
+{"deployment":"2026-08-25-css-rebuild-hero-badges-v17","date":"2026-08-25","note":"compiled CSS rebuilt (fixes white hero, invisible badges/disclosure in light mode), verified badges everywhere, local CKEditor super-build with submit fix, merged posting rules, ads hidden until enabled, tags, editorial policy"}
