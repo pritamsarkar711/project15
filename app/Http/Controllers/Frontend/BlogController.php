@@ -42,11 +42,17 @@ class BlogController extends Controller
         $toc = $post->table_of_contents;
         // Extract headings for TOC rendering with ids injection
         $contentWithAnchors = $this->injectAnchors($post->content, $toc);
-        // Insert in-article ads every N paragraphs (default 2)
-        $adFrequency = (int) setting('ad_paragraph_frequency', 2);
-        if ($adFrequency < 1) $adFrequency = 2;
-        $inArticleAd = \App\Models\Advertisement::active()->position('in_article')->first();
-        $contentWithAnchors = $this->injectInArticleAds($contentWithAnchors, $adFrequency, $inArticleAd);
+        // Insert in-article ads every N paragraphs (default 2).
+        // Ads only ever render when the admin has switched them on
+        // (Settings, Ads tab). Until then content stays completely clean.
+        if (setting('ads_enabled') !== '1') {
+            $contentWithAnchors = $this->injectInArticleAds($contentWithAnchors, 0, null);
+        } else {
+            $adFrequency = (int) setting('ad_paragraph_frequency', 2);
+            if ($adFrequency < 1) $adFrequency = 2;
+            $inArticleAd = \App\Models\Advertisement::active()->position('in_article')->first();
+            $contentWithAnchors = $this->injectInArticleAds($contentWithAnchors, $adFrequency, $inArticleAd);
+        }
 
         // Reactions ("Did you like this post?" section after content + FAQ).
         // Defensive: if the post_reactions table has not been created yet (the

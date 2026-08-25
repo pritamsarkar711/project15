@@ -35,7 +35,7 @@ class DatabaseSeeder extends Seeder
         // Categories - multi-niche - deep green palette consistent with primary #14532d
         $categories = [
             ['name'=>'Technology','slug'=>'technology','description'=>'Latest in tech AI gadgets and software','color'=>'#14532d','icon'=>'cpu'],
-            ['name'=>'Health & Wellness','slug'=>'health-wellness','description'=>'Fitness nutrition and mental health','color'=>'#0f3d22','icon'=>'heart-pulse'],
+            ['name'=>'Health & Wellness','slug'=>'health-wellness','description'=>'Fitness nutrition and mental health','color'=>'#0f3d22','icon'=>'activity'],
             ['name'=>'Finance','slug'=>'finance','description'=>'Money investing and personal finance','color'=>'#1b4332','icon'=>'wallet'],
             ['name'=>'Travel','slug'=>'travel','description'=>'Destinations guides and travel tips','color'=>'#0f5132','icon'=>'plane'],
             ['name'=>'Lifestyle','slug'=>'lifestyle','description'=>'Culture food and everyday inspiration','color'=>'#164e3b','icon'=>'sparkles'],

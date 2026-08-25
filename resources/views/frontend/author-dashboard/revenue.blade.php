@@ -71,6 +71,6 @@
             <div class="text-slate-500 dark:text-slate-400 mt-1">Click rate</div>
         </div>
     </div>
-    <p class="text-xs text-slate-500 dark:text-slate-400 mt-4">Clicks are counted when readers open links inside your affiliate posts. Share only trusted, reputable websites. Links to low quality or unsafe sites lead to post rejection.</p>
+    <p class="text-xs text-slate-500 dark:text-slate-400 mt-4">Clicks are counted when readers open links in your affiliate posts. Share links only from reputable sites.</p>
 </div>
 @endsection

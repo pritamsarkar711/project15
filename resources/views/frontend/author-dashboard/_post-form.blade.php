@@ -33,8 +33,20 @@
                 </div>
 
                 <div class="mt-4">
+                    <label class="text-sm font-medium text-slate-900 dark:text-white">Tags</label>
+                    <input type="text" name="meta_keywords" value="{{ old('meta_keywords', $isEdit ? $post->meta_keywords : '') }}" maxlength="255" placeholder="budget travel, packing list, europe"
+                        class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white">
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1.5">Separate tags with commas.</p>
+                </div>
+
+                <div class="mt-4">
                     <label class="text-sm font-semibold text-slate-900 dark:text-white">Content *</label>
-                    <textarea id="editor" name="content" rows="14" required class="mt-1 w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm min-h-[360px] text-slate-900 dark:text-white">{{ old('content', $isEdit ? $post->content : '') }}</textarea>
+                    {{-- No HTML required attribute here on purpose: CKEditor hides
+                         this textarea and the browser would block submit on a
+                         hidden empty required field. The submit handler and the
+                         server both still validate the content. --}}
+                    <textarea id="editor" name="content" rows="14" class="mt-1 w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm min-h-[360px] text-slate-900 dark:text-white">{{ old('content', $isEdit ? $post->content : '') }}</textarea>
+                    <p id="editor-error" class="hidden text-xs text-red-600 dark:text-red-400 mt-1.5">Please write the post content first.</p>
                     <p class="text-xs text-slate-500 dark:text-slate-400 mt-1.5">Minimum 300 words to submit for review.</p>
                 </div>
             </div>
@@ -132,54 +144,34 @@
 </form>
 
 @push('scripts')
-<script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/super-build/ckeditor.js"></script>
+{{-- Local CKEditor 5 super-build: no CDN dependency, always loads --}}
+<script src="{{ asset('js/ckeditor5-super-build.js') }}"></script>
+<script src="{{ asset('js/editor-init.js') }}"></script>
 <script>
-// Full CKEditor 5 toolbar: headings, formatting, fonts, colors, lists,
-// alignment, links, tables, media, images (base64), code blocks, find and
-// replace, source editing and more.
+// Full CKEditor 5 editor for the author post form.
 (function(){
-    var CK = window.CKEDITOR || {};
-    var Editor = CK.ClassicEditor;
-    if (!Editor) { console.warn('CKEditor failed to load'); return; }
+    initHuvantiEditor('#editor');
 
-    // Base64 upload adapter: lets authors paste or upload images without
-    // any server-side upload configuration.
-    var base64 = null;
-    try {
-        base64 = (CK.upload && CK.upload.Base64UploadAdapter)
-            || (window.CKEditor5 && window.CKEditor5.upload && window.CKEditor5.upload.Base64UploadAdapter);
-    } catch (e) {}
-
-    var config = {
-        toolbar: {
-            items: [
-                'heading', '|',
-                'bold', 'italic', 'underline', 'strikethrough', '|',
-                'fontSize', 'fontFamily', 'fontColor', 'fontBackgroundColor', '|',
-                'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent', 'alignment', '|',
-                'link', 'blockQuote', 'insertTable', 'mediaEmbed', 'insertImage', 'horizontalLine', 'specialCharacters', 'codeBlock', '|',
-                'findAndReplace', 'selectAll', 'removeFormat', 'sourceEditing', '|',
-                'undo', 'redo'
-            ]
-        },
-        image: {
-            toolbar: ['imageTextAlternative', 'toggleImageCaption', 'imageStyle:inline', 'imageStyle:block', 'imageStyle:side']
-        },
-        table: {
-            contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells', 'tableProperties', 'tableCellProperties']
-        },
-        heading: {
-            options: [
-                { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
-                { model: 'heading1', view: 'h2', title: 'Heading 1', class: 'ck-heading_heading1' },
-                { model: 'heading2', view: 'h3', title: 'Heading 2', class: 'ck-heading_heading2' },
-                { model: 'heading3', view: 'h4', title: 'Heading 3', class: 'ck-heading_heading3' }
-            ]
-        }
-    };
-    if (base64) { config.extraPlugins = [base64]; }
-
-    Editor.create(document.querySelector('#editor'), config).catch(function(e){ console.error(e); });
+    // Friendly validation for the content (the textarea itself must stay
+    // non-required so the browser never blocks on the hidden field).
+    var form = document.querySelector('#editor') ? document.querySelector('#editor').closest('form') : null;
+    if (form) {
+        form.addEventListener('submit', function(e){
+            var editor = window.huvantiEditor;
+            var val = editor ? editor.getData() : (document.querySelector('#editor') ? document.querySelector('#editor').value : '');
+            var submitting = !e.submitter || e.submitter.value !== 'save_draft';
+            if (submitting && val.replace(/<[^>]*>/g, '').trim().length < 10) {
+                e.preventDefault();
+                var err = document.getElementById('editor-error');
+                if (err) err.classList.remove('hidden');
+                var ed = document.getElementById('editor');
+                if (ed) ed.scrollIntoView({behavior: 'smooth', block: 'center'});
+            } else {
+                var err = document.getElementById('editor-error');
+                if (err) err.classList.add('hidden');
+            }
+        });
+    }
 })();
 
 // FAQ rows

@@ -78,7 +78,10 @@
                     <div class="w-9 h-9 bg-[#0C3B2E] text-white flex items-center justify-center font-bold text-sm">{{ strtoupper(substr(auth()->user()->name,0,1)) }}</div>
                 @endif
                 <div class="flex-1 min-w-0">
-                    <div class="text-sm font-semibold text-white truncate">{{ auth()->user()->name }}</div>
+                    <div class="flex items-center gap-1.5">
+                        <span class="text-sm font-semibold text-white truncate">{{ auth()->user()->name }}</span>
+                        {!! auth()->user()->badgeHtml() !!}
+                    </div>
                     <a href="{{ url('/') }}" class="text-[11px] text-slate-400 hover:text-white">View site</a>
                 </div>
                 <form method="POST" action="{{ route('logout') }}">@csrf

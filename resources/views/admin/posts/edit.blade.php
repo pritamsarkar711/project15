@@ -95,57 +95,19 @@
                 <h3 class="font-semibold mb-3">SEO</h3>
                 <input type="text" name="meta_title" value="{{ old('meta_title', $post->meta_title) }}" placeholder="Meta title" class="w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
                 <textarea name="meta_description" rows="2" placeholder="Meta description" class="mt-2 w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">{{ old('meta_description', $post->meta_description) }}</textarea>
-                <input type="text" name="meta_keywords" value="{{ old('meta_keywords', $post->meta_keywords) }}" placeholder="Meta keywords" class="mt-2 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
+                <label class="text-sm font-medium mt-3 block">Tags <span class="text-slate-400 font-normal">(comma separated)</span></label>
+                <input type="text" name="meta_keywords" value="{{ old('meta_keywords', $post->meta_keywords) }}" placeholder="budget travel, packing list" class="mt-2 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
             </div>
         </div>
     </div>
 </form>
 
 @push('scripts')
-<script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/super-build/ckeditor.js"></script>
+<script src="{{ asset('js/ckeditor5-super-build.js') }}"></script>
+<script src="{{ asset('js/editor-init.js') }}"></script>
 <script>
-// Full CKEditor 5 toolbar: headings, formatting, fonts, colors, lists,
-// alignment, links, tables, media, images (base64), code blocks, find and
-// replace, source editing and more.
-(function(){
-    var CK = window.CKEDITOR || {};
-    var Editor = CK.ClassicEditor;
-    if (!Editor) { console.warn('CKEditor failed to load'); return; }
-    var base64 = null;
-    try {
-        base64 = (CK.upload && CK.upload.Base64UploadAdapter)
-            || (window.CKEditor5 && window.CKEditor5.upload && window.CKEditor5.upload.Base64UploadAdapter);
-    } catch (e) {}
-    var config = {
-        toolbar: {
-            items: [
-                'heading', '|',
-                'bold', 'italic', 'underline', 'strikethrough', '|',
-                'fontSize', 'fontFamily', 'fontColor', 'fontBackgroundColor', '|',
-                'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent', 'alignment', '|',
-                'link', 'blockQuote', 'insertTable', 'mediaEmbed', 'insertImage', 'horizontalLine', 'specialCharacters', 'codeBlock', '|',
-                'findAndReplace', 'selectAll', 'removeFormat', 'sourceEditing', '|',
-                'undo', 'redo'
-            ]
-        },
-        image: {
-            toolbar: ['imageTextAlternative', 'toggleImageCaption', 'imageStyle:inline', 'imageStyle:block', 'imageStyle:side']
-        },
-        table: {
-            contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells', 'tableProperties', 'tableCellProperties']
-        },
-        heading: {
-            options: [
-                { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
-                { model: 'heading1', view: 'h2', title: 'Heading 1', class: 'ck-heading_heading1' },
-                { model: 'heading2', view: 'h3', title: 'Heading 2', class: 'ck-heading_heading2' },
-                { model: 'heading3', view: 'h4', title: 'Heading 3', class: 'ck-heading_heading3' }
-            ]
-        }
-    };
-    if (base64) { config.extraPlugins = [base64]; }
-    Editor.create(document.querySelector('#editor'), config).catch(function(e){ console.error(e); });
-})();
+// Full CKEditor 5 editor (local super-build, no CDN dependency).
+initHuvantiEditor('#editor');
 </script>
 <script>
     let faqIdx = {{ count(old('faqs', $post->faqs)) + 1 }};

@@ -119,10 +119,12 @@ class SettingController extends Controller
             Setting::set('social_enabled', $request->boolean('social_enabled') ? '1' : '0');
         }
 
-        // Revenue program switch — ONLY when the Ads tab form was submitted
-        // (the General / Hero / Appearance forms don't contain this checkbox).
+        // Revenue program switch and ads master switch — ONLY when the Ads
+        // tab form was submitted (the other forms don't contain these
+        // checkboxes).
         if ($request->input('tab') === 'ads') {
             Setting::set('revenue_enabled', $request->boolean('revenue_enabled') ? '1' : '0');
+            Setting::set('ads_enabled', $request->boolean('ads_enabled') ? '1' : '0');
             Setting::flushAllCache();
         }
 
