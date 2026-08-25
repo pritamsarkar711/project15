@@ -123,24 +123,24 @@
                 </div>
             </article>
 
-            {{-- FAQ separate container --}}
+            {{-- FAQ --}}
             @if($post->faqs->count() > 0)
             <div class="card-elev p-6">
                 <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
                     <span class="w-8 h-8 bg-emerald-50 dark:bg-emerald-400/10 flex items-center justify-center">
-                        <svg class="w-4 h-4 text-[#0C3B2E] dark:text-emerald-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/><path stroke-linecap="round" stroke-linejoin="round" d="M11 9a3 3 0 0 1 3 3 3 3 0 0 1-1 1h-.5a3 3 0 0 0-3 3"/></svg>
+                        <svg class="w-4 h-4 text-[#0C3B2E] dark:text-emerald-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 17h.01"/></svg>
                     </span>
                     Frequently Asked Questions
                 </h3>
                 <div class="space-y-2" id="faq-accordion">
                     @foreach($post->faqs as $faq)
-                        <div class="border border-slate-200 dark:border-[#383838] overflow-hidden bg-white dark:bg-[#2a2a2a]">
-                            <button type="button" onclick="toggleFaq(this)" aria-expanded="false" class="faq-toggle w-full flex items-center justify-between p-4 text-left hover:bg-slate-50 dark:hover:bg-[#333]/60 transition">
+                        <details class="group border border-slate-200 dark:border-[#383838] bg-white dark:bg-[#2a2a2a]">
+                            <summary class="flex items-center justify-between p-4 cursor-pointer list-none hover:bg-slate-50 dark:hover:bg-[#333]/60 transition select-none [&::-webkit-details-marker]:hidden">
                                 <span class="text-sm font-medium text-slate-900 dark:text-white pr-4">{{ $faq->question }}</span>
-                                <span class="faq-chevron w-7 h-7 bg-slate-100 dark:bg-slate-700 flex items-center justify-center shrink-0 transition-transform"><svg class="w-4 h-4 text-slate-600 dark:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></span>
-                            </button>
-                            <div class="faq-answer hidden px-4 pb-4 text-sm leading-relaxed text-slate-600 dark:text-slate-400 border-t border-slate-100 dark:border-[#383838] pt-3 bg-slate-50 dark:bg-[#2a2a2a]/50">{{ $faq->answer }}</div>
-                        </div>
+                                <span class="w-7 h-7 bg-slate-100 dark:bg-slate-700 flex items-center justify-center shrink-0 transition-transform group-open:rotate-180"><svg class="w-4 h-4 text-slate-600 dark:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></span>
+                            </summary>
+                            <div class="px-4 pb-4 text-sm leading-relaxed text-slate-600 dark:text-slate-400 border-t border-slate-100 dark:border-[#383838] pt-3 bg-slate-50 dark:bg-[#2a2a2a]/50">{{ $faq->answer }}</div>
+                        </details>
                     @endforeach
                 </div>
             </div>
@@ -381,23 +381,20 @@
 </div>
 @push('scripts')
 <script>
-function toggleFaq(btn){
-    const content = btn.nextElementSibling;
-    const chevron = btn.querySelector('.faq-chevron');
-    const isHidden = content.classList.contains('hidden');
-    document.querySelectorAll('#faq-accordion .faq-answer').forEach(el=>{ if(el!==content){ el.classList.add('hidden'); }});
-    document.querySelectorAll('#faq-accordion .faq-chevron').forEach(el=>{ if(el!==chevron){ el.style.transform = ''; }});
-    document.querySelectorAll('#faq-accordion .faq-toggle').forEach(el=>{ if(el!==btn){ el.setAttribute('aria-expanded','false'); }});
-    if(isHidden){
-        content.classList.remove('hidden');
-        btn.setAttribute('aria-expanded','true');
-        if(chevron) chevron.style.transform = 'rotate(180deg)';
-    } else {
-        content.classList.add('hidden');
-        btn.setAttribute('aria-expanded','false');
-        if(chevron) chevron.style.transform = '';
+(function(){
+    const acc = document.getElementById('faq-accordion');
+    if(acc){
+        acc.querySelectorAll('details').forEach(d=>{
+            d.addEventListener('toggle', ()=>{
+                if(d.open){
+                    acc.querySelectorAll('details').forEach(o=>{
+                        if(o!==d && o.open) o.removeAttribute('open');
+                    });
+                }
+            });
+        });
     }
-}
+})();
 // Reply system
 function replyTo(id, name){
     document.getElementById('reply-parent-id').value = id;
