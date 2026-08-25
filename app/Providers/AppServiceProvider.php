@@ -34,6 +34,25 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // ------------------------------------------------------------------
+        // Self-updating database: apply pending migrations automatically.
+        //
+        // This site runs on Hostinger shared hosting WITHOUT SSH, and the
+        // /deploy.php helper was unreachable for a while (it 404'd behind the
+        // root .htaccess rewrite). Result: new migrations (post reactions,
+        // extra categories, ...) silently never ran and the new code crashed
+        // with SQL "table not found" errors. Running `migrate --force` here
+        // is idempotent — when nothing is pending Laravel does nothing.
+        //
+        // Throttled with a filesystem flag (at most once every 10 minutes)
+        // so the normal page flow pays one cheap glob + one SELECT, and the
+        // actual migrate call only happens when new migration files exist.
+        // Never runs inside artisan/console commands (avoids recursion) and
+        // any failure is swallowed so a DB hiccup can never take the site
+        // down.
+        // ------------------------------------------------------------------
+        $this->applyPendingMigrations();
+
         // Ensure the public/storage symlink exists (equivalent of `artisan storage:link`).
         // Many shared hosts (Hostinger, Namecheap, Bluehost) disable the symlink()
         // function for security — gracefully skip in that case. Users on such hosts
@@ -121,6 +140,51 @@ class AppServiceProvider extends ServiceProvider
         }
         if (!empty($rows->get('mail_from_name'))) {
             Config::set('mail.from.name', $rows->get('mail_from_name'));
+        }
+    }
+
+    /**
+     * Apply pending database migrations automatically (shared-hosting safe).
+     *
+     * How it works:
+     *   1. Skipped entirely for console/artisan requests (avoids recursion
+     *      while `php artisan migrate` itself boots the app).
+     *   2. A filesystem flag throttles the check to once every 10 minutes —
+     *      normal traffic pays nothing.
+     *   3. When the check runs, the migrations table is compared against the
+     *      migration files on disk; only when files are missing from the
+     *      table is `migrate --force` invoked (idempotent).
+     *   4. Every step is wrapped so a database hiccup can never turn into a
+     *      site-wide 500.
+     */
+    private function applyPendingMigrations(): void
+    {
+        try {
+            if ($this->app->runningInConsole()) {
+                return;
+            }
+
+            $flag = storage_path('framework/.migrations_last_check');
+            $last = @filemtime($flag) ?: 0;
+            if (time() - $last < 600) {
+                return;
+            }
+            @touch($flag); // stamp BEFORE checking so parallel requests do not dogpile
+
+            if (!\Illuminate\Support\Facades\Schema::hasTable('migrations')) {
+                return; // not installed yet (install.php handles setup)
+            }
+
+            $ran = \Illuminate\Support\Facades\DB::table('migrations')->pluck('migration')->all();
+            $files = collect(glob(database_path('migrations/*.php')))
+                ->map(fn ($f) => basename($f, '.php'));
+
+            if ($files->diff($ran)->isNotEmpty()) {
+                \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+            }
+        } catch (\Throwable $e) {
+            // Never let a migration problem take the site down — the code
+            // paths that depend on new tables degrade gracefully.
         }
     }
 }

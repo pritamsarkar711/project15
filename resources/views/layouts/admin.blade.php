@@ -138,18 +138,18 @@
                     <svg class="w-[18px] h-[18px] hidden dark:block" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
                     <svg class="w-[18px] h-[18px] block dark:hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
                 </button>
-                <a href="{{ url('/') }}" class="inline-flex items-center gap-2 h-9 px-4 text-sm font-semibold text-white bg-[#0C3B2E] hover:bg-[#072A20] transition">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 3h6m0 0v6m0-6L10 14M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
-                    View Site
+                <a href="{{ url('/') }}" class="inline-flex items-center justify-center gap-2 h-9 px-3 sm:px-4 text-sm font-semibold text-white bg-[#0C3B2E] hover:bg-[#072A20] transition" aria-label="View Site" title="View Site">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 3h6m0 0v6m0-6L10 14M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
+                    <span class="hidden sm:inline">View Site</span>
                 </a>
                 {{-- Admin ⇄ User switch: browse the site + user panel as a regular
                      user from your own admin account, then switch straight back.
                      Only visible to the real admin; never exposes admin to users. --}}
                 <form method="POST" action="{{ route('admin.switch-role') }}" class="inline">
                     @csrf
-                    <button type="submit" title="Browse the site as a regular user from your own account" class="inline-flex items-center gap-2 h-9 px-4 text-sm font-semibold text-[#0C3B2E] dark:text-emerald-300 border border-[#0C3B2E] dark:border-emerald-500/40 hover:bg-[#0C3B2E]/5 dark:hover:bg-emerald-500/10 transition cursor-pointer">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path stroke-linecap="round" stroke-linejoin="round" d="m16 11 2 2 4-4"/></svg>
-                        Switch to User
+                    <button type="submit" title="Browse the site as a regular user from your own account" aria-label="Switch to User" class="inline-flex items-center justify-center gap-2 h-9 px-3 sm:px-4 text-sm font-semibold text-[#0C3B2E] dark:text-emerald-300 border border-[#0C3B2E] dark:border-emerald-500/40 hover:bg-[#0C3B2E]/5 dark:hover:bg-emerald-500/10 transition cursor-pointer">
+                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path stroke-linecap="round" stroke-linejoin="round" d="m16 11 2 2 4-4"/></svg>
+                        <span class="hidden lg:inline">Switch to User</span>
                     </button>
                 </form>
             </div>
