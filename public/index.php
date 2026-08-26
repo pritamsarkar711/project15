@@ -28,7 +28,7 @@ define('LARAVEL_START', microtime(true));
 // ---------------------------------------------------------------------------
 
 // Bump this string when you want to force a cache clear on every server.
-define('HUVANTI_DEPLOY_VERSION', 'v25-2026-08-25-feedback-blog-polish');
+define('HUVANTI_DEPLOY_VERSION', 'v26-2026-08-25-error500-icons');
 
 // Determine if the application is in maintenance mode...
 if (file_exists($maintenance = __DIR__.'/../storage/framework/maintenance.php')) {
@@ -135,7 +135,7 @@ function huvanti_render_boot_failure_page(?Throwable $e, array $notes = []): voi
         header('Cache-Control: no-store, max-age=0');
         header('X-Robots-Tag: noindex, nofollow');
         header('X-Content-Type-Options: nosniff');
-        header('X-Huvanti-Deploy: 2026-08-25-ads-badges-editor-v16');
+        header('X-Huvanti-Deploy: '.HUVANTI_DEPLOY_VERSION);
     }
 
     $h = static fn ($v): string => htmlspecialchars((string) $v, ENT_QUOTES, 'UTF-8');
@@ -143,7 +143,7 @@ function huvanti_render_boot_failure_page(?Throwable $e, array $notes = []): voi
     $checks = [
         'Deployment release' => [
             'ok' => true,
-            'value' => '2026-08-25-ads-badges-editor-v16',
+            'value' => HUVANTI_DEPLOY_VERSION,
         ],
         'PHP version' => [
             'ok' => PHP_VERSION_ID >= 80200,
