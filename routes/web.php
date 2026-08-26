@@ -144,7 +144,10 @@ Route::get('/sitemap.xml', [SeoController::class, 'sitemap'])->name('seo.sitemap
 // Admin Auth - slug is /manage for security (no Admin link on frontend)
 Route::prefix('manage')->name('admin.')->group(function(){
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-    Route::post('/login', [AuthController::class, 'login'])->name('admin.login.post')->middleware('throttle:8,1');
+    // Name is 'login.post' so the admin. group prefix yields admin.login.post
+    // (the name the login view already uses). Naming it admin.login.post here
+    // used to register admin.admin.login.post and 500'd /manage/login.
+    Route::post('/login', [AuthController::class, 'login'])->name('login.post')->middleware('throttle:8,1');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     Route::middleware(['admin'])->group(function(){

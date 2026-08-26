@@ -1,1 +1,1 @@
-{"deployment":"2026-08-25-author-2fa-top-v43","date":"2026-08-25","note":"author 2FA like admin, cancel setup button fixed, no user mode message, top 20 contributors, likes white"}
+{"deployment":"2026-08-26-fix-error500-v44","date":"2026-08-26","note":"fix site-wide 500: admin login route name, homepage compact(), sessions table self-heal, safe vite/font helpers"}

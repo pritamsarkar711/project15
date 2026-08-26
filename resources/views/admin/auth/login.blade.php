@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Admin Login</title>
     <link href="{{ \App\Support\SiteFont::googleUrl() }}" rel="stylesheet">
-    @vite(['resources/css/app.css'])
+    {!! \App\Support\ViteAssets::tags(['resources/css/app.css']) !!}
     <script>
         (function(){
             var t = localStorage.getItem('huvanti-admin-theme') || 'light';

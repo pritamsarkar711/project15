@@ -26,8 +26,16 @@ class BlogController extends Controller
         }
         $posts = $query->latest('published_at')->paginate(12)->withQueryString();
         // Filter dropdown: only live categories (active + has published posts)
-        $categories = Category::live()->orderBy('sort_order')->get();
-        $featured = Post::published()->where('is_featured',true)->latest()->take(3)->get();
+        try {
+            $categories = Category::live()->orderBy('sort_order')->get();
+        } catch (\Throwable $e) {
+            $categories = collect();
+        }
+        try {
+            $featured = Post::published()->where('is_featured',true)->latest()->take(3)->get();
+        } catch (\Throwable $e) {
+            $featured = collect();
+        }
         return view('frontend.blog.index', compact('posts','categories','featured'));
     }
 

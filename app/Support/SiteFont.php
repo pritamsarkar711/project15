@@ -12,7 +12,16 @@ class SiteFont
 {
     public static function key(): string
     {
-        return Setting::get('site_font_family', 'work-sans');
+        try {
+            $value = Setting::get('site_font_family', 'work-sans');
+            if (! is_string($value) || $value === '') {
+                return 'work-sans';
+            }
+
+            return $value;
+        } catch (\Throwable $e) {
+            return 'work-sans';
+        }
     }
 
     public static function googleUrl(): string
