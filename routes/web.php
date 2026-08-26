@@ -89,9 +89,9 @@ Route::get('/page/{slug}', [PageController::class, 'show'])->name('page.show');
 
 // Frontend user auth (separate from /manage admin login)
 Route::get('/register', [FrontendAuthController::class, 'showRegisterForm'])->name('register')->middleware('guest');
-Route::post('/register', [FrontendAuthController::class, 'register'])->name('register.post')->middleware('guest');
+Route::post('/register', [FrontendAuthController::class, 'register'])->name('register.post')->middleware(['guest', 'throttle:6,1']);
 Route::get('/login', [FrontendAuthController::class, 'showLoginForm'])->name('login')->middleware('guest');
-Route::post('/login', [FrontendAuthController::class, 'login'])->name('login.post')->middleware('guest');
+Route::post('/login', [FrontendAuthController::class, 'login'])->name('login.post')->middleware(['guest', 'throttle:10,1']);
 Route::post('/logout', [FrontendAuthController::class, 'logout'])->name('logout')->middleware('auth');
 
 Route::get('/auth/google', [FrontendAuthController::class, 'redirectToGoogle'])->name('auth.google.redirect')->middleware('guest');
@@ -106,7 +106,7 @@ Route::post('/switch-back-to-admin', [RoleSwitchController::class, 'switchBackTo
 // Password reset (frontend users — uses Huvanti-branded ResetPassword
 // notification that points to /reset-password/{token} instead of /manage).
 Route::get('/forgot-password', [FrontendAuthController::class, 'showForgotPasswordForm'])->name('password.request')->middleware('guest');
-Route::post('/forgot-password', [FrontendAuthController::class, 'sendResetLink'])->name('password.email')->middleware('guest');
+Route::post('/forgot-password', [FrontendAuthController::class, 'sendResetLink'])->name('password.email')->middleware(['guest', 'throttle:5,1']);
 Route::get('/reset-password/{token}', [FrontendAuthController::class, 'showResetForm'])->name('password.reset')->middleware('guest');
 Route::post('/reset-password', [FrontendAuthController::class, 'reset'])->name('password.update')->middleware('guest');
 
@@ -138,7 +138,7 @@ Route::get('/sitemap.xml', [SeoController::class, 'sitemap'])->name('seo.sitemap
 // Admin Auth - slug is /manage for security (no Admin link on frontend)
 Route::prefix('manage')->name('admin.')->group(function(){
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-    Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+    Route::post('/login', [AuthController::class, 'login'])->name('admin.login.post')->middleware('throttle:8,1');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     Route::middleware(['admin'])->group(function(){
