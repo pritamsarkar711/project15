@@ -11,6 +11,10 @@ class FeedbackController extends Controller
 {
     public function index()
     {
+        if (!Schema::hasTable('feedbacks')) {
+            $feedbacks = collect();
+            return view('frontend.author-dashboard.feedback', compact('feedbacks'));
+        }
         $feedbacks = Feedback::where('user_id', auth()->id())->latest()->take(5)->get();
         return view('frontend.author-dashboard.feedback', compact('feedbacks'));
     }
