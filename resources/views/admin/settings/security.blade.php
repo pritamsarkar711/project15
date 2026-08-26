@@ -27,13 +27,11 @@
                         <p class="text-sm font-medium">3. Enter the 6-digit code from the app to confirm:</p>
                     </div>
                 </div>
-                <form method="POST" action="{{ route('admin.settings.2fa.confirm') }}" class="flex gap-2">
+                <form method="POST" action="{{ route('admin.settings.2fa.confirm') }}" class="flex flex-wrap gap-2">
                     @csrf
                     <input type="text" name="two_factor_code" inputmode="numeric" maxlength="6" required placeholder="123456" class="h-11 w-40 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-mono tracking-widest text-center placeholder:tracking-normal placeholder:font-sans">
-                    <button type="submit" class="h-11 px-6 bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold transition">Confirm & Enable</button>
-                </form>
-                <form method="POST" action="{{ route('admin.settings.2fa.disable') }}">@csrf
-                    <button type="submit" class="text-sm text-slate-500 dark:text-slate-400 hover:underline">Cancel setup</button>
+                    <button type="submit" class="h-11 px-6 bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold text-sm transition">Confirm & Enable</button>
+                    <button type="submit" formaction="{{ route('admin.settings.2fa.disable') }}" formnovalidate class="h-11 px-6 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 font-semibold text-sm transition">Cancel setup</button>
                 </form>
             </div>
         @elseif($user->google2fa_secret)

@@ -79,6 +79,55 @@
     </div>
 </form>
 
+{{-- Two factor authentication --}}
+<div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 mt-6">
+    <h3 class="font-semibold mb-3 text-slate-900 dark:text-white">Two Factor Authentication</h3>
+
+    @if(session('author_2fa_setup_secret') && session('author_2fa_setup_qr'))
+        <div class="space-y-4">
+            <div class="flex flex-col sm:flex-row gap-5 items-start">
+                <div class="p-3 bg-white border border-slate-200 dark:border-slate-700 shrink-0">
+                    <img src="{{ session('author_2fa_setup_qr') }}" alt="2FA QR code" class="w-[180px] h-[180px]" loading="lazy" decoding="async">
+                </div>
+                <div class="space-y-3">
+                    <p class="text-sm font-medium">1. Scan the QR code with Google Authenticator or any TOTP app.</p>
+                    <div>
+                        <p class="text-sm font-medium">2. Or enter this secret manually:</p>
+                        <code class="block mt-1 px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-mono break-all">{{ session('author_2fa_setup_secret') }}</code>
+                    </div>
+                    <p class="text-sm font-medium">3. Enter the 6 digit code from the app to confirm:</p>
+                </div>
+            </div>
+            <form method="POST" action="{{ route('author.2fa.confirm') }}" class="flex flex-wrap gap-2">
+                @csrf
+                <input type="text" name="two_factor_code" inputmode="numeric" maxlength="6" required placeholder="123456" class="h-11 w-40 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-mono tracking-widest text-center placeholder:tracking-normal placeholder:font-sans">
+                <button type="submit" class="h-11 px-6 bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold text-sm transition">Confirm & Enable</button>
+                <button type="submit" formaction="{{ route('author.2fa.disable') }}" formnovalidate class="h-11 px-6 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 font-semibold text-sm transition">Cancel setup</button>
+            </form>
+        </div>
+    @elseif($user->google2fa_secret)
+        <div class="p-4 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/30 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-2 text-sm font-semibold text-emerald-800 dark:text-emerald-300">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path stroke-linecap="round" stroke-linejoin="round" d="m9 11 3 3L22 4"/></svg>
+                Enabled. A 6 digit code is required at login.
+            </div>
+            <form method="POST" action="{{ route('author.2fa.disable') }}">@csrf
+                <button type="submit" class="h-9 px-4 text-sm font-semibold border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-800 transition">Disable 2FA</button>
+            </form>
+        </div>
+    @else
+        <div class="p-4 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex flex-wrap items-center justify-between gap-3">
+            <div>
+                <span class="text-sm font-semibold text-slate-600 dark:text-slate-300 block">Disabled</span>
+                <span class="text-xs text-slate-500 dark:text-slate-400">Add an extra layer of protection to your account.</span>
+            </div>
+            <form method="POST" action="{{ route('author.2fa.start') }}">@csrf
+                <button type="submit" class="h-9 px-4 bg-[#0C3B2E] hover:bg-[#072A20] text-white text-sm font-semibold transition">Enable 2FA</button>
+            </form>
+        </div>
+    @endif
+</div>
+
 {{-- Account deletion --}}
 <div class="border border-red-200 dark:border-red-500/30 bg-white dark:bg-slate-900 p-6 mt-6">
     <h3 class="font-bold text-red-800 dark:text-red-300 text-base">Delete account</h3>

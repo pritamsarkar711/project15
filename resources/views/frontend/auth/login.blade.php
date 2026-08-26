@@ -37,6 +37,15 @@
                 Keep me signed in
             </label>
 
+            @if(session('show_2fa'))
+                <div>
+                    <label class="text-sm font-medium text-slate-900 dark:text-slate-200">Two factor code</label>
+                    <input type="text" name="two_factor_code" inputmode="numeric" maxlength="6" autocomplete="one-time-code" required
+                        class="mt-1 w-full h-11 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-[#0C3B2E] focus:ring-4 focus:ring-[#0C3B2E]/15 outline-none text-sm font-mono tracking-widest text-center placeholder:tracking-normal placeholder:font-sans text-slate-900 dark:text-white"
+                        placeholder="123456">
+                </div>
+            @endif
+
             <button type="submit"
                 class="w-full h-11 bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold text-sm transition">
                 Sign in
