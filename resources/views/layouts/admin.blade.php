@@ -85,7 +85,7 @@
                 @if($unreadMessages)<span class="ml-auto text-[11px] font-bold bg-amber-400 text-slate-900 px-2 py-0.5">{{ $unreadMessages }}</span>@endif
             </a>
             <a href="{{ route('admin.feedback.index') }}" class="flex items-center gap-3 px-3 py-2.5 transition {{ request()->routeIs('admin.feedback*') ? 'bg-[#0C3B2E] text-white' : 'hover:bg-white/5 hover:text-white' }}">
-                <svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 12h.01M12 12h.01M17 12h.01M21 14a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V8a4 4 0 0 1 4-4h12a4 4 0 0 1 4 4z"/></svg>
+                <svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/></svg>
                 Feedback
                 @php
                     try { $feedbackCount = \App\Models\Feedback::count(); }

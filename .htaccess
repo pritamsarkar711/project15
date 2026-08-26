@@ -36,7 +36,7 @@ DirectoryIndex index.php index.html
 
 # A unique, cache-independent signal that the corrected deployment is active.
 <IfModule mod_headers.c>
-    Header always set X-Huvanti-Deploy "2026-08-25-feedback-table-fix-v28"
+    Header always set X-Huvanti-Deploy "2026-08-25-feedback-grammar-icons-v29"
     Header always set X-Content-Type-Options "nosniff"
     Header always set X-Frame-Options "SAMEORIGIN"
     Header always set Referrer-Policy "strict-origin-when-cross-origin"
