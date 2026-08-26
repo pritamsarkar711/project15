@@ -1,1 +1,1 @@
-{"deployment":"2026-08-25-security-seo-v40","date":"2026-08-25","note":"security: XSS sanitizer on post save+render, login throttling, security headers, dotfile block; SEO: noindex auth+panels, expanded robots default"}
+{"deployment":"2026-08-25-adsense-pages-v41","date":"2026-08-25","note":"AdSense pages: new Affiliate Disclosure and Comment Policy pages with routes and footer links, Terms gains copyright DMCA reporting"}

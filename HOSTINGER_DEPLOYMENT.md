@@ -8,7 +8,7 @@ on the server. The repository intentionally includes `vendor/` and
 Current deployment marker:
 
 ```text
-2026-08-25-security-seo-v40
+2026-08-25-adsense-pages-v41
 ```
 
 ## "I pushed to GitHub but my site didn't change" — read this first

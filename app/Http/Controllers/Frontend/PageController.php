@@ -66,6 +66,16 @@ class PageController extends Controller
         return $this->policyPage('disclaimer', 'Disclaimer', $this->defaultContent('disclaimer'));
     }
 
+    public function affiliateDisclosure()
+    {
+        return $this->policyPage('affiliate-disclosure', 'Affiliate Disclosure', $this->defaultContent('affiliate-disclosure'));
+    }
+
+    public function commentPolicy()
+    {
+        return $this->policyPage('comment-policy', 'Comment Policy', $this->defaultContent('comment-policy'));
+    }
+
     /**
      * Default content for each policy page, kept in one place and shared with
      * the migration that seeds them, so a fresh install and an upgraded one
@@ -105,6 +115,38 @@ HTML,
 <p>Advertisements shown on this site are served by third-party networks such as Google AdSense. We do not endorse the products advertised and are not responsible for the content of the ads.</p>
 <h3>Contact</h3>
 <p>If you have questions about this disclaimer, reach us through the <a href="/contact">contact page</a>.</p>
+HTML,
+            'affiliate-disclosure' => <<<'HTML'
+<h2>Affiliate Disclosure</h2>
+<p>Last updated: August 2026</p>
+<p>Huvanti is a reader supported publication. Some pages on this site contain affiliate links. If you click one of these links and make a purchase, we may earn a commission. You never pay more because of this. The price stays the same whether you use our link or go to the seller directly.</p>
+<h3>How affiliate links work here</h3>
+<p>Every article that contains affiliate links carries a clear disclosure notice before the content begins. The notice tells you the page includes affiliate links and that we may earn a commission. This notice appears on the article itself, not hidden in a footer or a separate policy page only.</p>
+<h3>Our editorial promise</h3>
+<p>Commissions never decide what we recommend. Writers and editors choose products based on research, real experience and value for the reader. If a product is not good, we say so even when a commission is available. Sponsored placements, if ever used, are labeled as sponsored.</p>
+<h3>Who we work with</h3>
+<p>We only join affiliate programs of reputable companies that readers already know and trust, such as major retailers and well established brands. We do not link to unknown or low quality sites for the sake of a commission.</p>
+<h3>Prices and availability</h3>
+<p>Prices and availability mentioned in articles can change without notice on the seller side. Always check the final price on the seller page before buying.</p>
+<h3>Your support</h3>
+<p>Using our links costs you nothing extra. It simply helps us keep publishing free, well researched content. Thank you for supporting Huvanti.</p>
+<h3>Questions</h3>
+<p>If you have questions about this disclosure or any link on the site, reach us through the <a href="/contact">contact page</a>.</p>
+HTML,
+            'comment-policy' => <<<'HTML'
+<h2>Comment Policy</h2>
+<p>Last updated: August 2026</p>
+<p>Comments on Huvanti are welcome and moderated. This policy explains the rules so every reader knows what to expect.</p>
+<h3>What we allow</h3>
+<p>Questions about the article. Honest opinions shared politely. Additional tips that help other readers. Corrections if you believe something is wrong.</p>
+<h3>What we do not allow</h3>
+<p>Insults, harassment or personal attacks. Spam, self promotion or links to unrelated sites. Hate speech of any kind. False claims presented as fact. Anything illegal, unsafe or harmful, including links to adult, gambling, pirated or malicious content.</p>
+<h3>Moderation</h3>
+<p>Every comment is reviewed before it appears, or shortly after, depending on the article. We may edit or remove comments that break this policy. Repeated violations can lead to blocked posting. Comments express the views of the person who wrote them, not the views of Huvanti.</p>
+<h3>Your privacy</h3>
+<p>We ask for your name and email to comment. Your email is never published or shared. It is stored securely and used only for moderation. See our Privacy Policy for full details.</p>
+<h3>Remove a comment</h3>
+<p>You can ask us to remove your own comment at any time. Use the contact page and include the article link and the comment text.</p>
 HTML,
             default => '',
         };
