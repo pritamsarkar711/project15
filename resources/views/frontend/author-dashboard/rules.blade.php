@@ -20,7 +20,7 @@
         <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
             <div class="flex items-center gap-3">
                 <span class="w-9 h-9 bg-[#0C3B2E] text-white flex items-center justify-center shrink-0">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487 1.687-1.688a1.875 1.875 0 0 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M6 5v.01M12 12h.01M18 18h.01"/></svg>
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M11.097 1.515a.75.75 0 011.06 0l4.5 4.5a.75.75 0 010 1.06l-6.22 6.22a2.25 2.25 0 01-1.06.606l-3.725.996a.75.75 0 01-.928-.928l.996-3.725a2.25 2.25 0 01.606-1.06l6.22-6.22a.75.75 0 010-1.06l-4.5-4.5a.75.75 0 010-1.06z" clip-rule="evenodd"/></svg>
                 </span>
                 <h3 class="font-semibold text-slate-900 dark:text-white">Write for real readers</h3>
             </div>
@@ -30,7 +30,7 @@
         <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
             <div class="flex items-center gap-3">
                 <span class="w-9 h-9 bg-[#0C3B2E] text-white flex items-center justify-center shrink-0">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1M12 20v1M3 12h1M20 12h-1"/></svg>
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z"/><path fill-rule="evenodd" d="M1.323 11.447C2.811 6.976 7.028 3.75 12 3.75c4.97 0 9.19 3.223 10.677 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.19-3.223-10.677-7.69a1.762 1.762 0 010-1.113zM17.25 12a5.25 5.25 0 11-10.5 0 5.25 5.25 0 0110.5 0z" clip-rule="evenodd"/></svg>
                 </span>
                 <h3 class="font-semibold text-slate-900 dark:text-white">Keep it focused</h3>
             </div>
@@ -60,7 +60,7 @@
         <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
             <div class="flex items-center gap-3">
                 <span class="w-9 h-9 bg-[#0C3B2E] text-white flex items-center justify-center shrink-0">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4"/></svg>
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M11.484 2.17a.75.75 0 01.032 0l6.5 2.25a.75.75 0 01.5.707v6.857a8.25 8.25 0 01-1.885 5.173 8.25 8.25 0 01-6.115 3.07 8.25 8.25 0 01-6.115-3.07 8.25 8.25 0 01-1.885-5.173V5.127a.75.75 0 01.5-.707l6.5-2.25a.75.75 0 01.032 0zm-1.22 5.23a.75.75 0 00-1.06 1.06l2.5 2.5a.75.75 0 001.06 0l4-4a.75.75 0 00-1.06-1.06l-3.47 3.47-1.97-1.97z" clip-rule="evenodd"/></svg>
                 </span>
                 <h3 class="font-semibold text-slate-900 dark:text-white">Publish original work</h3>
             </div>
@@ -70,7 +70,7 @@
         <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
             <div class="flex items-center gap-3">
                 <span class="w-9 h-9 bg-[#0C3B2E] text-white flex items-center justify-center shrink-0">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 6h8M8 12h8M8 18h8"/><path stroke-linecap="round" stroke-linejoin="round" d="M3 6h.01M3 12h.01M3 18h.01"/><path stroke-linecap="round" stroke-linejoin="round" d="M14 6v4M14 18v-4"/></svg>
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M7.5 6v.75H5.513c-.96 0-1.764.724-1.865 1.679l-1.32 12.38A1.5 1.5 0 003.81 22.5h16.38A1.5 1.5 0 001.49 20.809l-1.32-12.38c-.101-.955-.905-1.679-1.865-1.679H16.5v-.75A2.25 2.25 0 0014.25 3.75h-4.5A2.25 2.25 0 007.5 6z"/><path fill-rule="evenodd" d="M9 9.75A1.5 1.5 0 0110.5 8.25h3A1.5 1.5 0 0115 9.75v.75H9v-.75zm1.5 3a.75.75 0 01.75-.75h3a.75.75 0 010 1.5h-3a.75.75 0 01-.75-.75zm0 3a.75.75 0 01.75-.75h3a.75.75 0 010 1.5h-3a.75.75 0 01-.75-.75z" clip-rule="evenodd"/></svg>
                 </span>
                 <h3 class="font-semibold text-slate-900 dark:text-white">Complete the extras</h3>
             </div>
@@ -111,7 +111,7 @@
     <div class="border border-red-200 dark:border-red-500/30 bg-white dark:bg-slate-900 p-5 mt-4">
         <div class="flex items-center gap-3">
             <span class="w-9 h-9 bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-300 flex items-center justify-center shrink-0">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 16h.01"/></svg>
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 14h-2v-2h2v2zm0-4h-2V7h2v5z"/></svg>
             </span>
             <h3 class="font-semibold text-slate-900 dark:text-white">External link policy</h3>
         </div>
