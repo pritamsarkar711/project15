@@ -195,7 +195,7 @@ class AuthController extends Controller
         }
         $state = Str::random(40);
         $request->session()->put('google_oauth_state', $state);
-        $redirectUri = str_replace('http://', 'https://', url('/auth/google/callback'));
+        $redirectUri = 'https://' . $request->getHost() . '/auth/google/callback';
         $params = http_build_query([
             'client_id' => $clientId,
             'redirect_uri' => $redirectUri,
@@ -228,7 +228,9 @@ class AuthController extends Controller
             return redirect()->route('login')->withErrors(['email' => 'Google did not return an authorization code.']);
         }
         try {
-            $redirectUri = str_replace('http://', 'https://', url('/auth/google/callback'));
+            // Must match the redirect_uri sent in the authorization request exactly.
+            $redirectUri = 'https://' . $request->getHost() . '/auth/google/callback';
+            \Log::info('Google OAuth token exchange', ['redirect_uri' => $redirectUri]);
             $tokenResponse = Http::asForm()->post('https://oauth2.googleapis.com/token', [
                 'client_id' => $clientId,
                 'client_secret' => $clientSecret,
@@ -237,7 +239,8 @@ class AuthController extends Controller
                 'redirect_uri' => $redirectUri,
             ]);
             if (!$tokenResponse->successful()) {
-                throw new \RuntimeException('Failed to exchange code for tokens: ' . $tokenResponse->body());
+                \Log::error('Google token exchange failed', ['body' => $tokenResponse->body()]);
+                throw new \RuntimeException('Failed to exchange code for tokens.');
             }
             $tokens = $tokenResponse->json();
             $accessToken = $tokens['access_token'] ?? null;

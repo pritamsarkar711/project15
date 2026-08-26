@@ -1,1 +1,1 @@
-{"deployment":"2026-08-25-google-https-fix-v34","date":"2026-08-25","note":"force https on google redirect_uri to fix invalid_request"}
+{"deployment":"2026-08-25-google-uri-host-v35","date":"2026-08-25","note":"google redirect_uri built from request host, fixes relative path invalid_request"}
