@@ -224,11 +224,6 @@ body.theme-loading { visibility: hidden; }
 .panel-ui aside nav > a:hover svg,
 .panel-ui aside nav > a[class*="bg-"] svg { opacity: 1; }
 
-/* Sidebar active item: accent edge on the left, shadcn-style */
-.panel-ui aside nav > a[class*="bg-"] {
-    box-shadow: inset 3px 0 0 rgba(52, 211, 153, 0.9);
-}
-
 /* Page content: quiet entrance, respects reduced motion */
 @keyframes panel-enter { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 .panel-ui main { animation: panel-enter 0.22s ease both; }
