@@ -26,7 +26,18 @@
         $footerAd = null;
     }
 
-    $copyright = setting('footer_copyright', '&copy; ' . date('Y') . ' All Rights Reserved');
+    // Copyright line. The {year} token always renders the current year, so
+    // the footer never goes stale on January 1st. Legacy values saved by old
+    // versions (a bare "2026-27, All Rights Reserved" style string) are
+    // upgraded to a clean full line automatically at render time.
+    $rawCopyright = trim(setting('footer_copyright', ''));
+    if ($rawCopyright === '' || preg_match('/^(?:\d{4}(?:\s*[-\/]\s*\d{2,4})?)?\s*,?\s*all rights reserved\.?\s*-?\s*$|^all rights reserved\.?\s*-?\s*$/i', $rawCopyright)) {
+        $rawCopyright = '{year} Huvanti. All Rights Reserved.';
+    }
+    if (stripos($rawCopyright, '©') === false && stripos($rawCopyright, '&copy') === false && stripos($rawCopyright, '&#169') === false) {
+        $rawCopyright = '© ' . $rawCopyright;
+    }
+    $copyright = str_replace('{year}', date('Y'), $rawCopyright);
 @endphp
 <footer class="bg-[#eeeeee] dark:bg-[#212121] border-t border-slate-200/70 dark:border-[#2f2f2f] mt-auto">
     <div class="max-w-[1200px] mx-auto px-4 sm:px-6 py-10">

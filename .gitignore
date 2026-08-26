@@ -52,3 +52,8 @@ database/*.sqlite-journal
 
 # Build artifacts ARE committed so the repo is runnable without `npm run build`.
 # vendor/ IS committed so the repo is deployable without `composer install`.
+
+# Server runtime markers (Hostinger deploy tracker)
+storage/framework/.huvanti_deploy_version
+storage/framework/.migrations_last_check
+storage/logs/last-web-error.json

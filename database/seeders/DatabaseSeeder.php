@@ -65,7 +65,7 @@ class DatabaseSeeder extends Seeder
             ['key'=>'site_keywords','value'=>'huvanti, blog, multi niche, technology, health, finance, travel','group'=>'seo'],
             ['key'=>'site_logo','value'=>'','group'=>'general'],
             ['key'=>'contact_email','value'=>'hello@huvanti.com','group'=>'general'],
-            ['key'=>'footer_copyright','value'=>'2026-27, All Rights Reserved','group'=>'footer'],
+            ['key'=>'footer_copyright','value'=>'© {year} Huvanti. All Rights Reserved.','group'=>'footer'],
             ['key'=>'ads_sidebar_code','value'=>'','group'=>'ads'],
         ];
         foreach($settings as $s){

@@ -34,7 +34,7 @@
         </div>
 
         <div>
-            <label class="text-sm font-medium block mb-2">Icon <span class="text-xs font-normal text-slate-500">full-width picker, 76 icons, searchable</span></label>
+            <label class="text-sm font-medium block mb-2">Icon <span class="text-xs font-normal text-slate-500">Full width picker, searchable</span></label>
             @include('admin.partials.icon-picker', ['current' => old('icon', $category->icon ?: 'newspaper'), 'category' => $category])
         </div>
 

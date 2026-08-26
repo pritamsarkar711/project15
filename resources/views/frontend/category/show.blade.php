@@ -18,7 +18,7 @@
                     <div class="p-5 flex flex-col flex-1">
                         <a href="{{ route('blog.show',$p->slug) }}" class="font-semibold text-slate-900 dark:text-white hover:text-[#0C3B2E] dark:hover:text-emerald-300 line-clamp-2">{{ $p->title }}</a>
                         <p class="text-sm text-slate-500 dark:text-slate-400 line-clamp-2 mt-2">{{ $p->excerpt }}</p>
-                        <div class="text-xs text-slate-400 dark:text-slate-500 mt-3 pt-3 border-t border-slate-100 dark:border-[#2f2f2f]">{{ $p->published_at->format('M d, Y') }} <span class="w-1 h-1 bg-slate-300 dark:bg-slate-600 inline-block mx-1 align-middle"></span> {{ $p->reading_time }} min</div>
+                        <div class="text-xs text-slate-400 dark:text-slate-500 mt-3 pt-3 border-t border-slate-100 dark:border-[#2f2f2f]">{{ $p->published_at->format('M d, Y') }} <span class="w-1 h-1 bg-slate-300 dark:bg-slate-600 inline-block mx-1 align-middle"></span> {{ $p->reading_time }} min read</div>
                     </div>
                 </article>
             @endforeach

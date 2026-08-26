@@ -346,7 +346,8 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
             </div>
             <div>
                 <label class="text-sm font-medium">Footer copyright</label>
-                <input type="text" name="footer_copyright" value="{{ old('footer_copyright', $settings['footer_copyright']->value ?? '© '.date('Y').' Huvanti. All Rights Reserved.') }}" class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
+                <input type="text" name="footer_copyright" value="{{ old('footer_copyright', $settings['footer_copyright']->value ?? '© {year} Huvanti. All Rights Reserved.') }}" class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1.5">Use {year} to show the current year automatically. Example: © {year} Huvanti. All Rights Reserved.</p>
             </div>
         </div>
 

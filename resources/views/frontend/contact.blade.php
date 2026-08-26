@@ -47,7 +47,7 @@
                         <textarea name="message" required rows="5" class="mt-1.5 w-full px-3 py-3 bg-slate-50 dark:bg-[#2a2a2a] border border-slate-200 dark:border-[#383838] text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:bg-white dark:focus:bg-slate-900 focus:border-emerald-300 outline-none text-sm" placeholder="How can we help?">{{ old('message') }}</textarea>
                         @error('message')<p class="text-xs text-red-600 dark:text-red-400 mt-1">{{ $message }}</p>@enderror
                     </div>
-                    <button type="submit" class="w-full h-12 bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold transition">Send Message</button>
+                    <button type="submit" class="w-full h-12 bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold transition">Send message</button>
                 </form>
             </div>
         </div>

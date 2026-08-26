@@ -275,7 +275,7 @@
                         <div><label class="text-sm font-medium text-slate-700 dark:text-slate-300">Email * <span class="text-slate-400 font-normal">(private)</span></label><input type="email" name="email" required value="{{ old('email') }}" class="mt-1 w-full h-10 px-3 bg-white dark:bg-[#1e1e1e] border border-slate-200 dark:border-[#383838] text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-emerald-300 dark:focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 dark:focus:ring-emerald-400/10 outline-none text-sm">@error('email')<p class="text-xs text-red-600 dark:text-red-400 mt-1">{{ $message }}</p>@enderror</div>
                     </div>
                     <div class="mt-3"><label class="text-sm font-medium text-slate-700 dark:text-slate-300">Comment *</label><textarea name="content" required rows="4" class="mt-1 w-full px-3 py-2 bg-white dark:bg-[#1e1e1e] border border-slate-200 dark:border-[#383838] text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-emerald-300 dark:focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 dark:focus:ring-emerald-400/10 outline-none text-sm" placeholder="Share your thoughts...">{{ old('content') }}</textarea>@error('content')<p class="text-xs text-red-600 dark:text-red-400 mt-1">{{ $message }}</p>@enderror</div>
-                    <button type="submit" class="mt-3 h-10 px-6 bg-[#0C3B2E] hover:bg-[#072A20] text-white text-sm font-semibold transition">Post Comment</button>
+                    <button type="submit" class="mt-3 h-10 px-6 bg-[#0C3B2E] hover:bg-[#072A20] text-white text-sm font-semibold transition">Post comment</button>
                 </form>
 
                 {{-- Threaded comments --}}
