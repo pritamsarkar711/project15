@@ -8,7 +8,7 @@ on the server. The repository intentionally includes `vendor/` and
 Current deployment marker:
 
 ```text
-2026-08-25-toggle-build-v33
+2026-08-25-google-https-fix-v34
 ```
 
 ## "I pushed to GitHub but my site didn't change" — read this first
