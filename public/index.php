@@ -28,7 +28,7 @@ define('LARAVEL_START', microtime(true));
 // ---------------------------------------------------------------------------
 
 // Bump this string when you want to force a cache clear on every server.
-define('HUVANTI_DEPLOY_VERSION', 'v31-2026-08-25-rules-solid-icons');
+define('HUVANTI_DEPLOY_VERSION', 'v32-2026-08-25-auth-logo-google');
 
 // Determine if the application is in maintenance mode...
 if (file_exists($maintenance = __DIR__.'/../storage/framework/maintenance.php')) {
@@ -354,6 +354,16 @@ try {
             $db = $app->make('db');
             try {
                 $db->statement("CREATE TABLE IF NOT EXISTS `feedbacks` (`id` BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY, `user_id` BIGINT UNSIGNED NULL, `overall_experience` VARCHAR(30) NULL, `profile_ease` VARCHAR(30) NULL, `publishing_ease` VARCHAR(30) NULL, `bug_report` TEXT NULL, `what_you_like` TEXT NULL, `what_to_improve` TEXT NULL, `feature_request` TEXT NULL, `additional_comment` TEXT NULL, `created_at` TIMESTAMP NULL, `updated_at` TIMESTAMP NULL, INDEX `feedbacks_user_id_index` (`user_id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+            } catch (\Throwable $e) {}
+            try {
+                if (!$db->getSchemaBuilder()->hasColumn('users', 'google_id')) {
+                    $db->statement("ALTER TABLE `users` ADD COLUMN `google_id` VARCHAR(255) NULL UNIQUE AFTER `email`");
+                }
+            } catch (\Throwable $e) {}
+            try {
+                if (!$db->getSchemaBuilder()->hasColumn('users', 'avatar')) {
+                    $db->statement("ALTER TABLE `users` ADD COLUMN `avatar` VARCHAR(255) NULL AFTER `google_id`");
+                }
             } catch (\Throwable $e) {}
             $db->table('categories')
                 ->where('slug', 'health-wellness')

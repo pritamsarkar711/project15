@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Setting;
 use App\Models\User;
 use App\Services\ImageService;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 
@@ -182,5 +184,99 @@ class AuthController extends Controller
             return redirect()->route('admin.dashboard');
         }
         return redirect()->route('author.dashboard');
+    }
+
+    public function redirectToGoogle(Request $request)
+    {
+        $clientId = Setting::get('google_client_id');
+        $enabled = Setting::get('google_enabled') === '1';
+        if (!$enabled || !$clientId) {
+            return redirect()->route('login')->withErrors(['email' => 'Google sign in is not configured.']);
+        }
+        $state = Str::random(40);
+        $request->session()->put('google_oauth_state', $state);
+        $params = http_build_query([
+            'client_id' => $clientId,
+            'redirect_uri' => route('auth.google.callback'),
+            'response_type' => 'code',
+            'scope' => 'openid email profile',
+            'state' => $state,
+            'access_type' => 'offline',
+            'prompt' => 'select_account',
+        ]);
+        return redirect('https://accounts.google.com/o/oauth2/v2/auth?' . $params);
+    }
+
+    public function handleGoogleCallback(Request $request)
+    {
+        $clientId = Setting::get('google_client_id');
+        $clientSecret = Setting::get('google_client_secret');
+        $enabled = Setting::get('google_enabled') === '1';
+        if (!$enabled || !$clientId || !$clientSecret) {
+            return redirect()->route('login')->withErrors(['email' => 'Google sign in is not configured.']);
+        }
+        $state = $request->session()->pull('google_oauth_state');
+        if (!$state || $state !== $request->input('state')) {
+            return redirect()->route('login')->withErrors(['email' => 'Invalid Google sign in request. Please try again.']);
+        }
+        if ($request->has('error')) {
+            return redirect()->route('login')->withErrors(['email' => 'Google sign in was cancelled.']);
+        }
+        $code = $request->input('code');
+        if (!$code) {
+            return redirect()->route('login')->withErrors(['email' => 'Google did not return an authorization code.']);
+        }
+        try {
+            $tokenResponse = Http::asForm()->post('https://oauth2.googleapis.com/token', [
+                'client_id' => $clientId,
+                'client_secret' => $clientSecret,
+                'code' => $code,
+                'grant_type' => 'authorization_code',
+                'redirect_uri' => route('auth.google.callback'),
+            ]);
+            if (!$tokenResponse->successful()) {
+                throw new \RuntimeException('Failed to exchange code for tokens: ' . $tokenResponse->body());
+            }
+            $tokens = $tokenResponse->json();
+            $accessToken = $tokens['access_token'] ?? null;
+            if (!$accessToken) {
+                throw new \RuntimeException('No access token returned by Google.');
+            }
+            $userResponse = Http::withToken($accessToken)->get('https://www.googleapis.com/oauth2/v2/userinfo');
+            if (!$userResponse->successful()) {
+                throw new \RuntimeException('Failed to fetch Google profile.');
+            }
+            $gUser = $userResponse->json();
+            $googleId = $gUser['id'] ?? null;
+            $email = strtolower($gUser['email'] ?? '');
+            $name = $gUser['name'] ?? $gUser['given_name'] ?? 'Google User';
+            $avatar = $gUser['picture'] ?? null;
+            $verified = $gUser['verified_email'] ?? false;
+            if (!$googleId || !$email) {
+                throw new \RuntimeException('Google did not return email or id.');
+            }
+            $user = User::where('google_id', $googleId)->first();
+            if (!$user) {
+                $user = User::where('email', $email)->first();
+                if ($user) {
+                    $user->forceFill(['google_id' => $googleId, 'avatar' => $avatar ?? $user->avatar])->save();
+                } else {
+                    $user = User::create([
+                        'name' => $name,
+                        'email' => $email,
+                        'google_id' => $googleId,
+                        'avatar' => $avatar,
+                        'password' => Str::random(32),
+                        'role' => 'author',
+                        'email_verified_at' => $verified ? now() : null,
+                    ]);
+                }
+            }
+            Auth::login($user, true);
+            $request->session()->regenerate();
+            return $this->redirectAfterAuth()->with('success', 'Signed in with Google.');
+        } catch (\Throwable $e) {
+            return redirect()->route('login')->withErrors(['email' => 'Google sign in failed: ' . $e->getMessage()]);
+        }
     }
 }

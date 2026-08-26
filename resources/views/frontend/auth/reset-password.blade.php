@@ -4,7 +4,7 @@
 <div class="max-w-[460px] mx-auto px-4 py-12">
     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm p-7 sm:p-8">
         <div class="text-center mb-7">
-            <div class="w-12 h-12 bg-[#0C3B2E] flex items-center justify-center mx-auto font-extrabold text-white text-xl">H</div>
+            <div class="flex justify-center">@include('partials.logo', ['class' => 'h-8', 'textClass' => 'text-[22px]'])</div>
             <h1 class="font-extrabold text-2xl mt-3 text-slate-900 dark:text-white">Set a new password</h1>
             <p class="text-sm text-slate-600 dark:text-slate-400 mt-1.5">Choose a strong password you haven't used before.</p>
         </div>
