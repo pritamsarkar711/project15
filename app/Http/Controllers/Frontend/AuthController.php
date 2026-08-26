@@ -188,16 +188,17 @@ class AuthController extends Controller
 
     public function redirectToGoogle(Request $request)
     {
-        $clientId = Setting::get('google_client_id');
+        $clientId = trim((string) Setting::get('google_client_id'));
         $enabled = Setting::get('google_enabled') === '1';
         if (!$enabled || !$clientId) {
             return redirect()->route('login')->withErrors(['email' => 'Google sign in is not configured.']);
         }
         $state = Str::random(40);
         $request->session()->put('google_oauth_state', $state);
+        $redirectUri = str_replace('http://', 'https://', url('/auth/google/callback'));
         $params = http_build_query([
             'client_id' => $clientId,
-            'redirect_uri' => route('auth.google.callback'),
+            'redirect_uri' => $redirectUri,
             'response_type' => 'code',
             'scope' => 'openid email profile',
             'state' => $state,
@@ -209,8 +210,8 @@ class AuthController extends Controller
 
     public function handleGoogleCallback(Request $request)
     {
-        $clientId = Setting::get('google_client_id');
-        $clientSecret = Setting::get('google_client_secret');
+        $clientId = trim((string) Setting::get('google_client_id'));
+        $clientSecret = trim((string) Setting::get('google_client_secret'));
         $enabled = Setting::get('google_enabled') === '1';
         if (!$enabled || !$clientId || !$clientSecret) {
             return redirect()->route('login')->withErrors(['email' => 'Google sign in is not configured.']);
@@ -227,12 +228,13 @@ class AuthController extends Controller
             return redirect()->route('login')->withErrors(['email' => 'Google did not return an authorization code.']);
         }
         try {
+            $redirectUri = str_replace('http://', 'https://', url('/auth/google/callback'));
             $tokenResponse = Http::asForm()->post('https://oauth2.googleapis.com/token', [
                 'client_id' => $clientId,
                 'client_secret' => $clientSecret,
                 'code' => $code,
                 'grant_type' => 'authorization_code',
-                'redirect_uri' => route('auth.google.callback'),
+                'redirect_uri' => $redirectUri,
             ]);
             if (!$tokenResponse->successful()) {
                 throw new \RuntimeException('Failed to exchange code for tokens: ' . $tokenResponse->body());

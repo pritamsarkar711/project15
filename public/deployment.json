@@ -1,1 +1,1 @@
-{"deployment":"2026-08-25-toggle-build-v33","date":"2026-08-25","note":"rebuild CSS for peer toggle switches"}
+{"deployment":"2026-08-25-google-https-fix-v34","date":"2026-08-25","note":"force https on google redirect_uri to fix invalid_request"}
