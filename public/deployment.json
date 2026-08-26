@@ -1,1 +1,1 @@
-{"deployment":"2026-08-25-google-uri-host-v35","date":"2026-08-25","note":"google redirect_uri built from request host, fixes relative path invalid_request"}
+{"deployment":"2026-08-25-panel-polish-v36","date":"2026-08-25","note":"panel UI polish: shadcn-style radii shadows hovers for admin and author, CSS rebuilt"}

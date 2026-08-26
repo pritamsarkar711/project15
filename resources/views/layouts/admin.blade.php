@@ -20,7 +20,7 @@
          attribute they decode correctly, matching the frontend layout. --}}
     @stack('head')
 </head>
-<body class="min-h-screen bg-slate-100 text-slate-900 dark:bg-[#0f172a] dark:text-slate-100 flex overflow-x-hidden" style="font-family:{{ \App\Support\SiteFont::cssStack() }}">
+<body class="panel-ui min-h-screen bg-slate-100 text-slate-900 dark:bg-[#0f172a] dark:text-slate-100 flex overflow-x-hidden" style="font-family:{{ \App\Support\SiteFont::cssStack() }}">
     <!-- Sidebar -->
     <aside id="admin-sidebar" class="fixed inset-y-0 left-0 w-[250px] bg-slate-900 dark:bg-slate-950 text-slate-300 flex flex-col z-40 transform lg:translate-x-0 -translate-x-full transition-transform duration-300 overflow-y-auto no-scrollbar border-r border-black/30">
         <div class="h-[64px] flex items-center gap-3 px-5 border-b border-white/10 shrink-0">
