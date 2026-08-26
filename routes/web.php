@@ -121,6 +121,8 @@ Route::prefix('author-dashboard')->name('author.')->middleware('auth')->group(fu
     Route::post('/profile', [AuthorDashboardController::class, 'profileUpdate'])->name('profile.update');
     Route::get('/revenue', [AuthorDashboardController::class, 'revenue'])->name('revenue');
     Route::get('/posting-rules', [AuthorDashboardController::class, 'rules'])->name('rules');
+    Route::get('/feedback', [App\Http\Controllers\Frontend\FeedbackController::class, 'index'])->name('feedback.index');
+    Route::post('/feedback', [App\Http\Controllers\Frontend\FeedbackController::class, 'store'])->name('feedback.store');
     Route::post('/account', [AuthorDashboardController::class, 'accountDelete'])->name('account.delete');
 });
 
@@ -200,6 +202,10 @@ Route::prefix('manage')->name('admin.')->group(function(){
         // Author profile
         Route::get('profile', [ProfileController::class,'edit'])->name('profile.edit');
         Route::post('profile', [ProfileController::class,'update'])->name('profile.update');
+
+        Route::get('feedback', [App\Http\Controllers\Admin\FeedbackController::class, 'index'])->name('feedback.index');
+        Route::get('feedback/{feedback}', [App\Http\Controllers\Admin\FeedbackController::class, 'show'])->name('feedback.show');
+        Route::delete('feedback/{feedback}', [App\Http\Controllers\Admin\FeedbackController::class, 'destroy'])->name('feedback.destroy');
 
         // Settings
         Route::get('settings', [SettingController::class,'index'])->name('settings.index');

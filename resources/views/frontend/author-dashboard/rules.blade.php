@@ -20,7 +20,7 @@
         <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
             <div class="flex items-center gap-3">
                 <span class="w-9 h-9 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 flex items-center justify-center shrink-0">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232 18.5 8.5M9 13.5 5.5 17 3 18l1-2.5L9 10.5V13.5Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 8.25V12l2.25 1.5"/></svg>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487 1.687-1.688a1.875 1.875 0 0 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M6 5v.01M12 12h.01M18 18h.01"/></svg>
                 </span>
                 <h3 class="font-semibold text-slate-900 dark:text-white">Write for real readers</h3>
             </div>
@@ -30,7 +30,7 @@
         <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
             <div class="flex items-center gap-3">
                 <span class="w-9 h-9 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 flex items-center justify-center shrink-0">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6"/><path stroke-linecap="round" stroke-linejoin="round" d="M3 12h.01M21 12h.01"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1M12 20v1"/><circle cx="12" cy="12" r="9"/></svg>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1M12 20v1M3 12h1M20 12h-1"/></svg>
                 </span>
                 <h3 class="font-semibold text-slate-900 dark:text-white">Keep it focused</h3>
             </div>
@@ -60,7 +60,7 @@
         <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
             <div class="flex items-center gap-3">
                 <span class="w-9 h-9 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 flex items-center justify-center shrink-0">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3.75v.75m0 12v.75m5.303-11.03-1.06 1.06M5.757 18.243l-1.06-1.06M18.364 18.243l-1.06-1.06M5.757 5.757l1.06 1.06M12 9.75a2.25 2.25 0 1 0 0 4.5 2.25 2.25 0 0 0 0-4.5Z"/></svg>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4"/></svg>
                 </span>
                 <h3 class="font-semibold text-slate-900 dark:text-white">Publish original work</h3>
             </div>
@@ -70,7 +70,7 @@
         <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
             <div class="flex items-center gap-3">
                 <span class="w-9 h-9 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 flex items-center justify-center shrink-0">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3.75h4.5m-4.5 16.5h4.5M5.25 12h13.5"/><circle cx="12" cy="12" r="9"/></svg>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 6h8M8 12h8M8 18h8"/><path stroke-linecap="round" stroke-linejoin="round" d="M3 6h.01M3 12h.01M3 18h.01"/><path stroke-linecap="round" stroke-linejoin="round" d="M14 6v4M14 18v-4"/></svg>
                 </span>
                 <h3 class="font-semibold text-slate-900 dark:text-white">Complete the extras</h3>
             </div>

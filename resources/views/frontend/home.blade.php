@@ -24,7 +24,7 @@
 
             <!-- Right: text -->
             <div class="order-2 lg:pl-6 py-12 sm:py-14 lg:py-20 min-w-0">
-                <span class="inline-flex items-center gap-2 text-xs font-semibold tracking-wide uppercase bg-white/10 text-emerald-100 px-3 py-1.5 rounded-full mb-4">
+                <span class="inline-flex items-center gap-2 text-xs font-semibold tracking-wide uppercase bg-white/10 text-emerald-100 px-3 py-1.5 mb-4">
                     <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 4.9 5.4.8-3.9 3.8.9 5.4L12 14.4l-4.8 2.5.9-5.4L4.2 7.7l5.4-.8L12 2z"/></svg>
                     Fresh reads every week
                 </span>
@@ -32,9 +32,9 @@
                     <span id="typing-text" class="typing-text"></span><span class="typing-cursor" aria-hidden="true"></span>
                 </h1>
                 <p class="mt-4 text-[17px] sm:text-[18px] leading-relaxed text-white/85 max-w-[520px] font-medium">{{ $heroSubtitle }}</p>
-                <form action="{{ route('search') }}" method="GET" class="mt-6 w-full max-w-[520px] min-w-0">
+                <form action="{{ route('search') }}" method="GET" class="mt-6 w-full max-w-[520px] min-w-0" autocomplete="off">
                     <div class="flex items-center w-full min-w-0 bg-white p-1.5 pl-5 shadow-[0_10px_30px_rgba(0,0,0,0.25)] overflow-hidden">
-                        <input type="text" name="q" value="{{ request('q') }}" placeholder="{{ $heroSearchPlaceholder }}" class="flex-1 min-w-0 h-11 bg-transparent text-slate-900 border-0 outline-none text-[15px] placeholder:text-slate-400" aria-label="Search articles">
+                        <input type="text" name="q" value="{{ request('q') }}" placeholder="{{ $heroSearchPlaceholder }}" autocomplete="off" autocorrect="off" spellcheck="false" class="flex-1 min-w-0 h-11 bg-transparent text-slate-900 border-0 outline-none text-[15px] placeholder:text-slate-400" aria-label="Search articles">
                         <button type="submit" class="h-11 px-6 sm:px-7 shrink-0 bg-[#0C3B2E] hover:bg-[#072A20] text-white text-sm font-semibold transition">Search</button>
                     </div>
                 </form>
