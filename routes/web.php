@@ -85,6 +85,8 @@ Route::get('/terms-conditions', [PageController::class,'terms'])->name('terms');
 Route::get('/cookie-policy', [PageController::class,'cookie'])->name('cookie');
 Route::get('/editorial-policy', [PageController::class,'editorial'])->name('editorial');
 Route::get('/disclaimer', [PageController::class,'disclaimer'])->name('disclaimer');
+Route::get('/affiliate-disclosure', [PageController::class,'affiliateDisclosure'])->name('affiliate');
+Route::get('/comment-policy', [PageController::class,'commentPolicy'])->name('comments.policy');
 Route::get('/page/{slug}', [PageController::class, 'show'])->name('page.show');
 
 // Frontend user auth (separate from /manage admin login)
