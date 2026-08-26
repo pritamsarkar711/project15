@@ -80,6 +80,10 @@ class SettingController extends Controller
             'ads_txt_content' => 'nullable|string|max:20000',
             'robots_txt_content' => 'nullable|string|max:20000',
             'llms_txt_content' => 'nullable|string|max:20000',
+            // Google OAuth
+            'google_client_id' => 'nullable|string|max:255',
+            'google_client_secret' => 'nullable|string|max:255',
+            'google_enabled' => 'nullable|in:1',
             // Uploads — extensions must match ImageService's capabilities.
             // (HEIC/AVIF are rejected up-front with a clear message instead of
             // crashing with a 500 halfway through the save.) The size caps are
@@ -104,11 +108,16 @@ class SettingController extends Controller
             'social_linkedin', 'social_whatsapp', 'social_youtube', 'social_instagram',
             'ga_measurement_id', 'search_console_token', 'ahrefs_verification_token',
             'ads_txt_content', 'robots_txt_content', 'llms_txt_content',
+            'google_client_id', 'google_client_secret',
         ];
         foreach ($keys as $key) {
             if ($request->has($key)) {
                 Setting::set($key, (string) $request->input($key));
             }
+        }
+
+        if ($request->input('tab') === 'integrations') {
+            Setting::set('google_enabled', $request->boolean('google_enabled') ? '1' : '0');
         }
 
         // Checkbox toggle — ONLY when the General tab form was submitted.

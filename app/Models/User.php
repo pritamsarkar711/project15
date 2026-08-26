@@ -12,7 +12,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\URL;
 
-#[Fillable(['name', 'email', 'password', 'role', 'bio', 'avatar', 'two_factor_enabled', 'two_factor_secret', 'theme_preference', 'google2fa_secret', 'author_avatar_path', 'username', 'role_title', 'portfolio_url', 'social_links', 'is_verified'])]
+#[Fillable(['name', 'email', 'password', 'role', 'bio', 'avatar', 'google_id', 'two_factor_enabled', 'two_factor_secret', 'theme_preference', 'google2fa_secret', 'author_avatar_path', 'username', 'role_title', 'portfolio_url', 'social_links', 'is_verified'])]
 #[Hidden(['password', 'remember_token', 'two_factor_secret', 'google2fa_secret'])]
 class User extends Authenticatable
 {

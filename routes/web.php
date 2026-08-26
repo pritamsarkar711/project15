@@ -94,6 +94,9 @@ Route::get('/login', [FrontendAuthController::class, 'showLoginForm'])->name('lo
 Route::post('/login', [FrontendAuthController::class, 'login'])->name('login.post')->middleware('guest');
 Route::post('/logout', [FrontendAuthController::class, 'logout'])->name('logout')->middleware('auth');
 
+Route::get('/auth/google', [FrontendAuthController::class, 'redirectToGoogle'])->name('auth.google.redirect')->middleware('guest');
+Route::get('/auth/google/callback', [FrontendAuthController::class, 'handleGoogleCallback'])->name('auth.google.callback')->middleware('guest');
+
 // Admin ⇄ User switch: "switch back to admin" lives OUTSIDE /manage so it stays
 // reachable while the admin is browsing the site in user mode. Only the real
 // admin account can ever use it (checked in the controller).

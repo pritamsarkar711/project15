@@ -55,6 +55,31 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
             <p class="text-xs text-slate-400 dark:text-slate-500">Served live at <a href="{{ url('llms.txt') }}" target="_blank" class="text-emerald-700 dark:text-emerald-300 hover:underline">{{ url('llms.txt') }}</a></p>
         </div>
 
+        <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-4">
+            <div class="flex items-center justify-between">
+                <h3 class="font-semibold">Google Sign In</h3>
+                <label class="inline-flex items-center gap-2 cursor-pointer">
+                    <span class="relative inline-flex shrink-0">
+                        <input type="checkbox" name="google_enabled" value="1" {{ old('google_enabled', $settings['google_enabled']->value ?? '0') === '1' ? 'checked' : '' }} class="peer sr-only">
+                        <span class="block w-11 h-6 rounded-full bg-slate-200 dark:bg-slate-700 peer-checked:bg-[#0C3B2E] transition-colors"></span>
+                        <span class="pointer-events-none absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform peer-checked:translate-x-5"></span>
+                    </span>
+                    <span class="text-sm font-medium {{ ($settings['google_enabled']->value ?? '0') === '1' ? 'text-emerald-700 dark:text-emerald-300' : 'text-slate-500' }}">{{ ($settings['google_enabled']->value ?? '0') === '1' ? 'Enabled' : 'Disabled' }}</span>
+                </label>
+            </div>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Allow users to sign in and sign up with their Google account. Create credentials at <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener" class="text-emerald-700 dark:text-emerald-300 hover:underline">Google Cloud Console</a> and set the redirect URI to <span class="font-mono bg-slate-100 dark:bg-slate-800 px-1">{{ url('/auth/google/callback') }}</span></p>
+            <div class="grid sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="text-sm font-medium">Client ID</label>
+                    <input type="text" name="google_client_id" value="{{ old('google_client_id', $settings['google_client_id']->value ?? '') }}" placeholder="123456...apps.googleusercontent.com" class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-mono placeholder:font-sans">
+                </div>
+                <div>
+                    <label class="text-sm font-medium">Client Secret</label>
+                    <input type="password" name="google_client_secret" value="{{ old('google_client_secret', $settings['google_client_secret']->value ?? '') }}" placeholder="GOCSPX-..." class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-mono placeholder:font-sans">
+                </div>
+            </div>
+        </div>
+
         <button type="submit" class="h-11 px-6 bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold transition">Save Integrations</button>
     </form>
 
