@@ -101,6 +101,7 @@ class PostController extends Controller
         } else {
             $data['published_at'] = null;
         }
+        $data['content'] = \App\Services\HtmlSanitizer::clean($data['content']);
         $data['reading_time'] = max(1, ceil(str_word_count(strip_tags($data['content'])) / 200));
 
         $post = Post::create($data);
@@ -269,9 +270,10 @@ class PostController extends Controller
 
         // Apply admin's edits directly to the post.
         $post->fill($request->only([
-            'title', 'excerpt', 'content', 'category_id',
+            'title', 'excerpt', 'category_id',
             'meta_title', 'meta_description',
         ]));
+        $post->content        = \App\Services\HtmlSanitizer::clean((string) $request->content);
         $post->is_featured    = $request->boolean('is_featured');
         $post->is_affiliate   = $request->boolean('is_affiliate');
         $post->allow_comments = $request->boolean('allow_comments');

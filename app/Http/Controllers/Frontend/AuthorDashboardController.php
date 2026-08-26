@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Post;
 use App\Models\Faq;
+use App\Services\HtmlSanitizer;
 use App\Services\ImageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -109,6 +110,9 @@ class AuthorDashboardController extends Controller
             'faqs.*.answer'   => ['nullable', 'string', 'max:2000'],
             'action'          => ['required', 'in:save_draft,submit'],
         ]);
+
+        $data['content'] = HtmlSanitizer::clean($data['content']);
+
 
         // Word-count floor — minimum helpful content (anti-AI-slop rule).
         $wordCount = str_word_count(strip_tags($data['content']));
@@ -220,6 +224,7 @@ class AuthorDashboardController extends Controller
                 'content' => "Submitted posts must contain at least 300 words (currently {$wordCount}).",
             ])->withInput();
         }
+        $data['content'] = HtmlSanitizer::clean($data['content']);
 
         // If the post was returned by admin, the author must re-submit.
         // Resetting review_status to pending_review clears the reviewer note.

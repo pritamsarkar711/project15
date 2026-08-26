@@ -14,7 +14,17 @@ class SeoController extends Controller
     {
         $content = trim((string) setting('robots_txt_content', ''));
         if ($content === '') {
-            $content = "User-agent: *\nDisallow: /manage\n\nSitemap: ".url('/sitemap.xml');
+            $content = "User-agent: *\n"
+                ."Disallow: /manage\n"
+                ."Disallow: /author-dashboard\n"
+                ."Disallow: /login\n"
+                ."Disallow: /register\n"
+                ."Disallow: /forgot-password\n"
+                ."Disallow: /reset-password\n"
+                ."Disallow: /deploy.php\n"
+                ."Disallow: /install.php\n"
+                ."Disallow: /doctor.php\n\n"
+                ."Sitemap: ".url('/sitemap.xml');
         }
         return response($content, 200)->header('Content-Type', 'text/plain; charset=UTF-8');
     }

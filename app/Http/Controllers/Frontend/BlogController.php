@@ -41,7 +41,8 @@ class BlogController extends Controller
         $popular = Post::published()->where('id','!=',$post->id)->orderByDesc('views')->take(3)->get();
         $toc = $post->table_of_contents;
         // Extract headings for TOC rendering with ids injection
-        $contentWithAnchors = $this->injectAnchors($post->content, $toc);
+        // Defense in depth: legacy rows may predate save-time sanitizing.
+        $contentWithAnchors = $this->injectAnchors(\App\Services\HtmlSanitizer::clean((string) $post->content), $toc);
         // Insert in-article ads every N paragraphs (default 2).
         // Ads only ever render when the admin has switched them on
         // (Settings, Ads tab). Until then content stays completely clean.
