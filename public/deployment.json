@@ -1,1 +1,1 @@
-{"deployment":"2026-08-25-panel-polish-v36","date":"2026-08-25","note":"panel UI polish: shadcn-style radii shadows hovers for admin and author, CSS rebuilt"}
+{"deployment":"2026-08-25-panel-no-radius-v37","date":"2026-08-25","note":"panel polish without radius: shadows focus rings row hovers sidebar slide, CSS rebuilt"}
