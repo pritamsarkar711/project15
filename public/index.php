@@ -28,7 +28,7 @@ define('LARAVEL_START', microtime(true));
 // ---------------------------------------------------------------------------
 
 // Bump this string when you want to force a cache clear on every server.
-define('HUVANTI_DEPLOY_VERSION', 'v43-2026-08-25-author-2fa-top');
+define('HUVANTI_DEPLOY_VERSION', 'v44-2026-08-26-fix-error500');
 
 // Determine if the application is in maintenance mode...
 if (file_exists($maintenance = __DIR__.'/../storage/framework/maintenance.php')) {
@@ -332,10 +332,18 @@ try {
                 @unlink($f);
             }
         }
-        // Clear route, config and event caches (critical after adding new routes)
-        foreach (['bootstrap/cache/routes-v7.php','bootstrap/cache/config.php','bootstrap/cache/events.php','bootstrap/cache/packages.php','bootstrap/cache/services.php'] as $cacheFile) {
+        // Clear route, config and event caches (critical after adding new routes).
+        // Do NOT delete packages.php / services.php — those are the compiled
+        // provider maps. Wiping them on a host that ran `composer install --no-dev`
+        // can leave Laravel unable to rediscover packages cleanly.
+        foreach (['bootstrap/cache/routes-v7.php','bootstrap/cache/config.php','bootstrap/cache/events.php'] as $cacheFile) {
             $path = __DIR__.'/../'.$cacheFile;
             if (is_file($path)) @unlink($path);
+        }
+        // A leftover Vite HMR file makes @vite try to talk to localhost:5173
+        // (or TypeError if the file is unreadable) and 500s every Blade page.
+        if (is_file(__DIR__.'/hot')) {
+            @unlink(__DIR__.'/hot');
         }
         // Clear view cache via glob as well
         foreach (glob(__DIR__.'/../storage/framework/cache/*') as $f) {
@@ -354,6 +362,15 @@ try {
             $db = $app->make('db');
             try {
                 $db->statement("CREATE TABLE IF NOT EXISTS `feedbacks` (`id` BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY, `user_id` BIGINT UNSIGNED NULL, `overall_experience` VARCHAR(30) NULL, `profile_ease` VARCHAR(30) NULL, `publishing_ease` VARCHAR(30) NULL, `bug_report` TEXT NULL, `what_you_like` TEXT NULL, `what_to_improve` TEXT NULL, `feature_request` TEXT NULL, `additional_comment` TEXT NULL, `created_at` TIMESTAMP NULL, `updated_at` TIMESTAMP NULL, INDEX `feedbacks_user_id_index` (`user_id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+            } catch (\Throwable $e) {}
+            try {
+                $db->statement("CREATE TABLE IF NOT EXISTS `sessions` (`id` VARCHAR(255) NOT NULL, `user_id` BIGINT UNSIGNED NULL, `ip_address` VARCHAR(45) NULL, `user_agent` TEXT NULL, `payload` LONGTEXT NOT NULL, `last_activity` INT NOT NULL, PRIMARY KEY (`id`), INDEX `sessions_user_id_index` (`user_id`), INDEX `sessions_last_activity_index` (`last_activity`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+            } catch (\Throwable $e) {}
+            try {
+                $db->statement("CREATE TABLE IF NOT EXISTS `cache` (`key` VARCHAR(255) NOT NULL, `value` MEDIUMTEXT NOT NULL, `expiration` BIGINT NOT NULL, PRIMARY KEY (`key`), INDEX `cache_expiration_index` (`expiration`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+            } catch (\Throwable $e) {}
+            try {
+                $db->statement("CREATE TABLE IF NOT EXISTS `cache_locks` (`key` VARCHAR(255) NOT NULL, `owner` VARCHAR(255) NOT NULL, `expiration` BIGINT NOT NULL, PRIMARY KEY (`key`), INDEX `cache_locks_expiration_index` (`expiration`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
             } catch (\Throwable $e) {}
             try {
                 if (!$db->getSchemaBuilder()->hasColumn('users', 'google_id')) {

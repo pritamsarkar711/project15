@@ -48,7 +48,11 @@
     // Until then no ad slot, box or label appears anywhere on the site.
     // Strict '1' comparison: a stored '0' must stay falsy.
     $adsEnabled = setting('ads_enabled') === '1';
-    $headerAd = $adsEnabled ? \App\Models\Advertisement::active()->position('header')->first() : null;
+    try {
+        $headerAd = $adsEnabled ? \App\Models\Advertisement::active()->position('header')->first() : null;
+    } catch (\Throwable $e) {
+        $headerAd = null;
+    }
 @endphp
 @if($headerAd && trim(strip_tags($headerAd->code ?? '')) !== '')
     {{-- Blank/unfilled ad slots collapse invisibly (same JS pattern as blog posts)

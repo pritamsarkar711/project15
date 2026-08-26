@@ -48,7 +48,7 @@
     <link rel="preconnect" href="https://picsum.photos" crossorigin>
     <link rel="dns-prefetch" href="https://www.googletagmanager.com">
     <link href="{{ \App\Support\SiteFont::googleUrl() }}" rel="stylesheet">
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    {!! \App\Support\ViteAssets::tags(['resources/css/app.css', 'resources/js/app.js']) !!}
     @stack('head')
 </head>
 <body class="bg-[#fafafa] dark:bg-[#121212] text-slate-800 dark:text-slate-100 antialiased overflow-x-hidden" style="font-family:{{ \App\Support\SiteFont::cssStack() }}">

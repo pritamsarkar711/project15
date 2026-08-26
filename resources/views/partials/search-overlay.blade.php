@@ -15,7 +15,11 @@
             <div class="mt-5">
                 <div class="text-xs font-semibold tracking-widest uppercase text-slate-400 dark:text-slate-500 mb-2.5">Popular categories</div>
                 <div class="flex flex-wrap gap-2">
-                    @foreach(\App\Models\Category::live()->orderBy('sort_order')->take(6)->get() as $cat)
+                    @php
+                        try { $overlayCategories = \App\Models\Category::live()->orderBy('sort_order')->take(6)->get(); }
+                        catch (\Throwable $e) { $overlayCategories = collect(); }
+                    @endphp
+                    @foreach($overlayCategories as $cat)
                         <a href="{{ route('category.show',$cat->slug) }}" onclick="closeSearch()" class="inline-flex items-center gap-2 px-3.5 h-10 bg-emerald-50 dark:bg-[#2a2a2a] border border-emerald-100 dark:border-[#383838] text-sm font-medium text-[#0C3B2E] dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-[#333] transition">
                             <span class="text-[#0C3B2E] dark:text-emerald-300">@include('partials.category-icon', ['category' => $cat, 'class' => 'w-4 h-4'])</span>
                             {{ $cat->name }}

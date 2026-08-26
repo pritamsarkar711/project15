@@ -7,7 +7,7 @@
     <title>@yield('title','Dashboard') - Author</title>
     <meta name="robots" content="noindex, nofollow">
     <link href="{{ \App\Support\SiteFont::googleUrl() }}" rel="stylesheet">
-    @vite(['resources/css/app.css','resources/js/app.js'])
+    {!! \App\Support\ViteAssets::tags(['resources/css/app.css', 'resources/js/app.js']) !!}
     <script>
         (function(){
             var t = localStorage.getItem('huvanti-admin-theme') || 'light';

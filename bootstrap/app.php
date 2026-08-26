@@ -24,6 +24,19 @@ return \App\Application::configure(basePath: dirname(__DIR__))
         $middleware->append(\App\Http\Middleware\ClearViewCacheAfterWrite::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        $exceptions->report(function (\Throwable $e) {
+            try {
+                @file_put_contents(storage_path('logs/last-web-error.json'), json_encode([
+                    'time' => date('c'),
+                    'class' => $e::class,
+                    'message' => $e->getMessage(),
+                    'file' => basename($e->getFile()),
+                    'line' => $e->getLine(),
+                ], JSON_UNESCAPED_SLASHES));
+            } catch (\Throwable $ignored) {
+            }
+        });
+
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
         );

@@ -19,10 +19,40 @@ class Setting extends Model
 
     public static function get($key, $default = null)
     {
-        return Cache::remember("setting_{$key}", self::$cacheTtl, function() use ($key, $default) {
-            $s = static::where('key',$key)->first();
-            return $s ? $s->value : $default;
-        });
+        try {
+            $value = Cache::remember("setting_{$key}", self::$cacheTtl, function () use ($key, $default) {
+                $s = static::where('key', $key)->first();
+                if (! $s) {
+                    return $default;
+                }
+                $raw = $s->value;
+                // A leftover object/array in cache or a NULL row must never
+                // leak into typed helpers like SiteFont::key(): string.
+                if (is_array($raw) || is_object($raw)) {
+                    return $default;
+                }
+
+                return $raw ?? $default;
+            });
+        } catch (\Throwable $e) {
+            try {
+                $s = static::where('key', $key)->first();
+                $value = $s ? $s->value : $default;
+            } catch (\Throwable $e2) {
+                return $default;
+            }
+        }
+
+        if (is_array($value) || is_object($value)) {
+            try {
+                Cache::forget("setting_{$key}");
+            } catch (\Throwable $e) {
+            }
+
+            return $default;
+        }
+
+        return $value;
     }
 
     public static function set($key, $value, $type='text', $group='general')
