@@ -28,7 +28,7 @@ define('LARAVEL_START', microtime(true));
 // ---------------------------------------------------------------------------
 
 // Bump this string when you want to force a cache clear on every server.
-define('HUVANTI_DEPLOY_VERSION', 'v28-2026-08-25-feedback-table-fix');
+define('HUVANTI_DEPLOY_VERSION', 'v29-2026-08-25-feedback-grammar-icons');
 
 // Determine if the application is in maintenance mode...
 if (file_exists($maintenance = __DIR__.'/../storage/framework/maintenance.php')) {
