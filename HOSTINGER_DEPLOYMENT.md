@@ -8,7 +8,7 @@ on the server. The repository intentionally includes `vendor/` and
 Current deployment marker:
 
 ```text
-2026-08-26-fix-error500-v44
+2026-08-27-fix-footer-500-v45
 ```
 
 ## "I pushed to GitHub but my site didn't change" — read this first
