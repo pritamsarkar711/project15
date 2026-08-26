@@ -113,7 +113,7 @@
                 <h3 class="font-semibold mb-3 text-slate-900 dark:text-white">Featured Image</h3>
                 <img id="featured-preview" src="{{ $isEdit && $post->featured_image ? (str_starts_with($post->featured_image, 'http') ? $post->featured_image : '/storage/'.$post->featured_image) : '#' }}" alt="" class="{{ $isEdit && $post->featured_image ? '' : 'hidden' }} w-full h-40 object-cover mb-3 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" loading="lazy" decoding="async">
                 <label class="block w-full cursor-pointer border border-dashed border-slate-300 dark:border-slate-600 py-4 text-center text-sm text-slate-500 dark:text-slate-400 hover:border-emerald-500 hover:text-emerald-700 dark:hover:text-emerald-300 transition">
-                    <svg class="w-5 h-5 mx-auto mb-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 3h6m0 0v6m0-6L10 14M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
+                    <svg class="w-5 h-5 mx-auto mb-1 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 3h6m0 0v6m0-6L10 14M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
                     Click to upload
                     <input type="file" name="featured_image" accept="image/*" class="hidden" onchange="previewFeatured(this)">
                 </label>

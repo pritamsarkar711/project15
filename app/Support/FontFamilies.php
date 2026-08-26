@@ -4,8 +4,9 @@ namespace App\Support;
 
 /**
  * Centralised list of Google-Fonts that can be selected from the admin panel
- * and applied site-wide (frontend + admin). Selecting a font here overrides
- * the hardcoded "Work Sans" everywhere on the site.
+ * and applied site-wide (frontend + admin). The site default is "Inter"
+ * (matching the reference design system); selecting a font here overrides it
+ * everywhere on the site.
  *
  * Each entry contains:
  *   - label   : human-friendly name shown in the admin dropdown
@@ -29,7 +30,7 @@ class FontFamilies
             'inter' => [
                 'label'  => 'Inter',
                 'css'    => "'Inter', ui-sans-serif, system-ui, sans-serif",
-                'google' => 'Inter:wght@400;500;600;700;800',
+                'google' => 'Inter:wght@400;500;600;700;800;900',
             ],
             'roboto' => [
                 'label'  => 'Roboto',
@@ -104,11 +105,11 @@ class FontFamilies
         ];
     }
 
-    /** Get the data array for a key, falling back to Work Sans. */
+    /** Get the data array for a key, falling back to the Inter default. */
     public static function get(string $key): array
     {
         $all = self::all();
-        return $all[$key] ?? $all['work-sans'];
+        return $all[$key] ?? $all['inter'];
     }
 
     /** Convenience: the Google Fonts URL for a given key. */

@@ -13,7 +13,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         *,*::before,*::after{box-sizing:border-box}
-        body{margin:0;font-family:'Work Sans',system-ui,-apple-system,sans-serif;background:#fafafa;color:#1e293b;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center}
+        body{margin:0;font-family:'Inter',system-ui,-apple-system,sans-serif;background:#fafafa;color:#1e293b;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center}
         .box{max-width:460px;width:100%;background:#fff;border:1px solid #e2e8f0;padding:40px 28px}
         .icon{width:56px;height:56px;background:#f0fdf4;color:#0C3B2E;display:flex;align-items:center;justify-content:center;margin:0 auto 18px}
         .code{font-size:12px;font-weight:700;letter-spacing:.18em;color:#94a3b8;text-transform:uppercase}
@@ -32,7 +32,7 @@
 <body>
     <div class="box">
         <div class="icon">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m13.5 8.5-5 5"/><path d="m8.5 8.5 5 5"/><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
         </div>
         <div class="code">Error 404</div>
         <h1>Page not found</h1>

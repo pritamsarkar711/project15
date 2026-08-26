@@ -13,7 +13,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         *,*::before,*::after{box-sizing:border-box}
-        body{margin:0;font-family:'Work Sans',system-ui,-apple-system,sans-serif;background:#fafafa;color:#1e293b;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center}
+        body{margin:0;font-family:'Inter',system-ui,-apple-system,sans-serif;background:#fafafa;color:#1e293b;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center}
         .box{max-width:460px;width:100%;background:#fff;border:1px solid #e2e8f0;padding:40px 28px}
         .icon{width:56px;height:56px;background:#fff7ed;color:#ea580c;display:flex;align-items:center;justify-content:center;margin:0 auto 18px}
         .code{font-size:12px;font-weight:700;letter-spacing:.18em;color:#94a3b8;text-transform:uppercase}
@@ -32,7 +32,7 @@
 <body>
     <div class="box">
         <div class="icon">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0"/><path d="3.6 9h16.8M3.6 15h16.8"/></svg>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
         </div>
         <div class="code">Error 503</div>
         <h1>The site is being updated</h1>

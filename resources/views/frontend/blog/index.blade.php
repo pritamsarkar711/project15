@@ -47,7 +47,7 @@
     @else
         <div class="text-center py-12 card-elev">
             <span class="inline-flex w-14 h-14 bg-emerald-50 dark:bg-emerald-400/10 items-center justify-center mb-3">
-                <svg class="w-7 h-7 text-[#0C3B2E] dark:text-emerald-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-4.35-4.35"/><circle cx="11" cy="11" r="7"/></svg>
+                <svg class="w-7 h-7 text-[#0C3B2E] dark:text-emerald-300 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-4.35-4.35"/><circle cx="11" cy="11" r="7"/></svg>
             </span>
             <p class="text-sm text-slate-600 dark:text-slate-400">No posts found. Try a different search or category.</p>
             <a href="{{ route('blog.index') }}" class="inline-flex mt-4 h-10 px-6 bg-[#0C3B2E] hover:bg-[#072A20] text-white text-sm font-semibold items-center transition">View all posts</a>

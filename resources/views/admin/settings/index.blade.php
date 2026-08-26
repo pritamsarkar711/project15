@@ -93,7 +93,7 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
                 <label class="text-sm font-medium">Font family</label>
                 <select name="site_font_family" class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
                     @foreach($fontOptions as $key => $label)
-                        <option value="{{ $key }}" {{ old('site_font_family', $settings['site_font_family']->value ?? 'work-sans') === $key ? 'selected' : '' }} style="font-family:{{ $fonts[$key]['css'] }}">{{ $label }}</option>
+                        <option value="{{ $key }}" {{ old('site_font_family', $settings['site_font_family']->value ?? 'inter') === $key ? 'selected' : '' }} style="font-family:{{ $fonts[$key]['css'] }}">{{ $label }}</option>
                     @endforeach
                 </select>
             </div>
@@ -135,7 +135,7 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
                     <label for="hero_person_image_file" class="mt-2 flex items-center justify-center h-24 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg cursor-pointer hover:border-[#0C3B2E] hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
                         <input type="file" name="hero_person_image_file" id="hero_person_image_file" accept="image/jpeg,image/png,image/gif,image/webp,image/bmp" class="hidden">
                         <div class="text-center" id="hero-upload-hint">
-                            <svg class="w-6 h-6 mx-auto text-slate-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg>
+                            <svg class="w-6 h-6 mx-auto text-slate-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg>
                             <p class="text-xs text-slate-500 mt-1">Click to upload</p>
                             <p class="text-[10px] text-slate-400 mt-0.5">JPG, PNG, GIF, WebP or BMP · max 4 MB</p>
                         </div>

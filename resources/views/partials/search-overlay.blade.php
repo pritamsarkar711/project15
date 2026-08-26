@@ -9,7 +9,7 @@
                     <button type="submit" class="h-9 sm:h-10 px-4 sm:px-6 ml-2 sm:ml-3 shrink-0 bg-[#0C3B2E] hover:bg-[#072A20] text-white text-sm font-semibold transition whitespace-nowrap">Search</button>
                 </form>
                 <button onclick="closeSearch()" class="w-10 h-10 sm:w-11 sm:h-11 bg-slate-100 dark:bg-[#2a2a2a] hover:bg-slate-200 dark:hover:bg-[#333] flex items-center justify-center text-slate-600 dark:text-slate-300 shrink-0" aria-label="Close search">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
             </div>
             <div class="mt-5">

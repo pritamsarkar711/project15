@@ -17,7 +17,7 @@ class Category extends Model
         'icon' => 'newspaper',
     ];
 
-    /** Icon keys allowed in the admin icon picker (Lucide outline names). */
+    /** Icon keys allowed in the admin icon picker (official Lucide outline names). */
     const ICONS = [
         // Tech / digital
         'cpu','smartphone','laptop','code','database','cloud','wifi','terminal','binary',
@@ -33,10 +33,10 @@ class Category extends Model
         'heart-pulse','dumbbell','activity','brain','stethoscope','pill','cross','bone',
         // Learning / growth
         'graduation-cap','lightbulb','flask-conical','atom','microscope','telescope',
-        // Mood / people
-        'sun','moon','sparkles','smile','users','user','baby','hand-helping',
-        // Misc
-        'clock','calendar','gift','key','puzzle','fingerprint','shield','flag','tag',
+        // Mood / people (decorative "sparkles" style deliberately excluded)
+        'sun','moon','smile','users','user','baby','hand-helping',
+        // Misc ("shield" excluded - flashy/alert style icons are not allowed)
+        'clock','calendar','gift','key','puzzle','fingerprint','flag','tag',
     ];
 
     public function posts()

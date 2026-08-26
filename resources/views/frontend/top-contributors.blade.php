@@ -39,7 +39,7 @@
                         <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">{{ number_format($author->posts_count) }} published {{ Str::plural('article', $author->posts_count) }}</p>
                         @if($profileUrl)
                             <a href="{{ $profileUrl }}" class="inline-flex items-center gap-1 mt-2 text-xs font-semibold text-[#0C3B2E] dark:text-emerald-300 hover:underline">View profile
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12l-7.5 7.5M21 12H3"/></svg>
+                                <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12l-7.5 7.5M21 12H3"/></svg>
                             </a>
                         @endif
                     </div>

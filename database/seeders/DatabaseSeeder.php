@@ -38,7 +38,7 @@ class DatabaseSeeder extends Seeder
             ['name'=>'Health & Wellness','slug'=>'health-wellness','description'=>'Fitness nutrition and mental health','color'=>'#0f3d22','icon'=>'heart-pulse'],
             ['name'=>'Finance','slug'=>'finance','description'=>'Money investing and personal finance','color'=>'#1b4332','icon'=>'wallet'],
             ['name'=>'Travel','slug'=>'travel','description'=>'Destinations guides and travel tips','color'=>'#0f5132','icon'=>'plane'],
-            ['name'=>'Lifestyle','slug'=>'lifestyle','description'=>'Culture food and everyday inspiration','color'=>'#164e3b','icon'=>'sparkles'],
+            ['name'=>'Lifestyle','slug'=>'lifestyle','description'=>'Culture food and everyday inspiration','color'=>'#164e3b','icon'=>'utensils'],
             ['name'=>'Education','slug'=>'education','description'=>'Learning career and skill development','color'=>'#1a3a2a','icon'=>'book'],
             // Additional categories (kept in sync with the
             // 2026_08_25_000001_add_more_categories migration for live sites)
