@@ -28,7 +28,7 @@ define('LARAVEL_START', microtime(true));
 // ---------------------------------------------------------------------------
 
 // Bump this string when you want to force a cache clear on every server.
-define('HUVANTI_DEPLOY_VERSION', 'v26-2026-08-25-error500-icons');
+define('HUVANTI_DEPLOY_VERSION', 'v27-2026-08-25-hotfix-500');
 
 // Determine if the application is in maintenance mode...
 if (file_exists($maintenance = __DIR__.'/../storage/framework/maintenance.php')) {
@@ -331,6 +331,15 @@ try {
             foreach (glob($appCacheDir.'/*') as $f) {
                 @unlink($f);
             }
+        }
+        // Clear route, config and event caches (critical after adding new routes)
+        foreach (['bootstrap/cache/routes-v7.php','bootstrap/cache/config.php','bootstrap/cache/events.php','bootstrap/cache/packages.php','bootstrap/cache/services.php'] as $cacheFile) {
+            $path = __DIR__.'/../'.$cacheFile;
+            if (is_file($path)) @unlink($path);
+        }
+        // Clear view cache via glob as well
+        foreach (glob(__DIR__.'/../storage/framework/cache/*') as $f) {
+            if (is_file($f)) @unlink($f);
         }
         @file_put_contents($versionFile, HUVANTI_DEPLOY_VERSION, LOCK_EX);
         if (function_exists('opcache_reset')) {

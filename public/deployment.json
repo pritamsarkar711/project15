@@ -1,1 +1,1 @@
-{"deployment":"2026-08-25-error500-icons-v26","date":"2026-08-25","note":"500 page simplified, feedback controllers handle missing table, posting rules icons upgraded to high quality"}
+{"deployment":"2026-08-25-hotfix-500-v27","date":"2026-08-25","note":"hotfix 500: clear route cache on deploy, feedback table resilience, simplified 500 page"}
