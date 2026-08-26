@@ -1,1 +1,1 @@
-{"deployment":"2026-08-25-hotfix-500-v27","date":"2026-08-25","note":"hotfix 500: clear route cache on deploy, feedback table resilience, simplified 500 page"}
+{"deployment":"2026-08-25-feedback-table-fix-v28","date":"2026-08-25","note":"fix Feedback model table name feedbacks (was querying feedback singular)"}
