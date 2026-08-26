@@ -46,11 +46,11 @@
                         <div class="text-[11px] text-slate-500 dark:text-slate-400">Posts</div>
                     </div>
                     <div class="bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 px-3 py-2.5 text-center">
-                        <div class="text-lg font-bold text-emerald-600 dark:text-emerald-300 leading-tight">{{ number_format($totalLikes) }}</div>
+                        <div class="text-lg font-bold text-slate-900 dark:text-white leading-tight">{{ number_format($totalLikes) }}</div>
                         <div class="text-[11px] text-slate-500 dark:text-slate-400">Likes</div>
                     </div>
                     <div class="bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 px-3 py-2.5 text-center">
-                        <div class="text-lg font-bold text-red-500 leading-tight">{{ number_format($totalDislikes) }}</div>
+                        <div class="text-lg font-bold text-slate-900 dark:text-white leading-tight">{{ number_format($totalDislikes) }}</div>
                         <div class="text-[11px] text-slate-500 dark:text-slate-400">Dislikes</div>
                     </div>
                     <div class="bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 px-3 py-2.5 text-center">

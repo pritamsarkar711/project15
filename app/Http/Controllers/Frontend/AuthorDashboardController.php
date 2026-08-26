@@ -8,6 +8,7 @@ use App\Models\Post;
 use App\Models\Faq;
 use App\Services\HtmlSanitizer;
 use App\Services\ImageService;
+use App\Services\TotpService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -112,7 +113,6 @@ class AuthorDashboardController extends Controller
         ]);
 
         $data['content'] = HtmlSanitizer::clean($data['content']);
-
 
         // Word-count floor — minimum helpful content (anti-AI-slop rule).
         $wordCount = str_word_count(strip_tags($data['content']));
@@ -439,6 +439,48 @@ class AuthorDashboardController extends Controller
     public function rules()
     {
         return view('frontend.author-dashboard.rules');
+    }
+
+    public function start2FA(Request $request)
+    {
+        $user = Auth::user();
+        if ($user->google2fa_secret) {
+            return redirect()->route('author.profile.edit');
+        }
+        $secret = TotpService::generateSecret();
+        session(['author_2fa_setup_secret' => $secret]);
+        session(['author_2fa_setup_qr' => TotpService::getQrUrl($user->email, $secret)]);
+        return redirect()->route('author.profile.edit')->with('success', 'Scan the QR code with your authenticator app, then confirm with a 6 digit code.');
+    }
+
+    public function confirm2FA(Request $request)
+    {
+        $request->validate(['two_factor_code' => 'required|digits:6']);
+        $secret = session('author_2fa_setup_secret');
+        if (!$secret) {
+            return redirect()->route('author.profile.edit');
+        }
+        if (!TotpService::verify($secret, $request->two_factor_code)) {
+            return back()->withErrors(['two_factor_code' => 'Invalid code. Check your authenticator app and try again.']);
+        }
+        $user = Auth::user();
+        $user->google2fa_secret = $secret;
+        $user->two_factor_enabled = true;
+        $user->save();
+        session()->forget('author_2fa_setup_secret');
+        session()->forget('author_2fa_setup_qr');
+        return redirect()->route('author.profile.edit')->with('success', 'Two factor authentication enabled.');
+    }
+
+    public function disable2FA(Request $request)
+    {
+        $user = Auth::user();
+        $user->google2fa_secret = null;
+        $user->two_factor_enabled = false;
+        $user->save();
+        session()->forget('author_2fa_setup_secret');
+        session()->forget('author_2fa_setup_qr');
+        return redirect()->route('author.profile.edit')->with('success', 'Two factor authentication disabled.');
     }
 
     public function accountDelete(Request $request)

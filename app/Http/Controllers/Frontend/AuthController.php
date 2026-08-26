@@ -89,12 +89,26 @@ class AuthController extends Controller
         // The admin login is at /manage/login. This /login is for users/authors
         // only — but admins are also users, so we let them in too and route
         // them to their proper dashboard after auth.
-        if (!Auth::attempt($credentials, $request->boolean('remember'))) {
+        $user = User::where('email', $credentials['email'])->first();
+
+        if (!$user || !Hash::check($credentials['password'], $user->password)) {
             return back()->withErrors([
                 'email' => 'We couldn\'t find an account with those details.',
             ])->onlyInput('email');
         }
 
+        // Two-factor challenge for users who enabled it in their dashboard.
+        if ($user->google2fa_secret) {
+            if (!$request->filled('two_factor_code')) {
+                return back()->with('show_2fa', true)->withInput($request->only('email'));
+            }
+            if (!\App\Services\TotpService::verify($user->google2fa_secret, $request->two_factor_code)) {
+                return back()->withErrors(['two_factor_code' => 'Invalid authentication code.'])
+                    ->with('show_2fa', true)->withInput($request->only('email'));
+            }
+        }
+
+        Auth::login($user, $request->boolean('remember'));
         $request->session()->regenerate();
 
         return $this->redirectAfterAuth()->with('success', 'Welcome back!');
