@@ -8,7 +8,7 @@ on the server. The repository intentionally includes `vendor/` and
 Current deployment marker:
 
 ```text
-2026-08-25-panel-no-radius-v37
+2026-08-25-panel-deep-polish-v38
 ```
 
 ## "I pushed to GitHub but my site didn't change" — read this first

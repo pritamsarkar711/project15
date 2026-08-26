@@ -171,3 +171,74 @@ body.theme-loading { visibility: hidden; }
 
 /* Topbar: slightly softer bottom edge */
 .panel-ui header { box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03); }
+
+/* ---- Deeper shadcn-style refinement (no radius, no color/font change) ---- */
+
+/* Typography: tighter display headings, calmer body rhythm */
+.panel-ui h1, .panel-ui h2, .panel-ui h3 { letter-spacing: -0.01em; }
+
+/* Keyboard accessibility: clear focus ring, shadcn-style */
+.panel-ui a:focus-visible,
+.panel-ui button:focus-visible,
+.panel-ui input:focus-visible,
+.panel-ui select:focus-visible,
+.panel-ui textarea:focus-visible,
+.panel-ui summary:focus-visible {
+    outline: 2px solid rgba(16, 185, 129, 0.55);
+    outline-offset: 2px;
+}
+
+/* Inputs: gentle hover response before focus */
+.panel-ui input:not([type="checkbox"]):not([type="radio"]):hover,
+.panel-ui select:hover,
+.panel-ui textarea:hover {
+    border-color: rgba(100, 116, 139, 0.5);
+}
+
+/* Native checkbox / radio accent matches the site primary */
+.panel-ui input[type="checkbox"],
+.panel-ui input[type="radio"] { accent-color: #0C3B2E; }
+.dark .panel-ui input[type="checkbox"],
+.dark .panel-ui input[type="radio"] { accent-color: #34D399; }
+
+/* Disabled controls: clearly inert */
+.panel-ui button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* Links: comfortable underline offset */
+.panel-ui main a { text-underline-offset: 3px; }
+
+/* Text selection tinted with the site primary */
+.panel-ui ::selection { background: rgba(16, 185, 129, 0.18); }
+
+/* Tables: stronger head separation, muted uppercase head cells */
+.panel-ui thead th { border-bottom: 2px solid rgba(100, 116, 139, 0.18); }
+
+/* Sidebar: section labels tracked out, icons calm until hover */
+.panel-ui aside nav > div { letter-spacing: 0.16em; }
+.panel-ui aside nav > a svg { opacity: 0.85; transition: opacity 0.12s ease; }
+.panel-ui aside nav > a:hover svg,
+.panel-ui aside nav > a[class*="bg-"] svg { opacity: 1; }
+
+/* Sidebar active item: accent edge on the left, shadcn-style */
+.panel-ui aside nav > a[class*="bg-"] {
+    box-shadow: inset 3px 0 0 rgba(52, 211, 153, 0.9);
+}
+
+/* Page content: quiet entrance, respects reduced motion */
+@keyframes panel-enter { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+.panel-ui main { animation: panel-enter 0.22s ease both; }
+@media (prefers-reduced-motion: reduce) {
+    .panel-ui main { animation: none; }
+    .panel-ui button, .panel-ui tbody tr, .panel-ui aside nav > a { transition: none; }
+}
+
+/* Scrollbars inside panels: thin, quiet, both axes */
+.panel-ui ::-webkit-scrollbar { width: 8px; height: 8px; }
+.panel-ui ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.4); }
+.panel-ui ::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.6); }
+.panel-ui ::-webkit-scrollbar-track { background: transparent; }
