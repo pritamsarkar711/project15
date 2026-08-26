@@ -28,7 +28,7 @@ define('LARAVEL_START', microtime(true));
 // ---------------------------------------------------------------------------
 
 // Bump this string when you want to force a cache clear on every server.
-define('HUVANTI_DEPLOY_VERSION', 'v24-2026-08-25-helpful-no-radius-site-font');
+define('HUVANTI_DEPLOY_VERSION', 'v25-2026-08-25-feedback-blog-polish');
 
 // Determine if the application is in maintenance mode...
 if (file_exists($maintenance = __DIR__.'/../storage/framework/maintenance.php')) {
@@ -343,6 +343,9 @@ try {
         // try/catch so a missing table can never break the boot.
         try {
             $db = $app->make('db');
+            try {
+                $db->statement("CREATE TABLE IF NOT EXISTS `feedbacks` (`id` BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY, `user_id` BIGINT UNSIGNED NULL, `overall_experience` VARCHAR(30) NULL, `profile_ease` VARCHAR(30) NULL, `publishing_ease` VARCHAR(30) NULL, `bug_report` TEXT NULL, `what_you_like` TEXT NULL, `what_to_improve` TEXT NULL, `feature_request` TEXT NULL, `additional_comment` TEXT NULL, `created_at` TIMESTAMP NULL, `updated_at` TIMESTAMP NULL, INDEX `feedbacks_user_id_index` (`user_id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+            } catch (\Throwable $e) {}
             $db->table('categories')
                 ->where('slug', 'health-wellness')
                 ->update(['icon' => 'heart-pulse']);

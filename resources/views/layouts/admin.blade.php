@@ -84,6 +84,15 @@
                 @endphp
                 @if($unreadMessages)<span class="ml-auto text-[11px] font-bold bg-amber-400 text-slate-900 px-2 py-0.5">{{ $unreadMessages }}</span>@endif
             </a>
+            <a href="{{ route('admin.feedback.index') }}" class="flex items-center gap-3 px-3 py-2.5 transition {{ request()->routeIs('admin.feedback*') ? 'bg-[#0C3B2E] text-white' : 'hover:bg-white/5 hover:text-white' }}">
+                <svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 12h.01M12 12h.01M17 12h.01M21 14a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V8a4 4 0 0 1 4-4h12a4 4 0 0 1 4 4z"/></svg>
+                Feedback
+                @php
+                    try { $feedbackCount = \App\Models\Feedback::count(); }
+                    catch (\Throwable $e) { $feedbackCount = 0; }
+                @endphp
+                @if($feedbackCount)<span class="ml-auto text-[11px] font-bold bg-sky-400 text-slate-900 px-2 py-0.5">{{ $feedbackCount }}</span>@endif
+            </a>
 
             <div class="pt-3 pb-1 px-3 text-[10px] font-bold tracking-[0.18em] text-slate-500 uppercase">System</div>
             <a href="{{ route('admin.navigation.index') }}" class="flex items-center gap-3 px-3 py-2.5 transition {{ request()->routeIs('admin.navigation*') ? 'bg-[#0C3B2E] text-white' : 'hover:bg-white/5 hover:text-white' }}">

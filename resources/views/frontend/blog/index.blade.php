@@ -1,20 +1,22 @@
 @extends('layouts.app')
 @section('content')
 <div class="bg-emerald-50/70 dark:bg-[#1e1e1e] border-b border-emerald-100 dark:border-[#2f2f2f]">
-    <div class="max-w-[1200px] mx-auto px-4 sm:px-6 py-10">
+    <div class="max-w-[1200px] mx-auto px-4 sm:px-6 py-8 sm:py-10">
         <h1 class="text-[30px] sm:text-[36px] font-extrabold text-slate-900 dark:text-white tracking-tight">Blog</h1>
         <p class="text-sm text-slate-600 dark:text-slate-400 mt-2 max-w-2xl">Discover the latest stories across technology, health, finance, travel, lifestyle and education.</p>
-        <form action="{{ route('blog.index') }}" method="GET" class="mt-6 flex flex-wrap gap-2 items-center">
-            <input type="text" name="q" value="{{ request('q') }}" placeholder="Search posts..." class="h-10 px-4 bg-white dark:bg-[#2a2a2a] border border-slate-200 dark:border-[#383838] text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 text-sm focus:border-emerald-300 dark:focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 dark:focus:ring-emerald-400/10 outline-none w-full sm:w-[280px]">
-            <select name="category" onchange="this.form.submit()" class="h-10 px-3 bg-white dark:bg-[#2a2a2a] border border-slate-200 dark:border-[#383838] text-slate-900 dark:text-white text-sm focus:border-emerald-300 outline-none">
+        <form action="{{ route('blog.index') }}" method="GET" class="mt-6 bg-white dark:bg-[#2a2a2a] border border-slate-200 dark:border-[#383838] p-2 flex flex-col sm:flex-row gap-2">
+            <div class="flex-1 relative min-w-0">
+                <input type="text" name="q" value="{{ request('q') }}" placeholder="Search posts by title or topic..." autocomplete="off" class="w-full h-11 pl-4 pr-4 bg-slate-50 dark:bg-[#1e1e1e] border border-slate-200 dark:border-[#383838] text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 text-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 dark:focus:ring-emerald-400/10 outline-none">
+            </div>
+            <select name="category" class="h-11 px-3 bg-slate-50 dark:bg-[#1e1e1e] border border-slate-200 dark:border-[#383838] text-slate-900 dark:text-white text-sm focus:border-emerald-500 outline-none sm:w-[200px] shrink-0">
                 <option value="">All categories</option>
                 @foreach($categories as $cat)
                     <option value="{{ $cat->slug }}" @selected(request('category')==$cat->slug)>{{ $cat->name }}</option>
                 @endforeach
             </select>
-            <button type="submit" class="h-10 px-6 bg-[#0C3B2E] hover:bg-[#072A20] text-white text-sm font-semibold transition">Filter</button>
+            <button type="submit" class="h-11 px-7 bg-[#0C3B2E] hover:bg-[#072A20] text-white text-sm font-semibold transition shrink-0">Filter</button>
             @if(request('q') || request('category'))
-                <a href="{{ route('blog.index') }}" class="h-10 px-5 bg-white dark:bg-[#2a2a2a] border border-slate-200 dark:border-[#383838] text-slate-700 dark:text-slate-300 text-sm font-medium flex items-center hover:bg-slate-50 dark:hover:bg-[#333] transition">Clear</a>
+                <a href="{{ route('blog.index') }}" class="h-11 px-5 bg-white dark:bg-[#1e1e1e] border border-slate-200 dark:border-[#383838] text-slate-700 dark:text-slate-300 text-sm font-medium flex items-center justify-center hover:bg-slate-50 dark:hover:bg-[#333] transition shrink-0">Clear</a>
             @endif
         </form>
     </div>
