@@ -25,7 +25,7 @@
             <!-- Right: text -->
             <div class="order-2 lg:pl-6 py-12 sm:py-14 lg:py-20 min-w-0">
                 <span class="inline-flex items-center gap-2 text-xs font-semibold tracking-wide uppercase bg-white/10 text-emerald-100 px-3 py-1.5 mb-4">
-                    <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 4.9 5.4.8-3.9 3.8.9 5.4L12 14.4l-4.8 2.5.9-5.4L4.2 7.7l5.4-.8L12 2z"/></svg>
+                    <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18h-5"/><path d="M18 14h-8"/><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-4 0v-9a2 2 0 0 1 2-2h2"/><rect width="8" height="4" x="10" y="6" rx="1"/></svg>
                     Fresh reads every week
                 </span>
                 <h1 class="text-[34px] sm:text-[42px] lg:text-[48px] font-extrabold leading-[1.15] tracking-tight min-h-[2.4em] sm:min-h-[2.2em]">
@@ -48,7 +48,11 @@
     // Until then no ad slot, box or label appears anywhere on the site.
     // Strict '1' comparison: a stored '0' must stay falsy.
     $adsEnabled = setting('ads_enabled') === '1';
-    $headerAd = $adsEnabled ? \App\Models\Advertisement::active()->position('header')->first() : null;
+    try {
+        $headerAd = $adsEnabled ? \App\Models\Advertisement::active()->position('header')->first() : null;
+    } catch (\Throwable $e) {
+        $headerAd = null;
+    }
 @endphp
 @if($headerAd && trim(strip_tags($headerAd->code ?? '')) !== '')
     {{-- Blank/unfilled ad slots collapse invisibly (same JS pattern as blog posts)
@@ -72,7 +76,7 @@
                 <h3 class="text-[17px] font-semibold text-slate-900 dark:text-white mt-3">{{ $cat->name }}</h3>
                 <p class="mt-1.5 text-sm text-slate-600 dark:text-slate-400 leading-relaxed line-clamp-2 max-w-[280px]">{{ $cat->description }}</p>
                 <span class="mt-3 text-xs font-semibold text-[#0C3B2E] dark:text-emerald-300 inline-flex items-center gap-1">Explore
-                    <svg class="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    <svg class="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                 </span>
             </a>
         @endforeach
@@ -82,7 +86,7 @@
 <!-- Latest Posts (generous whitespace, repo grid rhythm) -->
 <section class="max-w-[1200px] mx-auto px-4 sm:px-6 pb-14">
     <div class="flex items-center gap-2 mb-7">
-        <svg class="w-6 h-6 text-[#0C3B2E] dark:text-emerald-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m22 7-8.5 5.5a4 4 0 0 1-3 0L2 7"/><rect width="20" height="14" x="2" y="5" rx="2"/></svg>
+        <svg class="w-6 h-6 text-[#0C3B2E] dark:text-emerald-300 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m22 7-8.5 5.5a4 4 0 0 1-3 0L2 7"/><rect width="20" height="14" x="2" y="5" rx="2"/></svg>
         <h2 class="text-[26px] sm:text-[32px] font-bold text-slate-900 dark:text-white tracking-tight">Latest Posts</h2>
     </div>
 
@@ -140,7 +144,7 @@
     <div class="text-center mt-10">
         <a href="{{ route('blog.index') }}" class="inline-flex items-center gap-2 h-11 px-7 bg-[#0C3B2E] hover:bg-[#072A20] text-white text-sm font-semibold transition shadow">
             Browse all posts
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
         </a>
     </div>
 </section>
@@ -152,21 +156,21 @@
         <div class="grid sm:grid-cols-3 gap-6 mt-5">
             <div class="card-elev p-5 hover:shadow-lg transition">
                 <span class="text-[#0C3B2E] dark:text-emerald-300">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20h9"/><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                    <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20h9"/><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
                 </span>
                 <h4 class="text-sm font-semibold text-slate-900 dark:text-white mt-3">Thoughtfully edited</h4>
                 <p class="text-sm text-slate-600 dark:text-slate-400 mt-1.5 leading-relaxed">Every article is researched and reviewed by our editorial team before it goes live.</p>
             </div>
             <div class="card-elev p-5 hover:shadow-lg transition">
                 <span class="text-[#0C3B2E] dark:text-emerald-300">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 7v14"/><path stroke-linecap="round" stroke-linejoin="round" d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>
+                    <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 7v14"/><path stroke-linecap="round" stroke-linejoin="round" d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>
                 </span>
                 <h4 class="text-sm font-semibold text-slate-900 dark:text-white mt-3">Clean reading</h4>
                 <p class="text-sm text-slate-600 dark:text-slate-400 mt-1.5 leading-relaxed">No pop ups, no clutter, just content that respects your time and attention.</p>
             </div>
             <div class="card-elev p-5 hover:shadow-lg transition">
                 <span class="text-[#0C3B2E] dark:text-emerald-300">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.57 3.91a2 2 0 0 0 1.66 0l8.57-3.9a1 1 0 0 0 0-1.84z"/><path stroke-linecap="round" stroke-linejoin="round" d="m6.08 9.5-3.5 1.6a1 1 0 0 0 0 1.81l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9a1 1 0 0 0 0-1.83l-3.5-1.59"/><path stroke-linecap="round" stroke-linejoin="round" d="m6.08 14.5-3.5 1.6a1 1 0 0 0 0 1.81l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9a1 1 0 0 0 0-1.83l-3.5-1.59"/></svg>
+                    <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.57 3.91a2 2 0 0 0 1.66 0l8.57-3.9a1 1 0 0 0 0-1.84z"/><path stroke-linecap="round" stroke-linejoin="round" d="m6.08 9.5-3.5 1.6a1 1 0 0 0 0 1.81l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9a1 1 0 0 0 0-1.83l-3.5-1.59"/><path stroke-linecap="round" stroke-linejoin="round" d="m6.08 14.5-3.5 1.6a1 1 0 0 0 0 1.81l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9a1 1 0 0 0 0-1.83l-3.5-1.59"/></svg>
                 </span>
                 <h4 class="text-sm font-semibold text-slate-900 dark:text-white mt-3">Multi niche, unified</h4>
                 <p class="text-sm text-slate-600 dark:text-slate-400 mt-1.5 leading-relaxed">Technology, health, finance, travel, lifestyle and education, all in one place.</p>

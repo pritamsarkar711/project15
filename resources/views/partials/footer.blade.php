@@ -1,19 +1,43 @@
 @php
     // Only categories with at least one published post appear in the footer.
-    $footerCategories = \App\Models\Category::live()->orderBy('sort_order')->take(6)->get();
+    try {
+        $footerCategories = \App\Models\Category::live()->orderBy('sort_order')->take(6)->get();
+    } catch (\Throwable $e) {
+        $footerCategories = collect();
+    }
+
     $socialEnabled = setting('social_enabled', '1') === '1';
+
     // Social URLs — admin-editable via Settings → General. Empty = icon hidden.
     $socials = [
-        'x'         => ['url' => setting('social_x'),         'hover' => '#000000',         'label' => 'X'],
-        'facebook'  => ['url' => setting('social_facebook'),  'hover' => '#1877F2',         'label' => 'Facebook'],
-        'pinterest' => ['url' => setting('social_pinterest'), 'hover' => '#E60023',         'label' => 'Pinterest'],
-        'linkedin' => ['url' => setting('social_linkedin'),   'hover' => '#0A66C2',         'label' => 'LinkedIn'],
-        'whatsapp' => ['url' => setting('social_whatsapp'),   'hover' => '#25D366',         'label' => 'WhatsApp'],
-        'youtube'  => ['url' => setting('social_youtube'),    'hover' => '#FF0000',         'label' => 'YouTube'],
-        'instagram'=> ['url' => setting('social_instagram'),  'hover' => '#E1306C',         'label' => 'Instagram'],
+        'x'          => ['url' => setting('social_x'),         'hover' => '#000000', 'label' => 'X'],
+        'facebook'   => ['url' => setting('social_facebook'),  'hover' => '#1877F2', 'label' => 'Facebook'],
+        'pinterest'  => ['url' => setting('social_pinterest'), 'hover' => '#E60023', 'label' => 'Pinterest'],
+        'linkedin'   => ['url' => setting('social_linkedin'),  'hover' => '#0A66C2', 'label' => 'LinkedIn'],
+        'whatsapp'   => ['url' => setting('social_whatsapp'),  'hover' => '#25D366', 'label' => 'WhatsApp'],
+        'youtube'    => ['url' => setting('social_youtube'),   'hover' => '#FF0000', 'label' => 'YouTube'],
+        'instagram'  => ['url' => setting('social_instagram'), 'hover' => '#E1306C', 'label' => 'Instagram'],
     ];
     $socials = array_filter($socials, fn($s) => !empty($s['url']));
-    $copyright = '&copy; 2026-27 All Rights Reserved. Build With &hearts; By <a href="https://t.me/joegoldberg2025" target="_blank" rel="noopener nofollow" class="text-[#0C3B2E] dark:text-emerald-300 hover:underline font-semibold">Joe</a>';
+
+    try {
+        $footerAd = \App\Models\Advertisement::active()->position('footer')->first();
+    } catch (\Throwable $e) {
+        $footerAd = null;
+    }
+
+    // Copyright line. The {year} token always renders the current year, so
+    // the footer never goes stale on January 1st. Legacy values saved by old
+    // versions (a bare "2026-27, All Rights Reserved" style string) are
+    // upgraded to a clean full line automatically at render time.
+    $rawCopyright = trim(setting('footer_copyright', ''));
+    if ($rawCopyright === '' || preg_match('/^(?:\d{4}(?:\s*[-\/]\s*\d{2,4})?)?\s*,?\s*all rights reserved\.?\s*-?\s*$|^all rights reserved\.?\s*-?\s*$/i', $rawCopyright)) {
+        $rawCopyright = '{year} Huvanti. All Rights Reserved.';
+    }
+    if (stripos($rawCopyright, '©') === false && stripos($rawCopyright, '&copy') === false && stripos($rawCopyright, '&#169') === false) {
+        $rawCopyright = '© ' . $rawCopyright;
+    }
+    $copyright = str_replace('{year}', date('Y'), $rawCopyright);
 @endphp
 <footer class="bg-[#eeeeee] dark:bg-[#212121] border-t border-slate-200/70 dark:border-[#2f2f2f] mt-auto">
     <div class="max-w-[1200px] mx-auto px-4 sm:px-6 py-10">
@@ -77,11 +101,12 @@
                     <a href="{{ route('terms') }}" class="inline-flex items-center gap-2.5 text-slate-600 dark:text-slate-400 hover:text-[#0C3B2E] dark:hover:text-emerald-300 transition"><span class="w-1.5 h-1.5 bg-[#0C3B2E] dark:bg-emerald-300 shrink-0"></span>Terms</a>
                     <a href="{{ route('cookie') }}" class="inline-flex items-center gap-2.5 text-slate-600 dark:text-slate-400 hover:text-[#0C3B2E] dark:hover:text-emerald-300 transition"><span class="w-1.5 h-1.5 bg-[#0C3B2E] dark:bg-emerald-300 shrink-0"></span>Cookies</a>
                     <a href="{{ route('editorial') }}" class="inline-flex items-center gap-2.5 text-slate-600 dark:text-slate-400 hover:text-[#0C3B2E] dark:hover:text-emerald-300 transition"><span class="w-1.5 h-1.5 bg-[#0C3B2E] dark:bg-emerald-300 shrink-0"></span>Editorial</a>
+                    <a href="{{ route('affiliate') }}" class="inline-flex items-center gap-2.5 text-slate-600 dark:text-slate-400 hover:text-[#0C3B2E] dark:hover:text-emerald-300 transition"><span class="w-1.5 h-1.5 bg-[#0C3B2E] dark:bg-emerald-300 shrink-0"></span>Affiliate</a>
+                    <a href="{{ route('comments.policy') }}" class="inline-flex items-center gap-2.5 text-slate-600 dark:text-slate-400 hover:text-[#0C3B2E] dark:hover:text-emerald-300 transition"><span class="w-1.5 h-1.5 bg-[#0C3B2E] dark:bg-emerald-300 shrink-0"></span>Comment Policy</a>
                     <a href="{{ route('disclaimer') }}" class="inline-flex items-center gap-2.5 text-slate-600 dark:text-slate-400 hover:text-[#0C3B2E] dark:hover:text-emerald-300 transition"><span class="w-1.5 h-1.5 bg-[#0C3B2E] dark:bg-emerald-300 shrink-0"></span>Disclaimer</a>
                 </div>
             </div>
         </div>
-        @php $footerAd = \App\Models\Advertisement::active()->position('footer')->first(); @endphp
         @if($footerAd && trim(strip_tags($footerAd->code ?? '')) !== '')
         <div class="bg-amber-50/60 dark:bg-[#2a2a2a] p-4 text-center mt-8">{!! $footerAd->code !!}</div>
         @endif

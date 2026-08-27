@@ -89,12 +89,26 @@ class AuthController extends Controller
         // The admin login is at /manage/login. This /login is for users/authors
         // only — but admins are also users, so we let them in too and route
         // them to their proper dashboard after auth.
-        if (!Auth::attempt($credentials, $request->boolean('remember'))) {
+        $user = User::where('email', $credentials['email'])->first();
+
+        if (!$user || !Hash::check($credentials['password'], $user->password)) {
             return back()->withErrors([
                 'email' => 'We couldn\'t find an account with those details.',
             ])->onlyInput('email');
         }
 
+        // Two-factor challenge for users who enabled it in their dashboard.
+        if ($user->google2fa_secret) {
+            if (!$request->filled('two_factor_code')) {
+                return back()->with('show_2fa', true)->withInput($request->only('email'));
+            }
+            if (!\App\Services\TotpService::verify($user->google2fa_secret, $request->two_factor_code)) {
+                return back()->withErrors(['two_factor_code' => 'Invalid authentication code.'])
+                    ->with('show_2fa', true)->withInput($request->only('email'));
+            }
+        }
+
+        Auth::login($user, $request->boolean('remember'));
         $request->session()->regenerate();
 
         return $this->redirectAfterAuth()->with('success', 'Welcome back!');
@@ -195,7 +209,7 @@ class AuthController extends Controller
         }
         $state = Str::random(40);
         $request->session()->put('google_oauth_state', $state);
-        $redirectUri = str_replace('http://', 'https://', url('/auth/google/callback'));
+        $redirectUri = 'https://' . $request->getHost() . '/auth/google/callback';
         $params = http_build_query([
             'client_id' => $clientId,
             'redirect_uri' => $redirectUri,
@@ -228,7 +242,9 @@ class AuthController extends Controller
             return redirect()->route('login')->withErrors(['email' => 'Google did not return an authorization code.']);
         }
         try {
-            $redirectUri = str_replace('http://', 'https://', url('/auth/google/callback'));
+            // Must match the redirect_uri sent in the authorization request exactly.
+            $redirectUri = 'https://' . $request->getHost() . '/auth/google/callback';
+            \Log::info('Google OAuth token exchange', ['redirect_uri' => $redirectUri]);
             $tokenResponse = Http::asForm()->post('https://oauth2.googleapis.com/token', [
                 'client_id' => $clientId,
                 'client_secret' => $clientSecret,
@@ -237,7 +253,8 @@ class AuthController extends Controller
                 'redirect_uri' => $redirectUri,
             ]);
             if (!$tokenResponse->successful()) {
-                throw new \RuntimeException('Failed to exchange code for tokens: ' . $tokenResponse->body());
+                \Log::error('Google token exchange failed', ['body' => $tokenResponse->body()]);
+                throw new \RuntimeException('Failed to exchange code for tokens.');
             }
             $tokens = $tokenResponse->json();
             $accessToken = $tokens['access_token'] ?? null;

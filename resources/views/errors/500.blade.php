@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex">
     <title>Error 500</title>
-    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        *{box-sizing:border-box}body{margin:0;font-family:'Work Sans',system-ui,sans-serif;background:#fafafa;color:#1e293b;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center}
+        *{box-sizing:border-box}body{margin:0;font-family:'Inter',system-ui,sans-serif;background:#fafafa;color:#1e293b;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center}
         .box{max-width:400px;width:100%;background:#fff;border:1px solid #e2e8f0;padding:32px 24px}
         h1{font-size:20px;font-weight:700;margin:0 0 8px;color:#0f172a}
         p{font-size:14px;color:#64748b;margin:0 0 20px}

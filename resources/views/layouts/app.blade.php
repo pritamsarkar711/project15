@@ -48,7 +48,7 @@
     <link rel="preconnect" href="https://picsum.photos" crossorigin>
     <link rel="dns-prefetch" href="https://www.googletagmanager.com">
     <link href="{{ \App\Support\SiteFont::googleUrl() }}" rel="stylesheet">
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    {!! \App\Support\ViteAssets::tags(['resources/css/app.css', 'resources/js/app.js']) !!}
     @stack('head')
 </head>
 <body class="bg-[#fafafa] dark:bg-[#121212] text-slate-800 dark:text-slate-100 antialiased overflow-x-hidden" style="font-family:{{ \App\Support\SiteFont::cssStack() }}">
@@ -64,7 +64,7 @@
                     <div class="card-elev text-emerald-800 dark:text-emerald-300 px-4 py-3 flex items-center justify-between text-sm !shadow-none border border-emerald-200 dark:border-emerald-400/20 dark:!bg-[#1e2b24]">
                         <span class="font-medium">{{ session('success') }}</span>
                         <button onclick="this.parentElement.remove()" class="ml-4" aria-label="Dismiss">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                         </button>
                     </div>
                 </div>
@@ -84,7 +84,7 @@
 
     <!-- Scroll top (repo pattern: FAB appears after 100px) -->
     <button id="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" class="fixed bottom-4 right-4 w-10 h-10 bg-[#0C3B2E] dark:bg-emerald-400 text-white dark:text-slate-900 shadow-lg hidden items-center justify-center hover:bg-[#072A20] dark:hover:bg-emerald-300 transition" aria-label="Scroll to top">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
+        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
     </button>
 
     @if(setting('ga_measurement_id'))

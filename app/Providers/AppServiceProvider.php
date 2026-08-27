@@ -34,6 +34,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        $this->ensureRuntimeTables();
+
         // ------------------------------------------------------------------
         // Self-updating database: apply pending migrations automatically.
         //
@@ -185,6 +187,87 @@ class AppServiceProvider extends ServiceProvider
         } catch (\Throwable $e) {
             // Never let a migration problem take the site down — the code
             // paths that depend on new tables degrade gracefully.
+        }
+    }
+
+    /**
+     * Make sure the tables/directories session + cache drivers need exist.
+     * Runs on every request (one cheap hasTable) so a partial install cannot
+     * keep the public site in a 500 loop until someone opens /deploy.php.
+     */
+    private function ensureRuntimeTables(): void
+    {
+        try {
+            $sessionTable = (string) config('session.table', 'sessions');
+            if (config('session.driver') === 'database' && ! \Illuminate\Support\Facades\Schema::hasTable($sessionTable)) {
+                \Illuminate\Support\Facades\Schema::create($sessionTable, function ($table) {
+                    $table->string('id')->primary();
+                    $table->foreignId('user_id')->nullable()->index();
+                    $table->string('ip_address', 45)->nullable();
+                    $table->text('user_agent')->nullable();
+                    $table->longText('payload');
+                    $table->integer('last_activity')->index();
+                });
+            }
+        } catch (\Throwable $e) {
+            $this->fallbackSessionDriver();
+        }
+
+        try {
+            $cacheTable = (string) config('cache.stores.database.table', 'cache');
+            if (config('cache.default') === 'database' && ! \Illuminate\Support\Facades\Schema::hasTable($cacheTable)) {
+                \Illuminate\Support\Facades\Schema::create($cacheTable, function ($table) {
+                    $table->string('key')->primary();
+                    $table->mediumText('value');
+                    $table->bigInteger('expiration')->index();
+                });
+            }
+            if (config('cache.default') === 'database' && ! \Illuminate\Support\Facades\Schema::hasTable('cache_locks')) {
+                \Illuminate\Support\Facades\Schema::create('cache_locks', function ($table) {
+                    $table->string('key')->primary();
+                    $table->string('owner');
+                    $table->bigInteger('expiration')->index();
+                });
+            }
+        } catch (\Throwable $e) {
+            $this->fallbackCacheDriver();
+        }
+
+        $this->ensureSessionFilesDirectory();
+    }
+
+    private function fallbackSessionAndCacheDrivers(): void
+    {
+        $this->fallbackSessionDriver();
+        $this->fallbackCacheDriver();
+    }
+
+    private function fallbackSessionDriver(): void
+    {
+        \Illuminate\Support\Facades\Config::set('session.driver', 'file');
+        $this->ensureSessionFilesDirectory();
+        try {
+            $this->app->forgetInstance('session');
+            $this->app->forgetInstance('session.store');
+        } catch (\Throwable $e) {
+        }
+    }
+
+    private function fallbackCacheDriver(): void
+    {
+        \Illuminate\Support\Facades\Config::set('cache.default', 'file');
+        try {
+            $this->app->forgetInstance('cache');
+            $this->app->forgetInstance('cache.store');
+        } catch (\Throwable $e) {
+        }
+    }
+
+    private function ensureSessionFilesDirectory(): void
+    {
+        $dir = storage_path('framework/sessions');
+        if (! is_dir($dir)) {
+            @mkdir($dir, 0775, true);
         }
     }
 }

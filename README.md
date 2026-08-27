@@ -14,7 +14,7 @@ Production-ready Laravel CMS for Hostinger custom PHP hosting. Converted from SG
 - Blog Feed (`/blog`), Category pages, Search
 - Single Post: featured image, author bio, publication date, reading time, Table of Contents, content, FAQ accordion, comment section (name+email private), share (X, Facebook, Pinterest, Reddit, LinkedIn, WhatsApp)
 - Pages: About, Privacy, Terms, Cookie Policy, Editorial Policy (`/page/{slug}`), Contact with reason dropdown
-- Footer: © 2026-27 All Rights Reserved, Built with ♥ by [Joe Goldberg](https://t.me/JoeGoldberg2025), responsive, no overflow
+- Footer: © {year} Huvanti. All Rights Reserved. with automatic current year, responsive, no overflow
 
 ### Backend / Admin CMS (`/manage` - secured, no frontend link)
 - Dashboard with stats (posts, views, pending comments, unread contacts)

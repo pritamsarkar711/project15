@@ -50,6 +50,7 @@ Route::get('/storage/{path}', function ($path) {
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/search', [HomeController::class, 'search'])->name('search');
 Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
+Route::get('/top-contributors', [\App\Http\Controllers\Frontend\TopContributorsController::class, 'index'])->name('top.contributors');
 Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
 Route::post('/blog/{slug}/comment', [BlogController::class, 'storeComment'])->name('blog.comment.store');
 
@@ -85,13 +86,15 @@ Route::get('/terms-conditions', [PageController::class,'terms'])->name('terms');
 Route::get('/cookie-policy', [PageController::class,'cookie'])->name('cookie');
 Route::get('/editorial-policy', [PageController::class,'editorial'])->name('editorial');
 Route::get('/disclaimer', [PageController::class,'disclaimer'])->name('disclaimer');
+Route::get('/affiliate-disclosure', [PageController::class,'affiliateDisclosure'])->name('affiliate');
+Route::get('/comment-policy', [PageController::class,'commentPolicy'])->name('comments.policy');
 Route::get('/page/{slug}', [PageController::class, 'show'])->name('page.show');
 
 // Frontend user auth (separate from /manage admin login)
 Route::get('/register', [FrontendAuthController::class, 'showRegisterForm'])->name('register')->middleware('guest');
-Route::post('/register', [FrontendAuthController::class, 'register'])->name('register.post')->middleware('guest');
+Route::post('/register', [FrontendAuthController::class, 'register'])->name('register.post')->middleware(['guest', 'throttle:6,1']);
 Route::get('/login', [FrontendAuthController::class, 'showLoginForm'])->name('login')->middleware('guest');
-Route::post('/login', [FrontendAuthController::class, 'login'])->name('login.post')->middleware('guest');
+Route::post('/login', [FrontendAuthController::class, 'login'])->name('login.post')->middleware(['guest', 'throttle:10,1']);
 Route::post('/logout', [FrontendAuthController::class, 'logout'])->name('logout')->middleware('auth');
 
 Route::get('/auth/google', [FrontendAuthController::class, 'redirectToGoogle'])->name('auth.google.redirect')->middleware('guest');
@@ -106,7 +109,7 @@ Route::post('/switch-back-to-admin', [RoleSwitchController::class, 'switchBackTo
 // Password reset (frontend users — uses Huvanti-branded ResetPassword
 // notification that points to /reset-password/{token} instead of /manage).
 Route::get('/forgot-password', [FrontendAuthController::class, 'showForgotPasswordForm'])->name('password.request')->middleware('guest');
-Route::post('/forgot-password', [FrontendAuthController::class, 'sendResetLink'])->name('password.email')->middleware('guest');
+Route::post('/forgot-password', [FrontendAuthController::class, 'sendResetLink'])->name('password.email')->middleware(['guest', 'throttle:5,1']);
 Route::get('/reset-password/{token}', [FrontendAuthController::class, 'showResetForm'])->name('password.reset')->middleware('guest');
 Route::post('/reset-password', [FrontendAuthController::class, 'reset'])->name('password.update')->middleware('guest');
 
@@ -126,6 +129,9 @@ Route::prefix('author-dashboard')->name('author.')->middleware('auth')->group(fu
     Route::get('/posting-rules', [AuthorDashboardController::class, 'rules'])->name('rules');
     Route::get('/feedback', [App\Http\Controllers\Frontend\FeedbackController::class, 'index'])->name('feedback.index');
     Route::post('/feedback', [App\Http\Controllers\Frontend\FeedbackController::class, 'store'])->name('feedback.store');
+    Route::post('/security/2fa/start', [AuthorDashboardController::class, 'start2FA'])->name('2fa.start');
+    Route::post('/security/2fa/confirm', [AuthorDashboardController::class, 'confirm2FA'])->name('2fa.confirm');
+    Route::post('/security/2fa/disable', [AuthorDashboardController::class, 'disable2FA'])->name('2fa.disable');
     Route::post('/account', [AuthorDashboardController::class, 'accountDelete'])->name('account.delete');
 });
 
@@ -138,7 +144,9 @@ Route::get('/sitemap.xml', [SeoController::class, 'sitemap'])->name('seo.sitemap
 // Admin Auth - slug is /manage for security (no Admin link on frontend)
 Route::prefix('manage')->name('admin.')->group(function(){
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-    Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+    // Name is 'login.post' so the admin. group prefix yields the name the
+    // login view already uses. A doubled prefix here 500'd /manage/login.
+    Route::post('/login', [AuthController::class, 'login'])->name('login.post')->middleware('throttle:8,1');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     Route::middleware(['admin'])->group(function(){

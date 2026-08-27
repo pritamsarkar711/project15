@@ -51,6 +51,15 @@ test -f vendor/autoload.php
 test -f vendor/composer/autoload_static.php
 test -f vendor/laravel/framework/src/Illuminate/Foundation/Application.php
 
+echo "[6/6] Clearing cached views/config so template + icon updates go live..."
+if command -v php &>/dev/null && [[ -f artisan ]]; then
+    php artisan view:clear 2>/dev/null || rm -rf storage/framework/views/*.php 2>/dev/null || true
+    php artisan config:clear 2>/dev/null || true
+else
+    # Fallback: drop compiled blade files manually so they rebuild from source.
+    rm -rf storage/framework/views/*.php 2>/dev/null || true
+fi
+
 cat <<MESSAGE
 Deployment verified: ${DEPLOYMENT}
 Next:

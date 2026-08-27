@@ -12,8 +12,8 @@
         'Food / Kitchen'    => ['utensils','coffee','wine','ice-cream','apple','carrot'],
         'Health / Fitness'  => ['heart-pulse','dumbbell','activity','brain','stethoscope','pill','cross','bone'],
         'Learning / Growth' => ['graduation-cap','lightbulb','flask-conical','atom','microscope','telescope'],
-        'Mood / People'     => ['sun','moon','sparkles','smile','users','user','baby','hand-helping'],
-        'Misc'              => ['clock','calendar','gift','key','puzzle','fingerprint','shield','flag','tag'],
+        'Mood / People'     => ['sun','moon','smile','users','user','baby','hand-helping'],
+        'Misc'              => ['clock','calendar','gift','key','puzzle','fingerprint','flag','tag'],
     ];
 @endphp
 <div class="icon-picker-wrapper" data-icon-picker>
@@ -21,14 +21,14 @@
 
     {{-- Search box --}}
     <div class="relative mb-3">
-        <svg class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-4.3-4.3"/></svg>
+        <svg class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-4.3-4.3"/></svg>
         <input type="text" data-icon-search placeholder="Search icons by name..." class="w-full h-9 pl-9 pr-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:border-[#0C3B2E]">
     </div>
 
     {{-- Selected preview + clear filter chip --}}
     <div class="flex items-center gap-3 mb-4 pb-3 border-b border-slate-100 dark:border-slate-700/50">
         <div class="w-12 h-12 bg-[#0C3B2E] text-white flex items-center justify-center" data-icon-preview>
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">{!! $allIcons[$current] ?? $allIcons['newspaper'] !!}</svg>
+            <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">{!! $allIcons[$current] ?? $allIcons['newspaper'] !!}</svg>
         </div>
         <div class="flex-1 min-w-0">
             <div class="text-xs text-slate-500 dark:text-slate-400">Selected:</div>
@@ -48,7 +48,7 @@
                         $svgInner = $allIcons[$iconKey];
                     @endphp
                     <button type="button" data-icon-option="{{ $iconKey }}" class="aspect-square border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 text-slate-500 dark:text-slate-400 flex items-center justify-center hover:border-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition {{ $current === $iconKey ? '!border-[#0C3B2E] !bg-emerald-50 dark:!bg-emerald-500/10 !text-emerald-700 dark:!text-emerald-300' : '' }}">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">{!! $svgInner !!}</svg>
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">{!! $svgInner !!}</svg>
                     </button>
                 @endforeach
             </div>
@@ -80,7 +80,7 @@
     function selectIcon(key){
         if (!iconSvgs[key]) return;
         hidden.value = key;
-        if (preview) preview.innerHTML = '<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">' + iconSvgs[key] + '</svg>';
+        if (preview) preview.innerHTML = '<svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">' + iconSvgs[key] + '</svg>';
         if (nameEl) nameEl.textContent = key;
         options.forEach(o => {
             const isActive = (o.getAttribute('data-icon-option') === key);

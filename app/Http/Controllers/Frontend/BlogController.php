@@ -26,8 +26,16 @@ class BlogController extends Controller
         }
         $posts = $query->latest('published_at')->paginate(12)->withQueryString();
         // Filter dropdown: only live categories (active + has published posts)
-        $categories = Category::live()->orderBy('sort_order')->get();
-        $featured = Post::published()->where('is_featured',true)->latest()->take(3)->get();
+        try {
+            $categories = Category::live()->orderBy('sort_order')->get();
+        } catch (\Throwable $e) {
+            $categories = collect();
+        }
+        try {
+            $featured = Post::published()->where('is_featured',true)->latest()->take(3)->get();
+        } catch (\Throwable $e) {
+            $featured = collect();
+        }
         return view('frontend.blog.index', compact('posts','categories','featured'));
     }
 
@@ -41,7 +49,8 @@ class BlogController extends Controller
         $popular = Post::published()->where('id','!=',$post->id)->orderByDesc('views')->take(3)->get();
         $toc = $post->table_of_contents;
         // Extract headings for TOC rendering with ids injection
-        $contentWithAnchors = $this->injectAnchors($post->content, $toc);
+        // Defense in depth: legacy rows may predate save-time sanitizing.
+        $contentWithAnchors = $this->injectAnchors(\App\Services\HtmlSanitizer::clean((string) $post->content), $toc);
         // Insert in-article ads every N paragraphs (default 2).
         // Ads only ever render when the admin has switched them on
         // (Settings, Ads tab). Until then content stays completely clean.

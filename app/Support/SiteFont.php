@@ -5,14 +5,23 @@ namespace App\Support;
 use App\Models\Setting;
 
 /**
- * Read the active site-wide font family. Falls back to "work-sans"
- * if no setting is configured.
+ * Read the active site-wide font family. Falls back to "inter" (the site
+ * default, matching the reference design system) if no setting is configured.
  */
 class SiteFont
 {
     public static function key(): string
     {
-        return Setting::get('site_font_family', 'work-sans');
+        try {
+            $value = Setting::get('site_font_family', 'inter');
+            if (! is_string($value) || $value === '') {
+                return 'inter';
+            }
+
+            return $value;
+        } catch (\Throwable $e) {
+            return 'inter';
+        }
     }
 
     public static function googleUrl(): string
