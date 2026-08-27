@@ -188,10 +188,25 @@ function addFaq(){
 }
 function previewFeatured(input){
     var img = document.getElementById('featured-preview');
-    if (input.files && input.files[0]) {
-        img.src = URL.createObjectURL(input.files[0]);
-        img.classList.remove('hidden');
+    if (!input.files || !input.files[0]) return;
+    var file = input.files[0];
+    // Client-side guards so the author gets instant feedback instead of a
+    // server error page: max 4 MB (server limit) and real image types only.
+    var okTypes = ['image/jpeg','image/png','image/gif','image/webp','image/bmp'];
+    if (okTypes.indexOf(file.type) === -1) {
+        alert('Unsupported image type ("' + (file.type || 'unknown') + '"). Please use JPG, PNG, GIF, WebP or BMP.');
+        input.value = '';
+        return;
     }
+    if (file.size > 4 * 1024 * 1024) {
+        alert('The image is too large (' + Math.round(file.size / 1024 / 1024 * 10) / 10 + ' MB). Maximum size is 4 MB — please use a smaller image.');
+        input.value = '';
+        return;
+    }
+    if (img.dataset.objectUrl) { try { URL.revokeObjectURL(img.dataset.objectUrl); } catch(e){} }
+    img.dataset.objectUrl = URL.createObjectURL(file);
+    img.src = img.dataset.objectUrl;
+    img.classList.remove('hidden');
 }
 </script>
 @endpush

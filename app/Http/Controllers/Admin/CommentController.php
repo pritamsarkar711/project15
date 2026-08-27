@@ -23,13 +23,18 @@ class CommentController extends Controller
 
         $comments = $query->paginate(20)->withQueryString();
 
-        $counts = [
-            'all'      => Comment::whereNull('parent_id')->count(),
-            'pending'  => Comment::where('status', 'pending')->count(),
-            'approved' => Comment::where('status', 'approved')->count(),
-            'rejected' => Comment::where('status', 'rejected')->count(),
-            'spam'     => Comment::where('status', 'spam')->count(),
-        ];
+        // Tab counts must match what the tabs actually list: a thread shows
+        // when the top-level comment OR any of its replies has the status —
+        // plain per-status counts used to overstate the badges.
+        $counts = ['all' => Comment::whereNull('parent_id')->count()];
+        foreach (['pending', 'approved', 'rejected', 'spam'] as $st) {
+            $counts[$st] = Comment::whereNull('parent_id')
+                ->where(function ($q) use ($st) {
+                    $q->where('status', $st)
+                      ->orWhereHas('replies', fn ($r) => $r->where('status', $st));
+                })
+                ->count();
+        }
 
         return view('admin.comments.index', compact('comments', 'counts'));
     }

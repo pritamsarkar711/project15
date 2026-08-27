@@ -154,11 +154,15 @@ class SettingController extends Controller
             // raster images are optimised + converted to WebP.
             foreach (['site_logo_light', 'site_logo_dark', 'site_favicon'] as $fileKey) {
                 if ($request->hasFile($fileKey.'_file')) {
-                    $old = Setting::where('key', $fileKey)->value('value');
-                    $imageService->delete($old);
+                    // Store NEW first, delete OLD after — a failed upload then
+                    // never leaves the site without its current logo/favicon.
                     $path = $imageService->optimizeAndStore(
                         $request->file($fileKey.'_file'), 'uploads/settings', true
                     );
+                    $old = Setting::where('key', $fileKey)->value('value');
+                    if ($old && $old !== $path) {
+                        $imageService->delete($old);
+                    }
                     Setting::set($fileKey, $path);
                     Setting::flushAllCache();
                 }
@@ -171,11 +175,13 @@ class SettingController extends Controller
                 Setting::set('hero_person_image', '');
                 Setting::flushAllCache();
             } elseif ($request->hasFile('hero_person_image_file')) {
-                $old = Setting::where('key', 'hero_person_image')->value('value');
-                $imageService->delete($old);
                 $path = $imageService->optimizeAndStore(
                     $request->file('hero_person_image_file'), 'uploads/hero'
                 );
+                $old = Setting::where('key', 'hero_person_image')->value('value');
+                if ($old && $old !== $path) {
+                    $imageService->delete($old);
+                }
                 Setting::set('hero_person_image', $path);
                 Setting::flushAllCache();
             }

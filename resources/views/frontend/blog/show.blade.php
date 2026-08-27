@@ -5,7 +5,7 @@
     $shareText = urlencode($post->title);
     $authorName = $post->user->name ?? $post->author_name ?? 'Huvanti Team';
     $authorBio = $post->user->bio ?? $post->author_bio ?? 'Editor at Huvanti';
-    $authorAvatar = $post->user->author_avatar_path ? asset('storage/'.$post->user->author_avatar_path) : ($post->author_avatar ?: 'https://i.pravatar.cc/100?img=15');
+    $authorAvatar = $post->user?->author_avatar_path ? asset('storage/'.$post->user->author_avatar_path) : ($post->author_avatar ?: 'https://i.pravatar.cc/100?img=15');
     $topComments = $post->approvedComments->whereNull('parent_id');
     // Author profile URL: clicking the author's name or photo (byline above
     // the content AND the author box below it) opens their public profile,
@@ -356,8 +356,16 @@
                 <div class="space-y-1">
                     {{-- Live categories only (active + has published posts), with
                          published-post counts. Avoids empty category links and
-                         the N+1 query the old ->posts->count() caused. --}}
-                    @foreach(\App\Models\Category::live()->withCount(['posts as published_posts_count' => fn ($q) => $q->published()])->orderBy('sort_order')->get() as $cat)
+                         the N+1 query the old ->posts->count() caused.
+                         Wrapped in try/catch: a DB hiccup must never 500 the
+                         whole article page just because a sidebar list failed. --}}
+                    @php
+                        $sidebarCategories = collect();
+                        try {
+                            $sidebarCategories = \App\Models\Category::live()->withCount(['posts as published_posts_count' => fn ($q) => $q->published()])->orderBy('sort_order')->get();
+                        } catch (\Throwable $e) { $sidebarCategories = collect(); }
+                    @endphp
+                    @foreach($sidebarCategories as $cat)
                         <a href="{{ route('category.show',$cat->slug) }}" class="flex items-center justify-between p-2 hover:bg-slate-50 dark:hover:bg-[#2a2a2a] transition group">
                             <span class="flex items-center gap-2.5 text-slate-700 dark:text-slate-300">
                                 <span class="w-8 h-8 bg-emerald-50 dark:bg-emerald-400/10 flex items-center justify-center text-[#0C3B2E] dark:text-emerald-300 shrink-0">
@@ -372,7 +380,14 @@
             </div>
             {{-- Sidebar ad: renders only when ads are switched on in admin
                  settings AND the ad actually has code. No empty boxes, ever. --}}
-            @php $ad = setting('ads_enabled') === '1' ? \App\Models\Advertisement::active()->position('sidebar')->first() : null; @endphp
+            @php
+                // Guarded exactly like the controller-side queries: an ad or DB
+                // problem collapses the slot invisibly instead of erroring.
+                $ad = null;
+                try {
+                    $ad = setting('ads_enabled') === '1' ? \App\Models\Advertisement::active()->position('sidebar')->first() : null;
+                } catch (\Throwable $e) { $ad = null; }
+            @endphp
             @if($ad && trim(strip_tags($ad->code ?? '')) !== '')
                 <div class="card-elev p-3 ad-slot-wrap"><div class="ad-slot-label text-xs font-semibold tracking-wide text-slate-400 dark:text-slate-500 uppercase text-center mb-2">Advertisement</div>{!! $ad->code !!}</div>
             @endif

@@ -23,7 +23,7 @@ class ProfileController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'bio' => 'nullable|string|max:1000',
-            'avatar' => 'nullable|image|max:4096',
+            'avatar' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp,bmp|max:4096',
             // Author profile fields
             'username' => [
                 'nullable', 'string', 'max:50', 'regex:/^[a-z0-9._-]+$/i',
@@ -63,11 +63,27 @@ class ProfileController extends Controller
             $user->is_verified = true;
         }
 
+        // Avatar upload: any processing failure must be a friendly message,
+        // never a 500 (Laravel's "image" rule also lets AVIF/HEIC through,
+        // which the GD-based optimiser cannot decode). The NEW file is stored
+        // first and the old one deleted after, so a failed upload never
+        // destroys the existing avatar.
         if ($request->hasFile('avatar')) {
-            if ($user->author_avatar_path) {
-                app(\App\Services\ImageService::class)->delete($user->author_avatar_path);
+            $newAvatar = null;
+            try {
+                $newAvatar = app(ImageService::class)->optimizeAndStore($request->file('avatar'), 'uploads/avatars');
+            } catch (\InvalidArgumentException $e) {
+                return back()->with('error', 'Avatar upload failed: '.$e->getMessage());
+            } catch (\Throwable $e) {
+                report($e);
+                return back()->with('error', 'Avatar upload failed (server storage problem). Your other changes were NOT saved — please try a smaller JPG/PNG image.');
             }
-            $user->author_avatar_path = app(ImageService::class)->optimizeAndStore($request->file('avatar'), 'uploads/avatars');
+            if ($newAvatar) {
+                if ($user->author_avatar_path) {
+                    app(\App\Services\ImageService::class)->delete($user->author_avatar_path);
+                }
+                $user->author_avatar_path = $newAvatar;
+            }
         }
 
         $user->save();

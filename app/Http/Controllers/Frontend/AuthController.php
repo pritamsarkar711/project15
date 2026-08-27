@@ -140,9 +140,19 @@ class AuthController extends Controller
     {
         $request->validate(['email' => ['required', 'email']]);
 
-        $status = Password::broker()->sendResetLink(
-            $request->only('email')
-        );
+        try {
+            $status = Password::broker()->sendResetLink(
+                $request->only('email')
+            );
+        } catch (\Throwable $e) {
+            // Mail transport failure (SMTP not configured / unreachable — the
+            // normal case on a fresh Hostinger install) must be a friendly
+            // message, never a 500 error page.
+            report($e);
+            return back()->withErrors([
+                'email' => 'The reset email could not be sent right now (mail server problem). Please try again in a few minutes.',
+            ])->onlyInput('email');
+        }
 
         return $status === Password::RESET_LINK_SENT
             ? back()->with('status', __($status))

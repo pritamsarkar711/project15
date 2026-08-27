@@ -78,18 +78,20 @@ class PostController extends Controller
         $request->validate($this->validationRules());
 
         $data = $request->except(['featured_image', 'featured_image_url', 'faqs', 'scheduled_at', '_token', '_method']);
-        $data['slug'] = $request->slug ? Str::slug($request->slug) : Str::slug($request->title);
-        $original = $data['slug'];
-        $i = 1;
-        while (Post::withTrashed()->where('slug', $data['slug'])->exists()) {
-            $data['slug'] = $original.'-'.$i++;
-        }
+        $data['slug'] = $this->generateUniqueSlug($request->slug ? Str::slug($request->slug) : Str::slug($request->title));
         $data['user_id'] = auth()->id();
         $data['is_featured'] = $request->boolean('is_featured');
         $data['allow_comments'] = $request->boolean('allow_comments');
 
         if ($request->hasFile('featured_image')) {
-            $data['featured_image'] = app(ImageService::class)->optimizeAndStore($request->file('featured_image'), 'uploads/posts');
+            try {
+                $data['featured_image'] = app(ImageService::class)->optimizeAndStore($request->file('featured_image'), 'uploads/posts');
+            } catch (\InvalidArgumentException $e) {
+                return back()->withErrors(['featured_image' => $e->getMessage()])->withInput();
+            } catch (\Throwable $e) {
+                report($e);
+                return back()->withErrors(['featured_image' => 'The featured image could not be uploaded (server storage problem). The post was NOT saved — please try a smaller JPG/PNG image or try again later.'])->withInput();
+            }
         } elseif ($request->filled('featured_image_url')) {
             $data['featured_image'] = $request->featured_image_url;
         }
@@ -103,6 +105,14 @@ class PostController extends Controller
         }
         $data['content'] = \App\Services\HtmlSanitizer::clean($data['content']);
         $data['reading_time'] = max(1, ceil(str_word_count(strip_tags($data['content'])) / 200));
+        // Hard-cap lengths to what the database columns can store — prevents
+        // "Data too long for column" 500 errors regardless of strict mode.
+        $data['title'] = mb_substr((string) $data['title'], 0, 255);
+        $data['slug'] = mb_substr((string) $data['slug'], 0, 255);
+        $data['excerpt'] = isset($data['excerpt']) ? mb_substr((string) $data['excerpt'], 0, 500) : null;
+        $data['meta_title'] = isset($data['meta_title']) ? mb_substr((string) $data['meta_title'], 0, 255) : null;
+        $data['meta_description'] = isset($data['meta_description']) ? mb_substr((string) $data['meta_description'], 0, 500) : null;
+        $data['meta_keywords'] = isset($data['meta_keywords']) ? mb_substr((string) $data['meta_keywords'], 0, 255) : null;
 
         $post = Post::create($data);
         $this->syncFaqs($request, $post);
@@ -127,14 +137,27 @@ class PostController extends Controller
         $request->validate($this->validationRules($post));
 
         $data = $request->except(['featured_image', 'featured_image_url', 'faqs', 'scheduled_at', '_token', '_method']);
-        $data['slug'] = $request->slug ? Str::slug($request->slug) : Str::slug($request->title);
+        $data['slug'] = $this->generateUniqueSlug($request->slug ? Str::slug($request->slug) : Str::slug($request->title), $post->id);
         $data['is_featured'] = $request->boolean('is_featured');
         $data['allow_comments'] = $request->boolean('allow_comments');
         if ($request->hasFile('featured_image')) {
-            if ($post->featured_image && !str_starts_with($post->featured_image, 'http')) {
-                app(\App\Services\ImageService::class)->delete($post->featured_image);
+            // Store the NEW image first, delete the old one after — a failed
+            // upload then can never leave the post without its picture.
+            $newImage = null;
+            try {
+                $newImage = app(ImageService::class)->optimizeAndStore($request->file('featured_image'), 'uploads/posts');
+            } catch (\InvalidArgumentException $e) {
+                return back()->withErrors(['featured_image' => $e->getMessage()])->withInput();
+            } catch (\Throwable $e) {
+                report($e);
+                return back()->withErrors(['featured_image' => 'The featured image could not be uploaded (server storage problem). Your other changes were NOT saved — please try a smaller JPG/PNG image or try again later.'])->withInput();
             }
-            $data['featured_image'] = app(ImageService::class)->optimizeAndStore($request->file('featured_image'), 'uploads/posts');
+            if ($newImage) {
+                if ($post->featured_image && !str_starts_with($post->featured_image, 'http')) {
+                    app(\App\Services\ImageService::class)->delete($post->featured_image);
+                }
+                $data['featured_image'] = $newImage;
+            }
         } elseif ($request->filled('featured_image_url')) {
             $data['featured_image'] = $request->featured_image_url;
         }
@@ -147,10 +170,37 @@ class PostController extends Controller
             $data['published_at'] = $isFuture ? $post->published_at : ($post->published_at ?: now());
         }
 
+        $data['title'] = mb_substr((string) $data['title'], 0, 255);
+        $data['slug'] = mb_substr((string) $data['slug'], 0, 255);
+        $data['excerpt'] = isset($data['excerpt']) ? mb_substr((string) $data['excerpt'], 0, 500) : null;
+        $data['meta_title'] = isset($data['meta_title']) ? mb_substr((string) $data['meta_title'], 0, 255) : null;
+        $data['meta_description'] = isset($data['meta_description']) ? mb_substr((string) $data['meta_description'], 0, 500) : null;
+        $data['meta_keywords'] = isset($data['meta_keywords']) ? mb_substr((string) $data['meta_keywords'], 0, 255) : null;
+
         $post->update($data);
         $this->syncFaqs($request, $post);
 
         return redirect()->route('admin.posts.index')->with('success', 'Post updated');
+    }
+
+    /**
+     * Build a unique URL slug. Falls back to a random slug when the title is
+     * non-Latin (Str::slug() returns '' for Arabic/Bengali/Chinese titles),
+     * which previously crashed the second such save with a unique-constraint
+     * 500. $ignoreId lets the current post keep its own slug on update.
+     */
+    protected function generateUniqueSlug(string $base, ?int $ignoreId = null): string
+    {
+        if ($base === '') {
+            $base = 'post-'.strtolower(Str::random(8));
+        }
+        $base = mb_substr($base, 0, 240);
+        $slug = $base;
+        $i = 1;
+        while (Post::withTrashed()->where('slug', $slug)->when($ignoreId, fn ($q) => $q->where('id', '!=', $ignoreId))->exists()) {
+            $slug = $base.'-'.$i++;
+        }
+        return $slug;
     }
 
     protected function syncFaqs(Request $request, Post $post): void
@@ -159,7 +209,11 @@ class PostController extends Controller
         if ($request->filled('faqs')) {
             foreach ($request->faqs as $idx => $faq) {
                 if (!empty($faq['question']) && !empty($faq['answer'])) {
-                    $post->faqs()->create(['question' => $faq['question'], 'answer' => $faq['answer'], 'sort_order' => $idx]);
+                    $post->faqs()->create([
+                        'question' => mb_substr((string) $faq['question'], 0, 500),
+                        'answer'   => mb_substr((string) $faq['answer'], 0, 2000),
+                        'sort_order' => $idx,
+                    ]);
                 }
             }
         }

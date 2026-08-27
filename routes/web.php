@@ -181,8 +181,9 @@ Route::prefix('manage')->name('admin.')->group(function(){
         Route::delete('categories/{category}', [CategoryController::class,'destroy'])->name('categories.destroy');
         Route::post('categories/reorder', [CategoryController::class,'reorder'])->name('categories.reorder');
 
-        // Pages
-        Route::resource('pages', AdminPageController::class);
+        // Pages (no public "show" page inside the admin panel — the controller
+        // has no show() method, so registering it would 500 on /manage/pages/{id})
+        Route::resource('pages', AdminPageController::class)->except(['show']);
 
         // Ads
         Route::get('advertisements', [AdvertisementController::class,'index'])->name('ads.index');

@@ -157,13 +157,39 @@ class AuthorDashboardController extends Controller
         $post->review_status = $data['action'] === 'submit' ? 'pending_review' : 'draft';
         $post->submitted_at = $data['action'] === 'submit' ? now() : null;
 
+        // Featured image: any processing failure (unsupported type that slipped
+        // past validation — e.g. SVG —, GD memory limit on shared hosting,
+        // unwritable storage folder) must surface as a friendly validation
+        // error, NEVER as a bare 500 page.
         if ($request->hasFile('featured_image')) {
-            $post->featured_image = app(ImageService::class)
-                ->optimizeAndStore($request->file('featured_image'), 'uploads/posts');
+            try {
+                $post->featured_image = app(ImageService::class)
+                    ->optimizeAndStore($request->file('featured_image'), 'uploads/posts');
+            } catch (\InvalidArgumentException $e) {
+                return back()->withErrors(['featured_image' => $e->getMessage()])->withInput();
+            } catch (\Throwable $e) {
+                report($e);
+                return back()->withErrors([
+                    'featured_image' => 'The featured image could not be uploaded (server storage problem). The post was NOT saved — please try a smaller JPG/PNG image or try again later.',
+                ])->withInput();
+            }
         }
 
         $post->save();
-        $this->syncFaqs($request, $post);
+
+        // FAQ sync runs AFTER the post row exists, so any failure here used to
+        // produce the exact "500 shown but post was created" symptom. It is
+        // now fully guarded: the post is kept and the author sees a clear
+        // message instead of an error page.
+        try {
+            $this->syncFaqs($request, $post);
+        } catch (\Throwable $e) {
+            report($e);
+            $msg = $data['action'] === 'submit'
+                ? 'Your post was saved, but the FAQ section could not be stored because of a server problem. Please open the post, re-check the FAQs and submit again.'
+                : 'Your post was saved, but the FAQ section could not be stored because of a server problem. Please open the post and re-check the FAQs.';
+            return redirect()->route('author.posts.edit', $post->id)->with('error', $msg);
+        }
 
         if ($data['action'] === 'submit') {
             $this->notifyAdminsOfSubmission($post);
@@ -226,6 +252,17 @@ class AuthorDashboardController extends Controller
         }
         $data['content'] = HtmlSanitizer::clean($data['content']);
 
+        // FAQ requirement: at least one COMPLETE question + answer pair.
+        // Checked BEFORE anything is mutated or saved so a failed validation
+        // can never leave a half-updated post behind.
+        $hasCompleteFaq = collect($request->input('faqs', []))
+            ->contains(fn ($f) => !empty($f['question']) && !empty($f['answer']));
+        if (! $hasCompleteFaq) {
+            return back()->withErrors([
+                'faqs' => 'Add at least one FAQ with both a question and an answer.',
+            ])->withInput();
+        }
+
         // If the post was returned by admin, the author must re-submit.
         // Resetting review_status to pending_review clears the reviewer note.
         if ($data['action'] === 'submit') {
@@ -254,25 +291,39 @@ class AuthorDashboardController extends Controller
         $post->is_affiliate = $request->boolean('is_affiliate');
         $post->reading_time = max(1, ceil($wordCount / 200));
 
+        // Featured image: same friendly failure handling as in postsStore().
+        // The NEW image is stored first and only then is the old one deleted,
+        // so a failed upload can never leave the post without its picture.
         if ($request->hasFile('featured_image')) {
-            if ($post->featured_image && !str_starts_with($post->featured_image, 'http')) {
-                app(\App\Services\ImageService::class)->delete($post->featured_image);
+            $newImage = null;
+            try {
+                $newImage = app(ImageService::class)
+                    ->optimizeAndStore($request->file('featured_image'), 'uploads/posts');
+            } catch (\InvalidArgumentException $e) {
+                return back()->withErrors(['featured_image' => $e->getMessage()])->withInput();
+            } catch (\Throwable $e) {
+                report($e);
+                return back()->withErrors([
+                    'featured_image' => 'The featured image could not be uploaded (server storage problem). Your other changes were NOT saved — please try a smaller JPG/PNG image or try again later.',
+                ])->withInput();
             }
-            $post->featured_image = app(ImageService::class)
-                ->optimizeAndStore($request->file('featured_image'), 'uploads/posts');
+            if ($newImage) {
+                if ($post->featured_image && !str_starts_with($post->featured_image, 'http')) {
+                    app(\App\Services\ImageService::class)->delete($post->featured_image);
+                }
+                $post->featured_image = $newImage;
+            }
         }
 
         $post->save();
 
-        // FAQ requirement: at least one COMPLETE question + answer pair.
-        $hasCompleteFaq = collect($request->input('faqs', []))
-            ->contains(fn ($f) => !empty($f['question']) && !empty($f['answer']));
-        if (! $hasCompleteFaq) {
-            return back()->withErrors([
-                'faqs' => 'Add at least one FAQ with both a question and an answer.',
-            ])->withInput();
+        try {
+            $this->syncFaqs($request, $post);
+        } catch (\Throwable $e) {
+            report($e);
+            return redirect()->route('author.posts.edit', $post->id)
+                ->with('error', 'Your changes were saved, but the FAQ section could not be updated because of a server problem. Please re-check the FAQs and save again.');
         }
-        $this->syncFaqs($request, $post);
 
         if ($data['action'] === 'submit') {
             $this->notifyAdminsOfSubmission($post);
@@ -350,7 +401,7 @@ class AuthorDashboardController extends Controller
         $rules = [
             'name'             => ['required', 'string', 'max:60', 'regex:/^[\p{L}\p{M}\s.\-]+$/u'],
             'bio'              => ['required', 'string', 'min:30', 'max:600'],
-            'avatar'           => ['nullable', 'image', 'max:4096'],
+            'avatar'           => ['nullable', 'image', 'mimes:jpg,jpeg,png,gif,webp,bmp', 'max:4096'],
             'role_title'       => ['nullable', 'string', 'max:60'],
             'portfolio_url'    => ['nullable', 'url', 'max:255'],
             'social_links'     => ['nullable', 'array'],
@@ -551,6 +602,15 @@ class AuthorDashboardController extends Controller
     private function generateUniqueSlug(string $title): string
     {
         $base = Str::slug($title);
+
+        // Non-Latin titles (Arabic, Chinese, Bengali...) produce an EMPTY slug
+        // from Str::slug(). Two such posts would collide on the unique slug
+        // index with a database error (HTTP 500). Fall back to a random,
+        // URL-safe slug instead so publishing never crashes.
+        if ($base === '') {
+            $base = 'post-'.strtolower(Str::random(8));
+        }
+
         $slug = $base;
         $i = 1;
         while (Post::withTrashed()->where('slug', $slug)->exists()) {
@@ -559,6 +619,12 @@ class AuthorDashboardController extends Controller
         return $slug;
     }
 
+    /**
+     * Re-sync the FAQs of a post. Field lengths are hard-capped here (same
+     * limits as validation) so a database "data too long" error can never
+     * happen, even if validation rules change in the future. All lengths are
+     * counted multibyte-safe with mb_substr (Bengali/Arabic/emoji safe).
+     */
     private function syncFaqs(Request $request, Post $post): void
     {
         $post->faqs()->delete();
@@ -566,8 +632,8 @@ class AuthorDashboardController extends Controller
             foreach ($request->faqs as $idx => $faq) {
                 if (!empty($faq['question']) && !empty($faq['answer'])) {
                     $post->faqs()->create([
-                        'question' => $faq['question'],
-                        'answer'   => $faq['answer'],
+                        'question' => mb_substr((string) $faq['question'], 0, 500),
+                        'answer'   => mb_substr((string) $faq['answer'], 0, 2000),
                         'sort_order' => $idx,
                     ]);
                 }

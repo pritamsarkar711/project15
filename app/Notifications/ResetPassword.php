@@ -39,12 +39,39 @@ class ResetPassword extends BaseResetPassword
     /**
      * Get the reset URL for the given notifiable.
      * Uses route('password.reset') which is /reset-password/{token}.
+     *
+     * IMPORTANT: emails are read OUTSIDE the site, so the link must be fully
+     * absolute (https://huvanti.com/reset-password/...). The app runs a
+     * root-relative UrlGenerator by default (see RelativeAssetUrlGenerator),
+     * which would emit "/reset-password/..." — a link that is dead in every
+     * mail client. We therefore prepend the site origin explicitly, with a
+     * sane fallback chain: request host -> configured APP_URL.
      */
     protected function resetUrl($notifiable): string
     {
-        return url(route('password.reset', [
+        $path = route('password.reset', [
             'token' => $this->token,
             'email' => $notifiable->getEmailForPasswordReset(),
-        ], false));
+        ], false);
+
+        // Already absolute (in case the relative generator is removed later).
+        if (preg_match('~^https?://~i', $path)) {
+            return $path;
+        }
+
+        $base = '';
+        try {
+            $base = rtrim(request()->getSchemeAndHttpHost(), '/');
+        } catch (\Throwable $e) {
+            $base = '';
+        }
+        if ($base === '' || str_contains($base, 'localhost')) {
+            $configured = rtrim((string) config('app.url', ''), '/');
+            if ($configured !== '' && !str_contains($configured, 'localhost')) {
+                $base = $configured;
+            }
+        }
+
+        return $base . $path;
     }
 }

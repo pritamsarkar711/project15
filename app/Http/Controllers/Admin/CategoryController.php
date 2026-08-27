@@ -37,7 +37,7 @@ class CategoryController extends Controller
     {
         $request->validate($this->validationRules());
         $data = $request->only(['name', 'description', 'icon', 'sort_order']);
-        $data['slug'] = $request->slug ? Str::slug($request->slug) : Str::slug($request->name);
+        $data['slug'] = $this->uniqueCategorySlug($request->slug ? Str::slug($request->slug) : Str::slug($request->name));
         $data['icon'] = $data['icon'] ?? 'newspaper';
         $data['is_active'] = $request->boolean('is_active', true);
         if (empty($data['sort_order'])) $data['sort_order'] = Category::max('sort_order') + 1;
@@ -54,11 +54,43 @@ class CategoryController extends Controller
     {
         $request->validate($this->validationRules($category));
         $data = $request->only(['name', 'description', 'icon', 'sort_order']);
-        $data['slug'] = $request->slug ? Str::slug($request->slug) : Str::slug($request->name);
+        $data['slug'] = $this->uniqueCategorySlug(
+            $request->slug ? Str::slug($request->slug) : Str::slug($request->name),
+            $category->id
+        );
         $data['is_active'] = $request->boolean('is_active');
         if (empty($data['icon'])) $data['icon'] = 'newspaper';
+        // sort_order is NOT NULL in the database: an emptied field would
+        // otherwise crash the UPDATE under MySQL strict mode ("Column
+        // 'sort_order' cannot be null"). Keep the previous value instead.
+        if (!isset($data['sort_order']) || $data['sort_order'] === '') {
+            $data['sort_order'] = $category->sort_order ?? 0;
+        }
         $category->update($data);
         return redirect()->route('admin.categories.index')->with('success', 'Category updated');
+    }
+
+    /**
+     * Generate a guaranteed-unique category slug.
+     *
+     * The old code validated uniqueness against the RAW input but stored a
+     * Str::slug()'d version — so "Tech News" passed validation yet collided
+     * with an existing "tech-news" row, throwing a duplicate-key 500. Slugs
+     * are now made unique AFTER slugification, with a -2/-3… suffix, and an
+     * empty result (non-Latin names) falls back to a random slug.
+     */
+    protected function uniqueCategorySlug(string $base, ?int $ignoreId = null): string
+    {
+        if ($base === '') {
+            $base = 'category-'.strtolower(Str::random(6));
+        }
+        $base = mb_substr($base, 0, 110);
+        $slug = $base;
+        $i = 2;
+        while (Category::where('slug', $slug)->when($ignoreId, fn ($q) => $q->where('id', '!=', $ignoreId))->exists()) {
+            $slug = $base.'-'.$i++;
+        }
+        return $slug;
     }
 
     public function destroy(Category $category)

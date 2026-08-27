@@ -6,12 +6,14 @@
  * rebuild step and no CDN dependency.
  *
  * Features (TinyMCE/CKEditor-style toolbar):
- *   undo/redo | format block (P/H1-H4/quote/pre) | font family | font size |
+ *   undo/redo | icon paragraph/heading dropdown (P/H1-H4/quote/code) |
+ *   font family | icon text-size dropdown (visual A-scale) |
  *   bold/italic/underline/strikethrough/code | text color / highlight |
  *   sup/sub | lists (bullet, numbered) | indent/outdent | align L/C/R/J |
- *   link | image upload+paste+drag (base64) | table grid | hr |
+ *   link | image upload+paste+drag (base64, ≤1.5MB guard) | table grid | hr |
  *   special chars | emoji picker | find and replace | code block |
- *   line height | clear formatting | source view | fullscreen | word count |
+ *   line height | clear formatting | source view | TRUE fullscreen
+ *   (editor moves to <body> so no ancestor can clip it) | word count |
  *   keyboard shortcuts | autosave to localStorage
  *
  * Usage:
@@ -27,6 +29,9 @@
     var SVG = {
         undo: '<path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/>',
         redo: '<path d="M21 7v6h-6"/><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3L21 13"/>',
+        pilcrow: '<path d="M13 4v16"/><path d="M17 4v16"/><path d="M19 4H9.5a4.5 4.5 0 0 0 0 9H13"/>',
+        quote: '<path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"/>',
+        type: '<polyline points="4 7 4 4 20 4 20 7"/><line x1="9" x2="15" y1="20" y2="20"/><line x1="12" x2="12" y1="4" y2="20"/>',
         bold: '<path d="M6 12h9a4 4 0 0 1 0 8H7a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h7a4 4 0 0 1 0 8"/>',
         italic: '<line x1="19" x2="10" y1="4" y2="4"/><line x1="14" x2="5" y1="20" y2="20"/><line x1="15" x2="9" y1="4" y2="20"/>',
         underline: '<path d="M6 4v6a6 6 0 0 0 12 0V4"/><line x1="4" x2="20" y1="20" y2="20"/>',
@@ -135,8 +140,24 @@
         '.huv-rte.src .huv-rte-content{display:none;}',
         '.huv-rte.src .huv-rte-src{display:block;}',
         '.huv-rte-src{display:none;width:100%;box-sizing:border-box;min-height:320px;max-height:65vh;padding:16px;border:0;resize:vertical;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;line-height:1.6;background:#0f172a;color:#e2e8f0;outline:none;}',
-        '.huv-rte.full{position:fixed;inset:0;z-index:9999;border:0;border-radius:0;}',
-        '.huv-rte.full .huv-rte-content,.huv-rte.full .huv-rte-src{max-height:none;height:calc(100vh - 110px);}',
+        '.huv-rte.full{position:fixed;inset:0;z-index:9999;width:100vw;height:100vh;border:0;border-radius:0;margin:0;box-shadow:none;}',
+        '.huv-rte.full .huv-rte-content,.huv-rte.full .huv-rte-src{max-height:none;height:calc(100vh - 110px);width:100%;}',
+        'body.huv-rte-lock{overflow:hidden !important;}',
+        '.huv-rte-dd{position:relative;display:inline-flex;align-items:center;}',
+        '.huv-rte-dd-btn{gap:1px;padding:0 4px;}',
+        '.huv-rte-dd-btn .huv-rte-chev{width:12px;height:12px;opacity:.55;pointer-events:none;}',
+        '.huv-rte-dd-list{position:absolute;top:calc(100% + 6px);left:0;background:#fff;border:1px solid #cbd5e1;border-radius:8px;box-shadow:0 10px 30px rgba(0,0,0,.18);padding:6px;z-index:70;min-width:190px;max-height:70vh;overflow-y:auto;}',
+        '.dark .huv-rte-dd-list{background:#1e293b;border-color:#475569;}',
+        '.huv-rte-dd-item{display:flex;align-items:center;gap:10px;width:100%;padding:7px 9px;border:0;background:transparent;border-radius:6px;cursor:pointer;font:inherit;font-size:13px;color:#334155;text-align:left;}',
+        '.dark .huv-rte-dd-item{color:#e2e8f0;}',
+        '.huv-rte-dd-item:hover{background:#d1fae5;color:#065f46;}',
+        '.dark .huv-rte-dd-item:hover{background:#064e3b;color:#a7f3d0;}',
+        '.huv-rte-dd-ico{width:30px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;color:#334155;}',
+        '.dark .huv-rte-dd-ico{color:#cbd5e1;}',
+        '.huv-rte-dd-item:hover .huv-rte-dd-ico{color:#065f46;}',
+        '.dark .huv-rte-dd-item:hover .huv-rte-dd-ico{color:#a7f3d0;}',
+        '.huv-rte-dd-ico svg{width:16px;height:16px;}',
+        '.huv-rte-glyph{font-weight:800;line-height:1;display:inline-block;font-family:inherit;}',
         '.huv-rte.dragover{outline:2px dashed #10b981;outline-offset:-2px;}'
     ].join('\n');
 
@@ -153,6 +174,8 @@
 
     function closeAllPops(root) {
         root.querySelectorAll('.huv-rte-pop').forEach(function (p) { p.remove(); });
+        root.querySelectorAll('.huv-rte-dd-list').forEach(function (l) { l.remove(); });
+        root.querySelectorAll('.huv-rte-dd-btn.active').forEach(function (b) { b.classList.remove('active'); });
     }
 
     function pop(anchor, root, html, onOpen) {
@@ -327,14 +350,64 @@
             toolbar.appendChild(s);
             return s;
         }
+        /**
+         * Icon-driven dropdown button (professional editor UI): a compact
+         * toolbar button that opens a styled list of icon + label rows.
+         * Replaces the plain text <select> controls for paragraph/heading
+         * and font size, which looked poor with labels like "¶ P" or "S/N/M".
+         */
+        function dropdown(name, title, triggerIcon, items, handler) {
+            var dd = document.createElement('span');
+            dd.className = 'huv-rte-dd';
+            dd.setAttribute('data-cmd', name);
+            var b = document.createElement('button');
+            b.type = 'button';
+            b.className = 'huv-rte-btn huv-rte-dd-btn';
+            b.title = title;
+            b.setAttribute('aria-label', title);
+            b.setAttribute('aria-haspopup', 'true');
+            b.innerHTML = icon(triggerIcon) + '<svg class="huv-rte-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>';
+            b.addEventListener('mousedown', function (e) { e.preventDefault(); });
+            b.addEventListener('click', function () {
+                var existing = dd.querySelector('.huv-rte-dd-list');
+                if (existing) { existing.remove(); b.classList.remove('active'); return; }
+                closeAllPops(wrap);
+                var list = document.createElement('div');
+                list.className = 'huv-rte-dd-list';
+                list.setAttribute('role', 'menu');
+                items.forEach(function (it) {
+                    var row = document.createElement('button');
+                    row.type = 'button';
+                    row.className = 'huv-rte-dd-item';
+                    row.setAttribute('role', 'menuitem');
+                    row.innerHTML = '<span class="huv-rte-dd-ico">' + it.icon + '</span><span>' + it.label + '</span>';
+                    row.addEventListener('click', function () {
+                        list.remove();
+                        b.classList.remove('active');
+                        handler(it.v);
+                    });
+                    list.appendChild(row);
+                });
+                dd.appendChild(list);
+                b.classList.add('active');
+            });
+            dd.appendChild(b);
+            toolbar.appendChild(dd);
+            return dd;
+        }
 
         btn('undo', 'undo', 'Undo (Ctrl+Z)', function () { cmd('undo'); });
         btn('redo', 'redo', 'Redo (Ctrl+Y)', function () { cmd('redo'); });
         sep();
-        select('block', 'Format block', [
-            { label: '¶ P', v: 'p' }, { label: 'H1', v: 'h1' }, { label: 'H2', v: 'h2' },
-            { label: 'H3', v: 'h3' }, { label: 'H4', v: 'h4' },
-            { label: '❝ Quote', v: 'blockquote' }, { label: '</> Code', v: 'pre' }
+        // Paragraph / heading dropdown — icon driven, Google-Docs style rows
+        dropdown('block', 'Paragraph & headings', 'pilcrow', [
+            { v: 'p',          icon: icon('pilcrow'), label: 'Paragraph' },
+            { v: 'h1',         icon: '<span class="huv-rte-glyph" style="font-size:15px">H1</span>', label: 'Heading 1' },
+            { v: 'h2',         icon: '<span class="huv-rte-glyph" style="font-size:13px">H2</span>', label: 'Heading 2' },
+            { v: 'h3',         icon: '<span class="huv-rte-glyph" style="font-size:12px">H3</span>', label: 'Heading 3' },
+            { v: 'h4',         icon: '<span class="huv-rte-glyph" style="font-size:11px">H4</span>', label: 'Heading 4' },
+            { v: 'blockquote', icon: icon('quote'), label: 'Quote' },
+            { v: 'pre',        icon: icon('code'), label: 'Code block' }
         ], function (v) {
             content.focus();
             document.execCommand('formatBlock', false, v === 'pre' ? 'pre' : v);
@@ -344,7 +417,15 @@
             if (v === 'Default') { cmd('removeFormat'); return; }
             cmd('fontName', v);
         });
-        select('size', 'Size', SIZES, function (v) { cmd('fontSize', v); });
+        // Font size dropdown — visual "A" scale instead of cryptic S/N/M/L letters
+        dropdown('size', 'Text size', 'type', [
+            { v: '2', icon: '<span class="huv-rte-glyph" style="font-size:11px">A</span>', label: 'Small' },
+            { v: '3', icon: '<span class="huv-rte-glyph" style="font-size:14px">A</span>', label: 'Normal' },
+            { v: '4', icon: '<span class="huv-rte-glyph" style="font-size:17px">A</span>', label: 'Medium' },
+            { v: '5', icon: '<span class="huv-rte-glyph" style="font-size:21px">A</span>', label: 'Large' },
+            { v: '6', icon: '<span class="huv-rte-glyph" style="font-size:25px">A</span>', label: 'Huge' },
+            { v: '7', icon: '<span class="huv-rte-glyph" style="font-size:29px">A</span>', label: 'Extra large' }
+        ], function (v) { cmd('fontSize', v); });
         sep();
         btn('bold', 'bold', 'Bold (Ctrl+B)', function () { cmd('bold'); });
         btn('italic', 'italic', 'Italic (Ctrl+I)', function () { cmd('italic'); });
@@ -622,12 +703,39 @@
             this.classList.toggle('active', isSrc);
             sync();
         });
-        btn('full', 'expand', 'Fullscreen', function () {
-            var on = wrap.classList.toggle('full');
-            this.innerHTML = icon(on ? 'shrink' : 'expand');
-            this.classList.toggle('active', on);
-            document.body.style.overflow = on ? 'hidden' : '';
-        });
+        // Fullscreen: the editor element is MOVED to document.body while the
+        // overlay is open and put back to its exact original position on
+        // close. This defeats every ancestor that can break position:fixed
+        // (transforms, backdrop-filter, overflow clipping, narrow grid
+        // columns), so fullscreen now ALWAYS spans the real viewport edge to
+        // edge — fixing the "fullscreen is not really fullscreen" bug.
+        var fsPlaceholder = null;
+        function toggleFullscreen() {
+            var on = !wrap.classList.contains('full');
+            var fullBtn = toolbar.querySelector('[data-cmd="full"]');
+            if (on) {
+                fsPlaceholder = document.createComment('huv-rte-fullscreen-anchor');
+                if (wrap.parentNode) wrap.parentNode.insertBefore(fsPlaceholder, wrap);
+                document.body.appendChild(wrap);
+                document.body.classList.add('huv-rte-lock');
+                wrap.classList.add('full');
+            } else {
+                wrap.classList.remove('full');
+                document.body.classList.remove('huv-rte-lock');
+                if (fsPlaceholder && fsPlaceholder.parentNode) {
+                    fsPlaceholder.parentNode.insertBefore(wrap, fsPlaceholder);
+                    fsPlaceholder.parentNode.removeChild(fsPlaceholder);
+                }
+                fsPlaceholder = null;
+            }
+            if (fullBtn) {
+                fullBtn.innerHTML = icon(on ? 'shrink' : 'expand');
+                fullBtn.classList.toggle('active', on);
+            }
+            closeAllPops(wrap);
+            content.focus();
+        }
+        btn('full', 'expand', 'Fullscreen', function () { toggleFullscreen(); });
 
         status.innerHTML = '<span class="huv-rte-wc"></span><span>Huvanti Editor · <a href="#" data-role="help" style="color:inherit;text-decoration:underline">Shortcuts</a></span>';
         status.querySelector('[data-role="help"]').addEventListener('click', function (e) {
@@ -662,7 +770,11 @@
                 e.preventDefault();
                 cmd(e.shiftKey ? 'outdent' : 'indent');
             }
-            if (e.key === 'Escape') closeAllPops(wrap);
+            if (e.key === 'Escape') {
+                // Escape also leaves fullscreen — standard editor behaviour.
+                if (wrap.classList.contains('full')) toggleFullscreen();
+                closeAllPops(wrap);
+            }
         });
 
         // Paste: sanitize dangerous markup, keep formatting.
@@ -709,7 +821,7 @@
             if (!wrap.contains(e.target)) closeAllPops(wrap);
         });
         toolbar.addEventListener('mousedown', function (e) {
-            if (!e.target.closest('.huv-rte-pop') && !e.target.closest('.huv-rte-select')) {
+            if (!e.target.closest('.huv-rte-pop') && !e.target.closest('.huv-rte-select') && !e.target.closest('.huv-rte-dd')) {
                 var p = toolbar.querySelector('.huv-rte-pop');
                 if (p && !p.contains(e.target)) closeAllPops(wrap);
             }
@@ -748,6 +860,17 @@
     HuvantiEditor.prototype.insertImageFile = function (file) {
         var self = this;
         if (!file || file.type.indexOf('image') !== 0) return;
+        // Size guard: images placed in the text are embedded as base64 data
+        // URLs inside the post body. A multi-megabyte phone photo would
+        // silently bloat the form POST beyond the server's post_max_size and
+        // end as a 419/500 error when the author clicks save. Embedded images
+        // must stay lean; large photos belong in "Featured Image" (up to
+        // 4 MB, auto-optimised server side).
+        var MAX_EMBED_BYTES = 1.5 * 1024 * 1024;
+        if (file.size > MAX_EMBED_BYTES) {
+            window.alert('This image is ' + Math.round(file.size / 1024 / 1024 * 10) / 10 + ' MB. Images placed inside the text must be under 1.5 MB. Please resize it first, or use the "Featured Image" uploader which handles up to 4 MB.');
+            return;
+        }
         var reader = new FileReader();
         reader.onload = function () {
             self.content.focus();

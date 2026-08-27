@@ -9,6 +9,32 @@ use App\Models\Post;
 
 class SeoController extends Controller
 {
+    /**
+     * Absolute base URL (scheme + host) for SEO output.
+     *
+     * Sitemaps, robots.txt Sitemap directives and llms.txt links MUST be
+     * absolute URLs per the specs — but this app intentionally runs a
+     * root-relative UrlGenerator (see RelativeAssetUrlGenerator), which turns
+     * url() into "/path" strings. Those are invalid in sitemaps and dead in
+     * crawlers' eyes. We therefore build absolute URLs from the request's
+     * own host, which is always correct for whoever is asking.
+     */
+    protected function absoluteBase(): string
+    {
+        try {
+            $base = rtrim(request()->getSchemeAndHttpHost(), '/');
+        } catch (\Throwable $e) {
+            $base = '';
+        }
+        if ($base === '' || str_contains($base, 'localhost')) {
+            $configured = rtrim((string) config('app.url', ''), '/');
+            if ($configured !== '' && !str_contains($configured, 'localhost')) {
+                $base = $configured;
+            }
+        }
+        return $base !== '' ? $base : rtrim(url('/'), '/');
+    }
+
     /** GET /robots.txt — content managed in admin Settings > Integrations. */
     public function robots()
     {
@@ -24,7 +50,7 @@ class SeoController extends Controller
                 ."Disallow: /deploy.php\n"
                 ."Disallow: /install.php\n"
                 ."Disallow: /doctor.php\n\n"
-                ."Sitemap: ".url('/sitemap.xml');
+                ."Sitemap: ".$this->absoluteBase()."/sitemap.xml";
         }
         return response($content, 200)->header('Content-Type', 'text/plain; charset=UTF-8');
     }
@@ -42,6 +68,7 @@ class SeoController extends Controller
         $name = site_name();
         $tagline = (string) setting('site_tagline', '');
         $description = (string) setting('site_description', '');
+        $base = $this->absoluteBase();
 
         $custom = trim((string) setting('llms_txt_content', ''));
         $md = "# {$name}\n\n";
@@ -50,16 +77,22 @@ class SeoController extends Controller
         if ($custom) $md .= $custom."\n\n";
 
         $md .= "## Articles\n\n";
-        $posts = Post::published()->with('category')->latest('published_at')->limit(100)->get();
-        foreach ($posts as $post) {
-            $md .= '- ['.strip_tags($post->title).']('.url('/blog/'.$post->slug).')';
-            if ($post->excerpt) $md .= ': '.trim(strip_tags($post->excerpt));
-            $md .= "\n";
-        }
+        // Guarded: a DB hiccup must degrade to a minimal file, not a 500.
+        try {
+            $posts = Post::published()->with('category')->latest('published_at')->limit(100)->get();
+            foreach ($posts as $post) {
+                $md .= '- ['.strip_tags($post->title).']('.$base.'/blog/'.$post->slug.')';
+                if ($post->excerpt) $md .= ': '.trim(strip_tags($post->excerpt));
+                $md .= "\n";
+            }
 
-        $md .= "\n## Pages\n\n";
-        foreach (Page::where('status', 'published')->get() as $page) {
-            $md .= '- ['.strip_tags($page->title).']('.url('/page/'.$page->slug).")\n";
+            $md .= "\n## Pages\n\n";
+            foreach (Page::where('status', 'published')->get() as $page) {
+                $md .= '- ['.strip_tags($page->title).']('.$base.'/page/'.$page->slug.")\n";
+            }
+        } catch (\Throwable $e) {
+            report($e);
+            $md .= '- [Home]('.$base.")\n";
         }
 
         return response($md, 200)->header('Content-Type', 'text/plain; charset=UTF-8');
@@ -68,21 +101,29 @@ class SeoController extends Controller
     /** GET /sitemap.xml — posts, pages, categories + home. */
     public function sitemap()
     {
-        $entries = collect([
-            ['loc' => url('/'), 'lastmod' => optional(Post::published()->latest('updated_at')->first())->updated_at],
-            ['loc' => url('/blog'), 'lastmod' => optional(Post::published()->latest('updated_at')->first())->updated_at],
-        ]);
+        $base = $this->absoluteBase();
 
-        foreach (Post::published()->latest()->get() as $post) {
-            $entries[] = ['loc' => url('/blog/'.$post->slug), 'lastmod' => $post->updated_at];
-        }
-        // Only live categories (active + has published posts) belong in the
-        // sitemap — empty category pages return "no posts" to crawlers.
-        foreach (Category::live()->get() as $category) {
-            $entries[] = ['loc' => url('/category/'.$category->slug), 'lastmod' => $category->updated_at];
-        }
-        foreach (Page::where('status', 'published')->get() as $page) {
-            $entries[] = ['loc' => url('/page/'.$page->slug), 'lastmod' => $page->updated_at];
+        try {
+            $entries = collect([
+                ['loc' => $base.'/', 'lastmod' => optional(Post::published()->latest('updated_at')->first())->updated_at],
+                ['loc' => $base.'/blog', 'lastmod' => optional(Post::published()->latest('updated_at')->first())->updated_at],
+            ]);
+
+            foreach (Post::published()->latest()->get() as $post) {
+                $entries[] = ['loc' => $base.'/blog/'.$post->slug, 'lastmod' => $post->updated_at];
+            }
+            // Only live categories (active + has published posts) belong in the
+            // sitemap — empty category pages return "no posts" to crawlers.
+            foreach (Category::live()->get() as $category) {
+                $entries[] = ['loc' => $base.'/category/'.$category->slug, 'lastmod' => $category->updated_at];
+            }
+            foreach (Page::where('status', 'published')->get() as $page) {
+                $entries[] = ['loc' => $base.'/page/'.$page->slug, 'lastmod' => $page->updated_at];
+            }
+        } catch (\Throwable $e) {
+            report($e);
+            // Minimal but VALID sitemap so crawlers never get a 500.
+            $entries = collect([['loc' => $base.'/', 'lastmod' => null]]);
         }
 
         $xml = '<?xml version="1.0" encoding="UTF-8"?>'."\n";

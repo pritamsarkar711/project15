@@ -21,7 +21,7 @@
     <meta property="og:description" content="{{ $metaDescription ?? setting('site_description') }}">
     <meta property="og:url" content="{{ config('app.url') . request()->getRequestUri() }}">
     <meta property="og:type" content="website">
-    <meta property="og:image" content="{{ $ogImage ?? asset('images/og-huvanti.jpg') }}">
+    <meta property="og:image" content="{{ $ogImage ?? request()->getSchemeAndHttpHost() . asset('images/og-huvanti.jpg') }}">
     <meta name="twitter:card" content="summary_large_image">
     @if(setting('search_console_token'))<meta name="google-site-verification" content="{{ setting('search_console_token') }}">@endif
     @if(setting('ahrefs_verification_token'))<meta name="ahrefs-site-verification" content="{{ setting('ahrefs_verification_token') }}">@endif
