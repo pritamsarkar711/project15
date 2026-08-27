@@ -7,7 +7,7 @@
     <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4">
         <div class="flex items-center justify-between">
             <span class="text-[10px] font-bold tracking-widest uppercase text-slate-500 dark:text-slate-400">Drafts</span>
-            <svg class="w-5 h-5 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/></svg>
+            <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/></svg>
         </div>
         <div class="text-3xl font-extrabold mt-2">{{ $stats['draft'] }}</div>
         <a href="{{ route('author.posts.index', ['tab' => 'draft']) }}" class="mt-1 inline-flex text-xs font-semibold text-emerald-700 dark:text-emerald-300 hover:underline">Open drafts</a>
@@ -15,7 +15,7 @@
     <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4">
         <div class="flex items-center justify-between">
             <span class="text-[10px] font-bold tracking-widest uppercase text-slate-500 dark:text-slate-400">In Review</span>
-            <svg class="w-5 h-5 text-blue-500 dark:text-blue-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+            <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
         </div>
         <div class="text-3xl font-extrabold mt-2">{{ $stats['pending'] }}</div>
         <div class="mt-1 text-xs text-slate-500 dark:text-slate-400">Awaiting admin decision</div>
@@ -23,7 +23,7 @@
     <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4">
         <div class="flex items-center justify-between">
             <span class="text-[10px] font-bold tracking-widest uppercase text-slate-500 dark:text-slate-400">Returned</span>
-            <svg class="w-5 h-5 text-amber-500 dark:text-amber-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3"/></svg>
+            <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3"/></svg>
         </div>
         <div class="text-3xl font-extrabold mt-2 {{ $stats['returned'] > 0 ? 'text-amber-600 dark:text-amber-300' : '' }}">{{ $stats['returned'] }}</div>
         <a href="{{ route('author.posts.index', ['tab' => 'returned']) }}" class="mt-1 inline-flex text-xs font-semibold text-emerald-700 dark:text-emerald-300 hover:underline">Fix and resubmit</a>

@@ -60,7 +60,7 @@
         <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
             <div class="flex items-center gap-3">
                 <span class="w-9 h-9 bg-[#0C3B2E] text-white flex items-center justify-center shrink-0">
-                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M11.484 2.17a.75.75 0 01.032 0l6.5 2.25a.75.75 0 01.5.707v6.857a8.25 8.25 0 01-1.885 5.173 8.25 8.25 0 01-6.115 3.07 8.25 8.25 0 01-6.115-3.07 8.25 8.25 0 01-1.885-5.173V5.127a.75.75 0 01.5-.707l6.5-2.25a.75.75 0 01.032 0zm-1.22 5.23a.75.75 0 00-1.06 1.06l2.5 2.5a.75.75 0 001.06 0l4-4a.75.75 0 00-1.06-1.06l-3.47 3.47-1.97-1.97z" clip-rule="evenodd"/></svg>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 14.25l2 2 4-4"/></svg>
                 </span>
                 <h3 class="font-semibold text-slate-900 dark:text-white">Publish original work</h3>
             </div>
