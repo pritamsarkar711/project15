@@ -61,12 +61,12 @@ return \App\Application::configure(basePath: dirname(__DIR__))
             );
         });
 
-        // Broken / not-found links never show a dead 404 page: visitors are
-        // sent straight back to the homepage with a short note. (Admin URLs
-        // fall back to the admin login instead.) Actual broken links inside
-        // the site should of course still be fixed at the source — this is
-        // the safety net for everything else (old bookmarks, mistyped URLs,
-        // deleted posts shared on social media, ...).
+        // Not-found links render the standalone 404 page with a REAL HTTP 404
+        // status. (Previously this 302-redirected to the homepage, which made
+        // every dead URL look like a redirect to Google Search Console — dead
+        // posts/categories were re-crawled forever as "Page with redirect"
+        // instead of dropping out of the index.) Admin URLs still redirect to
+        // the admin login because those areas are behind auth anyway.
         $exceptions->renderable(function (\Symfony\Component\HttpKernel\Exception\NotFoundHttpException $e, Request $request) {
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'The page you were looking for could not be found.'], 404);
@@ -75,8 +75,7 @@ return \App\Application::configure(basePath: dirname(__DIR__))
                 return redirect()->route('admin.login')
                     ->with('error', 'The admin page you were looking for could not be found.');
             }
-            return redirect()->to('/')
-                ->with('error', 'The page you were looking for could not be found.');
+            return response()->view('errors.404', [], 404);
         });
 
         // 403 (no permission, e.g. an author opening /manage): back to the

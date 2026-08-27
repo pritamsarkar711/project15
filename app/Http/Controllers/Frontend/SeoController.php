@@ -43,6 +43,7 @@ class SeoController extends Controller
             $content = "User-agent: *\n"
                 ."Disallow: /manage\n"
                 ."Disallow: /author-dashboard\n"
+                ."Disallow: /search\n"
                 ."Disallow: /login\n"
                 ."Disallow: /register\n"
                 ."Disallow: /forgot-password\n"
@@ -104,10 +105,21 @@ class SeoController extends Controller
         $base = $this->absoluteBase();
 
         try {
+            $lastmod = optional(Post::published()->latest('updated_at')->first())->updated_at;
+
             $entries = collect([
-                ['loc' => $base.'/', 'lastmod' => optional(Post::published()->latest('updated_at')->first())->updated_at],
-                ['loc' => $base.'/blog', 'lastmod' => optional(Post::published()->latest('updated_at')->first())->updated_at],
+                ['loc' => $base.'/', 'lastmod' => $lastmod],
+                ['loc' => $base.'/blog', 'lastmod' => $lastmod],
             ]);
+
+            // Static pages linked from the header — indexable, so they belong
+            // in the sitemap. The Top Contributors page only exists while the
+            // admin feature switch is on (otherwise it 404s).
+            $entries[] = ['loc' => $base.'/about', 'lastmod' => null];
+            $entries[] = ['loc' => $base.'/contact', 'lastmod' => null];
+            if (\App\Models\Setting::get('top_contributors_enabled', '1') === '1') {
+                $entries[] = ['loc' => $base.'/top-contributors', 'lastmod' => null];
+            }
 
             foreach (Post::published()->latest()->get() as $post) {
                 $entries[] = ['loc' => $base.'/blog/'.$post->slug, 'lastmod' => $post->updated_at];

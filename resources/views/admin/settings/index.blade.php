@@ -380,6 +380,18 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
             </div>
         </div>
 
+        {{-- Frontend feature switches: turn whole public pages on/off. --}}
+        <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-4">
+            <h3 class="font-semibold">Features</h3>
+            <label class="flex items-center justify-between gap-4 cursor-pointer">
+                <span>
+                    <span class="block text-sm font-medium text-slate-900 dark:text-white">Top Contributors</span>
+                    <span class="block text-xs text-slate-500 dark:text-slate-400 mt-0.5">Show the "Top Contributors" page and its link in the site header. When off, the page returns 404 so search engines drop it cleanly.</span>
+                </span>
+                <input type="checkbox" name="top_contributors_enabled" value="1" {{ old('top_contributors_enabled', $settings['top_contributors_enabled']->value ?? '1') === '1' ? 'checked' : '' }} class="shrink-0 w-4 h-4 text-emerald-600 border-slate-300 dark:border-slate-600 rounded">
+            </label>
+        </div>
+
         <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-4">
             <h3 class="font-semibold">Logo &amp; Favicon</h3>
             <div class="grid sm:grid-cols-3 gap-5">

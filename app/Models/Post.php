@@ -14,7 +14,8 @@ class Post extends Model
         'title','slug','excerpt','content','featured_image','category_id','user_id',
         'author_name','author_bio','author_avatar','reading_time','status','published_at','scheduled_at',
         'meta_title','meta_description','meta_keywords','views','is_featured','allow_comments',
-        'review_status','submitted_at','reviewed_at','reviewer_id','reviewer_note','is_affiliate'
+        'review_status','submitted_at','reviewed_at','reviewer_id','reviewer_note','is_affiliate',
+        'autosaved_at'
     ];
 
     protected $casts = [
@@ -23,6 +24,7 @@ class Post extends Model
         'deleted_at' => 'datetime',
         'submitted_at' => 'datetime',
         'reviewed_at' => 'datetime',
+        'autosaved_at' => 'datetime',
         'is_featured' => 'boolean',
         'allow_comments' => 'boolean',
         'is_affiliate' => 'boolean',

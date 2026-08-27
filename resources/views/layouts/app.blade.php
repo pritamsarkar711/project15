@@ -13,16 +13,41 @@
             }catch(e){}
         })();
     </script>
-    <title>{{ $metaTitle ?? ($post->meta_title ?? ($page->meta_title ?? (setting('site_name','huvanti.com') . ' · ' . setting('site_tagline','Explore Ideas. Inspire Life.')))) }}</title>
+    <title>{{ $metaTitle ?? ($post->meta_title ?? ($post->title ?? ($page->meta_title ?? ($page->title ?? (setting('site_name','huvanti.com') . ' · ' . setting('site_tagline','Explore Ideas. Inspire Life.')))))) }}</title>
     <meta name="description" content="{{ $metaDescription ?? ($post->meta_description ?? ($page->meta_description ?? setting('site_description','Huvanti is a multi niche blog covering technology, health, finance, travel, lifestyle and education.'))) }}">
-    <meta name="keywords" content="{{ setting('site_keywords','huvanti, blog, technology, health, finance, travel, lifestyle') }}">
-    <link rel="canonical" href="{{ config('app.url') . request()->getRequestUri() }}">
-    <meta property="og:title" content="{{ $metaTitle ?? setting('site_name','huvanti.com') }}">
-    <meta property="og:description" content="{{ $metaDescription ?? setting('site_description') }}">
-    <meta property="og:url" content="{{ config('app.url') . request()->getRequestUri() }}">
-    <meta property="og:type" content="website">
+    @if(isset($robots) && $robots)<meta name="robots" content="{{ $robots }}">@endif
+    @php
+        // Canonical + og:url: build an ABSOLUTE url from the request's own
+        // scheme/host (config('app.url') may still be a localhost default on
+        // some deploys, and the root-relative URL generator would emit
+        // "/path" which is invalid for canonical/og:url). All query params
+        // are stripped EXCEPT ?page=N so paginated lists canonicalize
+        // correctly; search/filter query strings (?q=, ?category=) collapse
+        // to the clean URL, which kills duplicate-content index bloat.
+        $seoHost = request()->getSchemeAndHttpHost();
+        if (str_contains($seoHost, 'localhost')) {
+            $cfg = rtrim((string) config('app.url', ''), '/');
+            if ($cfg !== '' && !str_contains($cfg, 'localhost')) { $seoHost = $cfg; }
+        }
+        $seoPath = request()->getPathInfo();
+        $seoPage = (int) request()->query('page', 1);
+        $seoCanonical = rtrim($seoHost, '/') . $seoPath . ($seoPage > 1 ? '?page=' . $seoPage : '');
+        // Open Graph fallbacks mirror the <title>/<description> chain so
+        // every page shares something sensible about itself.
+        $seoOgTitle = $metaTitle ?? ($post->meta_title ?? ($post->title ?? ($page->meta_title ?? ($page->title ?? setting('site_name','huvanti.com')))));
+        $seoOgDescription = $metaDescription ?? ($post->meta_description ?? ($page->meta_description ?? setting('site_description','')));
+    @endphp
+    <link rel="canonical" href="{{ $seoCanonical }}">
+    <meta property="og:title" content="{{ $seoOgTitle }}">
+    <meta property="og:description" content="{{ $seoOgDescription }}">
+    <meta property="og:url" content="{{ $seoCanonical }}">
+    <meta property="og:type" content="{{ isset($post) ? 'article' : 'website' }}">
+    <meta property="og:site_name" content="{{ setting('site_name','huvanti.com') }}">
     <meta property="og:image" content="{{ $ogImage ?? request()->getSchemeAndHttpHost() . asset('images/og-huvanti.jpg') }}">
+    @if(isset($post) && $post->published_at)<meta property="article:published_time" content="{{ $post->published_at->toIso8601String() }}">@endif
     <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ $seoOgTitle }}">
+    <meta name="twitter:description" content="{{ $seoOgDescription }}">
     @if(setting('search_console_token'))<meta name="google-site-verification" content="{{ setting('search_console_token') }}">@endif
     @if(setting('ahrefs_verification_token'))<meta name="ahrefs-site-verification" content="{{ setting('ahrefs_verification_token') }}">@endif
     @php

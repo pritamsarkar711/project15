@@ -3,9 +3,13 @@
     $isEdit = isset($post) && $post?->exists;
 @endphp
 
-<form method="POST" action="{{ $isEdit ? route('author.posts.update', $post->id) : route('author.posts.store') }}" enctype="multipart/form-data" class="space-y-6">
+<form method="POST" action="{{ $isEdit ? route('author.posts.update', $post->id) : route('author.posts.store') }}" enctype="multipart/form-data" class="space-y-6" data-autosave="author">
     @csrf
     @if($isEdit) @method('POST') @endif
+    {{-- Server-side autosave target: the first autosave creates a draft and
+         JS fills this in; later autosaves and the next manual save update
+         that same draft instead of creating a duplicate. --}}
+    <input type="hidden" name="autosave_post_id" id="autosave-post-id" value="{{ $isEdit ? $post->id : '' }}">
 
     <div class="grid lg:grid-cols-12 gap-6">
         <div class="lg:col-span-8 space-y-5">
@@ -105,6 +109,9 @@
                             {{ $isEdit && $post->review_status === 'returned' ? 'Resubmit for review' : 'Submit for review' }}
                         </button>
                     </div>
+                    {{-- Live autosave feedback: reassures the writer that their
+                         work survives a crash, power cut or dropped connection. --}}
+                    <p id="autosave-status" class="mt-3 text-[11px] font-medium text-slate-400 dark:text-slate-500" aria-live="polite"></p>
                 @endif
             </div>
 
@@ -178,11 +185,169 @@
                 e.preventDefault();
                 if (err) { err.textContent = problem; err.classList.remove('hidden'); }
                 if (ed) ed.scrollIntoView({behavior: 'smooth', block: 'center'});
-            } else if (err) {
-                err.classList.add('hidden');
+            } else {
+                if (err) err.classList.add('hidden');
+                // A real submit means the post is being saved for good — stop
+                // the autosave loop so it can't fire against a navigating page.
+                window.__huvAutosaveStop = true;
+                try { localStorage.removeItem(window.__huvFormKey || ''); } catch (err2) {}
             }
         });
     }
+})();
+
+// ---------------------------------------------------------------------------
+// Crash-safe autosave — two independent layers, so a browser crash, power cut
+// ("load shedding") or dead network can never lose more than a few seconds of
+// writing:
+//   Layer 1 (local): every 3 s the WHOLE form is snapshotted to localStorage.
+//     On reopening the page with an empty form, the snapshot is restored —
+//     works fully OFFLINE.
+//   Layer 2 (server): every 45 s (and once on tab close) the form is POSTed
+//     to the autosave endpoint, which stores it as a real draft row. Survives
+//     browser resets, other devices and cleared storage.
+// ---------------------------------------------------------------------------
+(function(){
+    var form = document.querySelector('form[data-autosave]');
+    if (!form) return;
+
+    var STORAGE_KEY = 'huv-form-draft:' + location.pathname;
+    window.__huvFormKey = STORAGE_KEY;
+    var statusEl = document.getElementById('autosave-status');
+    var idEl = document.getElementById('autosave-post-id');
+    var dirtyLocal = false;   // snapshot needs a refresh
+    var dirtyServer = false;  // server copy needs a refresh
+    var inFlight = false;
+    var stopped = false;
+
+    function setStatus(msg) {
+        if (statusEl) statusEl.textContent = msg;
+    }
+
+    // Fields that carry the author's work (exclude file input, tokens, the
+    // submit-button name/value pair and the autosave id itself).
+    function snapshot() {
+        var fd = new FormData(form);
+        var data = {};
+        fd.forEach(function (value, key) {
+            if (key === '_token' || key === '_method' || key === 'action' || key === 'featured_image' || key === 'autosave_post_id') return;
+            data[key] = typeof value === 'string' ? value : '';
+        });
+        data.__savedAt = new Date().toISOString();
+        return data;
+    }
+
+    function formatTime(iso) {
+        try { return new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); }
+        catch (e) { return ''; }
+    }
+
+    function restore() {
+        // Only restore into a pristine form (never overwrite server-loaded
+        // or validation-returned values).
+        var title = form.querySelector('[name="title"]');
+        var ed = document.getElementById('editor');
+        var exc = form.querySelector('[name="excerpt"]');
+        var pristine = title && !title.value && ed && !ed.value && (!exc || !exc.value);
+        if (!pristine) return;
+        var raw = null;
+        try { raw = localStorage.getItem(STORAGE_KEY); } catch (e) { return; }
+        if (!raw) return;
+        var data;
+        try { data = JSON.parse(raw); } catch (e) { return; }
+        var restored = 0;
+        Object.keys(data).forEach(function (key) {
+            if (key === '__savedAt') return;
+            var field = form.querySelector('[name="' + key + '"]');
+            if (field && field.type !== 'file') { field.value = data[key]; restored++; }
+        });
+        if (restored) {
+            // Push content into the rich text editor too.
+            if (ed) {
+                ed.value = data['content'] || '';
+                ed.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+            setStatus('Your last unsaved work in this browser was restored (saved ' + formatTime(data.__savedAt) + ').');
+            dirtyLocal = false; dirtyServer = true; // push the restored copy to the server too
+        }
+    }
+
+    form.addEventListener('input', function () { dirtyLocal = true; dirtyServer = true; }, true);
+    form.addEventListener('change', function () { dirtyLocal = true; dirtyServer = true; }, true);
+
+    // ---- Layer 1: local snapshot every 3 s --------------------------------
+    setInterval(function () {
+        if (stopped || window.__huvAutosaveStop || !dirtyLocal || document.hidden) return;
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot()));
+            dirtyLocal = false;
+        } catch (e) { /* storage full/blocked — layer 2 still covers us */ }
+    }, 3000);
+
+    // ---- Layer 2: server autosave every 45 s ------------------------------
+    function buildAutosaveBody() {
+        var fd = new FormData(form);
+        // Never re-upload file inputs every 45 s — the featured image rides
+        // only on the real submit. SendBeacon also cannot carry files.
+        var drop = [];
+        fd.forEach(function (v, k) { if (typeof v !== 'string') drop.push(k); });
+        drop.forEach(function (k) { fd.delete(k); });
+        if (idEl && idEl.value) fd.set('autosave_post_id', idEl.value);
+        return fd;
+    }
+
+    function sendToServer(useBeacon) {
+        if (stopped || window.__huvAutosaveStop || inFlight || !navigator.onLine) {
+            if (!navigator.onLine) setStatus('You are offline — your work is saved in this browser and will sync when the connection returns.');
+            return;
+        }
+        var body = buildAutosaveBody();
+        if (useBeacon && navigator.sendBeacon) {
+            // Fire-and-forget; CSRF rides along via the hidden _token field.
+            navigator.sendBeacon('{{ route("author.posts.autosave") }}', body);
+            return;
+        }
+        inFlight = true;
+        fetch('{{ route("author.posts.autosave") }}', {
+            method: 'POST',
+            body: body,
+            credentials: 'same-origin',
+            headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+        }).then(function (r) { return r.json(); }).then(function (j) {
+            inFlight = false;
+            if (j && j.ok && j.autosave_post_id) {
+                if (idEl) idEl.value = j.autosave_post_id;
+                dirtyServer = false;
+                setStatus('Draft auto-saved' + (j.saved_at ? ' at ' + j.saved_at : '') + '. Safe from crashes and power cuts.');
+            } else if (j && j.locked) {
+                stopped = true;
+                setStatus(j.message || 'This post is locked — autosave paused.');
+            }
+        }).catch(function () {
+            inFlight = false;
+            setStatus('Offline or server busy — your work is saved in this browser.');
+        });
+    }
+
+    setInterval(function () {
+        if (stopped || window.__huvAutosaveStop || !dirtyServer) return;
+        sendToServer(false);
+    }, 45000);
+
+    // Last flush when the tab is hidden or closed (covers power cut mid-typing).
+    document.addEventListener('visibilitychange', function () {
+        if (document.visibilityState === 'hidden') {
+            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot())); dirtyLocal = false; } catch (e) {}
+            if (dirtyServer) sendToServer(true);
+        }
+    });
+    window.addEventListener('pagehide', function () {
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot())); dirtyLocal = false; } catch (e) {}
+        if (dirtyServer) sendToServer(true);
+    });
+
+    // Restore any local snapshot from a previous crashed session.
+    restore();
 })();
 
 // FAQ rows

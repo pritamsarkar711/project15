@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@php($metaTitle = 'Blog · ' . setting('site_name','huvanti.com'))
 @section('content')
 <div class="bg-emerald-50/70 dark:bg-[#1e1e1e] border-b border-emerald-100 dark:border-[#2f2f2f]">
     <div class="max-w-[1200px] mx-auto px-4 sm:px-6 py-8 sm:py-10">

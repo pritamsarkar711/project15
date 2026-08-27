@@ -1,4 +1,8 @@
 @extends('layouts.app')
+@php
+    $metaTitle = ($page->meta_title ?? null) ?: 'About ' . setting('site_name','huvanti.com');
+    $metaDescription = ($page->meta_description ?? null) ?: ('Learn about ' . setting('site_name','huvanti.com') . ', our editorial mission and the team behind the articles.');
+@endphp
 @section('content')
 <div class="max-w-4xl mx-auto px-4 sm:px-6 py-10">
     <div class="card-elev p-6 sm:p-10">

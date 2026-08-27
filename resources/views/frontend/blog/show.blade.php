@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('content')
 @php
-    $shareUrl = urlencode(url()->current());
+    $shareUrl = urlencode(request()->getSchemeAndHttpHost() . '/blog/' . $post->slug);
     $shareText = urlencode($post->title);
     $authorName = $post->user->name ?? $post->author_name ?? 'Huvanti Team';
     $authorBio = $post->user->bio ?? $post->author_bio ?? 'Editor at Huvanti';
@@ -12,6 +12,67 @@
     // where visitors can follow / unfollow them.
     $authorProfileUrl = $post->user?->username ? route('author.profile', $post->user->username) : null;
 @endphp
+@php
+    // ---- JSON-LD payload (computed here, printed below) ----
+    // Strings are json_encode'd ONCE in PHP and echoed with {!! !!} so
+    // quotes survive inside the script tag ({{ }} would HTML-escape them).
+    $ldStr    = 'Illuminate\Support\Str';
+    $ldSite   = request()->getSchemeAndHttpHost();
+    $ldUrl    = $ldSite . '/blog/' . $post->slug;
+    $ldImage  = $ldSite . ($post->featured_image ? asset('storage/' . $post->featured_image) : asset('images/og-huvanti.jpg'));
+    $ldTitle  = $ldStr::limit(strip_tags($post->title), 110);
+    $ldDesc   = $post->excerpt ? $ldStr::limit(strip_tags($post->excerpt), 160) : null;
+    $ldArticle = [
+        '@type' => 'Article',
+        'headline' => $ldTitle,
+        'image' => [$ldImage],
+        'dateModified' => $post->updated_at->toIso8601String(),
+        'author' => array_filter([
+            '@type' => 'Person',
+            'name' => $authorName,
+            'url' => $authorProfileUrl,
+        ]),
+        'publisher' => ['@type' => 'Organization', 'name' => setting('site_name', 'Huvanti')],
+        'mainEntityOfPage' => $ldUrl,
+    ];
+    if ($ldDesc) { $ldArticle['description'] = $ldDesc; }
+    if ($post->published_at) { $ldArticle['datePublished'] = $post->published_at->toIso8601String(); }
+
+    $ldGraph = [
+        $ldArticle,
+        [
+            '@type' => 'BreadcrumbList',
+            'itemListElement' => [
+                ['@type' => 'ListItem', 'position' => 1, 'name' => 'Home', 'item' => $ldSite . '/'],
+                ['@type' => 'ListItem', 'position' => 2, 'name' => 'Blog', 'item' => $ldSite . '/blog'],
+                ['@type' => 'ListItem', 'position' => 3, 'name' => $ldTitle],
+            ],
+        ],
+    ];
+    if ($post->faqs->count() > 0) {
+        $ldGraph[] = [
+            '@type' => 'FAQPage',
+            'mainEntity' => $post->faqs->map(function ($f) use ($ldStr) {
+                return [
+                    '@type' => 'Question',
+                    'name' => $ldStr::limit(strip_tags($f->question), 120),
+                    'acceptedAnswer' => [
+                        '@type' => 'Answer',
+                        'text' => $ldStr::limit(strip_tags($f->answer), 400),
+                    ],
+                ];
+            })->values()->all(),
+        ];
+    }
+    $ldJson = json_encode(
+        ['@context' => 'https://schema.org', '@graph' => $ldGraph],
+        JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
+    );
+@endphp
+@push('head')
+{{-- Article + BreadcrumbList + FAQPage structured data for rich results --}}
+<script type="application/ld+json">{!! $ldJson !!}</script>
+@endpush
 <div class="max-w-[1200px] mx-auto px-4 sm:px-6 py-6">
     <nav class="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-2 flex-wrap mb-4" aria-label="Breadcrumb">
         <a href="/" class="hover:text-slate-900 dark:hover:text-white inline-flex items-center gap-1"><svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg> Home</a>
@@ -30,7 +91,7 @@
             {{-- Article card --}}
             <article class="card-elev overflow-hidden">
                 <div class="relative h-[240px] sm:h-[360px] overflow-hidden">
-                    <img src="{{ $post->featured_image ?: 'https://picsum.photos/seed/'.$post->slug.'/1200/700' }}" alt="{{ $post->title }}" class="w-full h-full object-cover" loading="lazy" decoding="async">
+                    <img src="{{ $post->featured_image ?: 'https://picsum.photos/seed/'.$post->slug.'/1200/700' }}" alt="{{ $post->title }}" class="w-full h-full object-cover" decoding="async" fetchpriority="high">
                     <div class="absolute top-3 left-3 flex items-center gap-2">
                         @if($post->category)<span class="text-xs font-semibold bg-white/95 dark:bg-[#1e1e1e]/90 text-[#0C3B2E] dark:text-emerald-300 px-2.5 py-1 border border-slate-200 dark:border-[#383838] shadow-sm">{{ $post->category->name }}</span>@endif
                         @if($post->is_featured)<span class="text-xs font-bold bg-[#F5C445] text-slate-900 px-2.5 py-1">Popular</span>@endif

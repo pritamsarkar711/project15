@@ -1,4 +1,10 @@
 @extends('layouts.app')
+@php
+    // Search result URLs must stay OUT of the index (unbounded ?q= space ->
+    // Search Console "Crawled - currently not indexed" noise).
+    $robots = 'noindex, follow';
+    $metaTitle = $q ? ('Search: ' . $q . ' · ' . setting('site_name','huvanti.com')) : ('Search · ' . setting('site_name','huvanti.com'));
+@endphp
 @section('content')
 <div class="max-w-[1200px] mx-auto px-4 sm:px-6 py-8">
     <h1 class="font-extrabold text-2xl sm:text-[30px] text-slate-900 dark:text-white tracking-tight">Search results for "<span class="text-[#0C3B2E] dark:text-emerald-300">{{ $q }}</span>"</h1>

@@ -1,15 +1,16 @@
 @extends('layouts.app')
 
-@section('title', $author->name . ' · Author at ' . (setting('site_name', 'Huvanti')))
-
-@section('meta-description')
-<meta name="description" content="{{ \Illuminate\Support\Str::limit(strip_tags($author->bio ?? 'Author at ' . setting('site_name', 'Huvanti')), 150) }}">
-<meta property="og:title" content="{{ $author->name }} · Author">
-<meta property="og:description" content="{{ \Illuminate\Support\Str::limit(strip_tags($author->bio ?? ''), 150) }}">
-@if($author->author_avatar_path)
-<meta property="og:image" content="{{ asset('storage/'.$author->author_avatar_path) }}">
-@endif
-@endsection
+@php
+    // The layout reads $metaTitle/$metaDescription/$ogImage directly (the old
+    // @section('title')/@section('meta-description') blocks were dead code —
+    // the layout defines no such yields). og:image must be ABSOLUTE for
+    // social scrapers, so build it from the request host like the layout does.
+    $metaTitle = $author->name . ' · Author at ' . setting('site_name', 'Huvanti');
+    $metaDescription = \Illuminate\Support\Str::limit(strip_tags($author->bio ?? 'Author at ' . setting('site_name', 'Huvanti')), 150);
+    if ($author->author_avatar_path) {
+        $ogImage = request()->getSchemeAndHttpHost() . asset('storage/' . $author->author_avatar_path);
+    }
+@endphp
 
 @section('content')
 <section class="max-w-[900px] mx-auto px-4 sm:px-6 py-8">

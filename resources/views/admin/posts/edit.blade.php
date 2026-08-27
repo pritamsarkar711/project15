@@ -8,8 +8,16 @@
 @endsection
 
 @section('content')
-<form method="POST" action="{{ route('admin.posts.update', $post) }}" enctype="multipart/form-data" class="space-y-6">
+<form method="POST" action="{{ route('admin.posts.update', $post) }}" enctype="multipart/form-data" class="space-y-6" data-autosave="admin">
     @csrf @method('PUT')
+    {{-- Server-side autosave: enabled only while this post is still a DRAFT
+         (the endpoint refuses anything that is not a draft, so published
+         posts can never be auto-mutated). --}}
+    @if($post->status === 'draft' && $post->review_status === 'draft')
+        <input type="hidden" name="autosave_post_id" id="autosave-post-id" value="{{ $post->id }}">
+    @else
+        <input type="hidden" name="autosave_post_id" id="autosave-post-id" value="">
+    @endif
     <div class="grid lg:grid-cols-12 gap-6">
         <div class="lg:col-span-8 space-y-5">
             <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
@@ -72,6 +80,7 @@
                 <label class="flex items-center gap-2 mt-3 text-sm"><input type="checkbox" name="is_featured" value="1" @checked($post->is_featured) class="border-slate-300 dark:border-slate-600 text-emerald-600 focus:ring-emerald-500"> Featured post</label>
                 <label class="flex items-center gap-2 mt-2 text-sm"><input type="checkbox" name="allow_comments" value="1" @checked($post->allow_comments) class="border-slate-300 dark:border-slate-600 text-emerald-600 focus:ring-emerald-500"> Allow comments</label>
                 <button type="submit" class="w-full mt-4 h-11 bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold transition">Update Post</button>
+                <p id="autosave-status" class="mt-3 text-[11px] font-medium text-slate-400 dark:text-slate-500" aria-live="polite"></p>
                 <a href="{{ route('admin.posts.index') }}" class="block text-center mt-2 text-sm text-slate-500 dark:text-slate-400 hover:underline">Cancel</a>
             </div>
 
@@ -109,6 +118,7 @@
 // Self-made Huvanti rich text editor (single small file, no dependencies).
 huvantiEditorInit('#editor');
 </script>
+@include('admin.posts._autosave')
 <script>
     let faqIdx = {{ count(old('faqs', $post->faqs)) + 1 }};
     function addFaq(){

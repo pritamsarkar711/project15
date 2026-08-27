@@ -8,8 +8,11 @@
 @endsection
 
 @section('content')
-<form method="POST" action="{{ route('admin.posts.store') }}" enctype="multipart/form-data" class="space-y-6">
+<form method="POST" action="{{ route('admin.posts.store') }}" enctype="multipart/form-data" class="space-y-6" data-autosave="admin">
     @csrf
+    {{-- Server-side autosave target: the first autosave creates a draft, later
+         ones update it, and "Create Post" then resumes that same draft. --}}
+    <input type="hidden" name="autosave_post_id" id="autosave-post-id" value="">
     <div class="grid lg:grid-cols-12 gap-6">
         <div class="lg:col-span-8 space-y-5">
             <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
@@ -64,6 +67,7 @@
                 <label class="flex items-center gap-2 mt-3 text-sm"><input type="checkbox" name="is_featured" value="1" class="border-slate-300 dark:border-slate-600 text-emerald-600 focus:ring-emerald-500"> Featured post</label>
                 <label class="flex items-center gap-2 mt-2 text-sm"><input type="checkbox" name="allow_comments" value="1" checked class="border-slate-300 dark:border-slate-600 text-emerald-600 focus:ring-emerald-500"> Allow comments</label>
                 <button type="submit" class="w-full mt-4 h-11 bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold transition">Create Post</button>
+                <p id="autosave-status" class="mt-3 text-[11px] font-medium text-slate-400 dark:text-slate-500" aria-live="polite"></p>
             </div>
 
             <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
@@ -98,6 +102,7 @@
 // Self-made Huvanti rich text editor (single small file, no dependencies).
 huvantiEditorInit('#editor');
 </script>
+@include('admin.posts._autosave')
 <script>
     let faqIdx=1;
     function addFaq(){

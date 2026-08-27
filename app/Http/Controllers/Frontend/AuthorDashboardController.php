@@ -91,11 +91,159 @@ class AuthorDashboardController extends Controller
     public function postsCreate()
     {
         $categories = Category::where('is_active', true)->orderBy('sort_order')->get();
-        return view('frontend.author-dashboard.posts-create', compact('categories'));
+
+        // Crash / power-cut recovery: if the author has a recent auto-saved
+        // draft that was never manually saved, offer to resume it. Only drafts
+        // autosaved within the last 3 days are considered (older ones are
+        // findable under "My Posts" anyway and resurfacing stale work would
+        // be confusing).
+        $recoveredDraft = null;
+        try {
+            $recoveredDraft = Post::where('user_id', Auth::id())
+                ->where('review_status', 'draft')
+                ->whereNotNull('autosaved_at')
+                ->where('autosaved_at', '>=', now()->subDays(3))
+                ->orderByDesc('autosaved_at')
+                ->first();
+        } catch (\Throwable $e) {
+            // The autosaved_at column may not exist yet (migration pending) —
+            // never let recovery break the create page.
+            $recoveredDraft = null;
+        }
+
+        return view('frontend.author-dashboard.posts-create', compact('categories', 'recoveredDraft'));
+    }
+
+    /**
+     * Server-side autosave endpoint (author dashboard).
+     *
+     * Every 45 seconds — and once more when the tab is hidden or closed — the
+     * editor silently POSTs the WHOLE form (title, excerpt, category, content,
+     * FAQs, SEO fields) here. The payload becomes/updates a real draft row, so
+     * a browser crash, power cut ("load shedding") or dead network can never
+     * wipe out more than 45 seconds of typing. The client keeps its own
+     * localStorage copy too, which covers the offline case.
+     */
+    public function postsAutosave(Request $request)
+    {
+        try {
+            $user = Auth::user();
+
+            $data = $request->validate([
+                'autosave_post_id' => ['nullable', 'integer'],
+                'title'            => ['nullable', 'string', 'max:255'],
+                'excerpt'          => ['nullable', 'string', 'max:500'],
+                'content'          => ['nullable', 'string'],
+                'category_id'      => ['nullable', 'exists:categories,id'],
+                'meta_title'       => ['nullable', 'string', 'max:255'],
+                'meta_description' => ['nullable', 'string', 'max:500'],
+                'meta_keywords'    => ['nullable', 'string', 'max:255'],
+                'is_affiliate'     => ['nullable', 'boolean'],
+                'faqs'             => ['nullable', 'array'],
+                'faqs.*.question'  => ['nullable', 'string', 'max:500'],
+                'faqs.*.answer'    => ['nullable', 'string', 'max:2000'],
+            ]);
+
+            $post = null;
+            if (!empty($data['autosave_post_id'])) {
+                $post = Post::where('user_id', $user->id)->find((int) $data['autosave_post_id']);
+                if ($post && in_array($post->review_status, ['approved', 'pending_review'])) {
+                    // Locked post — do not autosave into it.
+                    return response()->json([
+                        'ok' => false,
+                        'locked' => true,
+                        'message' => 'This post is locked and cannot be auto-saved.',
+                    ], 409);
+                }
+            }
+
+            $title = trim((string) ($data['title'] ?? ''));
+            $contentLen = mb_strlen(trim((string) ($data['content'] ?? '')));
+
+            if (! $post) {
+                // Nothing meaningful typed yet — skip (avoid empty draft spam).
+                if ($title === '' && $contentLen === 0) {
+                    return response()->json(['ok' => true, 'skipped' => true]);
+                }
+                $post = new Post();
+                $post->user_id = $user->id;
+                $post->status = 'draft';
+                $post->review_status = 'draft';
+                $post->author_name = $user->name;
+                $post->author_bio = $user->bio;
+                $post->author_avatar = $user->author_avatar_path;
+                $post->allow_comments = true;
+            }
+
+            $post->title = mb_substr($title !== '' ? $title : 'Untitled draft', 0, 255);
+            if (! $post->exists || empty($post->slug)) {
+                $post->slug = $this->generateUniqueSlug($post->title);
+            }
+            if (array_key_exists('excerpt', $data)) {
+                $post->excerpt = $data['excerpt'] !== null ? mb_substr((string) $data['excerpt'], 0, 500) : null;
+            }
+            if (array_key_exists('content', $data)) {
+                $post->content = HtmlSanitizer::clean((string) ($data['content'] ?? ''));
+            }
+            if (array_key_exists('category_id', $data) && $data['category_id']) {
+                $post->category_id = (int) $data['category_id'];
+            }
+            if (array_key_exists('meta_title', $data)) {
+                $post->meta_title = $data['meta_title'] !== null ? mb_substr((string) $data['meta_title'], 0, 255) : null;
+            }
+            if (array_key_exists('meta_description', $data)) {
+                $post->meta_description = $data['meta_description'] !== null ? mb_substr((string) $data['meta_description'], 0, 500) : null;
+            }
+            if (array_key_exists('meta_keywords', $data)) {
+                $post->meta_keywords = $data['meta_keywords'] !== null ? mb_substr((string) $data['meta_keywords'], 0, 255) : null;
+            }
+            if (array_key_exists('is_affiliate', $data)) {
+                $post->is_affiliate = $request->boolean('is_affiliate');
+            }
+            $post->reading_time = max(1, ceil(str_word_count(strip_tags((string) $post->content)) / 200));
+            $post->autosaved_at = now();
+            $post->save();
+
+            // Sync FAQs only when the payload actually contains them, so a
+            // partial autosave can never wipe the stored FAQ section.
+            if (array_key_exists('faqs', $data) && is_array($data['faqs'])) {
+                try {
+                    $this->syncFaqs($request, $post);
+                } catch (\Throwable $e) {
+                    report($e);
+                    // FAQ failure is non-fatal for autosave.
+                }
+            }
+
+            return response()->json([
+                'ok' => true,
+                'autosave_post_id' => $post->id,
+                'created' => empty($data['autosave_post_id']),
+                'saved_at' => $post->autosaved_at->format('H:i'),
+                'edit_url' => route('author.posts.edit', $post->id),
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Invalid field values: report quietly, never break the writer.
+            return response()->json(['ok' => false, 'message' => 'Some fields could not be auto-saved.'], 200);
+        } catch (\Throwable $e) {
+            report($e);
+            return response()->json(['ok' => false, 'message' => 'Auto-save failed. Your work is still kept in this browser.'], 200);
+        }
     }
 
     public function postsStore(Request $request)
     {
+        // If a server-side autosave already created a draft for this editing
+        // session, the first manual save UPDATES that draft instead of
+        // creating a confusing near-duplicate.
+        $autosaveId = (int) $request->input('autosave_post_id');
+        if ($autosaveId) {
+            $autosaved = Post::where('user_id', Auth::id())->find($autosaveId);
+            if ($autosaved && in_array($autosaved->review_status, ['draft', 'returned'])) {
+                return $this->postsUpdate($request, $autosaved->id);
+            }
+        }
+
         $data = $request->validate([
             'title'           => ['required', 'string', 'max:255'],
             'excerpt'         => ['nullable', 'string', 'max:500'],
@@ -175,6 +323,9 @@ class AuthorDashboardController extends Controller
             }
         }
 
+        // A manual save means this post is no longer "autosave-only" — clear
+        // the marker so crash-recovery banners never offer already-saved work.
+        $post->autosaved_at = null;
         $post->save();
 
         // FAQ sync runs AFTER the post row exists, so any failure here used to
@@ -315,6 +466,8 @@ class AuthorDashboardController extends Controller
             }
         }
 
+        // Manual save clears the autosave-only marker (see postsStore).
+        $post->autosaved_at = null;
         $post->save();
 
         try {

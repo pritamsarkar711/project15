@@ -1,5 +1,26 @@
 @extends('layouts.app')
 
+@push('head')
+{{-- WebSite + SearchAction schema: sitelinks searchbox eligibility --}}
+@php
+    $ldHome = json_encode(
+        [
+            '@context' => 'https://schema.org',
+            '@type' => 'WebSite',
+            'name' => setting('site_name', 'Huvanti'),
+            'url' => request()->getSchemeAndHttpHost() . '/',
+            'potentialAction' => [
+                '@type' => 'SearchAction',
+                'target' => request()->getSchemeAndHttpHost() . '/search?q={search_term_string}',
+                'query-input' => 'required name=search_term_string',
+            ],
+        ],
+        JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
+    );
+@endphp
+<script type="application/ld+json">{!! $ldHome !!}</script>
+@endpush
+
 @section('content')
 @php
     $heroPhrase1 = setting('hero_phrase_1', 'Explore Ideas.');
@@ -30,7 +51,7 @@
                     Fresh reads every week
                 </span>
                 <h1 class="text-[34px] sm:text-[42px] lg:text-[48px] font-extrabold leading-[1.15] tracking-tight min-h-[2.4em] sm:min-h-[2.2em]">
-                    <span id="typing-text" class="typing-text"></span><span class="typing-cursor" aria-hidden="true"></span>
+                    <span id="typing-text" class="typing-text">{{ $heroPhrase1 }}</span><span class="typing-cursor" aria-hidden="true"></span>
                 </h1>
                 <p class="mt-4 text-[17px] sm:text-[18px] leading-relaxed text-white/85 max-w-[520px] font-medium">{{ $heroSubtitle }}</p>
                 <form action="{{ route('search') }}" method="GET" class="mt-6 w-full max-w-[520px] min-w-0" autocomplete="off">

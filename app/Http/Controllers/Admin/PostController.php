@@ -55,6 +55,117 @@ class PostController extends Controller
         return view('admin.posts.create', compact('categories'));
     }
 
+    /**
+     * Server-side autosave endpoint (admin panel) — DRAFTS ONLY.
+     *
+     * Mirrors the author autosave: the editor silently POSTs the whole form
+     * every 45 s (and once on tab close), and the payload becomes/updates a
+     * real draft row. A browser crash, power cut or dropped network can never
+     * lose more than 45 seconds of typing.
+     *
+     * Safety rules:
+     *   - PUBLISHED or SCHEDULED posts are NEVER auto-mutated (a silent write
+     *     to live content would be far worse than losing a little typing).
+     *     Editing those is still covered by the browser's local snapshot.
+     *   - Empty payloads are skipped to avoid draft spam.
+     *   - All failures are quiet JSON responses — autosave must never
+     *     interrupt writing.
+     */
+    public function autosave(Request $request)
+    {
+        try {
+            $data = $request->validate([
+                'autosave_post_id' => ['nullable', 'integer'],
+                'title'            => ['nullable', 'string', 'max:255'],
+                'excerpt'          => ['nullable', 'string', 'max:500'],
+                'content'          => ['nullable', 'string'],
+                'category_id'      => ['nullable', 'exists:categories,id'],
+                'meta_title'       => ['nullable', 'string', 'max:255'],
+                'meta_description' => ['nullable', 'string', 'max:500'],
+                'meta_keywords'    => ['nullable', 'string', 'max:255'],
+                'faqs'             => ['nullable', 'array'],
+                'faqs.*.question'  => ['nullable', 'string', 'max:500'],
+                'faqs.*.answer'    => ['nullable', 'string', 'max:2000'],
+            ]);
+
+            $post = null;
+            if (!empty($data['autosave_post_id'])) {
+                $post = Post::find((int) $data['autosave_post_id']);
+                // Only DRAFT posts may be auto-mutated — a silent write to a
+                // published/scheduled/live post would be a data-integrity bug.
+                if ($post && ($post->status !== 'draft' || $post->review_status !== 'draft')) {
+                    return response()->json([
+                        'ok' => false,
+                        'locked' => true,
+                        'message' => 'Only draft posts can be auto-saved. Use Update Post to save changes to this post.',
+                    ], 409);
+                }
+            }
+
+            $title = trim((string) ($data['title'] ?? ''));
+            $contentLen = mb_strlen(trim((string) ($data['content'] ?? '')));
+
+            if (! $post) {
+                if ($title === '' && $contentLen === 0) {
+                    return response()->json(['ok' => true, 'skipped' => true]);
+                }
+                $post = new Post();
+                $post->user_id = auth()->id();
+                $post->status = 'draft';
+                $post->review_status = 'draft';
+                $post->allow_comments = true;
+            }
+
+            $post->title = mb_substr($title !== '' ? $title : 'Untitled draft', 0, 255);
+            if (! $post->exists || empty($post->slug)) {
+                $post->slug = $this->generateUniqueSlug($post->title, $post->exists ? $post->id : null);
+            }
+            if (array_key_exists('excerpt', $data)) {
+                $post->excerpt = $data['excerpt'] !== null ? mb_substr((string) $data['excerpt'], 0, 500) : null;
+            }
+            if (array_key_exists('content', $data)) {
+                $post->content = \App\Services\HtmlSanitizer::clean((string) ($data['content'] ?? ''));
+            }
+            if (array_key_exists('category_id', $data) && $data['category_id']) {
+                $post->category_id = (int) $data['category_id'];
+            }
+            if (array_key_exists('meta_title', $data)) {
+                $post->meta_title = $data['meta_title'] !== null ? mb_substr((string) $data['meta_title'], 0, 255) : null;
+            }
+            if (array_key_exists('meta_description', $data)) {
+                $post->meta_description = $data['meta_description'] !== null ? mb_substr((string) $data['meta_description'], 0, 500) : null;
+            }
+            if (array_key_exists('meta_keywords', $data)) {
+                $post->meta_keywords = $data['meta_keywords'] !== null ? mb_substr((string) $data['meta_keywords'], 0, 255) : null;
+            }
+            $post->reading_time = max(1, ceil(str_word_count(strip_tags((string) $post->content)) / 200));
+            $post->autosaved_at = now();
+            $post->save();
+
+            if (array_key_exists('faqs', $data) && is_array($data['faqs'])) {
+                try {
+                    $this->syncFaqs($request, $post);
+                } catch (\Throwable $e) {
+                    report($e);
+                }
+            }
+
+            return response()->json([
+                'ok' => true,
+                'autosave_post_id' => $post->id,
+                'saved_at' => $post->autosaved_at->format('H:i'),
+                // Bind by the MODEL (slug route key), not the numeric id —
+                // admin.posts.edit uses {post} which resolves by slug.
+                'edit_url' => route('admin.posts.edit', $post),
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['ok' => false, 'message' => 'Some fields could not be auto-saved.'], 200);
+        } catch (\Throwable $e) {
+            report($e);
+            return response()->json(['ok' => false, 'message' => 'Auto-save failed. Your work is still kept in this browser.'], 200);
+        }
+    }
+
     protected function validationRules(Post $post = null): array
     {
         return [
@@ -77,8 +188,20 @@ class PostController extends Controller
     {
         $request->validate($this->validationRules());
 
+        // If a server-side autosave already created a draft for this editing
+        // session, "Create Post" UPDATES that draft instead of leaving a
+        // near-duplicate "Untitled draft" row behind.
+        $autosaveId = (int) $request->input('autosave_post_id');
+        $existing = null;
+        if ($autosaveId) {
+            $candidate = Post::find($autosaveId);
+            if ($candidate && $candidate->status === 'draft' && $candidate->review_status === 'draft') {
+                $existing = $candidate;
+            }
+        }
+
         $data = $request->except(['featured_image', 'featured_image_url', 'faqs', 'scheduled_at', '_token', '_method']);
-        $data['slug'] = $this->generateUniqueSlug($request->slug ? Str::slug($request->slug) : Str::slug($request->title));
+        $data['slug'] = $this->generateUniqueSlug($request->slug ? Str::slug($request->slug) : Str::slug($request->title), $existing?->id);
         $data['user_id'] = auth()->id();
         $data['is_featured'] = $request->boolean('is_featured');
         $data['allow_comments'] = $request->boolean('allow_comments');
@@ -114,7 +237,15 @@ class PostController extends Controller
         $data['meta_description'] = isset($data['meta_description']) ? mb_substr((string) $data['meta_description'], 0, 500) : null;
         $data['meta_keywords'] = isset($data['meta_keywords']) ? mb_substr((string) $data['meta_keywords'], 0, 255) : null;
 
-        $post = Post::create($data);
+        if ($existing) {
+            // Resuming an auto-saved draft: keep its author, overwrite the rest.
+            $data['autosaved_at'] = null;
+            $existing->fill($data);
+            $existing->save();
+            $post = $existing;
+        } else {
+            $post = Post::create($data);
+        }
         $this->syncFaqs($request, $post);
 
         return redirect()->route('admin.posts.index')->with('success', 'Post created successfully');
@@ -177,6 +308,8 @@ class PostController extends Controller
         $data['meta_description'] = isset($data['meta_description']) ? mb_substr((string) $data['meta_description'], 0, 500) : null;
         $data['meta_keywords'] = isset($data['meta_keywords']) ? mb_substr((string) $data['meta_keywords'], 0, 255) : null;
 
+        // Manual update clears the autosave-only marker.
+        $data['autosaved_at'] = null;
         $post->update($data);
         $this->syncFaqs($request, $post);
 

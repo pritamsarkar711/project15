@@ -73,6 +73,8 @@ class SettingController extends Controller
             'social_instagram' => 'nullable|string|max:255',
             // Revenue program switch (author panel)
             'revenue_enabled' => 'nullable|in:1',
+            // Frontend feature switches
+            'top_contributors_enabled' => 'nullable|in:1',
             // Integrations / SEO
             'ga_measurement_id' => 'nullable|string|max:32',
             'search_console_token' => 'nullable|string|max:255',
@@ -126,6 +128,11 @@ class SettingController extends Controller
         // footer social links every time another tab was saved.)
         if ($request->input('tab') === 'general' || $request->has('site_name')) {
             Setting::set('social_enabled', $request->boolean('social_enabled') ? '1' : '0');
+            // Feature visibility switches that live on the General tab.
+            // Unchecked checkboxes submit nothing, so they are only written
+            // when the General form itself was submitted (same reasoning as
+            // social_enabled above).
+            Setting::set('top_contributors_enabled', $request->boolean('top_contributors_enabled') ? '1' : '0');
         }
 
         // Revenue program switch and ads master switch — ONLY when the Ads

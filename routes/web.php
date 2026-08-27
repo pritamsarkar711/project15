@@ -118,6 +118,9 @@ Route::prefix('author-dashboard')->name('author.')->middleware('auth')->group(fu
     Route::get('/', [AuthorDashboardController::class, 'index'])->name('dashboard');
     Route::get('/posts', [AuthorDashboardController::class, 'postsIndex'])->name('posts.index');
     Route::get('/posts/create', [AuthorDashboardController::class, 'postsCreate'])->name('posts.create');
+    // Server-side autosave for the post editor. Registered BEFORE
+    // /posts/{id} so "autosave" is never captured as {id}.
+    Route::post('/posts/autosave', [AuthorDashboardController::class, 'postsAutosave'])->name('posts.autosave');
     Route::post('/posts', [AuthorDashboardController::class, 'postsStore'])->name('posts.store');
     Route::get('/posts/{id}/edit', [AuthorDashboardController::class, 'postsEdit'])->name('posts.edit');
     Route::post('/posts/{id}', [AuthorDashboardController::class, 'postsUpdate'])->name('posts.update');
@@ -159,6 +162,9 @@ Route::prefix('manage')->name('admin.')->group(function(){
         // /manage/posts/review-queue as {post}='review-queue' and crash with
         // "Method PostController::show() does not exist" (HTTP 500).
         Route::get('posts/review-queue', [PostController::class, 'reviewQueue'])->name('posts.review-queue');
+        // Server-side autosave for the admin post editor (drafts only).
+        // Also registered BEFORE the posts resource (same reason as above).
+        Route::post('posts/autosave', [PostController::class, 'autosave'])->name('posts.autosave');
         Route::post('posts/{post}/approve', [PostController::class, 'approve'])->name('posts.approve');
         Route::post('posts/{post}/return', [PostController::class, 'return'])->name('posts.return');
 

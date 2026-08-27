@@ -1,4 +1,8 @@
 @extends('layouts.app')
+@php
+    $metaTitle = 'Contact ' . setting('site_name','huvanti.com');
+    $metaDescription = 'Get in touch with the ' . setting('site_name','huvanti.com') . ' team - questions, feedback, corrections, partnerships or press inquiries.';
+@endphp
 @section('content')
 <div class="max-w-6xl mx-auto px-4 sm:px-6 py-10">
     <div class="grid lg:grid-cols-12 gap-6">
