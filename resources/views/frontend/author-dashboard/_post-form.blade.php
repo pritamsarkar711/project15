@@ -145,8 +145,10 @@
 </form>
 
 @push('scripts')
-{{-- Self-made Huvanti rich text editor: single small file, no dependencies --}}
-<script src="{{ asset('js/huvanti-editor.js') }}"></script>
+{{-- Self-made Huvanti rich text editor: single small file, no dependencies.
+     The tag is cache-busted (?v=filemtime) so editor fixes actually reach
+     browsers that cached the previous version. --}}
+{!! \App\Support\ViteAssets::editorScript() !!}
 <script>
 // Huvanti rich text editor for the author post form.
 (function(){
@@ -154,20 +156,30 @@
 
     // Friendly validation for the content (the textarea itself must stay
     // non-required so the browser never blocks on the hidden field).
+    // The rules below MIRROR the server (min 120 characters always, 300 words
+    // on submit) so the author gets the message next to the editor instead of
+    // a page reload with a generic error box at the top.
     var form = document.querySelector('#editor') ? document.querySelector('#editor').closest('form') : null;
     if (form) {
         form.addEventListener('submit', function(e){
-            var val = document.querySelector('#editor') ? document.querySelector('#editor').value : '';
-            var submitting = !e.submitter || e.submitter.value !== 'save_draft';
-            if (submitting && val.replace(/<[^>]*>/g, '').trim().length < 10) {
+            var ed = document.getElementById('editor');
+            var val = ed ? ed.value : '';
+            var text = val.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+            var words = text ? text.split(' ').length : 0;
+            var submitting = !(e.submitter && e.submitter.value === 'save_draft');
+            var err = document.getElementById('editor-error');
+            var problem = '';
+            if (val.replace(/<[^>]*>/g, '').trim().length < 120) {
+                problem = 'The content is too short — at least 120 characters are required.';
+            } else if (submitting && words < 300) {
+                problem = 'Submitted posts must contain at least 300 words (currently ' + words + '). Save it as a draft or keep writing.';
+            }
+            if (problem) {
                 e.preventDefault();
-                var err = document.getElementById('editor-error');
-                if (err) err.classList.remove('hidden');
-                var ed = document.getElementById('editor');
+                if (err) { err.textContent = problem; err.classList.remove('hidden'); }
                 if (ed) ed.scrollIntoView({behavior: 'smooth', block: 'center'});
-            } else {
-                var err = document.getElementById('editor-error');
-                if (err) err.classList.add('hidden');
+            } else if (err) {
+                err.classList.add('hidden');
             }
         });
     }

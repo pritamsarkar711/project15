@@ -140,8 +140,22 @@
         '.huv-rte.src .huv-rte-content{display:none;}',
         '.huv-rte.src .huv-rte-src{display:block;}',
         '.huv-rte-src{display:none;width:100%;box-sizing:border-box;min-height:320px;max-height:65vh;padding:16px;border:0;resize:vertical;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;line-height:1.6;background:#0f172a;color:#e2e8f0;outline:none;}',
-        '.huv-rte.full{position:fixed;inset:0;z-index:9999;width:100vw;height:100vh;border:0;border-radius:0;margin:0;box-shadow:none;}',
-        '.huv-rte.full .huv-rte-content,.huv-rte.full .huv-rte-src{max-height:none;height:calc(100vh - 110px);width:100%;}',
+        // TRUE fullscreen — bulletproof version.
+        // Why the old one failed: width:100vw/height:100vh OVER-CONSTRAIN a
+        // fixed box (top/left + size win, right/bottom are dropped) and 100vw
+        // INCLUDES the scrollbar width, so the editor was wider than the
+        // visible screen and threw a horizontal scrollbar ("not fully
+        // width"). Stretching with all four edges instead sizes the box to
+        // the EXACT visible viewport on every browser, desktop and mobile.
+        // Every critical property carries !important so no theme CSS can
+        // fight it, and the wrap becomes a flex column: toolbar + status bar
+        // take their natural height, the writing area absorbs all remaining
+        // space (the old "100vh - 110px" magic number broke whenever the
+        // toolbar wrapped onto two rows).
+        '.huv-rte.full{position:fixed !important;top:0 !important;left:0 !important;right:0 !important;bottom:0 !important;width:auto !important;height:auto !important;max-width:none !important;max-height:none !important;z-index:2147483000 !important;display:flex !important;flex-direction:column !important;margin:0 !important;border:0 !important;border-radius:0 !important;box-shadow:none !important;overflow:hidden !important;}',
+        '.huv-rte.full .huv-rte-toolbar{flex:0 0 auto;position:static;}',
+        '.huv-rte.full .huv-rte-content,.huv-rte.full .huv-rte-src{flex:1 1 auto;min-height:0;max-height:none;height:auto;width:100%;box-sizing:border-box;}',
+        '.huv-rte.full .huv-rte-status{flex:0 0 auto;}',
         'body.huv-rte-lock{overflow:hidden !important;}',
         '.huv-rte-dd{position:relative;display:inline-flex;align-items:center;}',
         '.huv-rte-dd-btn{gap:1px;padding:0 4px;}',
@@ -707,8 +721,9 @@
         // overlay is open and put back to its exact original position on
         // close. This defeats every ancestor that can break position:fixed
         // (transforms, backdrop-filter, overflow clipping, narrow grid
-        // columns), so fullscreen now ALWAYS spans the real viewport edge to
-        // edge — fixing the "fullscreen is not really fullscreen" bug.
+        // columns). Critical geometry is ALSO applied inline as a second
+        // line of defence, so fullscreen always spans the real viewport
+        // edge to edge.
         var fsPlaceholder = null;
         function toggleFullscreen() {
             var on = !wrap.classList.contains('full');
@@ -719,8 +734,13 @@
                 document.body.appendChild(wrap);
                 document.body.classList.add('huv-rte-lock');
                 wrap.classList.add('full');
+                // Inline fallback styles beat every stylesheet rule that is
+                // not !important; they are removed on exit so the editor
+                // flows exactly as before.
+                wrap.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;z-index:2147483000;margin:0;border-radius:0;';
             } else {
                 wrap.classList.remove('full');
+                wrap.style.cssText = '';
                 document.body.classList.remove('huv-rte-lock');
                 if (fsPlaceholder && fsPlaceholder.parentNode) {
                     fsPlaceholder.parentNode.insertBefore(wrap, fsPlaceholder);
@@ -771,9 +791,23 @@
                 cmd(e.shiftKey ? 'outdent' : 'indent');
             }
             if (e.key === 'Escape') {
-                // Escape also leaves fullscreen — standard editor behaviour.
-                if (wrap.classList.contains('full')) toggleFullscreen();
+                // Popovers close first. Leaving fullscreen is handled by the
+                // document-level Escape listener below (this event bubbles up
+                // to it — toggling here too would immediately undo itself).
                 closeAllPops(wrap);
+            }
+        });
+
+        // Escape leaves fullscreen even when the focus is NOT inside the
+        // editable area (toolbar button, source view, page background). If a
+        // popover or dropdown is open, the first Escape closes it instead.
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && wrap.classList.contains('full')) {
+                if (wrap.querySelector('.huv-rte-pop, .huv-rte-dd-list')) {
+                    closeAllPops(wrap);
+                    return;
+                }
+                toggleFullscreen();
             }
         });
 

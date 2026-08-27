@@ -39,6 +39,27 @@ class ViteAssets
         }
     }
 
+    /**
+     * <script> tag for the self-made Huvanti rich text editor with automatic
+     * cache-busting. The file lives at public/js/huvanti-editor.js and is
+     * served directly by Apache (it is NOT part of the Vite build), so its
+     * URL never changes on its own — browsers and LiteSpeed keep serving the
+     * previously cached copy after a deploy. That is exactly why editor fixes
+     * "did not apply" for returning visitors. Appending the file's
+     * modification time as ?v=... forces every client to fetch the fresh
+     * version whenever the file changes, while still allowing long-lived
+     * caching in between deploys.
+     */
+    public static function editorScript(): HtmlString
+    {
+        $path = public_path('js/huvanti-editor.js');
+        $version = is_file($path) ? (string) filemtime($path) : '1';
+
+        $src = htmlspecialchars(asset('js/huvanti-editor.js').'?v='.$version, ENT_QUOTES, 'UTF-8');
+
+        return new HtmlString('<script src="'.$src.'"></script>');
+    }
+
     private static function fallback(array $entrypoints): string
     {
         $manifest = [];

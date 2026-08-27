@@ -103,7 +103,8 @@
 </form>
 
 @push('scripts')
-<script src="{{ asset('js/huvanti-editor.js') }}"></script>
+{{-- Cache-busted editor tag: ?v=filemtime forces browsers to fetch the fixed editor --}}
+{!! \App\Support\ViteAssets::editorScript() !!}
 <script>
 // Self-made Huvanti rich text editor (single small file, no dependencies).
 huvantiEditorInit('#editor');
@@ -120,10 +121,26 @@ huvantiEditorInit('#editor');
     }
     function previewFeatured(input){
         const img = document.getElementById('featured-preview');
-        if(input.files && input.files[0]){
-            img.src = URL.createObjectURL(input.files[0]);
-            img.classList.remove('hidden');
+        if(!input.files || !input.files[0]) return;
+        const file = input.files[0];
+        // Client-side guards mirroring the server (4 MB max, real image
+        // types only) so admins get instant feedback instead of an error
+        // page after a full post was already written.
+        const okTypes = ['image/jpeg','image/png','image/gif','image/webp','image/bmp'];
+        if (okTypes.indexOf(file.type) === -1) {
+            alert('Unsupported image type ("' + (file.type || 'unknown') + '"). Please use JPG, PNG, GIF, WebP or BMP.');
+            input.value = '';
+            return;
         }
+        if (file.size > 4 * 1024 * 1024) {
+            alert('The image is too large (' + Math.round(file.size / 1024 / 1024 * 10) / 10 + ' MB). Maximum size is 4 MB — please use a smaller image.');
+            input.value = '';
+            return;
+        }
+        if (img.dataset.objectUrl) { try { URL.revokeObjectURL(img.dataset.objectUrl); } catch(e){} }
+        img.dataset.objectUrl = URL.createObjectURL(file);
+        img.src = img.dataset.objectUrl;
+        img.classList.remove('hidden');
     }
 </script>
 @endpush

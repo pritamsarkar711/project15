@@ -55,7 +55,8 @@
     </div>
 </div>
 @push('scripts')
-<script src="{{ asset('js/huvanti-editor.js') }}"></script>
+{{-- Cache-busted editor tag: ?v=filemtime forces browsers to fetch the fixed editor --}}
+{!! \App\Support\ViteAssets::editorScript() !!}
 <script>
 // Self-made Huvanti rich text editor (single small file, no dependencies).
 huvantiEditorInit('#editor');

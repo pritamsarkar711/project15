@@ -16,18 +16,53 @@ class HtmlSanitizer
         'h1','h2','h3','h4','h5','h6','blockquote','q',
         'ul','ol','li','table','thead','tbody','tr','th','td',
         'a','img','figure','figcaption','span','div','sup','sub','small',
+        // execCommand('foreColor' | 'hiliteColor' | 'fontName' | 'fontSize')
+        // serialises to <font color=... face=... size=...> in Chrome, Edge,
+        // Firefox and Safari. Without allowlisting it, every text colour,
+        // highlight, font family and font size the editor applies was
+        // SILENTLY DELETED on save (the tag was unwrapped, its attributes
+        // dropped) — the stored post then looked nothing like the editor.
+        'font',
     ];
 
     private const ALLOWED_ATTRS = [
         'a'    => ['href', 'title', 'target', 'rel'],
         'img'  => ['src', 'alt', 'width', 'height', 'loading', 'decoding'],
-        'th'   => ['colspan', 'rowspan'],
-        'td'   => ['colspan', 'rowspan'],
+        'th'   => ['colspan', 'rowspan', 'style'],
+        'td'   => ['colspan', 'rowspan', 'style'],
+        'font' => ['color', 'face', 'size', 'style'],
+        // style= carries the editor's line-height, text colour fallbacks
+        // (style="color:...") and background highlights. The style value is
+        // vetted below (expression/behavior/position/javascript rejected).
         'span' => ['style'],
         'div'  => ['style'],
         'p'    => ['style'],
         'li'   => ['style'],
+        'blockquote' => ['style'],
+        'h1'   => ['style'],
+        'h2'   => ['style'],
+        'h3'   => ['style'],
+        'h4'   => ['style'],
+        'h5'   => ['style'],
+        'h6'   => ['style'],
+        'mark' => ['style'],
+        'u'    => ['style'],
+        's'    => ['style'],
+        'em'   => ['style'],
+        'strong' => ['style'],
+        'b'    => ['style'],
+        'i'    => ['style'],
+        'small' => ['style'],
+        'sup'  => ['style'],
+        'sub'  => ['style'],
+        'figure' => ['style'],
+        'figcaption' => ['style'],
+        'pre'  => ['style'],
+        'code' => ['style'],
     ];
+
+    /** style="..." values that never pass, even though style itself is allowed. */
+    private const BLOCKED_STYLE_PATTERN = '/(expression|behavior|position\s*:\s*fixed|javascript|vbscript|import\s|url\s*\(\s*["\']?\s*data)/i';
 
     public static function clean(string $html): string
     {
@@ -79,7 +114,7 @@ class HtmlSanitizer
                 if (str_starts_with((string) $keep, 'on')) {
                     continue;
                 }
-                if ($keep === 'style' && preg_match('/(expression|behavior|position\s*:\s*fixed|javascript)/i', $val)) {
+                if ($keep === 'style' && preg_match(self::BLOCKED_STYLE_PATTERN, $val)) {
                     continue;
                 }
                 $node->setAttribute($keep, $val);
