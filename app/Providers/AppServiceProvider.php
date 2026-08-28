@@ -192,7 +192,7 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Make sure the tables/directories session + cache drivers need exist.
      * Runs on every request (one cheap hasTable) so a partial install cannot
-     * keep the public site in a 500 loop until someone opens /deploy.php.
+     * keep the public site in a 500 loop after a git deploy.
      */
     private function ensureRuntimeTables(): void
     {
