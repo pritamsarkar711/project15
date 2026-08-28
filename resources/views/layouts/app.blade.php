@@ -74,9 +74,30 @@
     <link rel="dns-prefetch" href="https://www.googletagmanager.com">
     <link href="{{ \App\Support\SiteFont::googleUrl() }}" rel="stylesheet">
     {!! \App\Support\ViteAssets::tags(['resources/css/app.css', 'resources/js/app.js']) !!}
+
+    {{-- Google Tag Manager (Admin → Settings → Analytics & Verification) --}}
+    @if(setting('gtm_container_id'))
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','{{ setting('gtm_container_id') }}');</script>
+    @endif
+
+    {{-- Google Analytics 4 (Search Console GA verification requires the
+         gtag.js snippet inside <head>, so it lives here — not at body end) --}}
+    @if(setting('ga_measurement_id'))
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ setting('ga_measurement_id') }}"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', '{{ setting('ga_measurement_id') }}');
+    </script>
+    @endif
+
     @stack('head')
 </head>
 <body class="bg-[#fafafa] dark:bg-[#121212] text-slate-800 dark:text-slate-100 antialiased overflow-x-hidden" style="font-family:{{ \App\Support\SiteFont::cssStack() }}">
+    @if(setting('gtm_container_id'))
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ setting('gtm_container_id') }}" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    @endif
     {{-- Admin ⇄ User switch: silent. While the admin browses in user mode the
          site header shows a small "Switch to Admin" button — no banner, no
          extra text, the public design stays exactly as visitors see it. --}}
@@ -111,16 +132,6 @@
     <button id="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" class="fixed bottom-4 right-4 w-10 h-10 bg-[#0C3B2E] dark:bg-emerald-400 text-white dark:text-slate-900 shadow-lg hidden items-center justify-center hover:bg-[#072A20] dark:hover:bg-emerald-300 transition" aria-label="Scroll to top">
         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
     </button>
-
-    @if(setting('ga_measurement_id'))
-    <script async src="https://www.googletagmanager.com/gtag/js?id={{ setting('ga_measurement_id') }}"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', '{{ setting('ga_measurement_id') }}');
-    </script>
-    @endif
 
     @stack('scripts')
     <script>

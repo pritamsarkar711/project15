@@ -26,6 +26,10 @@
                     <input type="text" name="ga_measurement_id" value="{{ old('ga_measurement_id', $settings['ga_measurement_id']->value ?? '') }}" placeholder="G-XXXXXXXXXX" class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-mono placeholder:font-sans">
                 </div>
                 <div>
+                    <label class="text-sm font-medium">Google Tag Manager ID</label>
+                    <input type="text" name="gtm_container_id" value="{{ old('gtm_container_id', $settings['gtm_container_id']->value ?? '') }}" placeholder="GTM-XXXXXXX" class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-mono placeholder:font-sans">
+                </div>
+                <div>
                     <label class="text-sm font-medium">Search Console Token</label>
                     <input type="text" name="search_console_token" value="{{ old('search_console_token', $settings['search_console_token']->value ?? '') }}" placeholder="google-site-verification value" class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-mono placeholder:font-sans">
                 </div>
