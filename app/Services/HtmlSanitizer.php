@@ -81,8 +81,11 @@ class HtmlSanitizer
         'code' => ['style'],
     ];
 
-    /** style="..." values that never pass, even though style itself is allowed. */
-    private const BLOCKED_STYLE_PATTERN = '/(expression|behavior|position\s*:\s*fixed|javascript|vbscript|import\s|url\s*\(\s*["\']?\s*data)/i';
+    /** style="..." values that never pass, even though style itself is allowed.
+     *  position: fixed/absolute/sticky is blocked too — a pasted element with
+     *  position styling could pin itself over the whole published article
+     *  (or the site header) and no legitimate post content needs it. */
+    private const BLOCKED_STYLE_PATTERN = '/(expression|behavior|position\s*:\s*(?:fixed|absolute|sticky)|javascript|vbscript|import\s|url\s*\(\s*["\']?\s*data)/i';
 
     public static function clean(string $html): string
     {

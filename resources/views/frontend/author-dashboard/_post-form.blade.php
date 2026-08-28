@@ -262,10 +262,16 @@
             if (field && field.type !== 'file') { field.value = data[key]; restored++; }
         });
         if (restored) {
-            // Push content into the rich text editor too.
+            // Push content into the rich text editor too. The editor never
+            // listens to textarea events, so plain value assignment leaves
+            // the editor VISUALLY EMPTY while the hidden textarea holds the
+            // text — __huvSet is the editor's official restore bridge.
             if (ed) {
-                ed.value = data['content'] || '';
-                ed.dispatchEvent(new Event('input', { bubbles: true }));
+                if (typeof ed.__huvSet === 'function') { ed.__huvSet(data['content'] || ''); }
+                else {
+                    ed.value = data['content'] || '';
+                    ed.dispatchEvent(new Event('input', { bubbles: true }));
+                }
             }
             setStatus('Your last unsaved work in this browser was restored (saved ' + formatTime(data.__savedAt) + ').');
             dirtyLocal = false; dirtyServer = true; // push the restored copy to the server too

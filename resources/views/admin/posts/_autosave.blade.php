@@ -54,9 +54,15 @@
             if (field && field.type !== 'file') { field.value = data[key]; restored++; }
         });
         if (restored) {
+            // Push content into the rich text editor too — __huvSet is the
+            // editor's official restore bridge (plain value assignment is
+            // invisible to it and left the editor looking empty).
             if (ed) {
-                ed.value = data['content'] || '';
-                ed.dispatchEvent(new Event('input', { bubbles: true }));
+                if (typeof ed.__huvSet === 'function') { ed.__huvSet(data['content'] || ''); }
+                else {
+                    ed.value = data['content'] || '';
+                    ed.dispatchEvent(new Event('input', { bubbles: true }));
+                }
             }
             setStatus('Your last unsaved work in this browser was restored (saved ' + formatTime(data.__savedAt) + ').');
             dirtyLocal = false; dirtyServer = true;

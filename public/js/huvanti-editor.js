@@ -304,10 +304,31 @@
         '.dark .huv-ico-btn{background:#0f172a;border-color:#334155;color:#e2e8f0;}',
         '.huv-ico-btn:hover{background:#d1fae5;border-color:#10b981;color:#065f46;}',
         '.dark .huv-ico-btn:hover{background:#064e3b;color:#a7f3d0;}',
-        '.huv-ico-btn svg{width:16px;height:16px;pointer-events:none;}'
+        '.huv-ico-btn svg{width:16px;height:16px;pointer-events:none;}',
+        // ---- table context tools (status bar, shown while the caret is
+        // inside a table — before this, an inserted table could never be
+        // extended or removed without mangling the HTML by hand) ----
+        '.huv-rte-tbl{display:none;align-items:center;gap:5px;}',
+        '.huv-rte-tbl.on{display:flex;}',
+        '.huv-rte-tbl button{border:1px solid #cbd5e1;background:#fff;color:#334155;border-radius:4px;font-size:11px;font-weight:600;padding:2px 8px;cursor:pointer;font-family:inherit;}',
+        '.huv-rte-tbl button:hover{background:#d1fae5;border-color:#10b981;color:#065f46;}',
+        '.dark .huv-rte-tbl button{background:#0f172a;border-color:#334155;color:#e2e8f0;}',
+        '.dark .huv-rte-tbl button:hover{background:#064e3b;color:#a7f3d0;}',
+        // Image resize handles must receive touch input directly — without
+        // touch-action:none, the browser scrolls the page instead of resizing.
+        '.huv-img-h{touch-action:none;}',
+        // ---- non-blocking toast (replaces window.alert for upload guards) ----
+        '.huv-toast{position:fixed;left:50%;transform:translateX(-50%);bottom:26px;background:#0f172a;color:#f8fafc;padding:10px 16px;border-radius:8px;font-size:13px;line-height:1.45;z-index:2147483600;box-shadow:0 10px 30px rgba(0,0,0,.35);max-width:min(480px,90vw);border-left:4px solid #dc2626;}',
+        // ---- recovered-draft notice (editor-owned recovery, e.g. pages) ----
+        '.huv-restore{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 12px;background:#fffbeb;border-bottom:1px solid #fde68a;color:#92400e;font-size:12px;}',
+        '.huv-restore button{border:1px solid #fcd34d;background:#fff;color:#92400e;border-radius:4px;font-size:11px;font-weight:700;padding:2px 9px;cursor:pointer;font-family:inherit;flex-shrink:0;}',
+        '.huv-restore button:hover{background:#fef3c7;}'
     ].join('\n');
 
-    var FONTS = ['Default', '"Google Sans", Roboto, Arial, sans-serif', 'Arial, Helvetica, sans-serif', 'Georgia, serif', '"Times New Roman", Times, serif', '"Courier New", monospace', 'Verdana, Geneva, sans-serif', '"Trebuchet MS", sans-serif', '"Work Sans", Arial, sans-serif'];
+    // NOTE: no "Google Sans" — that family is NOT on Google Fonts, the old
+    // <link> to fonts.googleapis.com returned HTTP 400 on every page load
+    // (wasted request, console error) and the font never rendered anyway.
+    var FONTS = ['Default', 'Arial, Helvetica, sans-serif', 'Georgia, serif', '"Times New Roman", Times, serif', '"Courier New", monospace', 'Verdana, Geneva, sans-serif', '"Trebuchet MS", sans-serif', '"Work Sans", Arial, sans-serif'];
     var LINE_HEIGHTS = ['Default', '1', '1.2', '1.5', '1.7', '2', '2.5'];
     var SIZES = [
         { label: 'S', v: '2', title: 'Small' }, { label: 'N', v: '3', title: 'Normal' }, { label: 'M', v: '4', title: 'Medium' },
@@ -319,10 +340,19 @@
     // equally sharp on every OS and inherit the text colour.
     var AUTOSAVE_KEY_PREFIX = 'huv-rte-autosave-';
 
+    // Popovers register an optional cleanup (e.g. find and replace clears
+    // its yellow find-marks) that runs whenever any popover/dropdown closes —
+    // before this, marks left behind by simply closing the Find pop were
+    // SAVED INTO the post as yellow highlight junk.
     function closeAllPops(root) {
         root.querySelectorAll('.huv-rte-pop').forEach(function (p) { p.remove(); });
         root.querySelectorAll('.huv-rte-dd-list').forEach(function (l) { l.remove(); });
         root.querySelectorAll('.huv-rte-dd-btn.active').forEach(function (b) { b.classList.remove('active'); });
+        if (typeof root.__huvPopCleanup === 'function') {
+            var fn = root.__huvPopCleanup;
+            root.__huvPopCleanup = null;
+            fn();
+        }
     }
 
     function pop(anchor, root, html, onOpen) {
@@ -330,6 +360,13 @@
         var popEl = document.createElement('div');
         popEl.className = 'huv-rte-pop';
         popEl.innerHTML = html;
+        // Clicking a popover control must not steal the contenteditable
+        // selection (Safari collapses it, so Bold/foreColor then applies to
+        // nothing). Form fields stay exempt so they still receive the caret.
+        popEl.addEventListener('mousedown', function (e) {
+            if (e.target && e.target.closest && e.target.closest('input,textarea,select')) return;
+            e.preventDefault();
+        });
         var tb = root.querySelector('.huv-rte-toolbar');
         tb.appendChild(popEl);
         var r = anchor.getBoundingClientRect();
@@ -344,6 +381,12 @@
         var t = document.createElement('div');
         t.innerHTML = html;
         t.querySelectorAll('script,style,iframe,object,embed,form,input,button,link,meta').forEach(function (n) { n.remove(); });
+        // Comments: Word/Google-Docs paste payloads carry kilobytes of
+        // conditional comments that would otherwise be stored in the DB.
+        var commentWalker = document.createTreeWalker(t, NodeFilter.SHOW_COMMENT, null);
+        var comments = [];
+        while (commentWalker.nextNode()) comments.push(commentWalker.currentNode);
+        comments.forEach(function (c) { c.remove(); });
         t.querySelectorAll('*').forEach(function (n) {
             [].slice.call(n.attributes).forEach(function (a) {
                 var name = a.name.toLowerCase();
@@ -351,6 +394,18 @@
                     n.removeAttribute(a.name);
                 }
             });
+        });
+        // Mirror the server-side style blacklist: pasted position/z-index
+        // declarations could pin an element over the whole article (or the
+        // site header) once published. The editor itself never emits them.
+        t.querySelectorAll('[style]').forEach(function (n) {
+            var s = n.getAttribute('style') || '';
+            var cleaned = s.replace(/position\s*:\s*(?:fixed|absolute|sticky)[^;]*;?/gi, '')
+                           .replace(/z-index\s*:\s*[^;]+;?/gi, '');
+            if (cleaned !== s) {
+                if (cleaned.trim()) n.setAttribute('style', cleaned.trim());
+                else n.removeAttribute('style');
+            }
         });
         return t.innerHTML;
     }
@@ -392,6 +447,16 @@
 
         this.wrap = wrap; this.content = content; this.srcArea = srcArea;
 
+        // Programmatic bridge for the form-level autosave layers: they
+        // restore a whole-form snapshot (title + excerpt + content TOGETHER)
+        // and push the saved content back through here. Plain textarea value
+        // assignment is invisible to the editor — it never listens to
+        // textarea events — so recovery silently showed an empty editor.
+        textarea.__huvSet = function (html) {
+            content.innerHTML = sanitizeHTML(html || '');
+            sync();
+        };
+
         // ---------------- helpers ----------------
         function cmd(name, value) {
             content.focus();
@@ -417,8 +482,12 @@
                 html = html.replace(/<b(\s|>)/g, '<strong$1').replace(/<\/b>/g, '</strong>')
                            .replace(/<i(\s|>)/g, '<em$1').replace(/<\/i>/g, '</em>');
                 textarea.value = html;
-                srcArea.value = html;
+                // NOTE: srcArea is deliberately NOT mirrored here — entering
+                // source view refreshes it from the content. Mirroring up to
+                // megabytes of base64 HTML into TWO places on EVERY keystroke
+                // made long image-heavy posts visibly lag while typing.
             }
+            if (typeof autosaveDirty === 'boolean') autosaveDirty = true;
             updateCount();
         }
 
@@ -430,7 +499,13 @@
 
         function updateCount() {
             var wc = status.querySelector('.huv-rte-wc');
-            if (wc) wc.textContent = wordCount() + ' words';
+            if (!wc) return;
+            var text = (wrap.classList.contains('src') ? srcArea.value : content.innerText) || '';
+            var m = text.trim().match(/\S+/g);
+            // Characters (excluding spaces) shown as well: the server rejects
+            // drafts under 120 content characters, so the author can watch
+            // that threshold approach instead of guessing.
+            wc.textContent = (m ? m.length : 0) + ' words · ' + text.replace(/\s/g, '').length + ' characters';
         }
 
         function updateStates() {
@@ -441,13 +516,23 @@
                 setA('strike', document.queryCommandState('strikeThrough'));
                 setA('ul', document.queryCommandState('insertUnorderedList'));
                 setA('ol', document.queryCommandState('insertOrderedList'));
-                var blocks = ['alignL', 'alignC', 'alignR', 'alignJ'];
                 var justify = document.queryCommandState('justifyCenter');
                 var right = document.queryCommandState('justifyRight');
                 var full = document.queryCommandState('justifyFull');
                 setA('alignL', !justify && !right && !full);
                 setA('alignC', justify); setA('alignR', right); setA('alignJ', full);
             } catch (e) { /* queryCommandState can throw on some selections */ }
+            // Table context toolbar: visible while the caret is inside a
+            // table — the only place where adding/removing rows and columns
+            // makes sense (see tableOp below).
+            var inTable = false;
+            try {
+                var ts = window.getSelection();
+                var ta = ts && ts.anchorNode ? (ts.anchorNode.nodeType === 3 ? ts.anchorNode.parentNode : ts.anchorNode) : null;
+                var tt = ta && ta.closest ? ta.closest('table') : null;
+                inTable = !!(tt && content.contains(tt));
+            } catch (e2) {}
+            if (tblBar) tblBar.classList.toggle('on', inTable);
         }
 
         function setA(name, on) {
@@ -457,9 +542,19 @@
 
         function restoreRange() {
             if (self.savedRange) {
-                var sel = window.getSelection();
-                sel.removeAllRanges();
-                sel.addRange(self.savedRange);
+                // A range whose anchors were removed from the DOM (deleted
+                // surrounding content, form autofill, etc.) must NOT be
+                // re-added — some browsers then apply commands to nowhere or
+                // throw. Fall back to the end of the document instead.
+                var alive = false;
+                try { alive = content.contains(self.savedRange.commonAncestorContainer); } catch (e) {}
+                if (alive) {
+                    var sel = window.getSelection();
+                    sel.removeAllRanges();
+                    sel.addRange(self.savedRange);
+                } else {
+                    self.savedRange = null;
+                }
             }
             content.focus();
         }
@@ -521,6 +616,15 @@
             if (full) full.classList.toggle('active', !w);
         }
 
+        function toast(msg) {
+            var t = document.createElement('div');
+            t.className = 'huv-toast';
+            t.setAttribute('role', 'status');
+            t.textContent = msg;
+            document.body.appendChild(t);
+            setTimeout(function () { if (t.parentNode) t.remove(); }, 6000);
+        }
+
         function selectImage(img) {
             deselectImage();
             imgSel.img = img;
@@ -535,7 +639,7 @@
             ['nw', 'ne', 'sw', 'se'].forEach(function (pos) {
                 var h = document.createElement('span');
                 h.className = 'huv-img-h huv-img-h-' + pos;
-                h.addEventListener('mousedown', function (e) { startResize(e, pos); });
+                h.addEventListener('pointerdown', function (e) { startResize(e, pos, h); });
                 frame.appendChild(h);
             });
             ov.appendChild(frame);
@@ -567,7 +671,12 @@
                 } else if (b.getAttribute('data-act') === 'del') {
                     var im = imgSel.img;
                     deselectImage();
+                    // Deleting an image that lives inside a link used to
+                    // leave an empty <a></a> shell behind — clicking it did
+                    // nothing and Backspace inside it confused the caret.
+                    var parentA = (im.parentNode && im.parentNode.nodeName === 'A') ? im.parentNode : null;
                     if (im.parentNode) im.parentNode.removeChild(im);
+                    if (parentA && !parentA.firstChild) parentA.parentNode.removeChild(parentA);
                     sync();
                 }
             });
@@ -634,7 +743,11 @@
             imgSel.form.querySelector('[data-f="title"]').value = imgSel.img.getAttribute('title') || '';
             imgSel.form.classList.add('open');
             positionImageOverlay();
-            imgSel.form.querySelector('[data-f="alt"]').focus();
+            // Autofocusing pops the on-screen keyboard over half the editor
+            // on phones/tablets — only auto-focus on fine pointers (mouse).
+            if (!(window.matchMedia && window.matchMedia('(pointer: coarse)').matches)) {
+                imgSel.form.querySelector('[data-f="alt"]').focus();
+            }
         }
 
         function closeImageForm() {
@@ -642,20 +755,30 @@
             positionImageOverlay();
         }
 
-        function startResize(e, pos) {
+        function startResize(e, pos, handle) {
             if (!imgSel.img) return;
+            if (e.button !== undefined && e.button !== 0) return;
             e.preventDefault();
             e.stopPropagation();
             imgSel.dragging = {
                 img: imgSel.img,
                 startX: e.clientX,
                 startW: imgSel.img.getBoundingClientRect().width,
-                dir: (pos === 'ne' || pos === 'se') ? 1 : -1
+                // The SE handle grows when dragged right; EVERY other handle
+                // (nw/ne/sw) grows when dragged LEFT — the old map treated ne
+                // like se, so dragging the top-right handle felt inverted.
+                dir: (pos === 'se') ? 1 : -1
             };
+            // Pointer capture keeps the drag glued to the handle even when
+            // the cursor/finger leaves it — and makes TOUCH resize work at
+            // all (the old mousedown-only handles were dead on phones).
+            if (handle && handle.setPointerCapture && e.pointerId !== undefined) {
+                try { handle.setPointerCapture(e.pointerId); } catch (err) {}
+            }
             document.body.classList.add('huv-img-resizing');
         }
 
-        document.addEventListener('mousemove', function (e) {
+        document.addEventListener('pointermove', function (e) {
             var d = imgSel.dragging;
             if (!d) return;
             var maxW = Math.max(120, content.clientWidth - 44);
@@ -665,7 +788,7 @@
             d.img.style.width = w + 'px'; // smooth live resize; removed on release
             positionImageOverlay();
         });
-        document.addEventListener('mouseup', function () {
+        function endResize() {
             var d = imgSel.dragging;
             if (!d) return;
             imgSel.dragging = null;
@@ -673,7 +796,9 @@
             d.img.style.width = ''; // the width ATTRIBUTE keeps the size (it survives the server-side sanitizer)
             sync();
             positionImageOverlay();
-        });
+        }
+        document.addEventListener('pointerup', endResize);
+        document.addEventListener('pointercancel', endResize);
 
         // Keep the overlay glued to the image when the writing area scrolls,
         // the window resizes, or the image itself changes size (lazy load).
@@ -695,7 +820,7 @@
             // 419/500 on save. Large photos belong in "Featured Image".
             var MAX_EMBED_BYTES = 1.5 * 1024 * 1024;
             if (file.size > MAX_EMBED_BYTES) {
-                window.alert('This image is ' + Math.round(file.size / 1024 / 1024 * 10) / 10 + ' MB. Images placed inside the text must be under 1.5 MB. Please resize it first, or use the "Featured Image" uploader which handles up to 4 MB.');
+                toast('This image is ' + Math.round(file.size / 1024 / 1024 * 10) / 10 + ' MB. Images placed inside the text must be under 1.5 MB. Please resize it first, or use the \u201CFeatured Image\u201D uploader which handles up to 4 MB.');
                 return;
             }
             var reader = new FileReader();
@@ -703,6 +828,7 @@
                 var img = document.createElement('img');
                 img.setAttribute('src', reader.result);
                 var alt = (file.name || '').replace(/\.[a-z0-9]+$/i, '').replace(/[-_]+/g, ' ').replace(/\s+/g, ' ').trim();
+                if (alt) alt = alt.charAt(0).toUpperCase() + alt.slice(1); // sentence case reads like a real description
                 var postTitle = '';
                 try {
                     var f = textarea.closest('form');
@@ -778,6 +904,9 @@
                 var list = document.createElement('div');
                 list.className = 'huv-rte-dd-list';
                 list.setAttribute('role', 'menu');
+                // Keep the contenteditable selection alive while the menu is
+                // used (same reason pop() guards mousedown).
+                list.addEventListener('mousedown', function (e) { e.preventDefault(); });
                 items.forEach(function (it) {
                     var row = document.createElement('button');
                     row.type = 'button';
@@ -864,12 +993,7 @@
             if (text) {
                 insertHTML('<code>' + text.replace(/</g, '&lt;') + '</code>');
             } else {
-                var code = document.createElement('code');
-                code.textContent = 'code';
-                code.style.background = '#f1f5f9';
-                code.style.padding = '1px 5px';
-                code.style.borderRadius = '4px';
-                insertHTML(code.outerHTML + '&nbsp;');
+                insertHTML('<code style="background:#f1f5f9;padding:1px 5px;border-radius:4px">code</code>&nbsp;');
             }
         });
         btn('sup', 'sup', 'Superscript', function () { cmd('superscript'); });
@@ -886,14 +1010,20 @@
                     sw.addEventListener('click', function () { closeAllPops(wrap); cmd('foreColor', sw.getAttribute('data-color')); });
                 });
                 p.querySelector('.huv-rte-custom').addEventListener('change', function () { closeAllPops(wrap); cmd('foreColor', this.value); });
-                p.querySelector('.huv-rte-custom').addEventListener('input', function () { cmd('foreColor', this.value); });
+                // NOTE: no live 'input' handler — dragging the color slider
+                // fired an execCommand per pixel (dozens of undo steps and a
+                // full sync each), which stuttered long posts.
             });
         });
         btn('hiliteColor', 'highlighter', 'Highlight', function () {
             var anchor = this;
-            var html = '<div class="huv-rte-pop-grid">' + COLORS.map(function (c) {
-                return '<button type="button" class="huv-rte-swatch" data-color="' + c + '" style="background:' + c + '" title="' + c + '"></button>';
-            }).join('') + '</div>';
+            var html = '<div class="huv-rte-pop-grid">' +
+                // First swatch = REMOVE the highlight (previously there was
+                // no way to un-highlight without picking white and hoping).
+                '<button type="button" class="huv-rte-swatch" data-color="transparent" title="No highlight" style="background:#fff;color:#dc2626;font-size:12px;font-weight:700;line-height:1">\u2715</button>' +
+                COLORS.map(function (c) {
+                    return '<button type="button" class="huv-rte-swatch" data-color="' + c + '" style="background:' + c + '" title="' + c + '"></button>';
+                }).join('') + '</div>';
             pop(anchor, wrap, html, function (p) {
                 p.querySelectorAll('.huv-rte-swatch').forEach(function (sw) {
                     sw.addEventListener('click', function () { closeAllPops(wrap); cmd('hiliteColor', sw.getAttribute('data-color')); });
@@ -916,6 +1046,17 @@
             restoreRange();
             var sel = window.getSelection();
             var selectedText = sel && sel.toString() ? sel.toString() : '';
+            // Caret inside an existing link (collapsed selection)? Then this
+            // is an EDIT session: prefill its URL and update it in place.
+            // The old code always INSERTED, producing nested <a><a>… markup
+            // that browsers split into broken halves.
+            var existing = null;
+            if (self.savedRange && self.savedRange.commonAncestorContainer) {
+                var anc = self.savedRange.commonAncestorContainer;
+                if (anc.nodeType === 3) anc = anc.parentNode;
+                existing = (anc && anc.closest) ? anc.closest('a') : null;
+                if (existing && !content.contains(existing)) existing = null;
+            }
             var html =
                 '<label class="huv-rte-label">URL</label>' +
                 '<input type="url" class="huv-rte-field" data-role="url" placeholder="https://example.com">' +
@@ -925,12 +1066,24 @@
                 '<button type="button" class="huv-rte-btn-primary" data-role="apply">Apply</button></div>';
             pop(anchor, wrap, html, function (p) {
                 var url = p.querySelector('[data-role="url"]');
+                var blank = p.querySelector('[data-role="blank"]');
+                if (existing) {
+                    url.value = existing.getAttribute('href') || '';
+                    blank.checked = existing.getAttribute('target') === '_blank';
+                }
                 url.focus();
-                p.querySelector('[data-role="apply"]').addEventListener('click', function () {
+                function applyLink() {
                     var v = url.value.trim();
                     if (!v) return;
                     if (!/^(https?:\/\/|mailto:|#|\/)/i.test(v)) v = 'https://' + v;
                     closeAllPops(wrap);
+                    if (existing && !selectedText) {
+                        existing.setAttribute('href', v);
+                        if (blank.checked) { existing.setAttribute('target', '_blank'); existing.setAttribute('rel', 'noopener noreferrer'); }
+                        else { existing.removeAttribute('target'); existing.removeAttribute('rel'); }
+                        sync();
+                        return;
+                    }
                     restoreRange();
                     if (selectedText) {
                         document.execCommand('createLink', false, v);
@@ -939,18 +1092,30 @@
                             if (node.nodeType === 3) node = node.parentNode;
                             a = node.closest ? node.closest('a') : null;
                         }
-                        if (a && p.querySelector('[data-role="blank"]').checked) {
+                        if (a && blank.checked) {
                             a.setAttribute('target', '_blank');
                             a.setAttribute('rel', 'noopener noreferrer');
                         }
                     } else {
-                        insertHTML('<a href="' + v.replace(/"/g, '&quot;') + '"' + (p.querySelector('[data-role="blank"]').checked ? ' target="_blank" rel="noopener noreferrer"' : '') + '>' + v + '</a>');
+                        insertHTML('<a href="' + v.replace(/"/g, '&quot;') + '"' + (blank.checked ? ' target="_blank" rel="noopener noreferrer"' : '') + '>' + v.replace(/</g, '&lt;') + '</a>');
                     }
                     sync();
-                });
+                }
+                p.querySelector('[data-role="apply"]').addEventListener('click', applyLink);
+                url.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); applyLink(); } });
                 p.querySelector('[data-role="remove"]').addEventListener('click', function () {
                     closeAllPops(wrap);
                     restoreRange();
+                    // A collapsed caret gives unlink() nothing to work with
+                    // in some browsers — select the whole link first so
+                    // removal is deterministic.
+                    if (existing && (!sel || sel.isCollapsed)) {
+                        var r = document.createRange();
+                        r.selectNode(existing);
+                        var s2 = window.getSelection();
+                        s2.removeAllRanges();
+                        s2.addRange(r);
+                    }
                     document.execCommand('unlink');
                     sync();
                 });
@@ -1022,7 +1187,9 @@
                 var grid = p.querySelector('[data-role="grid"]');
                 function show(gi) {
                     grid.innerHTML = ICON_GROUPS[gi].icons.map(function (n) {
-                        return '<button type="button" class="huv-ico-btn" title="' + n + '" data-n="' + n + '">' + icon(n) + '</button>';
+                        // Human-readable tooltip: "checkCircle" → "Check Circle".
+                        var label = n.replace(/([a-z0-9])([A-Z])/g, '$1 $2');
+                        return '<button type="button" class="huv-ico-btn" title="' + label + '" aria-label="' + label + '" data-n="' + n + '">' + icon(n) + '</button>';
                     }).join('');
                     grid.querySelectorAll('.huv-ico-btn').forEach(function (b) {
                         b.addEventListener('click', function () {
@@ -1037,6 +1204,12 @@
                             svg.setAttribute('stroke-linejoin', 'round');
                             svg.setAttribute('aria-hidden', 'true');
                             svg.setAttribute('class', 'huv-inline-icon');
+                            // One Backspace/Delete removes the WHOLE icon on
+                            // every browser; without this, some engines put
+                            // the caret inside the SVG and behave erratically.
+                            // (The attribute is stripped on save by the
+                            // sanitizer allowlist — published pages are clean.)
+                            svg.setAttribute('contenteditable', 'false');
                             svg.style.width = '1.15em';
                             svg.style.height = '1.15em';
                             svg.style.verticalAlign = '-0.2em';
@@ -1071,6 +1244,11 @@
                 var marks = [];
                 var idx = -1;
                 function clear() { content.querySelectorAll('.huv-rte-findmark').forEach(function (m) { var t = document.createTextNode(m.textContent); m.parentNode.replaceChild(t, m); }); content.normalize(); marks = []; idx = -1; }
+                // Any popover close (Escape, another button, outside click)
+                // used to leave the yellow find-marks IN the content — they
+                // then got SAVED into the post. The cleanup hook runs on
+                // every closeAllPops.
+                wrap.__huvPopCleanup = function () { clear(); };
                 function doFind() {
                     clear();
                     var q = findEl.value;
@@ -1109,19 +1287,23 @@
                 });
                 p.querySelector('[data-role="one"]').addEventListener('click', function () {
                     if (idx >= 0 && marks[idx]) {
-                        marks[idx].textContent = repEl.value;
-                        marks[idx].classList.remove('active');
-                        marks[idx].outerHTML = marks[idx].textContent;
+                        // Replace via a TEXT node — the old outerHTML approach
+                        // parsed the replacement as HTML (typing "<img …>"
+                        // into the Replace field literally created an image).
+                        marks[idx].parentNode.replaceChild(document.createTextNode(repEl.value), marks[idx]);
                         marks.splice(idx, 1); idx--;
                         sync();
                     }
                 });
                 p.querySelector('[data-role="all"]').addEventListener('click', function () {
-                    marks.forEach(function (m) { m.textContent = repEl.value; m.outerHTML = m.textContent; });
+                    marks.forEach(function (m) { m.parentNode.replaceChild(document.createTextNode(repEl.value), m); });
                     marks = []; idx = -1; sync();
                 });
                 findEl.focus();
-                p.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeAllPops(wrap); });
+                // Enter = find next (what every editor user expects).
+                findEl.addEventListener('keydown', function (e) {
+                    if (e.key === 'Enter') { e.preventDefault(); p.querySelector('[data-role="next"]').click(); }
+                });
             });
         });
         select('lh', 'Line height', LINE_HEIGHTS.map(function (h) { return { label: h === 'Default' ? '↕' : h, v: h }; }), function (v) {
@@ -1205,11 +1387,64 @@
             // The wrap just moved (page → body or back): re-glue the image
             // overlay to its image in the new geometry.
             if (imgSel.img) requestAnimationFrame(positionImageOverlay);
-            content.focus();
+            // In source view the content area is hidden — focusing it leaves
+            // the keyboard dead until a click. Focus whatever is visible.
+            if (wrap.classList.contains('src')) srcArea.focus(); else content.focus();
         }
         btn('full', 'expand', 'Fullscreen', function () { toggleFullscreen(); });
 
-        status.innerHTML = '<span class="huv-rte-wc"></span><span>Huvanti Editor · <a href="#" data-role="help" style="color:inherit;text-decoration:underline">Shortcuts</a></span>';
+        status.innerHTML = '<span class="huv-rte-wc"></span>';
+        // Table tools live in the status bar (always visible, zero
+        // positioning headaches) and light up only when the caret is inside
+        // a table. Until now an inserted table could not be extended or
+        // removed without hand-editing HTML in the source view.
+        var tblBar = document.createElement('span');
+        tblBar.className = 'huv-rte-tbl';
+        tblBar.innerHTML =
+            '<button type="button" data-t="row-below" title="Insert row below">+ Row</button>' +
+            '<button type="button" data-t="col-right" title="Insert column right">+ Col</button>' +
+            '<button type="button" data-t="row-del" title="Delete row">\u2212 Row</button>' +
+            '<button type="button" data-t="col-del" title="Delete column">\u2212 Col</button>' +
+            '<button type="button" data-t="table-del" title="Delete whole table">\u2715 Table</button>';
+        tblBar.addEventListener('click', function (e) {
+            var b = e.target.closest('button');
+            if (b) tableOp(b.getAttribute('data-t'));
+        });
+        status.appendChild(tblBar);
+        status.insertAdjacentHTML('beforeend', '<span>Huvanti Editor · <a href="#" data-role="help" style="color:inherit;text-decoration:underline">Shortcuts</a></span>');
+        function tableOp(op) {
+            var s = window.getSelection();
+            var anc = s && s.anchorNode ? s.anchorNode : null;
+            if (!anc) return;
+            if (anc.nodeType === 3) anc = anc.parentNode;
+            var cell = anc.closest ? anc.closest('td,th') : null;
+            var table = anc.closest ? anc.closest('table') : null;
+            if (!cell || !table || !content.contains(table)) return;
+            var row = cell.parentNode;
+            if (!row || row.nodeName !== 'TR') return;
+            var cellIndex = Array.prototype.indexOf.call(row.cells, cell);
+            var rowIndex = Array.prototype.indexOf.call(table.rows, row);
+            var i, idx2;
+            if (op === 'row-below') {
+                var nr = table.insertRow(rowIndex + 1);
+                for (i = 0; i < row.cells.length; i++) nr.insertCell(i);
+            } else if (op === 'col-right') {
+                for (i = 0; i < table.rows.length; i++) {
+                    idx2 = Math.min(cellIndex + 1, table.rows[i].cells.length);
+                    table.rows[i].insertCell(idx2);
+                }
+            } else if (op === 'row-del') {
+                if (table.rows.length <= 1) { table.parentNode.removeChild(table); }
+                else table.deleteRow(rowIndex);
+            } else if (op === 'col-del') {
+                if (row.cells.length <= 1) { table.parentNode.removeChild(table); }
+                else for (i = 0; i < table.rows.length; i++) { if (table.rows[i].cells[cellIndex]) table.rows[i].deleteCell(cellIndex); }
+            } else if (op === 'table-del') {
+                table.parentNode.removeChild(table);
+            }
+            sync();
+            updateStates();
+        }
         status.querySelector('[data-role="help"]').addEventListener('click', function (e) {
             e.preventDefault();
             alert('Shortcuts:\nCtrl+B  Bold\nCtrl+I  Italic\nCtrl+U  Underline\nCtrl+K  Link\nCtrl+F  Find and replace\nCtrl+Z  Undo\nCtrl+Y  Redo\nTab     Indent  ·  Shift+Tab Outdent');
@@ -1236,10 +1471,18 @@
             }
         });
 
+        var statesQueued = false;
         document.addEventListener('selectionchange', function () {
             var sel = window.getSelection();
             if (sel && sel.rangeCount && content.contains(sel.anchorNode)) {
                 self.savedRange = sel.getRangeAt(0).cloneRange();
+            }
+            // Refresh toolbar/button states (and the table tools) even for
+            // caret moves that are not key/mouse driven (mobile selection
+            // handles, accessibility navigation). rAF-throttled.
+            if (!statesQueued) {
+                statesQueued = true;
+                requestAnimationFrame(function () { statesQueued = false; updateStates(); });
             }
         });
 
@@ -1257,30 +1500,23 @@
                 e.preventDefault();
                 cmd(e.shiftKey ? 'outdent' : 'indent');
             }
-            if (e.key === 'Escape') {
-                // Popovers and the image form close first, then an image
-                // selection is dropped. Leaving fullscreen is handled by the
-                // document-level Escape listener below (this event bubbles
-                // up to it — toggling here too would immediately undo itself).
-                closeAllPops(wrap);
-                if (imgSel.form && imgSel.form.classList.contains('open')) closeImageForm();
-                else if (imgSel.img) deselectImage();
-            }
+            // NOTE: Escape is handled ONLY by the central document-level
+            // listener below (staged: popover → image form → image selection
+            // → fullscreen). Handling it here too meant that with a popover
+            // open in fullscreen, this handler closed the pop, the document
+            // handler then found no pop and ALSO exited fullscreen — one
+            // keypress doing two things.
         });
 
-        // Escape leaves fullscreen even when the focus is NOT inside the
-        // editable area (toolbar button, source view, page background). If a
-        // popover or dropdown is open, the first Escape closes it instead.
+        // ONE central Escape handler for everything, staged: popover → image
+        // form → image selection → fullscreen exit. Works no matter where
+        // the focus sits (content, toolbar, source view, page background).
         document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape' && wrap.classList.contains('full')) {
-                if (wrap.querySelector('.huv-rte-pop, .huv-rte-dd-list')) {
-                    closeAllPops(wrap);
-                    return;
-                }
-                if (imgSel.form && imgSel.form.classList.contains('open')) { closeImageForm(); return; }
-                if (imgSel.img) { deselectImage(); return; }
-                toggleFullscreen();
-            }
+            if (e.key !== 'Escape') return;
+            if (wrap.querySelector('.huv-rte-pop, .huv-rte-dd-list')) { closeAllPops(wrap); return; }
+            if (imgSel.form && imgSel.form.classList.contains('open')) { closeImageForm(); return; }
+            if (imgSel.img) { deselectImage(); return; }
+            if (wrap.classList.contains('full')) toggleFullscreen();
         });
 
         // Paste: sanitize dangerous markup, keep formatting.
@@ -1335,26 +1571,68 @@
 
         srcArea.addEventListener('input', function () {
             textarea.value = srcArea.value;
+            autosaveDirty = true; // source edits must reach the local snapshot too
             updateCount();
         });
 
-        // Autosave every 3s to localStorage (recovered on reload). Writes are
-        // skipped while the HTML is unchanged — no churn for idle editors.
+        // ---- editor-level local autosave (crash recovery) -----------------
+        // KEY SCOPING FIX: every editor form on this site uses
+        // <textarea name="content">, so the old global key
+        // "huv-rte-autosave-content" was SHARED by all of them — text written
+        // in the admin PAGE editor could resurrect itself inside a NEW POST
+        // (and vice versa). The key is now scoped per URL + field.
         var form = textarea.closest('form');
-        var autosaveKey = AUTOSAVE_KEY_PREFIX + (textarea.getAttribute('name') || textarea.id || 'editor');
-        var draft = null;
-        try { draft = localStorage.getItem(autosaveKey); } catch (e) {}
-        if (draft && !textarea.value.trim() && !content.textContent.trim()) {
-            content.innerHTML = sanitizeHTML(draft);
-            sync();
-        }
+        var autosaveKey = AUTOSAVE_KEY_PREFIX + location.pathname + ':' + (textarea.getAttribute('name') || textarea.id || 'editor');
+        // When the surrounding form runs its own whole-form autosave (author
+        // and admin post forms carry data-autosave), THAT layer owns crash
+        // recovery: it restores title + excerpt + content TOGETHER through
+        // textarea.__huvSet. A second restore here used to race it — the
+        // editor refilled first, the form layer then saw a non-pristine form
+        // and silently DROPPED the recovered title and excerpt.
+        var formOwnsRecovery = !!(form && form.hasAttribute('data-autosave'));
+        var autosaveDirty = false;
         var lastAutosaved = null;
-        setInterval(function () {
-            var html = wrap.classList.contains('src') ? srcArea.value : content.innerHTML;
-            if (html === lastAutosaved) return;
-            lastAutosaved = html;
-            try { localStorage.setItem(autosaveKey, html); } catch (e) {}
-        }, 3000);
+        if (!formOwnsRecovery) {
+            var draft = null;
+            try { draft = localStorage.getItem(autosaveKey); } catch (e) {}
+            if (draft && !textarea.value.trim() && !content.textContent.trim()) {
+                content.innerHTML = sanitizeHTML(draft);
+                sync();
+                // Recovery must be VISIBLE and reversible — silently
+                // resurrecting old text looked like the editor was haunted.
+                var note = document.createElement('div');
+                note.className = 'huv-restore';
+                var noteTxt = document.createElement('span');
+                noteTxt.textContent = 'Unsaved changes from your last session were restored.';
+                note.appendChild(noteTxt);
+                var disc = document.createElement('button');
+                disc.type = 'button';
+                disc.textContent = 'Discard';
+                disc.addEventListener('click', function () {
+                    try { localStorage.removeItem(autosaveKey); } catch (e2) {}
+                    content.innerHTML = '';
+                    sync();
+                    if (note.parentNode) note.remove();
+                    content.focus();
+                });
+                note.appendChild(disc);
+                wrap.insertBefore(note, content);
+            }
+            setInterval(function () {
+                if (!autosaveDirty) return; // idle: don't even READ innerHTML (megabyte posts)
+                autosaveDirty = false;
+                var html = wrap.classList.contains('src') ? srcArea.value : content.innerHTML;
+                if (html === lastAutosaved) return;
+                lastAutosaved = html;
+                try {
+                    localStorage.setItem(autosaveKey, html);
+                } catch (e) {
+                    // Quota exceeded (big base64 images): keep at least the
+                    // TEXT by stripping embedded images from the snapshot.
+                    try { localStorage.setItem(autosaveKey, html.replace(/<img[^>]*>/gi, '')); } catch (e2) {}
+                }
+            }, 3000);
+        }
         if (form) form.addEventListener('submit', function () { try { localStorage.removeItem(autosaveKey); } catch (e) {} });
 
         // Sync on submit (safety net besides live sync).
@@ -1411,13 +1689,9 @@
         if (!el || el.tagName !== 'TEXTAREA') return null;
         if (el.dataset.huvantiRte === '1') return null;
         el.dataset.huvantiRte = '1';
-        if (!document.querySelector('link[data-huv-google-sans]')) {
-            var gs = document.createElement('link');
-            gs.rel = 'stylesheet';
-            gs.href = 'https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Google+Sans+Text:wght@400;500&display=swap';
-            gs.setAttribute('data-huv-google-sans','1');
-            document.head.appendChild(gs);
-        }
+        // NOTE: the old "Google Sans" stylesheet injection was removed — that
+        // family is not distributed via Google Fonts, so the request 404'd on
+        // every page load while the font stack silently fell back anyway.
         return new HuvantiEditor(el, options || {});
     };
 
