@@ -74,9 +74,15 @@ class SeoController extends Controller
         if ($description) $md .= $description."\n\n";
         if ($custom) $md .= $custom."\n\n";
 
-        $md .= "## Articles\n\n";
         // Guarded: a DB hiccup must degrade to a minimal file, not a 500.
         try {
+            $md .= "## Sections\n\n";
+            $md .= '- [Blog]('.$base.'/blog): All latest articles across every category'."\n";
+            if (\App\Models\Setting::get('top_contributors_enabled', '1') === '1') {
+                $md .= '- [Top Contributors]('.$base.'/top-contributors): The most active writers on Huvanti'."\n";
+            }
+
+            $md .= "\n## Articles\n\n";
             $posts = Post::published()->with('category')->latest('published_at')->limit(100)->get();
             foreach ($posts as $post) {
                 $md .= '- ['.strip_tags($post->title).']('.$base.'/blog/'.$post->slug.')';
