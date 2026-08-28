@@ -47,10 +47,7 @@ class SeoController extends Controller
                 ."Disallow: /login\n"
                 ."Disallow: /register\n"
                 ."Disallow: /forgot-password\n"
-                ."Disallow: /reset-password\n"
-                ."Disallow: /deploy.php\n"
-                ."Disallow: /install.php\n"
-                ."Disallow: /doctor.php\n\n"
+                ."Disallow: /reset-password\n\n"
                 ."Sitemap: ".$this->absoluteBase()."/sitemap.xml";
         }
         return response($content, 200)->header('Content-Type', 'text/plain; charset=UTF-8');

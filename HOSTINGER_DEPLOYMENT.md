@@ -50,18 +50,11 @@ admin page).
 
 ### Step 3 — Finish the deploy (clear caches + run migrations)
 
-After the new files are on the server, open this once in your browser:
-
-```text
-https://huvanti.com/deploy.php
-```
-
-It automatically:
-
-- clears compiled Blade views and OPcache,
-- clears the application cache (settings),
-- runs **pending database migrations** (idempotent — safe to run any time),
-- recreates the `public/storage` symlink if possible.
+Nothing to open — `deploy.php` was removed from the repository for security.
+Deployment is automatic on `git push`, and the admin dashboard applies pending
+database migrations automatically the first time it loads after a deploy.
+If a manual cache clear is ever needed, run `deploy.sh` on the server or delete
+`storage/framework/views/*.php` via File Manager.
 
 ### Step 4 — Hard-refresh the browser
 
@@ -118,13 +111,13 @@ Do not publish `.env`, paste it into GitHub, or replace it with `.env.example`.
 
 ### 2. Repair the current outage with one file (optional but fastest)
 
-Upload the current `doctor.php` to `public_html/` and visit:
+> **Note:** `doctor.php` was removed from the repository for security after the
+> incident. This section is kept as a historical record. If a similar outage
+> ever happens again, restore it from git history
+> (`git checkout <old-commit> -- doctor.php`), upload it to `public_html/`,
+> recover, then DELETE it again immediately.
 
-```text
-https://huvanti.com/doctor.php
-```
-
-The doctor is genuinely standalone: it contains a compressed, checksummed copy
+The doctor was genuinely standalone: it contained a compressed, checksummed copy
 of all 11 pristine Composer loader/map files. It can repair the obsolete
 checkout even though that checkout has no `bootstrap/autoload_backup/` folder.
 

@@ -64,6 +64,5 @@ cat <<MESSAGE
 Deployment verified: ${DEPLOYMENT}
 Next:
   1. Confirm https://huvanti.com/deployment.json reports this marker.
-  2. For a new site, open https://huvanti.com/install.php.
-  3. Delete install.php and doctor.php after setup/recovery.
+  2. Verify https://huvanti.com/ and https://huvanti.com/robots.txt respond normally.
 MESSAGE

@@ -21,7 +21,7 @@ define('LARAVEL_START', microtime(true));
 //      README in that directory). Self-healing, zero interaction needed.
 //   2. If anything still fails before Laravel's exception handler can take
 //      over, renders a readable diagnostic page instead of a blank 500, with
-//      a checklist and a link to the authenticated /doctor.php.
+//      a checklist drawn from the same self-checks.
 //   3. After Laravel boots, auto-clears compiled Blade views when the deploy
 //      version changes (after a Git pull on Hostinger). This ensures UI
 //      changes are visible immediately without SSH or manual cache clear.
@@ -180,7 +180,7 @@ function huvanti_render_boot_failure_page(?Throwable $e, array $notes = []): voi
             'ok' => huvanti_autoloader_is_pristine(),
             'value' => huvanti_autoloader_is_pristine()
                 ? 'yes'
-                : 'no — reload this page (auto-restore) or use authenticated /doctor.php',
+                : 'no — reload this page (auto-restore retries it)',
         ],
     ];
 
@@ -202,7 +202,7 @@ function huvanti_render_boot_failure_page(?Throwable $e, array $notes = []): voi
 
     // Never expose exception messages, absolute paths, SQL or stack traces on
     // the public error page. The full exception is written to the PHP error log
-    // by the outer catch; authenticated doctor.php provides deeper diagnostics.
+    // by the outer catch.
     $errorBlock = $e === null
         ? ''
         : '<p class="sub"><strong>Technical details were written to the server error log.</strong></p>';
@@ -246,7 +246,6 @@ HTTP 500. Work through the checklist below — red items are the problem.</p>
 {$errorBlock}
 <table>{$rows}</table>
 {$notesHtml}
-<a class="btn" href="/doctor.php">Open authenticated doctor</a>
 <a class="btn secondary" href="/">Retry homepage</a>
 </div>
 </body>
@@ -300,8 +299,7 @@ try {
         huvanti_render_boot_failure_page(new RuntimeException(
             'The autoloader maps are intact and the framework files exist, but Illuminate '
             .'classes still do not load — stale OPcache is the likely cause. Reload this '
-            .'page, or use authenticated /doctor.php → "Restore autoloader" (it also '
-            .'flushes the cached bytecode).'
+            .'page; a redeploy (git push) also flushes the cached bytecode.'
         ));
         exit(1);
     }

@@ -73,9 +73,11 @@ curl -fsS https://huvanti.com/deployment.json
 # Must report: 2026-08-24-hostinger-launch-v2
 ```
 
-Then open `/install.php`. The installer performs migrations and creates the
-admin account without shell commands. Remove `install.php` and `doctor.php`
-afterward.
+Then verify the homepage loads. The old web installer (`install.php`), deploy
+helper (`deploy.php`) and emergency doctor (`doctor.php`) were removed from the
+repository for security once setup was complete — the site deploys automatically
+on every `git push`.
+Restore them from git history only if ever needed, and delete again afterward.
 
 ## Structure
 
@@ -89,8 +91,8 @@ afterward.
 
 ## Administrator account
 
-The production administrator email and password are created through
-`install.php`; no production credentials are stored in this README.
+The production administrator email and password were created during the initial
+setup; no production credentials are stored in this README.
 
 ## License
 

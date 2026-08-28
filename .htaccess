@@ -1,9 +1,8 @@
 # Huvanti on Hostinger when public_html is the project root
 # -----------------------------------------------------------------------------
 # The application code lives above public/ because Hostinger's Git deployment
-# checks out the repository directly into public_html. Only install.php and the
-# temporary emergency doctor are allowed to execute from that private root.
-# Everything else is forwarded into public/.
+# checks out the repository directly into public_html. NOTHING from the
+# private root is executable — every request is forwarded into public/.
 
 Options -Indexes
 DirectoryIndex index.php index.html
@@ -15,13 +14,6 @@ DirectoryIndex index.php index.html
 
 <IfModule mod_rewrite.c>
     RewriteEngine On
-
-    # Standalone bootstrap/recovery endpoints. Delete after installation.
-    # deploy.php MUST be listed here: without the exemption the root rewrite
-    # forwards /deploy.php into public/ where it does not exist, so opening
-    # https://your-domain/deploy.php returned a 404 and the deploy steps
-    # (cache clear + migrations) could never run.
-    RewriteRule ^(?:install|doctor|deploy)\.php$ - [L]
 
     # Per-directory rewrites can run again after the internal public/ rewrite.
     # Stop here so /foo never becomes /public/public/... (an HTTP 500 loop).
