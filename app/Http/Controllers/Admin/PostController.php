@@ -352,6 +352,71 @@ class PostController extends Controller
         }
     }
 
+    /**
+     * Bulk actions for the posts list — the admin ticks any number of
+     * checkboxes and moves/restores/deletes them in ONE click.
+     *
+     *   trash   → soft-delete the selected posts (move to trash)
+     *   restore → restore the selected posts from trash
+     *   delete  → permanently delete the selected posts (trash tab only),
+     *             including their featured image files.
+     *
+     * SoftDeletes semantics keep this safe: "trash" only ever touches
+     * non-trashed rows, "restore"/"delete" only ever touch trashed rows
+     * (Post::onlyTrashed()), so a stale browser tab can never wrongly
+     * restore a post the admin just trashed from another tab.
+     */
+    public function bulkAction(Request $request)
+    {
+        $data = $request->validate([
+            'ids'         => ['required', 'array', 'min:1'],
+            'ids.*'       => ['integer'],
+            'bulk_action' => ['required', 'in:trash,restore,delete'],
+        ]);
+
+        $ids   = array_values(array_unique(array_map('intval', $data['ids'])));
+        $count = 0;
+
+        switch ($data['bulk_action']) {
+            case 'trash':
+                // Non-trashed posts only (SoftDeletes excludes trashed rows).
+                $count = Post::whereIn('id', $ids)->count();
+                if ($count) {
+                    Post::whereIn('id', $ids)->delete();
+                }
+                $message = $count === 1 ? '1 post moved to trash' : $count.' posts moved to trash';
+                break;
+
+            case 'restore':
+                $count = Post::onlyTrashed()->whereIn('id', $ids)->count();
+                if ($count) {
+                    Post::onlyTrashed()->whereIn('id', $ids)->restore();
+                }
+                $message = $count === 1 ? '1 post restored from trash' : $count.' posts restored from trash';
+                break;
+
+            default: // delete — permanently, trash tab only
+                $posts = Post::onlyTrashed()->whereIn('id', $ids)->get();
+                $count = $posts->count();
+                foreach ($posts as $post) {
+                    if ($post->featured_image && !str_starts_with($post->featured_image, 'http')) {
+                        app(\App\Services\ImageService::class)->delete($post->featured_image);
+                    }
+                }
+                if ($count) {
+                    Post::onlyTrashed()->whereIn('id', $ids)->forceDelete();
+                }
+                $message = $count === 1 ? '1 post permanently deleted' : $count.' posts permanently deleted';
+        }
+
+        if ($count === 0) {
+            $verbs = ['trash' => 'moved to trash', 'restore' => 'restored', 'delete' => 'deleted'];
+            return back()->with('error', 'None of the selected posts could be '.$verbs[$data['bulk_action']].' — they may have already been removed.');
+        }
+
+        return back()->with('success', $message);
+    }
+
     /** Soft delete — post moves to trash and disappears from the frontend. */
     public function destroy(Post $post)
     {

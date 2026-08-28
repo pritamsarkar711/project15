@@ -46,11 +46,42 @@
     </div>
 </div>
 
+{{-- Bulk-action form. It sits OUTSIDE the table because the rows already contain their own per-post <form> elements (HTML forbids nested forms). Every checkbox and bulk button joins THIS form through the form="posts-bulk-form" attribute — the same battle-tested pattern the admin comments list uses. The clicked submit button's name/value carries the chosen action. --}}
+<form method="POST" action="{{ route('admin.posts.bulk') }}" id="posts-bulk-form" class="hidden">@csrf</form>
+
+<div id="posts-bulk-bar" class="mb-3 flex flex-wrap items-center gap-2 border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 px-3 py-2">
+    <svg class="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m9 11 3 3L22 4"/><path stroke-linecap="round" stroke-linejoin="round" d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+    <span class="text-sm text-slate-600 dark:text-slate-300"><strong id="bulk-count" class="text-[#0C3B2E] dark:text-emerald-400">0</strong> selected</span>
+    @if($tab === 'trash')
+        <button type="submit" name="bulk_action" value="restore" form="posts-bulk-form" id="bulk-restore-btn" disabled
+                class="h-8 px-3 text-xs font-semibold inline-flex items-center gap-1.5 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30 bg-emerald-50 dark:bg-emerald-500/10 hover:bg-emerald-100 dark:hover:bg-emerald-500/20 transition disabled:opacity-40 disabled:cursor-not-allowed">
+            <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path stroke-linecap="round" stroke-linejoin="round" d="M3 3v5h5"/></svg>
+            Restore selected
+        </button>
+        <button type="submit" name="bulk_action" value="delete" form="posts-bulk-form" id="bulk-delete-btn" disabled
+                onclick="return confirm('Permanently delete ALL selected posts? This cannot be undone.')"
+                class="h-8 px-3 text-xs font-semibold inline-flex items-center gap-1.5 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-500/30 bg-red-50 dark:bg-red-500/10 hover:bg-red-100 dark:hover:bg-red-500/20 transition disabled:opacity-40 disabled:cursor-not-allowed">
+            <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6"/></svg>
+            Delete forever
+        </button>
+    @else
+        <button type="submit" name="bulk_action" value="trash" form="posts-bulk-form" id="bulk-trash-btn" disabled
+                onclick="return confirm('Move ALL selected posts to trash?')"
+                class="h-8 px-3 text-xs font-semibold inline-flex items-center gap-1.5 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-500/30 bg-red-50 dark:bg-red-500/10 hover:bg-red-100 dark:hover:bg-red-500/20 transition disabled:opacity-40 disabled:cursor-not-allowed">
+            <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            Trash selected
+        </button>
+    @endif
+</div>
+
 <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden">
     <div class="overflow-x-auto">
         <table class="w-full text-sm">
             <thead class="bg-slate-50 dark:bg-slate-800/60 text-[11px] font-bold tracking-widest uppercase text-slate-500 dark:text-slate-400">
                 <tr>
+                    <th class="px-4 py-3 w-10">
+                        <input type="checkbox" id="select-all-posts" class="w-4 h-4 shrink-0 text-emerald-600 border-slate-300 dark:border-slate-600" aria-label="Select all posts on this page">
+                    </th>
                     <th class="text-left px-4 py-3">Post</th>
                     <th class="text-left px-4 py-3">Category</th>
                     <th class="text-left px-4 py-3">Status</th>
@@ -62,6 +93,9 @@
             <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
                 @forelse($posts as $post)
                     <tr class="hover:bg-slate-50/70 dark:hover:bg-slate-800/40">
+                        <td class="px-4 py-3">
+                            <input type="checkbox" name="ids[]" value="{{ $post->id }}" form="posts-bulk-form" class="bulk-post-check w-4 h-4 shrink-0 text-emerald-600 border-slate-300 dark:border-slate-600" aria-label="Select post: {{ $post->title }}">
+                        </td>
                         <td class="px-4 py-3">
                             <div class="flex items-center gap-3">
                                 @if($post->featured_image)
@@ -130,11 +164,55 @@
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="6" class="px-4 py-10 text-center text-sm text-slate-500 dark:text-slate-400">{{ $tab === 'trash' ? 'Trash is empty.' : 'No posts found.' }}</td></tr>
+                    <tr><td colspan="7" class="px-4 py-10 text-center text-sm text-slate-500 dark:text-slate-400">{{ $tab === 'trash' ? 'Trash is empty.' : 'No posts found.' }}</td></tr>
                 @endforelse
             </tbody>
         </table>
     </div>
     <div class="p-4 border-t border-slate-100 dark:border-slate-800">{{ $posts->links() }}</div>
 </div>
+
+{{-- Bulk-selection JS: live counter + select-all parity (same pattern as the admin comments list) --}}
+@push('scripts')
+<script>
+(function () {
+    const form = document.getElementById('posts-bulk-form');
+    const counter = document.getElementById('bulk-count');
+    const selectAll = document.getElementById('select-all-posts');
+    const actionBtns = ['bulk-trash-btn', 'bulk-restore-btn', 'bulk-delete-btn']
+        .map((id) => document.getElementById(id)).filter(Boolean);
+    if (!form || !counter) return;
+
+    function checked() { return document.querySelectorAll('.bulk-post-check:checked'); }
+
+    function refresh() {
+        const n = checked().length;
+        counter.textContent = n;
+        actionBtns.forEach((b) => { b.disabled = n === 0; });
+        if (selectAll) {
+            const all = document.querySelectorAll('.bulk-post-check');
+            selectAll.checked = all.length > 0 && n === all.length;
+        }
+    }
+
+    document.querySelectorAll('.bulk-post-check').forEach((cb) => {
+        cb.addEventListener('change', refresh);
+    });
+
+    if (selectAll) {
+        selectAll.addEventListener('change', () => {
+            document.querySelectorAll('.bulk-post-check').forEach((cb) => {
+                cb.checked = selectAll.checked;
+            });
+            refresh();
+        });
+    }
+
+    // Last line of defence: never submit with zero selection.
+    form.addEventListener('submit', (e) => {
+        if (checked().length === 0) e.preventDefault();
+    });
+})();
+</script>
+@endpush
 @endsection

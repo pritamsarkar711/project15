@@ -11,10 +11,15 @@
  *   bold/italic/underline/strikethrough/code | text color / highlight |
  *   sup/sub | lists (bullet, numbered) | indent/outdent | align L/C/R/J |
  *   link | image upload+paste+drag (base64, ≤1.5MB guard) | table grid | hr |
- *   special chars | emoji picker | find and replace | code block |
- *   line height | clear formatting | source view | TRUE fullscreen
- *   (editor moves to <body> so no ancestor can clip it) | word count |
- *   keyboard shortcuts | autosave to localStorage
+ *   special chars | icon picker (60 crisp stroke icons — no emojis) |
+ *   find and replace | code block | line height | clear formatting |
+ *   source view | TRUE fullscreen (editor moves to <body> so no ancestor
+ *   can clip it) | word count | keyboard shortcuts | autosave to localStorage
+ *
+ * Images in the text get a WordPress/Medium-style overlay: click an image
+ * to select it → corner drag handles resize it with the mouse, the S/M/L
+ * buttons apply preset sizes, the original-size button restores natural
+ * width, and the pencil button opens an alt-text/title form (SEO).
  *
  * Usage:
  *   huvantiEditorInit('#editor');            // textarea selector
@@ -36,9 +41,11 @@
         italic: '<line x1="19" x2="10" y1="4" y2="4"/><line x1="14" x2="5" y1="20" y2="20"/><line x1="15" x2="9" y1="4" y2="20"/>',
         underline: '<path d="M6 4v6a6 6 0 0 0 12 0V4"/><line x1="4" x2="20" y1="20" y2="20"/>',
         strike: '<path d="M16 4H9a3 3 0 0 0-2.83 4"/><path d="M14 12a4 4 0 0 1 0 8H6"/><line x1="4" x2="20" y1="12" y2="12"/>',
-        codeInline: '<polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/><rect x="10" y="8" width="4" height="8" rx="1" fill="currentColor" opacity="0.35"/>',
-        sup: '<path d="M6 16v-8l6 3.5Z"/><path d="M18 12h-2l-1-4 2-1 1 1.5-1 1.5 1 1.5-1 .5Z"/>',
-        sub: '<path d="M6 8v8l6-3.5Z"/><path d="M18 16h-2l-1 4 2 1 1-1.5-1-1.5 1-1.5-1-.5Z"/>',
+        codeInline: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="m10 9-3 3 3 3"/><path d="m14 15 3-3-3-3"/>',
+        // Superscript / subscript: clean "X + plus" convention (the old
+        // hand-drawn paths read like broken arrows).
+        sup: '<path d="M5 19 15 5"/><path d="M15 19 5 5"/><path d="M19 3v6"/><path d="M16 6h6"/>',
+        sub: '<path d="M5 5 15 19"/><path d="M15 5 5 19"/><path d="M19 15v6"/><path d="M16 18h6"/>',
         selectAll: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 9h8"/><path d="M8 12h8"/><path d="M8 15h5"/>',
         ul: '<line x1="8" x2="21" y1="6" y2="6"/><line x1="8" x2="21" y1="12" y2="12"/><line x1="8" x2="21" y1="18" y2="18"/><line x1="3" x2="3.01" y1="6" y2="6"/><line x1="3" x2="3.01" y1="12" y2="12"/><line x1="3" x2="3.01" y1="18" y2="18"/>',
         ol: '<line x1="10" x2="21" y1="6" y2="6"/><line x1="10" x2="21" y1="12" y2="12"/><line x1="10" x2="21" y1="18" y2="18"/><path d="M4 6h1v4"/><path d="M4 10h2"/><path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/>',
@@ -58,18 +65,99 @@
         source: '<polyline points="4 17 10 11 4 5"/><line x1="12" x2="20" y1="19" y2="19"/>',
         expand: '<path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/>',
         shrink: '<path d="M4 14h6v6"/><path d="M20 10h-6V4"/><path d="M14 10l7-7"/><path d="M3 21l7-7"/>',
-        smile: '<circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" x2="9.01" y1="9" y2="9"/><line x1="15" x2="15.01" y1="9" y2="9"/>',
         find: '<circle cx="11" cy="11" r="7"/><path d="M21 21l-3.5-3.5"/><path d="M8 11h6"/>',
-        emoji: '<circle cx="12" cy="12" r="10"/><path d="M8 14c1.5 1.5 4.5 1.5 6 0"/><path d="M9 9h.01"/><path d="M15 9h.01"/>',
-        palette: '<circle cx="12" cy="12" r="10"/><circle cx="8" cy="10" r="1"/><circle cx="12" cy="7" r="1"/><circle cx="16" cy="10" r="1"/><circle cx="12" cy="16" r="1"/>'
+        palette: '<circle cx="12" cy="12" r="10"/><circle cx="8" cy="10" r="1"/><circle cx="12" cy="7" r="1"/><circle cx="16" cy="10" r="1"/><circle cx="12" cy="16" r="1"/>',
+        // The old Highlight and Special-chars buttons reused a SMILEY icon —
+        // the main reason the toolbar "icons look bad". Proper glyphs now.
+        highlighter: '<path d="m9 11-6 6v3h9l3-3"/><path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4"/>',
+        atSign: '<circle cx="12" cy="12" r="4"/><path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-3.92 7.94"/>',
+        sparkles: '<path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/>',
+        trash: '<path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/>',
+        pencil: '<path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>',
+        maximize: '<path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/>'
     };
 
+    /**
+     * Icon library for the in-post icon picker (replaces the old emoji
+     * picker — high-quality stroke icons that stay crisp at any size and
+     * inherit the text colour, unlike emojis which render differently on
+     * every platform). 24x24 lucide-style paths, grouped for the picker.
+     */
+    var ICONS = {
+        star: '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>',
+        heart: '<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>',
+        bell: '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>',
+        bookmark: '<path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/>',
+        checkCircle: '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>',
+        clock: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+        flag: '<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" x2="4" y1="22" y2="15"/>',
+        info: '<circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>',
+        alertTriangle: '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+        thumbsUp: '<path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"/>',
+        arrowRight: '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>',
+        arrowLeft: '<path d="m12 19-7-7 7-7"/><path d="M19 12H5"/>',
+        arrowUp: '<path d="m5 12 7-7 7 7"/><path d="M12 19V5"/>',
+        arrowDown: '<path d="M12 5v14"/><path d="m19 12-7 7-7-7"/>',
+        cornerDownRight: '<polyline points="15 10 20 15 15 20"/><path d="M4 4v7a4 4 0 0 0 4 4h12"/>',
+        repeat: '<path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/>',
+        externalLink: '<path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>',
+        trendingUp: '<polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>',
+        trendingDown: '<polyline points="22 17 13.5 8.5 8.5 13.5 2 7"/><polyline points="16 17 22 17 22 11"/>',
+        shuffle: '<path d="M2 18h1.4c1.3 0 2.5-.6 3.3-1.7l6.1-8.6c.8-1.1 2-1.7 3.3-1.7H22"/><path d="m18 2 4 4-4 4"/><path d="M2 6h1.9c1.5 0 2.9.9 3.6 2.2"/><path d="M22 18h-5.9c-1.3 0-2.6-.7-3.3-1.8l-.5-.8"/><path d="m18 14 4 4-4 4"/>',
+        camera: '<path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/>',
+        mail: '<rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>',
+        phone: '<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>',
+        mapPin: '<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>',
+        gift: '<rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/>',
+        cart: '<circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/>',
+        creditCard: '<rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/>',
+        key: '<circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/>',
+        lightbulb: '<path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/>',
+        pkg: '<path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/>',
+        sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>',
+        moon: '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>',
+        cloud: '<path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>',
+        leaf: '<path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>',
+        flame: '<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>',
+        zap: '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
+        globe: '<circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>',
+        droplet: '<path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/>',
+        play: '<polygon points="6 3 20 12 6 21 6 3"/>',
+        music: '<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>',
+        mic: '<path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/>',
+        headphones: '<path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/>',
+        video: '<path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2"/>',
+        picture: '<rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>',
+        speaker: '<rect width="14" height="20" x="5" y="2" rx="2"/><circle cx="12" cy="14" r="3"/><path d="M12 7h.01"/>',
+        briefcase: '<path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/>',
+        barChart: '<line x1="12" x2="12" y1="20" y2="10"/><line x1="18" x2="18" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="16"/>',
+        pieChart: '<path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/>',
+        dollar: '<line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>',
+        target: '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
+        award: '<circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/>',
+        rocket: '<path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/>',
+        shield: '<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>',
+        users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>'
+    };
+
+    var ICON_GROUPS = [
+        { name: 'Popular', icons: ['star', 'heart', 'checkCircle', 'zap', 'flame', 'lightbulb', 'target', 'rocket', 'award', 'thumbsUp', 'bell', 'bookmark', 'flag', 'clock', 'alertTriangle', 'info'] },
+        { name: 'Arrows', icons: ['arrowRight', 'arrowLeft', 'arrowUp', 'arrowDown', 'cornerDownRight', 'repeat', 'externalLink', 'trendingUp', 'trendingDown', 'shuffle'] },
+        { name: 'Objects', icons: ['camera', 'mail', 'phone', 'mapPin', 'gift', 'cart', 'creditCard', 'key', 'pkg', 'bookmark', 'clock'] },
+        { name: 'Nature', icons: ['sun', 'moon', 'cloud', 'leaf', 'flame', 'droplet', 'globe', 'zap'] },
+        { name: 'Media', icons: ['play', 'music', 'mic', 'headphones', 'video', 'picture', 'speaker'] },
+        { name: 'Business', icons: ['briefcase', 'barChart', 'pieChart', 'dollar', 'target', 'shield', 'users', 'lightbulb', 'rocket'] }
+    ];
+
     function icon(name) {
-        return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (SVG[name] || '') + '</svg>';
+        return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (SVG[name] || ICONS[name] || '') + '</svg>';
     }
 
     var STYLES = [
-        '.huv-rte{border:1px solid #cbd5e1;background:#fff;}',
+        // position:relative gives the image-selection overlay its positioning
+        // context (the overlay lives inside the editor wrap, OUTSIDE the
+        // contenteditable area, so it never pollutes the saved HTML).
+        '.huv-rte{border:1px solid #cbd5e1;background:#fff;position:relative;}',
         '.dark .huv-rte{border-color:#334155;background:#1e293b;}',
         '.huv-rte-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:2px;padding:6px;border-bottom:1px solid #e2e8f0;background:#f8fafc;position:sticky;top:0;z-index:30;}',
         '.dark .huv-rte-toolbar{border-color:#334155;background:#0f172a;}',
@@ -120,9 +208,6 @@
         '.huv-rte-char{width:28px;height:28px;border:1px solid #e2e8f0;border-radius:4px;background:#fff;cursor:pointer;font-size:15px;color:#334155;}',
         '.dark .huv-rte-char{background:#0f172a;border-color:#334155;color:#e2e8f0;}',
         '.huv-rte-char:hover{background:#d1fae5;}',
-        '.huv-rte-emoji{width:32px;height:32px;border:0;border-radius:6px;background:#fff;cursor:pointer;font-size:18px;display:inline-flex;align-items:center;justify-content:center;}',
-        '.dark .huv-rte-emoji{background:#0f172a;}',
-        '.huv-rte-emoji:hover{background:#d1fae5;}',
         '.huv-rte-findmark{background:#fef08a;color:#422006;padding:1px 2px;border-radius:3px;}',
         '.huv-rte-findmark.active{background:#0C3B2E;color:#fff;}',
         '.huv-rte-field{width:100%;box-sizing:border-box;margin-bottom:8px;padding:7px 9px;border:1px solid #cbd5e1;border-radius:6px;font-size:13px;background:#fff;color:#0f172a;}',
@@ -172,7 +257,54 @@
         '.dark .huv-rte-dd-item:hover .huv-rte-dd-ico{color:#a7f3d0;}',
         '.huv-rte-dd-ico svg{width:16px;height:16px;}',
         '.huv-rte-glyph{font-weight:800;line-height:1;display:inline-block;font-family:inherit;}',
-        '.huv-rte.dragover{outline:2px dashed #10b981;outline-offset:-2px;}'
+        '.huv-rte.dragover{outline:2px dashed #10b981;outline-offset:-2px;}',
+        // Source-mode guard: every formatting control except the source-view
+        // toggle itself and fullscreen is dimmed AND click-disabled. Before,
+        // clicking Bold while in source view silently ran execCommand on the
+        // hidden editable area — invisible corruption of the undo stack.
+        '.huv-rte.src .huv-rte-btn:not([data-cmd="src"]):not([data-cmd="full"]),.huv-rte.src .huv-rte-select,.huv-rte.src .huv-rte-dd-btn{opacity:.35;pointer-events:none;}',
+        // ---- image selection overlay (resize + SEO) ----
+        '.huv-rte-content img.huv-img-sel{outline:2px solid #10b981;outline-offset:2px;}',
+        '.huv-img-ov{position:absolute;inset:0;z-index:55;pointer-events:none;}',
+        '.huv-img-frame{position:absolute;border:1px dashed #10b981;pointer-events:none;}',
+        '.huv-img-h{position:absolute;width:13px;height:13px;background:#fff;border:2px solid #0C3B2E;border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,.3);pointer-events:auto;}',
+        '.huv-img-h-nw{top:-7px;left:-7px;cursor:nwse-resize;}',
+        '.huv-img-h-ne{top:-7px;right:-7px;cursor:nesw-resize;}',
+        '.huv-img-h-sw{bottom:-7px;left:-7px;cursor:nesw-resize;}',
+        '.huv-img-h-se{bottom:-7px;right:-7px;cursor:nwse-resize;}',
+        '.huv-img-tools{position:absolute;display:flex;align-items:center;gap:1px;background:#0C3B2E;border-radius:7px;padding:3px;box-shadow:0 6px 18px rgba(0,0,0,.28);white-space:nowrap;pointer-events:auto;}',
+        '.huv-img-tools-lab{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#86efac;padding:0 3px 0 5px;pointer-events:none;}',
+        '.huv-img-tools button{height:24px;min-width:24px;padding:0 5px;border:0;border-radius:5px;background:transparent;color:#d1fae5;font-size:12px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-family:inherit;}',
+        '.huv-img-tools button:hover{background:rgba(255,255,255,.16);color:#fff;}',
+        '.huv-img-tools button.active{background:#10b981;color:#fff;}',
+        '.huv-img-tools button svg{width:13px;height:13px;pointer-events:none;}',
+        '.huv-img-tools-sep{width:1px;height:15px;background:rgba(255,255,255,.28);margin:0 3px;}',
+        '.huv-img-form{position:absolute;display:none;width:280px;max-width:calc(100vw - 40px);background:#fff;border:1px solid #cbd5e1;border-radius:8px;box-shadow:0 12px 32px rgba(0,0,0,.22);padding:10px;pointer-events:auto;box-sizing:border-box;}',
+        '.dark .huv-img-form{background:#1e293b;border-color:#475569;}',
+        '.huv-img-form.open{display:block;}',
+        '.huv-img-form label{display:block;font-size:11px;font-weight:700;color:#334155;margin:6px 0 3px;}',
+        '.dark .huv-img-form label{color:#cbd5e1;}',
+        '.huv-img-form label small{font-weight:400;color:#64748b;}',
+        '.dark .huv-img-form label small{color:#94a3b8;}',
+        '.huv-img-form input{width:100%;box-sizing:border-box;padding:6px 8px;border:1px solid #cbd5e1;border-radius:6px;font-size:12px;background:#fff;color:#0f172a;font-family:inherit;}',
+        '.dark .huv-img-form input{background:#0f172a;color:#e2e8f0;border-color:#475569;}',
+        '.huv-img-form-btns{display:flex;gap:6px;justify-content:flex-end;margin-top:9px;}',
+        '.huv-img-save{padding:5px 12px;border:0;border-radius:6px;background:#0C3B2E;color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;}',
+        '.huv-img-save:hover{background:#072A20;}',
+        '.huv-img-cancel{padding:5px 12px;border:1px solid #cbd5e1;border-radius:6px;background:transparent;color:#334155;font-size:12px;cursor:pointer;font-family:inherit;}',
+        '.dark .huv-img-cancel{border-color:#475569;color:#e2e8f0;}',
+        'body.huv-img-resizing,body.huv-img-resizing *{cursor:nwse-resize !important;user-select:none !important;}',
+        // ---- icon picker (replaces the emoji picker) ----
+        '.huv-ico-tabs{display:flex;flex-wrap:wrap;gap:3px;margin-bottom:8px;}',
+        '.huv-ico-tab{padding:4px 9px;border:1px solid #e2e8f0;border-radius:999px;background:#fff;color:#334155;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;}',
+        '.dark .huv-ico-tab{background:#0f172a;border-color:#334155;color:#e2e8f0;}',
+        '.huv-ico-tab.active{background:#0C3B2E;border-color:#0C3B2E;color:#fff;}',
+        '.huv-ico-grid{display:grid;grid-template-columns:repeat(8,30px);gap:3px;}',
+        '.huv-ico-btn{width:30px;height:30px;border:1px solid #e2e8f0;border-radius:6px;background:#fff;color:#334155;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0;}',
+        '.dark .huv-ico-btn{background:#0f172a;border-color:#334155;color:#e2e8f0;}',
+        '.huv-ico-btn:hover{background:#d1fae5;border-color:#10b981;color:#065f46;}',
+        '.dark .huv-ico-btn:hover{background:#064e3b;color:#a7f3d0;}',
+        '.huv-ico-btn svg{width:16px;height:16px;pointer-events:none;}'
     ].join('\n');
 
     var FONTS = ['Default', '"Google Sans", Roboto, Arial, sans-serif', 'Arial, Helvetica, sans-serif', 'Georgia, serif', '"Times New Roman", Times, serif', '"Courier New", monospace', 'Verdana, Geneva, sans-serif', '"Trebuchet MS", sans-serif', '"Work Sans", Arial, sans-serif'];
@@ -183,7 +315,8 @@
     ];
     var COLORS = ['#0f172a', '#334155', '#64748b', '#dc2626', '#ea580c', '#d97706', '#16a34a', '#059669', '#0891b2', '#2563eb', '#7c3aed', '#db2777', '#ffffff', '#f1f5f9', '#fef3c7', '#d1fae5'];
     var CHARS = ['\u00A9', '\u00AE', '\u2122', '\u2192', '\u2190', '\u2191', '\u2193', '\u2022', '\u2026', '\u2018', '\u2019', '\u201C', '\u201D', '\u2013', '\u2014', '\u00D7', '\u00F7', '\u2260', '\u2264', '\u2265', '\u00B0', '\u00B1', '\u221E', '\u20AC', '\u00A3', '\u00A5', '\u20B9', '\u0024', '\u03B1', '\u03B2', '\u03C0', '\u221A'];
-    var EMOJIS = ['\uD83D\uDE00','\uD83D\uDE02','\uD83D\uDE0D','\uD83D\uDC4D','\uD83D\uDC4F','\u2764\uFE0F','\uD83D\uDD25','\u2B50','\u2705','\u274C','\uD83D\uDCA1','\uD83D\uDE80','\uD83C\uDF89','\uD83D\uDCD6','\uD83D\uDCC5','\uD83D\uDCE2','\u26A0\uFE0F','\uD83D\uDCAC','\uD83D\uDCDA','\uD83C\uDFAF','\uD83E\uDD1D','\uD83D\uDE4F','\u2728','\uD83D\uDC99','\uD83D\uDFE2','\uD83D\uDFE1','\uD83D\uDCF8','\uD83C\uDF0D','\uD83D\uDCBB','\uD83D\uDD0D','\u270F\uFE0F','\uD83D\uDCC4'];
+    // Emoji picker removed on purpose — inline SVG icons (ICONS above) look
+    // equally sharp on every OS and inherit the text colour.
     var AUTOSAVE_KEY_PREFIX = 'huv-rte-autosave-';
 
     function closeAllPops(root) {
@@ -272,7 +405,14 @@
                 textarea.value = srcArea.value;
             } else {
                 var html = content.innerHTML;
-                if (html === '<br>' || html === '<div><br></div>') html = '';
+                if (html === '<br>' || html === '<div><br></div>') {
+                    html = '';
+                    // Truly empty the content so the :empty placeholder
+                    // reappears after deleting everything (contenteditable
+                    // loves leaving a stray <br> behind — the placeholder
+                    // never came back without this).
+                    content.innerHTML = '';
+                }
                 // Semantic tags instead of presentational ones (better SEO).
                 html = html.replace(/<b(\s|>)/g, '<strong$1').replace(/<\/b>/g, '</strong>')
                            .replace(/<i(\s|>)/g, '<em$1').replace(/<\/i>/g, '</em>');
@@ -329,6 +469,255 @@
             document.execCommand('insertHTML', false, html);
             sync();
         }
+
+        /**
+         * Insert a DOM node at the caret. Used for inline SVG icons —
+         * execCommand('insertHTML') mangles SVG markup in some browsers,
+         * while a direct Range insert is byte-exact.
+         */
+        function insertNode(node) {
+            restoreRange();
+            var s = window.getSelection();
+            var r = (s && s.rangeCount) ? s.getRangeAt(0) : null;
+            if (!r || !content.contains(r.commonAncestorContainer)) {
+                r = document.createRange();
+                r.selectNodeContents(content);
+                r.collapse(false);
+            }
+            r.deleteContents();
+            r.insertNode(node);
+            r.setStartAfter(node);
+            r.setEndAfter(node);
+            s.removeAllRanges();
+            s.addRange(r);
+            sync();
+        }
+
+        // ------------------------------------------------------------
+        //  Image selection overlay — WordPress/Medium-style.
+        //  Click an image → dashed frame + 4 corner drag handles + a
+        //  floating toolbar (S / M / L / Original · alt & title · delete).
+        //  The overlay lives in the editor WRAP, outside the
+        //  contenteditable area, so it is never part of the saved HTML.
+        // ------------------------------------------------------------
+        var IMG_PRESETS = { s: 350, m: 560, l: 760 };
+        var imgSel = { img: null, ov: null, frame: null, tools: null, form: null, dragging: null };
+
+        function deselectImage() {
+            if (imgSel.dragging) { imgSel.dragging = null; document.body.classList.remove('huv-img-resizing'); }
+            if (imgSel.ov) { imgSel.ov.remove(); }
+            if (imgSel.img) { imgSel.img.classList.remove('huv-img-sel'); }
+            imgSel.img = imgSel.ov = imgSel.frame = imgSel.tools = imgSel.form = null;
+        }
+
+        function markActiveSize() {
+            if (!imgSel.img || !imgSel.tools) return;
+            var w = imgSel.img.getAttribute('width');
+            ['s', 'm', 'l'].forEach(function (k) {
+                var b = imgSel.tools.querySelector('[data-w="' + k + '"]');
+                if (b) b.classList.toggle('active', w === String(IMG_PRESETS[k]));
+            });
+            var full = imgSel.tools.querySelector('[data-w="full"]');
+            if (full) full.classList.toggle('active', !w);
+        }
+
+        function selectImage(img) {
+            deselectImage();
+            imgSel.img = img;
+            img.classList.add('huv-img-sel');
+
+            var ov = document.createElement('div');
+            ov.className = 'huv-img-ov';
+            ov.setAttribute('contenteditable', 'false');
+
+            var frame = document.createElement('div');
+            frame.className = 'huv-img-frame';
+            ['nw', 'ne', 'sw', 'se'].forEach(function (pos) {
+                var h = document.createElement('span');
+                h.className = 'huv-img-h huv-img-h-' + pos;
+                h.addEventListener('mousedown', function (e) { startResize(e, pos); });
+                frame.appendChild(h);
+            });
+            ov.appendChild(frame);
+
+            var tools = document.createElement('div');
+            tools.className = 'huv-img-tools';
+            tools.innerHTML =
+                '<span class="huv-img-tools-lab">Size</span>' +
+                '<button type="button" data-w="s" title="Small (350px)">S</button>' +
+                '<button type="button" data-w="m" title="Medium (560px)">M</button>' +
+                '<button type="button" data-w="l" title="Large (760px)">L</button>' +
+                '<button type="button" data-w="full" title="Original size">' + icon('maximize') + '</button>' +
+                '<span class="huv-img-tools-sep"></span>' +
+                '<button type="button" data-act="seo" title="Edit alt text & title (SEO)">' + icon('pencil') + '</button>' +
+                '<button type="button" data-act="del" title="Remove image">' + icon('trash') + '</button>';
+            tools.addEventListener('mousedown', function (e) { if (e.target.closest('button')) e.preventDefault(); });
+            tools.addEventListener('click', function (e) {
+                var b = e.target.closest('button');
+                if (!b || !imgSel.img) return;
+                if (b.getAttribute('data-w')) {
+                    var k = b.getAttribute('data-w');
+                    if (k === 'full') imgSel.img.removeAttribute('width');
+                    else imgSel.img.setAttribute('width', IMG_PRESETS[k]);
+                    markActiveSize();
+                    sync();
+                    positionImageOverlay();
+                } else if (b.getAttribute('data-act') === 'seo') {
+                    openImageForm();
+                } else if (b.getAttribute('data-act') === 'del') {
+                    var im = imgSel.img;
+                    deselectImage();
+                    if (im.parentNode) im.parentNode.removeChild(im);
+                    sync();
+                }
+            });
+            ov.appendChild(tools);
+
+            var form = document.createElement('div');
+            form.className = 'huv-img-form';
+            form.innerHTML =
+                '<label>Alt text <small>— describes the image for Google Images (SEO)</small></label>' +
+                '<input type="text" data-f="alt" maxlength="250" placeholder="e.g. Coffee cup on a wooden desk">' +
+                '<label>Title <small>— shown on hover, extra SEO signal</small></label>' +
+                '<input type="text" data-f="title" maxlength="250" placeholder="e.g. Morning coffee routine">' +
+                '<div class="huv-img-form-btns">' +
+                '<button type="button" class="huv-img-cancel">Cancel</button>' +
+                '<button type="button" class="huv-img-save">Save</button></div>';
+            form.querySelector('.huv-img-save').addEventListener('click', function () {
+                if (!imgSel.img) return;
+                var alt = form.querySelector('[data-f="alt"]').value.trim();
+                var title = form.querySelector('[data-f="title"]').value.trim();
+                if (alt) imgSel.img.setAttribute('alt', alt); else imgSel.img.removeAttribute('alt');
+                if (title) imgSel.img.setAttribute('title', title); else imgSel.img.removeAttribute('title');
+                closeImageForm();
+                sync();
+            });
+            form.querySelector('.huv-img-cancel').addEventListener('click', closeImageForm);
+            ov.appendChild(form);
+
+            wrap.appendChild(ov);
+            imgSel.ov = ov; imgSel.frame = frame; imgSel.tools = tools; imgSel.form = form;
+            img.addEventListener('load', positionImageOverlay);
+            markActiveSize();
+            positionImageOverlay();
+        }
+
+        function positionImageOverlay() {
+            if (!imgSel.img || !imgSel.ov) return;
+            if (!content.contains(imgSel.img)) { deselectImage(); return; }
+            var wr = wrap.getBoundingClientRect();
+            var ir = imgSel.img.getBoundingClientRect();
+            if (!ir.width && !ir.height) { imgSel.ov.style.display = 'none'; return; }
+            imgSel.ov.style.display = '';
+            var top = ir.top - wr.top, left = ir.left - wr.left;
+            imgSel.frame.style.top = top + 'px';
+            imgSel.frame.style.left = left + 'px';
+            imgSel.frame.style.width = ir.width + 'px';
+            imgSel.frame.style.height = ir.height + 'px';
+            var toolsH = imgSel.tools.offsetHeight || 30;
+            var tTop = top - toolsH - 5;
+            if (tTop < 0) tTop = top + ir.height + 5;
+            imgSel.tools.style.top = tTop + 'px';
+            imgSel.tools.style.left = Math.max(2, left) + 'px';
+            if (imgSel.form.classList.contains('open')) {
+                var fH = imgSel.form.offsetHeight || 150;
+                var fTop = (tTop < top ? tTop + toolsH + 4 : tTop - fH - 8);
+                if (fTop + fH > wrap.offsetHeight - 4) fTop = Math.max(2, wrap.offsetHeight - fH - 4);
+                imgSel.form.style.top = fTop + 'px';
+                imgSel.form.style.left = Math.max(2, Math.min(left, wrap.offsetWidth - imgSel.form.offsetWidth - 6)) + 'px';
+            }
+        }
+
+        function openImageForm() {
+            if (!imgSel.img || !imgSel.form) return;
+            imgSel.form.querySelector('[data-f="alt"]').value = imgSel.img.getAttribute('alt') || '';
+            imgSel.form.querySelector('[data-f="title"]').value = imgSel.img.getAttribute('title') || '';
+            imgSel.form.classList.add('open');
+            positionImageOverlay();
+            imgSel.form.querySelector('[data-f="alt"]').focus();
+        }
+
+        function closeImageForm() {
+            if (imgSel.form) imgSel.form.classList.remove('open');
+            positionImageOverlay();
+        }
+
+        function startResize(e, pos) {
+            if (!imgSel.img) return;
+            e.preventDefault();
+            e.stopPropagation();
+            imgSel.dragging = {
+                img: imgSel.img,
+                startX: e.clientX,
+                startW: imgSel.img.getBoundingClientRect().width,
+                dir: (pos === 'ne' || pos === 'se') ? 1 : -1
+            };
+            document.body.classList.add('huv-img-resizing');
+        }
+
+        document.addEventListener('mousemove', function (e) {
+            var d = imgSel.dragging;
+            if (!d) return;
+            var maxW = Math.max(120, content.clientWidth - 44);
+            var w = Math.round(d.startW + (e.clientX - d.startX) * d.dir);
+            w = Math.max(80, Math.min(maxW, w));
+            d.img.setAttribute('width', w);
+            d.img.style.width = w + 'px'; // smooth live resize; removed on release
+            positionImageOverlay();
+        });
+        document.addEventListener('mouseup', function () {
+            var d = imgSel.dragging;
+            if (!d) return;
+            imgSel.dragging = null;
+            document.body.classList.remove('huv-img-resizing');
+            d.img.style.width = ''; // the width ATTRIBUTE keeps the size (it survives the server-side sanitizer)
+            sync();
+            positionImageOverlay();
+        });
+
+        // Keep the overlay glued to the image when the writing area scrolls,
+        // the window resizes, or the image itself changes size (lazy load).
+        content.addEventListener('scroll', function () { if (imgSel.img) positionImageOverlay(); });
+        window.addEventListener('resize', function () { if (imgSel.img) positionImageOverlay(); });
+
+        /**
+         * Real insert pipeline for images (upload button, paste, drag & drop).
+         * Defined inside the constructor so it can auto-select the new image
+         * and open the SEO form — images are never inserted "naked": alt is
+         * prefilled from the file name, title from the post title field, and
+         * the alt/title form opens immediately so the author completes SEO.
+         */
+        self._insertImageFile = function (file) {
+            if (!file || file.type.indexOf('image') !== 0) return;
+            // Size guard: images placed in the text are embedded as base64
+            // data URLs inside the post body. A multi-megabyte phone photo
+            // would bloat the form POST beyond post_max_size and end as a
+            // 419/500 on save. Large photos belong in "Featured Image".
+            var MAX_EMBED_BYTES = 1.5 * 1024 * 1024;
+            if (file.size > MAX_EMBED_BYTES) {
+                window.alert('This image is ' + Math.round(file.size / 1024 / 1024 * 10) / 10 + ' MB. Images placed inside the text must be under 1.5 MB. Please resize it first, or use the "Featured Image" uploader which handles up to 4 MB.');
+                return;
+            }
+            var reader = new FileReader();
+            reader.onload = function () {
+                var img = document.createElement('img');
+                img.setAttribute('src', reader.result);
+                var alt = (file.name || '').replace(/\.[a-z0-9]+$/i, '').replace(/[-_]+/g, ' ').replace(/\s+/g, ' ').trim();
+                var postTitle = '';
+                try {
+                    var f = textarea.closest('form');
+                    var t = f && f.querySelector('input[name="title"]');
+                    if (t) postTitle = t.value.trim();
+                } catch (err) { /* no form around — skip prefill */ }
+                if (!alt && postTitle) alt = postTitle;
+                if (alt) img.setAttribute('alt', alt);
+                if (postTitle) img.setAttribute('title', postTitle);
+                insertNode(img);
+                selectImage(img);
+                openImageForm();
+            };
+            reader.readAsDataURL(file);
+        };
 
         // ---------------- toolbar ----------------
         function btn(name, svgName, title, handler) {
@@ -427,8 +816,31 @@
             document.execCommand('formatBlock', false, v === 'pre' ? 'pre' : v);
             sync(); updateStates();
         });
-        select('font', 'Font family', FONTS.map(function (f) { return { label: f === 'Default' ? 'Default' : f.split(',')[0].replace(/"/g, '').replace('Google Sans','Google Sans'), v: f }; }), function (v) {
-            if (v === 'Default') { cmd('removeFormat'); return; }
+        select('font', 'Font family', FONTS.map(function (f) { return { label: f === 'Default' ? 'Default' : f.split(',')[0].replace(/"/g, ''), v: f }; }), function (v) {
+            if (v === 'Default') {
+                // Old behaviour ran removeFormat(), which nuked bold/italic/
+                // links — everything. "Default" must only strip the FONT.
+                restoreRange();
+                var s = window.getSelection();
+                if (s && s.rangeCount && !s.isCollapsed) {
+                    var r = s.getRangeAt(0);
+                    var frag = r.extractContents();
+                    var tmp = document.createElement('div');
+                    tmp.appendChild(frag);
+                    tmp.querySelectorAll('font[face]').forEach(function (f) {
+                        f.removeAttribute('face');
+                        if (!f.attributes.length) {
+                            while (f.firstChild) f.parentNode.insertBefore(f.firstChild, f);
+                            f.remove();
+                        }
+                    });
+                    r.insertNode(tmp);
+                    s.removeAllRanges();
+                    s.addRange(r);
+                }
+                sync();
+                return;
+            }
             cmd('fontName', v);
         });
         // Font size dropdown — visual "A" scale instead of cryptic S/N/M/L letters
@@ -477,7 +889,7 @@
                 p.querySelector('.huv-rte-custom').addEventListener('input', function () { cmd('foreColor', this.value); });
             });
         });
-        btn('hiliteColor', 'smile', 'Highlight', function () {
+        btn('hiliteColor', 'highlighter', 'Highlight', function () {
             var anchor = this;
             var html = '<div class="huv-rte-pop-grid">' + COLORS.map(function (c) {
                 return '<button type="button" class="huv-rte-swatch" data-color="' + c + '" style="background:' + c + '" title="' + c + '"></button>';
@@ -585,7 +997,7 @@
             });
         });
         btn('hr', 'hr', 'Horizontal line', function () { cmd('insertHorizontalRule'); });
-        btn('chars', 'smile', 'Special characters', function () {
+        btn('chars', 'atSign', 'Special characters', function () {
             var anchor = this;
             var html = '<div class="huv-rte-pop-grid" style="grid-template-columns:repeat(8,28px)">' + CHARS.map(function (ch) {
                 return '<button type="button" class="huv-rte-char">' + ch + '</button>';
@@ -596,14 +1008,51 @@
                 });
             });
         });
-        btn('emoji', 'emoji', 'Emoji', function () {
+        /**
+         * Icon picker — replaces the old emoji picker. Inserts crisp inline
+         * SVG icons (created via createElementNS so no browser mangles the
+         * markup) that inherit the text colour and stay sharp at any size.
+         */
+        btn('icons', 'sparkles', 'Insert icon (high-quality SVG icons)', function () {
             var anchor = this;
-            var html = '<div class="huv-rte-pop-grid" style="grid-template-columns:repeat(8,32px)">' + EMOJIS.map(function (e) {
-                return '<button type="button" class="huv-rte-emoji">' + e + '</button>';
-            }).join('') + '</div>';
+            var html = '<div class="huv-ico-tabs">' + ICON_GROUPS.map(function (g, i) {
+                return '<button type="button" class="huv-ico-tab' + (i === 0 ? ' active' : '') + '" data-g="' + i + '">' + g.name + '</button>';
+            }).join('') + '</div><div class="huv-ico-grid" data-role="grid"></div>';
             pop(anchor, wrap, html, function (p) {
-                p.querySelectorAll('.huv-rte-emoji').forEach(function (b) {
-                    b.addEventListener('click', function () { closeAllPops(wrap); insertHTML(b.textContent); });
+                var grid = p.querySelector('[data-role="grid"]');
+                function show(gi) {
+                    grid.innerHTML = ICON_GROUPS[gi].icons.map(function (n) {
+                        return '<button type="button" class="huv-ico-btn" title="' + n + '" data-n="' + n + '">' + icon(n) + '</button>';
+                    }).join('');
+                    grid.querySelectorAll('.huv-ico-btn').forEach(function (b) {
+                        b.addEventListener('click', function () {
+                            var name = b.getAttribute('data-n');
+                            if (!ICONS[name]) return;
+                            var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                            svg.setAttribute('viewBox', '0 0 24 24');
+                            svg.setAttribute('fill', 'none');
+                            svg.setAttribute('stroke', 'currentColor');
+                            svg.setAttribute('stroke-width', '2');
+                            svg.setAttribute('stroke-linecap', 'round');
+                            svg.setAttribute('stroke-linejoin', 'round');
+                            svg.setAttribute('aria-hidden', 'true');
+                            svg.setAttribute('class', 'huv-inline-icon');
+                            svg.style.width = '1.15em';
+                            svg.style.height = '1.15em';
+                            svg.style.verticalAlign = '-0.2em';
+                            svg.innerHTML = ICONS[name];
+                            closeAllPops(wrap);
+                            insertNode(svg);
+                        });
+                    });
+                }
+                show(0);
+                p.querySelectorAll('.huv-ico-tab').forEach(function (t) {
+                    t.addEventListener('click', function () {
+                        p.querySelectorAll('.huv-ico-tab').forEach(function (x) { x.classList.remove('active'); });
+                        t.classList.add('active');
+                        show(parseInt(t.getAttribute('data-g'), 10) || 0);
+                    });
                 });
             });
         });
@@ -712,7 +1161,7 @@
         sep();
         btn('src', 'source', 'HTML source view', function () {
             var isSrc = wrap.classList.toggle('src');
-            if (isSrc) { srcArea.value = content.innerHTML; srcArea.focus(); }
+            if (isSrc) { deselectImage(); srcArea.value = content.innerHTML; srcArea.focus(); }
             else { content.innerHTML = sanitizeHTML(srcArea.value); content.focus(); }
             this.classList.toggle('active', isSrc);
             sync();
@@ -753,6 +1202,9 @@
                 fullBtn.classList.toggle('active', on);
             }
             closeAllPops(wrap);
+            // The wrap just moved (page → body or back): re-glue the image
+            // overlay to its image in the new geometry.
+            if (imgSel.img) requestAnimationFrame(positionImageOverlay);
             content.focus();
         }
         btn('full', 'expand', 'Fullscreen', function () { toggleFullscreen(); });
@@ -765,9 +1217,24 @@
         updateCount();
 
         // ---------------- events ----------------
-        content.addEventListener('input', sync);
+        content.addEventListener('input', function () {
+            sync();
+            // Typing can delete the selected image (Backspace) — the
+            // positioner re-checks containment and deselects if it's gone.
+            if (imgSel.img) positionImageOverlay();
+        });
         content.addEventListener('keyup', updateStates);
         content.addEventListener('mouseup', updateStates);
+
+        // Click an image → select it and show the resize/SEO overlay.
+        content.addEventListener('click', function (e) {
+            var img = e.target && e.target.closest ? e.target.closest('img') : null;
+            if (img && content.contains(img)) {
+                if (imgSel.img !== img) selectImage(img);
+            } else if (imgSel.img) {
+                deselectImage();
+            }
+        });
 
         document.addEventListener('selectionchange', function () {
             var sel = window.getSelection();
@@ -791,10 +1258,13 @@
                 cmd(e.shiftKey ? 'outdent' : 'indent');
             }
             if (e.key === 'Escape') {
-                // Popovers close first. Leaving fullscreen is handled by the
-                // document-level Escape listener below (this event bubbles up
-                // to it — toggling here too would immediately undo itself).
+                // Popovers and the image form close first, then an image
+                // selection is dropped. Leaving fullscreen is handled by the
+                // document-level Escape listener below (this event bubbles
+                // up to it — toggling here too would immediately undo itself).
                 closeAllPops(wrap);
+                if (imgSel.form && imgSel.form.classList.contains('open')) closeImageForm();
+                else if (imgSel.img) deselectImage();
             }
         });
 
@@ -807,6 +1277,8 @@
                     closeAllPops(wrap);
                     return;
                 }
+                if (imgSel.form && imgSel.form.classList.contains('open')) { closeImageForm(); return; }
+                if (imgSel.img) { deselectImage(); return; }
                 toggleFullscreen();
             }
         });
@@ -850,9 +1322,9 @@
             });
         });
 
-        // Close popovers on outside click.
+        // Close popovers on outside click; also drop the image selection.
         document.addEventListener('mousedown', function (e) {
-            if (!wrap.contains(e.target)) closeAllPops(wrap);
+            if (!wrap.contains(e.target)) { closeAllPops(wrap); deselectImage(); }
         });
         toolbar.addEventListener('mousedown', function (e) {
             if (!e.target.closest('.huv-rte-pop') && !e.target.closest('.huv-rte-select') && !e.target.closest('.huv-rte-dd')) {
@@ -866,7 +1338,8 @@
             updateCount();
         });
 
-        // Autosave every 3s to localStorage (recovered on reload).
+        // Autosave every 3s to localStorage (recovered on reload). Writes are
+        // skipped while the HTML is unchanged — no churn for idle editors.
         var form = textarea.closest('form');
         var autosaveKey = AUTOSAVE_KEY_PREFIX + (textarea.getAttribute('name') || textarea.id || 'editor');
         var draft = null;
@@ -875,8 +1348,12 @@
             content.innerHTML = sanitizeHTML(draft);
             sync();
         }
+        var lastAutosaved = null;
         setInterval(function () {
-            try { localStorage.setItem(autosaveKey, wrap.classList.contains('src') ? srcArea.value : content.innerHTML); } catch (e) {}
+            var html = wrap.classList.contains('src') ? srcArea.value : content.innerHTML;
+            if (html === lastAutosaved) return;
+            lastAutosaved = html;
+            try { localStorage.setItem(autosaveKey, html); } catch (e) {}
         }, 3000);
         if (form) form.addEventListener('submit', function () { try { localStorage.removeItem(autosaveKey); } catch (e) {} });
 
@@ -891,25 +1368,23 @@
         sync();
     }
 
+    /**
+     * Insert an image file. The real pipeline lives on the instance
+     * (self._insertImageFile) where it can auto-select the image and open
+     * the SEO form; this prototype wrapper stays for API compatibility.
+     */
     HuvantiEditor.prototype.insertImageFile = function (file) {
-        var self = this;
-        if (!file || file.type.indexOf('image') !== 0) return;
-        // Size guard: images placed in the text are embedded as base64 data
-        // URLs inside the post body. A multi-megabyte phone photo would
-        // silently bloat the form POST beyond the server's post_max_size and
-        // end as a 419/500 error when the author clicks save. Embedded images
-        // must stay lean; large photos belong in "Featured Image" (up to
-        // 4 MB, auto-optimised server side).
-        var MAX_EMBED_BYTES = 1.5 * 1024 * 1024;
-        if (file.size > MAX_EMBED_BYTES) {
-            window.alert('This image is ' + Math.round(file.size / 1024 / 1024 * 10) / 10 + ' MB. Images placed inside the text must be under 1.5 MB. Please resize it first, or use the "Featured Image" uploader which handles up to 4 MB.');
+        if (typeof this._insertImageFile === 'function') {
+            this._insertImageFile(file);
             return;
         }
+        if (!file || file.type.indexOf('image') !== 0) return;
+        var self = this;
         var reader = new FileReader();
         reader.onload = function () {
             self.content.focus();
             self.restoreRange();
-            document.execCommand('insertHTML', false, '<img src="' + reader.result + '" alt="">');
+            document.execCommand('insertHTML', false, '<img src="' + reader.result + '">');
             self.syncNow();
         };
         reader.readAsDataURL(file);

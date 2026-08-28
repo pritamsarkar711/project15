@@ -165,6 +165,9 @@ Route::prefix('manage')->name('admin.')->group(function(){
         // Server-side autosave for the admin post editor (drafts only).
         // Also registered BEFORE the posts resource (same reason as above).
         Route::post('posts/autosave', [PostController::class, 'autosave'])->name('posts.autosave');
+        // Bulk actions on the posts list (tick checkboxes → trash / restore /
+        // delete in one click). Registered BEFORE the resource for hygiene.
+        Route::post('posts/bulk', [PostController::class, 'bulkAction'])->name('posts.bulk');
         Route::post('posts/{post}/approve', [PostController::class, 'approve'])->name('posts.approve');
         Route::post('posts/{post}/return', [PostController::class, 'return'])->name('posts.return');
 

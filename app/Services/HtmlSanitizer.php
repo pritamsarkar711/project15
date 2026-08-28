@@ -23,14 +23,34 @@ class HtmlSanitizer
         // SILENTLY DELETED on save (the tag was unwrapped, its attributes
         // dropped) — the stored post then looked nothing like the editor.
         'font',
+        // The editor's icon picker inserts inline SVG icons (stroke paths —
+        // crisp at every size, inherit the text colour, render identically
+        // on every OS — unlike emojis). Only the shape vocabulary is
+        // allowed: no <use>, no <foreignObject>, no animation elements, no
+        // href/xlink:href attributes → no external references, no script.
+        'svg', 'path', 'circle', 'rect', 'line', 'polyline', 'polygon', 'g',
     ];
 
     private const ALLOWED_ATTRS = [
         'a'    => ['href', 'title', 'target', 'rel'],
-        'img'  => ['src', 'alt', 'width', 'height', 'loading', 'decoding'],
+        // title = hover tooltip + image SEO signal set by the editor's image
+        // form; width carries the author-chosen size (S/M/L/drag-resize).
+        'img'  => ['src', 'alt', 'title', 'width', 'height', 'loading', 'decoding'],
         'th'   => ['colspan', 'rowspan', 'style'],
         'td'   => ['colspan', 'rowspan', 'style'],
         'font' => ['color', 'face', 'size', 'style'],
+        // Inline SVG icon vocabulary. No href/xlink anywhere, so an SVG can
+        // never reference an external resource. (libxml lowercases
+        // attribute names — the browser's HTML parser re-adjusts
+        // "viewbox" to "viewBox" when rendering inline SVG.)
+        'svg'      => ['viewbox', 'width', 'height', 'fill', 'stroke', 'stroke-width', 'stroke-linecap', 'stroke-linejoin', 'xmlns', 'class', 'aria-hidden', 'role', 'style'],
+        'path'     => ['d', 'fill', 'stroke', 'stroke-width', 'stroke-linecap', 'stroke-linejoin', 'opacity'],
+        'circle'   => ['cx', 'cy', 'r', 'fill', 'stroke', 'stroke-width', 'opacity'],
+        'rect'     => ['x', 'y', 'width', 'height', 'rx', 'ry', 'fill', 'stroke', 'stroke-width', 'opacity'],
+        'line'     => ['x1', 'y1', 'x2', 'y2', 'stroke', 'stroke-width', 'stroke-linecap', 'opacity'],
+        'polyline' => ['points', 'fill', 'stroke', 'stroke-width', 'stroke-linecap', 'stroke-linejoin', 'opacity'],
+        'polygon'  => ['points', 'fill', 'stroke', 'stroke-width', 'stroke-linejoin', 'opacity'],
+        'g'        => ['fill', 'stroke', 'stroke-width', 'opacity'],
         // style= carries the editor's line-height, text colour fallbacks
         // (style="color:...") and background highlights. The style value is
         // vetted below (expression/behavior/position/javascript rejected).
@@ -85,7 +105,11 @@ class HtmlSanitizer
             $tag = strtolower($node->nodeName);
 
             // Drop dangerous elements entirely (with their children).
-            if (in_array($tag, ['script','style','iframe','object','embed','form','input','button','select','textarea','link','meta','base','applet','frame','frameset'], true)) {
+            if (in_array($tag, ['script','style','iframe','object','embed','form','input','button','select','textarea','link','meta','base','applet','frame','frameset',
+                // SVG escape hatches — never allowlisted, dropped outright so
+                // a crafted <svg><use href=...> / <foreignObject> / animation
+                // payload cannot smuggle external references through.
+                'use','foreignobject','animate','animatetransform','animatemotion','set','mpath','image','audio','video'], true)) {
                 $node->parentNode?->removeChild($node);
                 continue;
             }
