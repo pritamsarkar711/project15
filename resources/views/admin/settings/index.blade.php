@@ -392,6 +392,31 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
             </label>
         </div>
 
+        {{-- Maintenance mode: close the public site while updating. --}}
+        <div class="border {{ old('maintenance_enabled', $settings['maintenance_enabled']->value ?? '0') === '1' ? 'border-amber-400 dark:border-amber-500/60' : 'border-slate-200 dark:border-slate-800' }} bg-white dark:bg-slate-900 p-6 space-y-4">
+            <div class="flex items-center justify-between gap-3">
+                <h3 class="font-semibold inline-flex items-center gap-2">
+                    <svg class="w-4 h-4 text-amber-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17 17.25 21A2.652 2.652 0 0 0 21 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 1 1-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 0 0 4.486-6.336l-3.276 3.277a3.004 3.004 0 0 1-2.25-2.25l3.276-3.276a4.5 4.5 0 0 0-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085"/></svg>
+                    Maintenance mode
+                    @if(old('maintenance_enabled', $settings['maintenance_enabled']->value ?? '0') === '1')
+                        <span class="text-[10px] font-bold tracking-wide uppercase px-2 py-0.5 bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300">On</span>
+                    @endif
+                </h3>
+            </div>
+            <label class="flex items-center justify-between gap-4 cursor-pointer">
+                <span>
+                    <span class="block text-sm font-medium text-slate-900 dark:text-white">Enable maintenance mode</span>
+                    <span class="block text-xs text-slate-500 dark:text-slate-400 mt-0.5">Visitors see a maintenance page with a countdown instead of the site. Search engines get HTTP 503, so your rankings are safe. You (and the whole admin panel) keep full access while it is on.</span>
+                </span>
+                <input type="checkbox" name="maintenance_enabled" value="1" {{ old('maintenance_enabled', $settings['maintenance_enabled']->value ?? '0') === '1' ? 'checked' : '' }} class="shrink-0 w-4 h-4 text-emerald-600 border-slate-300 dark:border-slate-600 rounded">
+            </label>
+            <div>
+                <label class="text-xs font-medium text-slate-600 dark:text-slate-400">Comeback time (optional countdown)</label>
+                <input type="datetime-local" name="maintenance_ends_at" value="{{ old('maintenance_ends_at', $settings['maintenance_ends_at']->value ?? '') }}" class="mt-1 h-9 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm w-full sm:w-64">
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1.5">Leave empty for a simple page with no timer. Visitors are sent back to the site automatically when the countdown ends.</p>
+            </div>
+        </div>
+
         <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-4">
             <h3 class="font-semibold">Logo &amp; Favicon</h3>
             <div class="grid sm:grid-cols-3 gap-5">

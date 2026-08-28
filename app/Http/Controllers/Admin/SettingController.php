@@ -75,6 +75,9 @@ class SettingController extends Controller
             'revenue_enabled' => 'nullable|in:1',
             // Frontend feature switches
             'top_contributors_enabled' => 'nullable|in:1',
+            // Maintenance mode (timer is optional; empty or past = no countdown)
+            'maintenance_enabled' => 'nullable|in:1',
+            'maintenance_ends_at' => 'nullable|date',
             // Integrations / SEO
             'ga_measurement_id' => 'nullable|string|max:32',
             'search_console_token' => 'nullable|string|max:255',
@@ -133,6 +136,25 @@ class SettingController extends Controller
             // when the General form itself was submitted (same reasoning as
             // social_enabled above).
             Setting::set('top_contributors_enabled', $request->boolean('top_contributors_enabled') ? '1' : '0');
+            // Maintenance mode + optional countdown end. An empty/absent time
+            // clears the timer ("back soon", no countdown). A PAST time is
+            // also treated as no timer by the middleware. Flush now so the
+            // mode flips for the very next request instead of after the 30s
+            // settings cache TTL.
+            Setting::set('maintenance_enabled', $request->boolean('maintenance_enabled') ? '1' : '0');
+            $endsAtRaw = trim((string) $request->input('maintenance_ends_at', ''));
+            try {
+                // Past times are ACCEPTED but normalised to empty — otherwise
+                // an expired timer left in the field would block every later
+                // General-tab save. The middleware ignores past times anyway.
+                $endsAt = $endsAtRaw !== '' && \Illuminate\Support\Carbon::parse($endsAtRaw)->isFuture()
+                    ? \Illuminate\Support\Carbon::parse($endsAtRaw)->format('Y-m-d H:i:s')
+                    : '';
+            } catch (\Throwable $e) {
+                $endsAt = '';
+            }
+            Setting::set('maintenance_ends_at', $endsAt);
+            Setting::flushAllCache();
         }
 
         // Revenue program switch and ads master switch — ONLY when the Ads

@@ -150,9 +150,19 @@ class HtmlSanitizer
             }
         }
 
+        // Extract the cleaned fragment. Newer libxml builds (2.15+, HTML5
+        // parser) do NOT synthesise <html>/<body> shells for fragments under
+        // LIBXML_HTML_NOIMPLIED — the nodes sit directly in the document,
+        // and multiple top-level siblings stay siblings. Older builds always
+        // wrap everything in <body>. Support both shapes so an infrastructure
+        // upgrade can never truncate or wipe post content.
         $body = $doc->getElementsByTagName('body')->item(0);
+        $children = $body ? $body->childNodes : $doc->childNodes;
         $out = '';
-        foreach ($body?->childNodes ?? [] as $child) {
+        foreach ($children as $child) {
+            if ($child->nodeType === XML_DOCUMENT_TYPE_NODE) {
+                continue;
+            }
             $out .= $doc->saveHTML($child);
         }
         return $out;

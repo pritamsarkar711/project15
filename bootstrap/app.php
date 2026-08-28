@@ -22,6 +22,9 @@ return \App\Application::configure(basePath: dirname(__DIR__))
         // Auto-clear compiled Blade views after every admin write (POST/PUT/PATCH/DELETE)
         // so changes are instantly visible on shared hosting with OPcache.
         $middleware->append(\App\Http\Middleware\ClearViewCacheAfterWrite::class);
+        // Site-wide maintenance mode (Admin → Settings → General). Global so
+        // even sitemap.xml answers 503 — the correct signal for crawlers.
+        $middleware->append(\App\Http\Middleware\EnsureSiteIsLive::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->report(function (\Throwable $e) {

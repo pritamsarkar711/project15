@@ -1,5 +1,12 @@
 @extends('layouts.app')
-@php($metaTitle = 'Top Contributors · ' . setting('site_name','huvanti.com'))
+@php
+    // NOTE: keep this as a BLOCK-style PHP section (open/close pair), NOT
+    // the inline single-line directive. This file contains a second PHP
+    // block further down; Blade's pre-compiler pairs openers with the first
+    // closer it finds GREEDILY, so the inline single-line form here got
+    // swallowed into one broken raw block -> PHP parse error -> HTTP 500.
+    $metaTitle = 'Top Contributors · ' . setting('site_name', 'huvanti.com');
+@endphp
 @section('content')
 <div class="bg-emerald-50/70 dark:bg-[#1e1e1e] border-b border-emerald-100 dark:border-[#2f2f2f]">
     <div class="max-w-[1200px] mx-auto px-4 sm:px-6 py-8 sm:py-10">

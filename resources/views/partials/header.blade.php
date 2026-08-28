@@ -40,7 +40,7 @@
                 </div>
                 <a href="/blog" class="px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#2a2a2a] transition {{ request()->is('blog*') ? '!text-[#0C3B2E] dark:!text-emerald-300 bg-emerald-50 dark:bg-emerald-400/10' : '' }}">Blog</a>
                 <a href="/about" class="px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#2a2a2a] transition {{ request()->is('about') ? '!text-[#0C3B2E] dark:!text-emerald-300 bg-emerald-50 dark:bg-emerald-400/10' : '' }}">About</a>
-                @if(\Illuminate\Support\Facades\Setting::get('top_contributors_enabled', '1') === '1')
+                @if(setting('top_contributors_enabled', '1') === '1')
                 <a href="/top-contributors" class="px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#2a2a2a] transition {{ request()->is('top-contributors') ? '!text-[#0C3B2E] dark:!text-emerald-300 bg-emerald-50 dark:bg-emerald-400/10' : '' }}">Top Contributors</a>
                 @endif
                 <a href="/contact" class="px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#2a2a2a] transition {{ request()->is('contact') ? '!text-[#0C3B2E] dark:!text-emerald-300 bg-emerald-50 dark:bg-emerald-400/10' : '' }}">Contact</a>
@@ -120,7 +120,7 @@
             <a href="/about" class="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-50 dark:hover:bg-[#2a2a2a] text-slate-700 dark:text-slate-300 font-medium">
                 <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 16v-4"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 8h.01"/></svg> About
             </a>
-            @if(\Illuminate\Support\Facades\Setting::get('top_contributors_enabled', '1') === '1')
+            @if(setting('top_contributors_enabled', '1') === '1')
             <a href="/top-contributors" class="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-50 dark:hover:bg-[#2a2a2a] text-slate-700 dark:text-slate-300 font-medium">
                 <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0ZM4 21v-1a7 7 0 0 1 14 0v1"/></svg> Top Contributors
             </a>
