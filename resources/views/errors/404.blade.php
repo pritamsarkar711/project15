@@ -38,7 +38,6 @@
         <h1>Page not found</h1>
         <p>The page you are looking for was moved, renamed or no longer exists.</p>
         <a class="btn" href="/">Go to homepage</a>
-        <p class="sub">If the problem keeps happening, open /deploy.php once and hard refresh with Ctrl + Shift + R.</p>
     </div>
 </body>
 </html>

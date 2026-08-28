@@ -469,7 +469,7 @@ class PostController extends Controller
         try {
             if (!\Illuminate\Support\Facades\Schema::hasColumn('posts', 'review_status')) {
                 return redirect()->route('admin.dashboard')
-                    ->with('error', 'The review workflow table is not set up yet. Run deploy.php or visit doctor.php to apply pending migrations.');
+                    ->with('error', 'The review workflow table is not set up yet. Reload the admin dashboard once to apply pending database migrations.');
             }
         } catch (\Throwable $e) {
             // If even Schema check fails, show the queue as empty.

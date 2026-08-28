@@ -157,7 +157,7 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
                         <img src="{{ $heroImg ? asset('storage/'.$heroImg) : asset('images/hero-person-harry.png') }}" alt="" class="w-full h-full object-cover" loading="lazy" decoding="async" id="hero-preview-img"
                              onerror="this.style.display='none'; var h=document.getElementById('hero-load-hint'); if(h){h.classList.remove('hidden');}">
                     </div>
-                    <p id="hero-load-hint" class="mt-1.5 text-[11px] text-red-500 hidden">Saved but the file is not reachable. Open /deploy.php once and check that public/storage is writable.</p>
+                    <p id="hero-load-hint" class="mt-1.5 text-[11px] text-red-500 hidden">Saved but the file is not reachable. Hard refresh with Ctrl + Shift + R; if it still fails, check that public/storage is writable.</p>
                 </div>
             </div>
         </div>

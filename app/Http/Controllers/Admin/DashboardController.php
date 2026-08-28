@@ -20,9 +20,8 @@ class DashboardController extends Controller
         // an admin opens the dashboard.
         //
         // Why: this site lives on Hostinger shared hosting without SSH, and
-        // the /deploy.php script was unreachable for a while (root .htaccess
-        // rewrote it into public/ and it 404'd). Result: new migrations
-        // (extra categories, post reactions, ...) silently never ran and
+        // there is no deploy script to run after a git push. Result: new
+        // migrations (extra categories, post reactions, ...) silently never ran and
         // features appeared "broken". Running `migrate --force` here is
         // idempotent: when nothing is pending Laravel does nothing at all.
         // Failures are caught and shown to the admin instead of crashing

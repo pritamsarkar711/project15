@@ -38,7 +38,6 @@
         <h1>Access denied</h1>
         <p>You do not have permission to view this page.</p>
         <a class="btn" href="/">Go to homepage</a>
-        <p class="sub">If the problem keeps happening, open /deploy.php once and hard refresh with Ctrl + Shift + R.</p>
     </div>
 </body>
 </html>

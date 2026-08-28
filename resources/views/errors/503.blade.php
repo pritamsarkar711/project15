@@ -38,7 +38,6 @@
         <h1>The site is being updated</h1>
         <p>We are applying a quick update or the server is briefly overloaded. This page will be back in a moment, please try again shortly.</p>
         <a class="btn" href="/">Go to homepage</a>
-        <p class="sub">If the problem keeps happening, open /deploy.php once and hard refresh with Ctrl + Shift + R.</p>
     </div>
 </body>
 </html>

@@ -39,11 +39,10 @@ class AppServiceProvider extends ServiceProvider
         // ------------------------------------------------------------------
         // Self-updating database: apply pending migrations automatically.
         //
-        // This site runs on Hostinger shared hosting WITHOUT SSH, and the
-        // /deploy.php helper was unreachable for a while (it 404'd behind the
-        // root .htaccess rewrite). Result: new migrations (post reactions,
-        // extra categories, ...) silently never ran and the new code crashed
-        // with SQL "table not found" errors. Running `migrate --force` here
+        // This site runs on Hostinger shared hosting WITHOUT SSH, and there
+        // is no deploy script to run after a git push. Result: new migrations
+        // (post reactions, extra categories, ...) would silently never run
+        // and the new code crashed with SQL "table not found" errors. Running `migrate --force` here
         // is idempotent — when nothing is pending Laravel does nothing.
         //
         // Throttled with a filesystem flag (at most once every 10 minutes)
