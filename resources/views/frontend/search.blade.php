@@ -12,7 +12,7 @@
     <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         @forelse($posts as $p)
             <a href="{{ route('blog.show',$p->slug) }}" class="group card-elev overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-200 block">
-                <img src="{{ $p->featured_image ?: 'https://picsum.photos/seed/'.$p->slug.'/600/400' }}" alt="{{ $p->title }}" class="w-full h-44 object-cover group-hover:scale-[1.03] transition duration-300" loading="lazy" decoding="async">
+                <img src="{{ storage_image_url($p->featured_image) ?: 'https://picsum.photos/seed/'.$p->slug.'/600/400' }}" alt="{{ image_alt_text($p->featured_image, $p->title) }}" class="w-full h-44 object-cover group-hover:scale-[1.03] transition duration-300" loading="lazy" decoding="async">
                 <div class="p-4">
                     <div class="text-xs font-bold uppercase tracking-wide text-[#0C3B2E] dark:text-emerald-300">{{ $p->category->name ?? 'General' }}</div>
                     <h3 class="font-semibold text-slate-900 dark:text-white line-clamp-2 mt-1 group-hover:text-[#0C3B2E] dark:group-hover:text-emerald-300">{{ $p->title }}</h3>

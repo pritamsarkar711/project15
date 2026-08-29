@@ -39,6 +39,7 @@
                             @else
                                 <span class="font-bold text-slate-900 dark:text-white truncate">{{ $author->name }}</span>
                             @endif
+                            @include('partials.country-flag', ['user' => $author, 'class' => 'w-4 h-3'])
                             {!! $author->badgeHtml() !!}
                         </div>
                         @if($author->role_title)

@@ -12,7 +12,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\URL;
 
-#[Fillable(['name', 'email', 'password', 'role', 'bio', 'avatar', 'google_id', 'two_factor_enabled', 'two_factor_secret', 'theme_preference', 'google2fa_secret', 'author_avatar_path', 'username', 'role_title', 'portfolio_url', 'social_links', 'is_verified'])]
+#[Fillable(['name', 'email', 'password', 'role', 'bio', 'avatar', 'google_id', 'two_factor_enabled', 'two_factor_secret', 'theme_preference', 'google2fa_secret', 'author_avatar_path', 'username', 'role_title', 'portfolio_url', 'social_links', 'is_verified', 'country'])]
 #[Hidden(['password', 'remember_token', 'two_factor_secret', 'google2fa_secret'])]
 class User extends Authenticatable
 {
@@ -179,6 +179,34 @@ class User extends Authenticatable
     public function following()
     {
         return $this->belongsToMany(self::class, 'user_follows', 'follower_id', 'followee_id')->withTimestamps();
+    }
+
+    /**
+     * The user's country as a human-readable name ("BD" → "Bangladesh"),
+     * or null when no country was picked (or the code is unknown).
+     * Used on the public author profile and the post byline.
+     */
+    public function countryName(): ?string
+    {
+        try {
+            return \App\Support\Countries::name($this->country ?? null);
+        } catch (\Throwable $e) {
+            return null;
+        }
+    }
+
+    /**
+     * Country flag icon URL (flagcdn.com) for the stored ISO code, or null
+     * when unset/invalid. Emoji flags are not used because Windows renders
+     * them as plain letters instead of the flag.
+     */
+    public function countryFlagUrl(): ?string
+    {
+        try {
+            return \App\Support\Countries::flagUrl($this->country ?? null);
+        } catch (\Throwable $e) {
+            return null;
+        }
     }
 
     /**

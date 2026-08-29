@@ -43,11 +43,32 @@
     <meta property="og:url" content="{{ $seoCanonical }}">
     <meta property="og:type" content="{{ isset($post) ? 'article' : 'website' }}">
     <meta property="og:site_name" content="{{ setting('site_name','huvanti.com') }}">
-    <meta property="og:image" content="{{ $ogImage ?? request()->getSchemeAndHttpHost() . asset('images/og-huvanti.jpg') }}">
+    @php
+        // og:image / twitter:image: prefer an explicitly passed $ogImage,
+        // then the current post's featured image, then the site default.
+        // Bug this fixes: posts WITH a featured image still advertised the
+        // generic og-huvanti.jpg to social scrapers and Google Discover,
+        // because nothing ever bridged $post->featured_image into the meta
+        // tags. The URL is made absolute (required by scrapers) and goes
+        // through storage_image_url() so legacy/absolute paths also work.
+        $seoOgImage = $ogImage
+            ?? ((isset($post) && !empty($post->featured_image))
+                ? (str_starts_with((string) storage_image_url($post->featured_image), 'http')
+                    ? storage_image_url($post->featured_image)
+                    : request()->getSchemeAndHttpHost() . storage_image_url($post->featured_image))
+                : request()->getSchemeAndHttpHost() . asset('images/og-huvanti.jpg'));
+    @endphp
+    <meta property="og:image" content="{{ $seoOgImage }}">
+    <meta property="og:image:alt" content="{{ $seoOgTitle }}">
     @if(isset($post) && $post->published_at)<meta property="article:published_time" content="{{ $post->published_at->toIso8601String() }}">@endif
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="{{ $seoOgTitle }}">
     <meta name="twitter:description" content="{{ $seoOgDescription }}">
+    <meta name="twitter:image" content="{{ $seoOgImage }}">
+    {{-- Google Discover / image search: explicitly allow large thumbnails.
+         Only emitted when the page doesn't define its own robots directive,
+         so the two meta tags can never contradict each other. --}}
+    @if(!isset($robots))<meta name="robots" content="max-image-preview:large, max-snippet:-1, max-video-preview:-1">@endif
     @if(setting('search_console_token'))<meta name="google-site-verification" content="{{ setting('search_console_token') }}">@endif
     @if(setting('ahrefs_verification_token'))<meta name="ahrefs-site-verification" content="{{ setting('ahrefs_verification_token') }}">@endif
     @php

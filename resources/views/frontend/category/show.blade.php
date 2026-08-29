@@ -18,7 +18,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             @foreach($posts as $p)
                 <article class="group card-elev overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-200 flex flex-col">
-                    <a href="{{ route('blog.show',$p->slug) }}"><img src="{{ $p->featured_image ?: 'https://picsum.photos/seed/'.$p->slug.'/600/400' }}" alt="{{ $p->title }}" class="w-full h-48 object-cover group-hover:scale-[1.03] transition duration-300" loading="lazy" decoding="async"></a>
+                    <a href="{{ route('blog.show',$p->slug) }}"><img src="{{ storage_image_url($p->featured_image) ?: 'https://picsum.photos/seed/'.$p->slug.'/600/400' }}" alt="{{ image_alt_text($p->featured_image, $p->title) }}" class="w-full h-48 object-cover group-hover:scale-[1.03] transition duration-300" loading="lazy" decoding="async"></a>
                     <div class="p-5 flex flex-col flex-1">
                         <a href="{{ route('blog.show',$p->slug) }}" class="font-semibold text-slate-900 dark:text-white hover:text-[#0C3B2E] dark:hover:text-emerald-300 line-clamp-2">{{ $p->title }}</a>
                         <p class="text-sm text-slate-500 dark:text-slate-400 line-clamp-2 mt-2">{{ $p->excerpt }}</p>

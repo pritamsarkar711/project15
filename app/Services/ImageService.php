@@ -39,11 +39,18 @@ class ImageService
     /**
      * Validate, optimise and store an uploaded image on the public disk.
      *
+     * The ORIGINAL file name is preserved: "Nabil Rahman.jpg" is stored as
+     * "Nabil Rahman.webp" (spaces become hyphens for URL safety, the
+     * extension reflects the optimised format, a numeric suffix is added
+     * only when a file with the same name already exists). Random uniqid
+     * names are gone — authors and admins can recognise their uploads by
+     * name, and the file name doubles as SEO-friendly alt text on render.
+     *
      * @param bool $allowVector When true, SVG / ICO files are accepted and
      *                          stored without re-encoding (GD can't process
      *                          them). Used for logos & favicons, where SVG is
      *                          the natural format. SVGs are sanitised first.
-     * @return string relative path on public disk, e.g. "uploads/posts/65f1a2b3c4d5e.webp"
+     * @return string relative path on public disk, e.g. "uploads/posts/my-crochet-article.webp"
      * @throws \InvalidArgumentException with a user-friendly message
      */
     public function optimizeAndStore(UploadedFile $file, string $dir = 'uploads', bool $allowVector = false): string
@@ -118,16 +125,77 @@ class ImageService
             throw new \InvalidArgumentException('The image could not be read from the server temp folder.');
         }
 
-        $relative = trim($dir, '/') . '/' . uniqid('', true) . '.' . $ext;
+        $relative = trim($dir, '/') . '/' . $this->uniqueStoredName($file, $dir, $ext);
         $this->persist($relative, $contents);
 
         return $relative;
     }
 
     /**
+     * Build a collision-free, URL-safe stored file name that KEEPS the
+     * original upload's name.
+     *
+     *   "Nabil Rahman.jpg"   → "Nabil-Rahman.webp"
+     *   "my article (v2).png" → "my-article-v2.webp"
+     *   "নাবিল রহমান.jpg"     → "নাবিল-রহমান.webp" (unicode kept)
+     *
+     * Rules:
+     *   - whitespace runs collapse to a single hyphen (URL-safe, readable)
+     *   - characters unsafe in URLs/paths are stripped; unicode LETTERS and
+     *     digits from every script are kept (multibyte-safe)
+     *   - the extension comes from the actual re-encoded format ($ext), not
+     *     the original one — GD converts everything to WebP/JPEG
+     *   - if the target name already exists in EITHER storage location, a
+     *     -2 / -3 / … suffix is appended so an upload can never overwrite
+     *     an earlier file
+     *   - a name that empties out entirely falls back to "image-<random>"
+     */
+    protected function uniqueStoredName(UploadedFile $file, string $dir, string $ext): string
+    {
+        $original = pathinfo($file->getClientOriginalName() ?: '', PATHINFO_FILENAME);
+
+        // Strip URL/path-unsafe characters but KEEP unicode letters/digits
+        // (Bengali, Arabic, accented Latin…). Spaces, hyphens, underscores
+        // and dots are normalised to single hyphens.
+        $name = preg_replace('/[^\\p{L}\\p{N}._\-\s]+/u', '', (string) $original) ?? '';
+        $name = preg_replace('/[._\-\s]+/u', '-', trim($name)) ?? '';
+        $name = trim($name, '-');
+        $name = mb_substr($name, 0, 80);
+        $name = trim($name, '-');
+
+        if ($name === '') {
+            $name = 'image-' . strtolower(\Illuminate\Support\Str::random(6));
+        }
+
+        $dir = trim($dir, '/');
+        $candidate = $name . '.' . $ext;
+        $i = 1;
+        while ($this->existsOnDisk($dir . '/' . $candidate)) {
+            $candidate = $name . '-' . (++$i) . '.' . $ext;
+        }
+
+        return $candidate;
+    }
+
+    /** Does this relative path already exist in either storage location? */
+    protected function existsOnDisk(string $relative): bool
+    {
+        try {
+            if (Storage::disk('public')->exists($relative)) {
+                return true;
+            }
+        } catch (\Throwable $e) {
+            // fall through to the physical check
+        }
+        return is_file(public_path('storage/' . $relative))
+            || is_file(storage_path('app/public/' . $relative));
+    }
+
+    /**
      * Store SVG / ICO uploads untouched (GD cannot re-encode them, and they
      * are already compact). SVG content is sanitised to strip scripts and
-     * event handlers before it is written to disk.
+     * event handlers before it is written to disk. The original file name is
+     * kept (see uniqueStoredName()).
      */
     protected function storeRaw(UploadedFile $file, string $dir): string
     {
@@ -146,7 +214,7 @@ class ImageService
             $contents = preg_replace('/javascript\s*:/i', '', $contents) ?? $contents;
         }
 
-        $relative = trim($dir, '/') . '/' . uniqid('', true) . '.' . $ext;
+        $relative = trim($dir, '/') . '/' . $this->uniqueStoredName($file, $dir, $ext);
         $this->persist($relative, $contents);
 
         return $relative;

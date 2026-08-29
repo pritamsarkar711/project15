@@ -5,12 +5,23 @@
     $shareText = urlencode($post->title);
     $authorName = $post->user->name ?? $post->author_name ?? 'Huvanti Team';
     $authorBio = $post->user->bio ?? $post->author_bio ?? 'Editor at Huvanti';
-    $authorAvatar = $post->user?->author_avatar_path ? asset('storage/'.$post->user->author_avatar_path) : ($post->author_avatar ?: 'https://i.pravatar.cc/100?img=15');
+    $authorAvatar = $post->user?->author_avatar_path ? storage_image_url($post->user->author_avatar_path) : ($post->author_avatar ?: 'https://i.pravatar.cc/100?img=15');
     $topComments = $post->approvedComments->whereNull('parent_id');
     // Author profile URL: clicking the author's name or photo (byline above
     // the content AND the author box below it) opens their public profile,
     // where visitors can follow / unfollow them.
     $authorProfileUrl = $post->user?->username ? route('author.profile', $post->user->username) : null;
+    // Featured image MUST go through storage_image_url(): the DB stores
+    // "uploads/posts/x.webp" and printing that raw inside src="..." makes the
+    // browser request /blog/uploads/posts/x.webp → 404 → the image never
+    // shows. Alt text comes from the image's own file name (falls back to
+    // the post title when the name is meaningless like "IMG_2043").
+    $featuredImageUrl = storage_image_url($post->featured_image) ?: 'https://picsum.photos/seed/' . $post->slug . '/1200/700';
+    $featuredImageAlt = image_alt_text($post->featured_image, $post->title);
+    // og:image / twitter:image for social scrapers — absolute URL required.
+    // Legacy rows may store a full http URL as featured_image — only prefix
+    // the host for root-relative paths.
+    $ogImage = str_starts_with($featuredImageUrl, 'http') ? $featuredImageUrl : request()->getSchemeAndHttpHost() . $featuredImageUrl;
 @endphp
 @php
     // ---- JSON-LD payload (computed here, printed below) ----
@@ -19,7 +30,11 @@
     $ldStr    = 'Illuminate\Support\Str';
     $ldSite   = request()->getSchemeAndHttpHost();
     $ldUrl    = $ldSite . '/blog/' . $post->slug;
-    $ldImage  = $ldSite . ($post->featured_image ? asset('storage/' . $post->featured_image) : asset('images/og-huvanti.jpg'));
+    $ldImage  = $post->featured_image
+        ? (str_starts_with((string) storage_image_url($post->featured_image), 'http')
+            ? storage_image_url($post->featured_image)
+            : $ldSite . storage_image_url($post->featured_image))
+        : $ldSite . asset('images/og-huvanti.jpg');
     $ldTitle  = $ldStr::limit(strip_tags($post->title), 110);
     $ldDesc   = $post->excerpt ? $ldStr::limit(strip_tags($post->excerpt), 160) : null;
     $ldArticle = [
@@ -91,7 +106,7 @@
             {{-- Article card --}}
             <article class="card-elev overflow-hidden">
                 <div class="relative h-[240px] sm:h-[360px] overflow-hidden">
-                    <img src="{{ $post->featured_image ?: 'https://picsum.photos/seed/'.$post->slug.'/1200/700' }}" alt="{{ $post->title }}" class="w-full h-full object-cover" decoding="async" fetchpriority="high">
+                    <img src="{{ $featuredImageUrl }}" alt="{{ $featuredImageAlt }}" class="w-full h-full object-cover" decoding="async" fetchpriority="high">
                     <div class="absolute top-3 left-3 flex items-center gap-2">
                         @if($post->category)<span class="text-xs font-semibold bg-white/95 dark:bg-[#1e1e1e]/90 text-[#0C3B2E] dark:text-emerald-300 px-2.5 py-1 border border-slate-200 dark:border-[#383838] shadow-sm">{{ $post->category->name }}</span>@endif
                         @if($post->is_featured)<span class="text-xs font-bold bg-[#F5C445] text-slate-900 px-2.5 py-1">Popular</span>@endif
@@ -109,6 +124,7 @@
                                 <div class="flex items-center gap-1.5 flex-wrap {{ $authorProfileUrl ? 'group-hover:text-[#0C3B2E] dark:group-hover:text-emerald-300 transition' : '' }}">
                                     <span class="text-sm font-semibold text-slate-900 dark:text-white">{{ $authorName }}</span>
                                     @if($post->user)
+                                        @include('partials.country-flag', ['user' => $post->user, 'class' => 'w-4 h-3'])
                                         {!! $post->user->badgeHtml() !!}
                                     @endif
                                 </div>
@@ -384,7 +400,7 @@
                     <div class="space-y-3">
                         @foreach($related as $r)
                             <a href="{{ route('blog.show',$r->slug) }}" class="flex gap-3 group">
-                                <img src="{{ $r->featured_image ?: 'https://picsum.photos/seed/'.$r->slug.'/200/200' }}" class="w-14 h-14 object-cover shrink-0" alt="{{ $r->title }}" loading="lazy" decoding="async">
+                                <img src="{{ storage_image_url($r->featured_image) ?: 'https://picsum.photos/seed/'.$r->slug.'/200/200' }}" class="w-14 h-14 object-cover shrink-0" alt="{{ image_alt_text($r->featured_image, $r->title) }}" loading="lazy" decoding="async">
                                 <div><h4 class="text-sm font-medium text-slate-900 dark:text-white group-hover:text-[#0C3B2E] dark:group-hover:text-emerald-300 line-clamp-2 leading-snug">{{ $r->title }}</h4><span class="text-xs text-slate-500 dark:text-slate-400">{{ $r->reading_time }} min read</span></div>
                             </a>
                         @endforeach

@@ -29,7 +29,7 @@
             @foreach($posts as $p)
                 <article class="group card-elev overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-200 flex flex-col">
                     <a href="{{ route('blog.show',$p->slug) }}" class="relative h-[180px] overflow-hidden block">
-                        <img src="{{ $p->featured_image ?: 'https://picsum.photos/seed/'.$p->slug.'/600/400' }}" alt="{{ $p->title }}" class="w-full h-full object-cover group-hover:scale-[1.03] transition duration-300" loading="lazy" decoding="async">
+                        <img src="{{ storage_image_url($p->featured_image) ?: 'https://picsum.photos/seed/'.$p->slug.'/600/400' }}" alt="{{ image_alt_text($p->featured_image, $p->title) }}" class="w-full h-full object-cover group-hover:scale-[1.03] transition duration-300" loading="lazy" decoding="async">
                         <span class="absolute top-3 left-3 text-xs font-semibold bg-white/95 dark:bg-[#1e1e1e]/90 text-[#0C3B2E] dark:text-emerald-300 px-2.5 py-1 border border-slate-200 dark:border-[#383838] shadow-sm">{{ $p->category->name ?? 'General' }}</span>
                     </a>
                     <div class="p-4 flex flex-col flex-1">

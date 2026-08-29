@@ -27,6 +27,9 @@
             <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-2 flex-wrap">
                     <h1 class="text-2xl sm:text-[28px] font-extrabold text-slate-900 dark:text-white tracking-tight">{{ $author->name }}</h1>
+                    {{-- Country flag icon + name — unique profile decoration. The
+                         tooltip spells out the full country name on hover. --}}
+                    @include('partials.country-flag', ['user' => $author, 'class' => 'w-6 h-4', 'showName' => true])
                     {{-- Achievement badge: purple for admins, green at 10+ posts, yellow at 100+ --}}
                     {!! $author->badgeHtml() !!}
                 </div>
@@ -118,7 +121,7 @@
             @foreach($posts as $post)
             <article class="group card-elev overflow-hidden hover:-translate-y-1 hover:shadow-xl transition-all duration-200 flex flex-col">
                 <a href="{{ route('blog.show', $post->slug) }}" class="relative h-[180px] overflow-hidden block">
-                    <img src="{{ $post->featured_image ?: 'https://picsum.photos/seed/'.$post->slug.'/600/400' }}" alt="{{ $post->title }}" class="w-full h-full object-cover group-hover:scale-[1.03] transition duration-300" loading="lazy" decoding="async">
+                    <img src="{{ storage_image_url($post->featured_image) ?: 'https://picsum.photos/seed/'.$post->slug.'/600/400' }}" alt="{{ image_alt_text($post->featured_image, $post->title) }}" class="w-full h-full object-cover group-hover:scale-[1.03] transition duration-300" loading="lazy" decoding="async">
                 </a>
                 <div class="p-5 flex flex-col flex-1">
                     <span class="text-xs font-semibold text-[#0C3B2E] dark:text-emerald-300 uppercase tracking-wide">{{ $post->category->name ?? 'General' }}</span>
