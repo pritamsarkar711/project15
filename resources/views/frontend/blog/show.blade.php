@@ -161,12 +161,23 @@
                     </div>
 
                     @if(count($toc) > 0)
-                        <div class="mt-6 bg-emerald-50/80 dark:bg-[#2a2a2a]/60 border border-emerald-100 dark:border-[#383838] p-4">
-                            <h3 class="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2"><svg class="w-4 h-4 text-[#0C3B2E] dark:text-emerald-300 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16"/><path stroke-linecap="round" stroke-linejoin="round" d="M4 12h16"/><path stroke-linecap="round" stroke-linejoin="round" d="M4 18h16"/></svg> Table of Contents</h3>
-                            <ol class="mt-2 space-y-1 list-decimal list-inside text-sm text-slate-700 dark:text-slate-300">
+                        {{-- Collapsible Table of Contents — same native
+                             <details> pattern as the FAQ accordion below:
+                             tap the header (or the chevron icon) to hide or
+                             show the list. Open by default. --}}
+                        <details class="mt-6 bg-emerald-50/80 dark:bg-[#2a2a2a]/60 border border-emerald-100 dark:border-[#383838] group" open>
+                            <summary class="flex items-center justify-between p-4 cursor-pointer list-none select-none [&::-webkit-details-marker]:hidden hover:bg-emerald-50 dark:hover:bg-[#333]/60 transition">
+                                <span class="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+                                    <svg class="w-4 h-4 text-[#0C3B2E] dark:text-emerald-300 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16"/><path stroke-linecap="round" stroke-linejoin="round" d="M4 12h16"/><path stroke-linecap="round" stroke-linejoin="round" d="M4 18h16"/></svg> Table of Contents
+                                </span>
+                                <span class="w-7 h-7 bg-white dark:bg-slate-700 border border-emerald-100 dark:border-[#383838] flex items-center justify-center shrink-0 transition-transform duration-200 group-open:rotate-180">
+                                    <svg class="w-4 h-4 text-slate-600 dark:text-slate-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                </span>
+                            </summary>
+                            <ol class="px-4 pb-4 pt-3 border-t border-emerald-100 dark:border-[#383838] space-y-1 list-decimal list-inside text-sm text-slate-700 dark:text-slate-300">
                                 @foreach($toc as $item)<li><a href="#{{ $item['id'] }}" class="hover:text-[#0C3B2E] dark:hover:text-emerald-300 hover:underline">{{ $item['title'] }}</a></li>@endforeach
                             </ol>
-                        </div>
+                        </details>
                     @endif
 
                     @if($post->is_affiliate)

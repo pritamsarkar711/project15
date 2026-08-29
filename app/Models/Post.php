@@ -167,8 +167,16 @@ class Post extends Model
         preg_match_all('/<h[2-3][^>]*>(.*?)<\/h[2-3]>/i', $this->content, $matches);
         $toc = [];
         foreach ($matches[1] as $idx => $title) {
-            $id = Str::slug(strip_tags($title)).'-'.$idx;
-            $toc[] = ['id'=>$id,'title'=>strip_tags($title)];
+            // Rich-text content often carries entities and non-breaking
+            // spaces (e.g. "Final Thoughts&nbsp;"). Decode them, normalise
+            // every NBSP/whitespace run to a single plain space and trim,
+            // otherwise the TOC label literally prints "&nbsp;" and the
+            // anchor slug keeps a stray "nbsp" fragment.
+            $plain = html_entity_decode(strip_tags($title), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            $plain = str_replace("\xc2\xa0", ' ', $plain);
+            $plain = trim(preg_replace('/\s+/u', ' ', $plain) ?? '');
+            $id = Str::slug($plain).'-'.$idx;
+            $toc[] = ['id'=>$id,'title'=>$plain];
         }
         return $toc;
     }

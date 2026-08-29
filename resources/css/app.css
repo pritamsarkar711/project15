@@ -121,6 +121,17 @@ body, header, footer, section, article, aside, nav, div, a, button, input, selec
   .prose table::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
 }
 .dark .prose table::-webkit-scrollbar-thumb { background: #475569; }
+/* -----------------------------------------------------------------------
+   Mobile overflow ROOT fix: grid/flex items default to min-width:auto, so
+   a wide child (comparison table, code block, embed) silently grew its
+   whole grid COLUMN to the child's min-content width (531px on a 390px
+   phone) and the clipped article hid half of every heading/paragraph.
+   Letting grid children shrink keeps every column inside the viewport —
+   wide content then scrolls INSIDE the .prose table blocks above. */
+.grid > * { min-width: 0; }
+/* Anchored headings must not hide behind the sticky header when a reader
+   taps a Table of Contents link. */
+.prose h2[id], .prose h3[id] { scroll-margin-top: 84px; }
 /* ----------------------------------------------------------------------- */
 
 /* Prose dark mode */

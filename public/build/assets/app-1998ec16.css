@@ -5,3 +5,5 @@
 .prose,.prose td,.prose th{overflow-wrap:break-word}
 @media (max-width:767px){.prose table{display:block;width:100%;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}.prose table::-webkit-scrollbar{height:6px}.prose table::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px}}
 .dark .prose table::-webkit-scrollbar-thumb{background:#475569}
+
+.grid>*{min-width:0}.prose h2[id],.prose h3[id]{scroll-margin-top:84px}
