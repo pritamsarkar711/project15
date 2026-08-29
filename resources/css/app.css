@@ -90,6 +90,39 @@ body, header, footer, section, article, aside, nav, div, a, button, input, selec
 .prose th { background: #f8fafc; font-weight: 600; color: #0f172a; }
 .prose hr { border-color: #e2e8f0; margin: 2rem 0; }
 
+/* --- Mobile overflow & overlap fixes ---------------------------------- */
+/* Wide content inside an article (comparison tables with fixed-width
+   cells, embedded iframes, long code lines) used to push past the card
+   edge on phones: the page then scrolled sideways / content overlapped.
+   Tables become horizontally scrollable blocks INSIDE the article on
+   small screens instead of stretching the page; iframes and videos can
+   never exceed the column width on any screen. */
+.prose iframe,
+.prose embed,
+.prose video {
+  max-width: 100%;
+}
+/* Long words / URLs pasted by authors can also force the column wider. */
+.prose,
+.prose td,
+.prose th {
+  overflow-wrap: break-word;
+}
+@media (max-width: 767px) {
+  .prose table {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;          /* the table scrolls, the page does not */
+    -webkit-overflow-scrolling: touch;
+  }
+  /* Hint for readers: a table wider than the screen can be swiped. */
+  .prose table::-webkit-scrollbar { height: 6px; }
+  .prose table::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+}
+.dark .prose table::-webkit-scrollbar-thumb { background: #475569; }
+/* ----------------------------------------------------------------------- */
+
 /* Prose dark mode */
 .dark .prose h2 { color: #f1f5f9; }
 .dark .prose h3 { color: #e2e8f0; }

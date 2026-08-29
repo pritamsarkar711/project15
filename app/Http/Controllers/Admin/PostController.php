@@ -301,6 +301,26 @@ class PostController extends Controller
             $data['published_at'] = $isFuture ? $post->published_at : ($post->published_at ?: now());
         }
 
+        // ------------------------------------------------------------------
+        // Keep the AUTHOR-facing review state in sync with the admin publish
+        // state. Bug this fixes: an author's post kept showing "In review"
+        // in their dashboard forever, because the admin had approved it via
+        // THIS regular edit form (status → published) instead of the review
+        // queue — and this method never touched review_status.
+        //
+        //   published  → review_status 'approved'  (dashboard shows Published)
+        //   unpublished→ an already-approved post goes back to 'draft' so the
+        //                author can edit and re-submit (dashboard shows Draft,
+        //                never a stale "Published" badge)
+        // ------------------------------------------------------------------
+        if ($data['status'] === 'published' && $post->review_status !== 'approved') {
+            $data['review_status'] = 'approved';
+            $data['reviewed_at']   = now();
+            $data['reviewer_id']   = auth()->id();
+        } elseif ($data['status'] !== 'published' && $post->review_status === 'approved') {
+            $data['review_status'] = 'draft';
+        }
+
         $data['title'] = mb_substr((string) $data['title'], 0, 255);
         $data['slug'] = mb_substr((string) $data['slug'], 0, 255);
         $data['excerpt'] = isset($data['excerpt']) ? mb_substr((string) $data['excerpt'], 0, 500) : null;
@@ -449,6 +469,20 @@ class PostController extends Controller
             $isFuture = $post->scheduled_at && $post->scheduled_at->isFuture();
             if (!$isFuture) $post->published_at = now();
         }
+
+        // Sync the AUTHOR-facing review state with the new publish state,
+        // same rule as in update(): publishing marks the submission as
+        // approved (otherwise the author's dashboard shows "In review"
+        // forever even though the post is live), unpublishing a previously
+        // approved post hands it back to the author as an editable draft.
+        if ($post->status === 'published' && $post->review_status !== 'approved') {
+            $post->review_status = 'approved';
+            $post->reviewed_at   = now();
+            $post->reviewer_id   = auth()->id();
+        } elseif ($post->status !== 'published' && $post->review_status === 'approved') {
+            $post->review_status = 'draft';
+        }
+
         $post->save();
         return back()->with('success', 'Status updated to '.$post->status);
     }

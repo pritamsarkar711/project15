@@ -116,7 +116,7 @@
         <div class="grid lg:grid-cols-12 gap-6 mb-8">
             @php $big = $featuredPosts->first(); @endphp
             <a href="{{ route('blog.show',$big->slug) }}" class="lg:col-span-7 group relative overflow-hidden bg-[#0C3B2E] min-h-[360px] flex flex-col justify-end p-8">
-                <img src="{{ $big->featured_image ?: 'https://picsum.photos/seed/'.$big->slug.'/900/600' }}" alt="{{ $big->title }}" class="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:opacity-60 transition" loading="lazy" decoding="async">
+                <img src="{{ storage_image_url($big->featured_image) ?: 'https://picsum.photos/seed/'.$big->slug.'/900/600' }}" alt="{{ image_alt_text($big->featured_image, $big->title) }}" class="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:opacity-60 transition" loading="lazy" decoding="async">
                 <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
                 <div class="relative">
                     <div class="flex items-center gap-2 mb-3 flex-wrap">
@@ -130,7 +130,7 @@
             <div class="lg:col-span-5 grid gap-6">
                 @foreach($featuredPosts->skip(1)->take(2) as $fp)
                     <a href="{{ route('blog.show',$fp->slug) }}" class="group card-elev p-5 flex gap-4 items-center hover:-translate-y-1 hover:shadow-xl transition-all duration-200">
-                        <img src="{{ $fp->featured_image ?: 'https://picsum.photos/seed/'.$fp->slug.'/400/300' }}" class="w-[120px] h-[100px] object-cover shrink-0" alt="{{ $fp->title }}" loading="lazy" decoding="async">
+                        <img src="{{ storage_image_url($fp->featured_image) ?: 'https://picsum.photos/seed/'.$fp->slug.'/400/300' }}" class="w-[120px] h-[100px] object-cover shrink-0" alt="{{ image_alt_text($fp->featured_image, $fp->title) }}" loading="lazy" decoding="async">
                         <div class="flex flex-col min-w-0">
                             <span class="text-xs font-semibold text-[#0C3B2E] dark:text-emerald-300 uppercase tracking-wide">{{ $fp->category->name ?? 'Story' }}</span>
                             <h4 class="text-[15px] font-semibold text-slate-900 dark:text-white leading-snug mt-1.5 line-clamp-2 group-hover:text-[#0C3B2E] dark:group-hover:text-emerald-300">{{ $fp->title }}</h4>
@@ -146,7 +146,7 @@
         @foreach($latestPosts as $lp)
             <article class="group card-elev overflow-hidden hover:-translate-y-1 hover:shadow-xl transition-all duration-200 flex flex-col">
                 <a href="{{ route('blog.show',$lp->slug) }}" class="relative h-[190px] overflow-hidden block">
-                    <img src="{{ $lp->featured_image ?: 'https://picsum.photos/seed/'.$lp->slug.'/600/400' }}" alt="{{ $lp->title }}" class="w-full h-full object-cover group-hover:scale-[1.03] transition duration-300" loading="lazy" decoding="async">
+                    <img src="{{ storage_image_url($lp->featured_image) ?: 'https://picsum.photos/seed/'.$lp->slug.'/600/400' }}" alt="{{ image_alt_text($lp->featured_image, $lp->title) }}" class="w-full h-full object-cover group-hover:scale-[1.03] transition duration-300" loading="lazy" decoding="async">
                     @if($lp->is_featured)<span class="absolute top-2.5 right-2.5 text-xs font-bold bg-[#F5C445] text-slate-900 px-2.5 py-1">Popular</span>@endif
                 </a>
                 <div class="p-5 flex flex-col flex-1">

@@ -58,6 +58,28 @@
                 <input type="url" name="portfolio_url" value="{{ old('portfolio_url', $user->portfolio_url) }}" maxlength="255" placeholder="https://"
                     class="w-full h-11 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/15 outline-none text-sm text-slate-900 dark:text-white">
             </div>
+            {{-- Country picker: tooltip on the label explains what it does; the
+                 selected flag icon previews live next to the select. The saved
+                 country shows up (with its flag) on the public author profile,
+                 the post byline and the author box. --}}
+            <div>
+                <label for="country-select" class="block text-sm font-semibold text-slate-900 dark:text-white mb-1.5 inline-flex items-center gap-1.5 cursor-help" title="Pick the country you are writing from. It appears on your public profile and next to your name on your posts — readers instantly see where you're based. You can update it any time.">
+                    Country
+                    <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 16v-4"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 8h.01"/></svg>
+                </label>
+                <div class="flex items-center gap-2">
+                    <img id="country-flag-preview" src="{{ \App\Support\Countries::flagUrl(old('country', $user->country)) }}" alt=""
+                        class="{{ \App\Support\Countries::flagUrl(old('country', $user->country)) ? '' : 'hidden' }} w-6 h-4 object-cover border border-slate-200 dark:border-slate-600 shrink-0" loading="lazy" decoding="async">
+                    <select id="country-select" name="country"
+                        class="flex-1 h-11 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/15 outline-none text-sm text-slate-900 dark:text-white">
+                        <option value="">Not specified</option>
+                        @foreach(\App\Support\Countries::ALL as $code => $countryName)
+                            <option value="{{ $code }}" @selected(strtoupper(old('country', $user->country)) === $code)>{{ $countryName }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Optional. Shown on your public profile with a flag icon.</p>
+            </div>
         </div>
         <button type="submit" class="mt-5 h-11 px-6 bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold text-sm transition">Save profile</button>
     </div>
@@ -78,6 +100,26 @@
         <p class="text-xs text-slate-500 dark:text-slate-400 mt-3">Leave blank to hide an icon.</p>
     </div>
 </form>
+
+{{-- Live flag preview: picking a country in the dropdown instantly shows its
+     flag icon next to the select (and hides it for "Not specified"). --}}
+<script>
+(function(){
+    var select = document.getElementById('country-select');
+    var flag = document.getElementById('country-flag-preview');
+    if (!select || !flag) return;
+    select.addEventListener('change', function(){
+        var code = (select.value || '').toLowerCase();
+        if (/^[a-z]{2}$/.test(code)) {
+            flag.src = 'https://flagcdn.com/w40/' + code + '.png';
+            flag.classList.remove('hidden');
+        } else {
+            flag.classList.add('hidden');
+            flag.removeAttribute('src');
+        }
+    });
+})();
+</script>
 
 {{-- Two factor authentication --}}
 <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 mt-6">

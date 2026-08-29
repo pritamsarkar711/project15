@@ -132,6 +132,7 @@ class AuthorDashboardController extends Controller
             $data = $request->validate([
                 'autosave_post_id' => ['nullable', 'integer'],
                 'title'            => ['nullable', 'string', 'max:255'],
+                'slug'             => ['nullable', 'string', 'max:255', 'regex:/^[a-zA-Z0-9._\-]+$/'],
                 'excerpt'          => ['nullable', 'string', 'max:500'],
                 'content'          => ['nullable', 'string'],
                 'category_id'      => ['nullable', 'exists:categories,id'],
@@ -178,6 +179,10 @@ class AuthorDashboardController extends Controller
             $post->title = mb_substr($title !== '' ? $title : 'Untitled draft', 0, 255);
             if (! $post->exists || empty($post->slug)) {
                 $post->slug = $this->generateUniqueSlug($post->title);
+            } elseif (!empty($data['slug'])) {
+                // The author typed a custom slug before the first autosave —
+                // keep it on the draft (uniqueness guarded, own id ignored).
+                $post->slug = $this->generateUniqueSlug(Str::slug($data['slug']), $post->id);
             }
             if (array_key_exists('excerpt', $data)) {
                 $post->excerpt = $data['excerpt'] !== null ? mb_substr((string) $data['excerpt'], 0, 500) : null;
@@ -246,6 +251,7 @@ class AuthorDashboardController extends Controller
 
         $data = $request->validate([
             'title'           => ['required', 'string', 'max:255'],
+            'slug'            => ['nullable', 'string', 'max:255', 'regex:/^[a-zA-Z0-9._\-]+$/'],
             'excerpt'         => ['nullable', 'string', 'max:500'],
             'content'         => ['required', 'string', 'min:120'],
             'category_id'     => ['required', 'exists:categories,id'],
@@ -258,6 +264,8 @@ class AuthorDashboardController extends Controller
             'faqs.*.question' => ['nullable', 'string', 'max:500'],
             'faqs.*.answer'   => ['nullable', 'string', 'max:2000'],
             'action'          => ['required', 'in:save_draft,submit'],
+        ], [
+            'slug.regex' => 'The URL slug may only contain letters, numbers, hyphens, dots and underscores.',
         ]);
 
         $data['content'] = HtmlSanitizer::clean($data['content']);
@@ -288,7 +296,11 @@ class AuthorDashboardController extends Controller
 
         $post = new Post();
         $post->title = $data['title'];
-        $post->slug = $this->generateUniqueSlug($data['title']);
+        // URL slug: the author's custom slug (from the new Slug field) wins;
+        // when left empty it is generated from the title as before.
+        $post->slug = $this->generateUniqueSlug(
+            trim((string) ($data['slug'] ?? '')) !== '' ? Str::slug($data['slug']) : $data['title']
+        );
         $post->excerpt = $data['excerpt'] ?? null;
         $post->content = $data['content'];
         $post->category_id = $data['category_id'] ?? null;
@@ -381,6 +393,7 @@ class AuthorDashboardController extends Controller
 
         $data = $request->validate([
             'title'           => ['required', 'string', 'max:255'],
+            'slug'            => ['nullable', 'string', 'max:255', 'regex:/^[a-zA-Z0-9._\-]+$/'],
             'excerpt'         => ['nullable', 'string', 'max:500'],
             'content'         => ['required', 'string', 'min:120'],
             'category_id'     => ['required', 'exists:categories,id'],
@@ -393,6 +406,8 @@ class AuthorDashboardController extends Controller
             'faqs.*.question' => ['nullable', 'string', 'max:500'],
             'faqs.*.answer'   => ['nullable', 'string', 'max:2000'],
             'action'          => ['required', 'in:save_draft,submit'],
+        ], [
+            'slug.regex' => 'The URL slug may only contain letters, numbers, hyphens, dots and underscores.',
         ]);
 
         $wordCount = str_word_count(strip_tags($data['content']));
@@ -433,6 +448,14 @@ class AuthorDashboardController extends Controller
         }
 
         $post->title = $data['title'];
+        // URL slug: honour the author's custom slug; regenerating from the
+        // title on every save would silently break links already shared.
+        // A "-2"/"-3" suffix is appended when the slug is taken — the post's
+        // own slug never collides with itself (ignoreId).
+        $post->slug = $this->generateUniqueSlug(
+            trim((string) ($data['slug'] ?? '')) !== '' ? Str::slug($data['slug']) : ($post->slug ?: $data['title']),
+            $post->id
+        );
         $post->excerpt = $data['excerpt'] ?? null;
         $post->content = $data['content'];
         $post->category_id = $data['category_id'] ?? null;
@@ -559,6 +582,10 @@ class AuthorDashboardController extends Controller
             'portfolio_url'    => ['nullable', 'url', 'max:255'],
             'social_links'     => ['nullable', 'array'],
             'social_links.*'   => ['nullable', 'url', 'max:255'],
+            // Country: optional ISO 3166-1 alpha-2 code from the dropdown.
+            // Validated against the Countries list so a tampered request can
+            // never store an arbitrary string.
+            'country'          => ['nullable', 'string', 'size:2'],
         ];
 
         // Username is one-time-lockable — only allow setting it if it's
@@ -574,13 +601,22 @@ class AuthorDashboardController extends Controller
         $data = $request->validate($rules, [
             'username.regex' => 'Username can only contain letters, numbers, dots, underscores and hyphens.',
             'username.unique' => 'That username is taken. Try another.',
+            'country.size' => 'Please pick a country from the list.',
         ]);
+
+        // Reject codes that pass the size rule but are not real countries.
+        if (isset($data['country']) && !in_array(strtoupper($data['country']), array_keys(\App\Support\Countries::ALL), true)) {
+            return back()->withErrors(['country' => 'Please pick a country from the list.'])->withInput();
+        }
 
         $user->name = $data['name'];
         $user->bio = $data['bio'] ?? null;
         $user->role_title = $data['role_title'] ?? null;
         $user->portfolio_url = $data['portfolio_url'] ?? null;
         $user->social_links = array_filter($data['social_links'] ?? [], fn($u) => is_string($u) && $u !== '');
+        // Empty select = user cleared their country — honour that instead of
+        // silently keeping the old value.
+        $user->country = strtoupper(trim((string) ($data['country'] ?? ''))) ?: null;
 
         if (empty($user->username) && isset($data['username'])) {
             // Lowercase the username for case-insensitive uniqueness on lookup
@@ -752,7 +788,7 @@ class AuthorDashboardController extends Controller
         }
     }
 
-    private function generateUniqueSlug(string $title): string
+    private function generateUniqueSlug(string $title, ?int $ignoreId = null): string
     {
         $base = Str::slug($title);
 
@@ -766,7 +802,7 @@ class AuthorDashboardController extends Controller
 
         $slug = $base;
         $i = 1;
-        while (Post::withTrashed()->where('slug', $slug)->exists()) {
+        while (Post::withTrashed()->where('slug', $slug)->when($ignoreId, fn ($q) => $q->where('id', '!=', $ignoreId))->exists()) {
             $slug = $base.'-'.$i++;
         }
         return $slug;
