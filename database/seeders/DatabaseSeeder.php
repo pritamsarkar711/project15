@@ -64,7 +64,7 @@ class DatabaseSeeder extends Seeder
             ['key'=>'site_description','value'=>'Huvanti is a multi-niche blog covering technology, health, finance, travel, lifestyle and education with expert insights and curated stories.','group'=>'general'],
             ['key'=>'site_keywords','value'=>'huvanti, blog, multi niche, technology, health, finance, travel','group'=>'seo'],
             ['key'=>'site_logo','value'=>'','group'=>'general'],
-            ['key'=>'contact_email','value'=>'hello@huvanti.com','group'=>'general'],
+            ['key'=>'contact_email','value'=>'huvantiofficial@gmail.com','group'=>'general'],
             ['key'=>'footer_copyright','value'=>'© {year} Huvanti. All Rights Reserved.','group'=>'footer'],
             ['key'=>'ads_sidebar_code','value'=>'','group'=>'ads'],
         ];

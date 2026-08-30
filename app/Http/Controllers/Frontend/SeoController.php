@@ -55,31 +55,52 @@ class SeoController extends Controller
     /** GET /robots.txt — content managed in admin Settings > Integrations. */
     public function robots()
     {
-        $content = trim((string) setting('robots_txt_content', ''));
-        if ($content === '') {
-            // Explicit Allow blocks for Google and the major AI crawlers:
-            // everything is allowed by default, but spelling it out removes
-            // any doubt for auditors (Ahrefs "robots.txt blocks crawl") and
-            // for AI answer engines deciding whether the site is open.
-            $aiBots = [
-                'GPTBot', 'OAI-SearchBot', 'ChatGPT-User', 'ClaudeBot',
-                'anthropic-ai', 'PerplexityBot', 'Google-Extended', 'CCBot',
-                'Applebot-Extended', 'Amazonbot', 'Meta-ExternalAgent', 'Bytespider',
-            ];
-            $content = "User-agent: Googlebot\nAllow: /\n\n";
-            foreach ($aiBots as $bot) {
-                $content .= "User-agent: {$bot}\nAllow: /\n\n";
-            }
-            $content .= "User-agent: *\n"
-                ."Disallow: /manage\n"
-                ."Disallow: /author-dashboard\n"
-                ."Disallow: /search\n"
-                ."Disallow: /login\n"
-                ."Disallow: /register\n"
-                ."Disallow: /forgot-password\n"
-                ."Disallow: /reset-password\n\n"
-                ."Sitemap: ".$this->absoluteBase()."/sitemap.xml";
+        // The generated policy is ALWAYS the base: explicit Allow blocks for
+        // Google and the major AI crawlers (removes any doubt for auditors —
+        // Ahrefs "robots.txt blocks crawl" — and for AI answer engines
+        // deciding whether the site is open) plus the default Disallow rules
+        // for private areas and the sitemap directive.
+        $aiBots = [
+            'GPTBot', 'OAI-SearchBot', 'ChatGPT-User', 'ClaudeBot',
+            'anthropic-ai', 'PerplexityBot', 'Google-Extended', 'CCBot',
+            'Applebot-Extended', 'Amazonbot', 'Meta-ExternalAgent', 'Bytespider',
+        ];
+        $content = "User-agent: Googlebot\nAllow: /\n\n";
+        foreach ($aiBots as $bot) {
+            $content .= "User-agent: {$bot}\nAllow: /\n\n";
         }
+        $content .= "User-agent: *\n"
+            ."Disallow: /manage\n"
+            ."Disallow: /author-dashboard\n"
+            ."Disallow: /search\n"
+            ."Disallow: /login\n"
+            ."Disallow: /register\n"
+            ."Disallow: /forgot-password\n"
+            ."Disallow: /reset-password\n\n"
+            ."Sitemap: ".$this->absoluteBase()."/sitemap.xml";
+
+        // Admin "extra rules" are APPENDED to the generated policy — they can
+        // never REMOVE the Googlebot/AI-crawler Allow blocks or the Sitemap
+        // directive. Historical accident this guards against: a copy of the
+        // OLD default robots.txt (without the Allow blocks) was once saved
+        // into this setting, and because a stored value used to fully shadow
+        // the generator, the stale content kept being served forever — the
+        // exact "robots.txt blocks crawl" regression Ahrefs reported.
+        $custom = trim((string) setting('robots_txt_content', ''));
+        $custom = str_replace("\r\n", "\n", $custom);
+        $legacyDefault = "User-agent: *\n"
+            ."Disallow: /manage\n"
+            ."Disallow: /author-dashboard\n"
+            ."Disallow: /search\n"
+            ."Disallow: /login\n"
+            ."Disallow: /register\n"
+            ."Disallow: /forgot-password\n"
+            ."Disallow: /reset-password\n\n"
+            ."Sitemap: ".$this->absoluteBase()."/sitemap.xml";
+        if ($custom !== '' && rtrim($custom) !== rtrim($legacyDefault)) {
+            $content .= "\n\n# Custom rules\n".$custom;
+        }
+
         return $this->text($content, 'text/plain');
     }
 
@@ -99,6 +120,14 @@ class SeoController extends Controller
         $base = $this->absoluteBase();
 
         $custom = trim((string) setting('llms_txt_content', ''));
+        // This setting is for handwritten EXTRA markdown appended to the
+        // auto-generated file. A stale copy of a previously auto-generated
+        // llms.txt stored here used to duplicate every section (with dead
+        // /page/* links). Generator section headers are the fingerprint of
+        // such stale dumps — skip them.
+        if ($custom !== '' && preg_match('/^##\s+(Sections|Articles|Pages)\b/m', $custom)) {
+            $custom = '';
+        }
         $md = "# {$name}\n\n";
         if ($tagline) $md .= "> {$tagline}\n\n";
         if ($description) $md .= $description."\n\n";
@@ -157,19 +186,39 @@ class SeoController extends Controller
     {
         $base = $this->absoluteBase();
 
+        // IMPORTANT: plain PHP array, NOT collect(). paginatedUrls() declares
+        // `array &$entries` — passing a Collection raised a TypeError on EVERY
+        // request, the catch turned it into a homepage-only fallback, and the
+        // live sitemap silently shrank to a single URL.
+        $entries = [];
+        $lastmod = null;
+
         try {
             $lastmod = optional(Post::published()->latest('updated_at')->first())->updated_at;
+        } catch (\Throwable $e) {
+            report($e);
+        }
 
-            $entries = collect([
-                ['loc' => $base.'/', 'lastmod' => $lastmod],
-                ['loc' => $base.'/blog', 'lastmod' => $lastmod],
-            ]);
+        $entries[] = ['loc' => $base.'/', 'lastmod' => $lastmod];
+        $entries[] = ['loc' => $base.'/blog', 'lastmod' => $lastmod];
 
+        // Each section below is guarded on its own: a failure in one (a data
+        // quirk, a transient DB hiccup on shared hosting) must skip that
+        // section only — never collapse the whole sitemap to one URL again.
+        try {
             // Blog listing pagination (12 posts per page — same as the
             // controller) so "?page=2" style URLs are discoverable.
             $postTotal = Post::published()->count();
             $this->paginatedUrls('/blog', $postTotal, 12, $base, $lastmod, $entries);
 
+            foreach (Post::published()->latest()->get() as $post) {
+                $entries[] = ['loc' => $base.'/blog/'.$post->slug, 'lastmod' => $post->updated_at];
+            }
+        } catch (\Throwable $e) {
+            report($e);
+        }
+
+        try {
             // Static pages linked from the header — indexable, so they belong
             // in the sitemap. The Top Contributors page only exists while the
             // admin feature switch is on (otherwise it 404s).
@@ -178,19 +227,23 @@ class SeoController extends Controller
             if (\App\Models\Setting::get('top_contributors_enabled', '1') === '1') {
                 $entries[] = ['loc' => $base.'/top-contributors', 'lastmod' => null];
             }
+        } catch (\Throwable $e) {
+            report($e);
+        }
 
-            foreach (Post::published()->latest()->get() as $post) {
-                $entries[] = ['loc' => $base.'/blog/'.$post->slug, 'lastmod' => $post->updated_at];
-            }
-
-            // Only live categories (active + has published posts) belong in the
-            // sitemap — empty category pages return "no posts" to crawlers.
+        try {
+            // Only live categories (active + has published posts) belong in
+            // the sitemap — empty category pages return "no posts" to crawlers.
             foreach (Category::live()->get() as $category) {
                 $entries[] = ['loc' => $base.'/category/'.$category->slug, 'lastmod' => $category->updated_at];
                 $catTotal = Post::published()->where('category_id', $category->id)->count();
                 $this->paginatedUrls('/category/'.$category->slug, $catTotal, 12, $base, $category->updated_at, $entries);
             }
+        } catch (\Throwable $e) {
+            report($e);
+        }
 
+        try {
             // Author profile pages for everyone with at least one published
             // post — previously invisible to crawlers' sitemaps entirely.
             $authors = User::whereHas('posts', function ($q) {
@@ -203,23 +256,34 @@ class SeoController extends Controller
                     'lastmod' => $latest ? \Illuminate\Support\Carbon::parse($latest) : null,
                 ];
             }
+        } catch (\Throwable $e) {
+            report($e);
+        }
 
+        try {
             // Built-in policy pages at their CANONICAL named-route URLs
             // (/privacy-policy — the one the footer links). The /page/{slug}
             // variants 301-redirect here, so listing them would advertise a
             // redirect. Custom admin-created pages keep /page/{slug}.
-            foreach (Page::where('status', 'published')->get() as $page) {
-                $url = StaticPages::canonicalUrl((string) $page->slug)
-                    ?? $base.'/page/'.$page->slug;
-                if (!str_starts_with($url, $base)) {
-                    $url = $base.$url; // route() returns root-relative here
-                }
-                $entries[] = ['loc' => $url, 'lastmod' => $page->updated_at];
-            }
+            $pages = Page::where('status', 'published')->get();
         } catch (\Throwable $e) {
             report($e);
-            // Minimal but VALID sitemap so crawlers never get a 500.
-            $entries = collect([['loc' => $base.'/', 'lastmod' => null]]);
+            // Degrade gracefully: if the status filter itself fails (e.g. an
+            // older pages table schema), list all pages rather than none.
+            try {
+                $pages = Page::all();
+            } catch (\Throwable $e2) {
+                report($e2);
+                $pages = collect();
+            }
+        }
+        foreach ($pages as $page) {
+            $url = StaticPages::canonicalUrl((string) $page->slug)
+                ?? $base.'/page/'.$page->slug;
+            if (!str_starts_with($url, $base)) {
+                $url = $base.$url; // route() returns root-relative here
+            }
+            $entries[] = ['loc' => $url, 'lastmod' => $page->updated_at];
         }
 
         $xml = '<?xml version="1.0" encoding="UTF-8"?>'."\n";

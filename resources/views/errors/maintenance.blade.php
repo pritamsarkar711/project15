@@ -10,10 +10,10 @@
     <meta name="robots" content="noindex, nofollow">
     <title>{{ setting('site_name', 'huvanti.com') }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="{{ \App\Support\SiteFont::googleUrl() }}" rel="stylesheet">
     <style>
         *{box-sizing:border-box}
-        body{margin:0;font-family:'Inter',system-ui,-apple-system,sans-serif;background:#fafafa;color:#1e293b;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center}
+        body{margin:0;background:#fafafa;color:#1e293b;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center}
         .logo{margin-bottom:40px}
         .timer{display:flex;gap:10px;align-items:flex-start;justify-content:center}
         .cell{background:#0C3B2E;color:#fff;min-width:78px;padding:14px 6px 10px}
@@ -29,7 +29,7 @@
         @media (max-width:420px){.cell{min-width:62px;padding:12px 4px 8px}.cell .num{font-size:24px}}
     </style>
 </head>
-<body>
+<body style="font-family:{{ \App\Support\SiteFont::cssStack() }}">
     <div class="logo">
         @php
             $logoLight = setting('site_logo_light');

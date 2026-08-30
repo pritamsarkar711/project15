@@ -50,13 +50,13 @@
             <h3 class="font-semibold">robots.txt</h3>
             <textarea name="robots_txt_content" rows="5" placeholder="User-agent: *
 Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-mono placeholder:font-sans">{{ old('robots_txt_content', $settings['robots_txt_content']->value ?? '') }}</textarea>
-            <p class="text-xs text-slate-400 dark:text-slate-500">Served live at <a href="{{ url('robots.txt') }}" target="_blank" class="text-emerald-700 dark:text-emerald-300 hover:underline">{{ url('robots.txt') }}</a></p>
+            <p class="text-xs text-slate-400 dark:text-slate-500">Optional extra rules APPENDED below the auto-generated policy (Googlebot + AI crawler Allow blocks are always kept). Served live at <a href="{{ url('robots.txt') }}" target="_blank" class="text-emerald-700 dark:text-emerald-300 hover:underline">{{ url('robots.txt') }}</a></p>
         </div>
 
         <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-4">
             <h3 class="font-semibold">llms.txt</h3>
             <textarea name="llms_txt_content" rows="5" placeholder="Extra markdown appended to the auto-generated llms.txt" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">{{ old('llms_txt_content', $settings['llms_txt_content']->value ?? '') }}</textarea>
-            <p class="text-xs text-slate-400 dark:text-slate-500">Served live at <a href="{{ url('llms.txt') }}" target="_blank" class="text-emerald-700 dark:text-emerald-300 hover:underline">{{ url('llms.txt') }}</a></p>
+            <p class="text-xs text-slate-400 dark:text-slate-500">Optional handwritten markdown appended to the auto-generated llms.txt. Served live at <a href="{{ url('llms.txt') }}" target="_blank" class="text-emerald-700 dark:text-emerald-300 hover:underline">{{ url('llms.txt') }}</a></p>
         </div>
 
         <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-4">
