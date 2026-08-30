@@ -10,7 +10,7 @@
 <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
     <div>
         <h2 class="font-semibold">All Categories</h2>
-        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">A category only appears on the public site when it is <span class="font-semibold text-emerald-700 dark:text-emerald-300">enabled</span> and has at least <span class="font-semibold text-emerald-700 dark:text-emerald-300">one published post</span>.</p>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Shown on the site when <span class="font-semibold text-emerald-700 dark:text-emerald-300">enabled</span> with at least <span class="font-semibold text-emerald-700 dark:text-emerald-300">one published post</span>.</p>
     </div>
     <a href="{{ route('admin.categories.create') }}" class="h-9 px-4 bg-[#0C3B2E] hover:bg-[#072A20] text-white text-sm font-semibold inline-flex items-center gap-1.5">
         <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14m-7-7h14"/></svg> New Category
@@ -34,7 +34,7 @@
                         @if($cat->is_active && $cat->published_posts_count > 0)
                             <span class="text-[10px] font-bold uppercase px-1.5 py-0.5 bg-emerald-100 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300" title="Enabled and has published posts">live on site</span>
                         @elseif($cat->is_active)
-                            <span class="text-[10px] font-bold uppercase px-1.5 py-0.5 bg-amber-100 dark:bg-amber-500/15 text-amber-700 dark:text-amber-300" title="Enabled, but no published posts yet. Hidden from visitors until the first post goes live.">no published posts</span>
+                            <span class="text-[10px] font-bold uppercase px-1.5 py-0.5 bg-amber-100 dark:bg-amber-500/15 text-amber-700 dark:text-amber-300" title="Enabled, but hidden until it has a published post.">no published posts</span>
                         @endif
                     </div>
                     <div class="text-xs text-slate-500 dark:text-slate-400 truncate">{{ $cat->description ?? $cat->slug }} · {{ $cat->posts_count }} posts ({{ $cat->published_posts_count }} published)</div>

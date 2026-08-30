@@ -50,13 +50,13 @@
             <h3 class="font-semibold">robots.txt</h3>
             <textarea name="robots_txt_content" rows="5" placeholder="User-agent: *
 Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-mono placeholder:font-sans">{{ old('robots_txt_content', $settings['robots_txt_content']->value ?? '') }}</textarea>
-            <p class="text-xs text-slate-400 dark:text-slate-500">Optional extra rules APPENDED below the auto-generated policy (Googlebot + AI crawler Allow blocks are always kept). Served live at <a href="{{ url('robots.txt') }}" target="_blank" class="text-emerald-700 dark:text-emerald-300 hover:underline">{{ url('robots.txt') }}</a></p>
+            <p class="text-xs text-slate-400 dark:text-slate-500">Optional. Appended to the auto-generated robots.txt. Served at <a href="{{ url('robots.txt') }}" target="_blank" class="text-emerald-700 dark:text-emerald-300 hover:underline">{{ url('robots.txt') }}</a></p>
         </div>
 
         <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-4">
             <h3 class="font-semibold">llms.txt</h3>
-            <textarea name="llms_txt_content" rows="5" placeholder="Extra markdown appended to the auto-generated llms.txt" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">{{ old('llms_txt_content', $settings['llms_txt_content']->value ?? '') }}</textarea>
-            <p class="text-xs text-slate-400 dark:text-slate-500">Optional handwritten markdown appended to the auto-generated llms.txt. Served live at <a href="{{ url('llms.txt') }}" target="_blank" class="text-emerald-700 dark:text-emerald-300 hover:underline">{{ url('llms.txt') }}</a></p>
+            <textarea name="llms_txt_content" rows="5" placeholder="Extra markdown appended to llms.txt" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">{{ old('llms_txt_content', $settings['llms_txt_content']->value ?? '') }}</textarea>
+            <p class="text-xs text-slate-400 dark:text-slate-500">Optional. Appended to the auto-generated llms.txt. Served at <a href="{{ url('llms.txt') }}" target="_blank" class="text-emerald-700 dark:text-emerald-300 hover:underline">{{ url('llms.txt') }}</a></p>
         </div>
 
         <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-4">
@@ -71,7 +71,7 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
                     <span class="text-sm font-medium {{ ($settings['google_enabled']->value ?? '0') === '1' ? 'text-emerald-700 dark:text-emerald-300' : 'text-slate-500' }}">{{ ($settings['google_enabled']->value ?? '0') === '1' ? 'Enabled' : 'Disabled' }}</span>
                 </label>
             </div>
-            <p class="text-xs text-slate-500 dark:text-slate-400">Allow users to sign in and sign up with their Google account. Create credentials at <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener" class="text-emerald-700 dark:text-emerald-300 hover:underline">Google Cloud Console</a> and set the redirect URI to <span class="font-mono bg-slate-100 dark:bg-slate-800 px-1">{{ url('/auth/google/callback') }}</span></p>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Sign-in with Google. Create credentials at <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener" class="text-emerald-700 dark:text-emerald-300 hover:underline">Google Cloud Console</a>. Redirect URI: <span class="font-mono bg-slate-100 dark:bg-slate-800 px-1">{{ url('/auth/google/callback') }}</span></p>
             <div class="grid sm:grid-cols-2 gap-4">
                 <div>
                     <label class="text-sm font-medium">Client ID</label>
@@ -161,7 +161,7 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
                         <img src="{{ $heroImg ? asset('storage/'.$heroImg) : asset('images/hero-person-harry.png') }}" alt="" class="w-full h-full object-cover" loading="lazy" decoding="async" id="hero-preview-img"
                              onerror="this.style.display='none'; var h=document.getElementById('hero-load-hint'); if(h){h.classList.remove('hidden');}">
                     </div>
-                    <p id="hero-load-hint" class="mt-1.5 text-[11px] text-red-500 hidden">Saved but the file is not reachable. Hard refresh with Ctrl + Shift + R; if it still fails, check that public/storage is writable.</p>
+                    <p id="hero-load-hint" class="mt-1.5 text-[11px] text-red-500 hidden">File not reachable. Hard refresh (Ctrl + Shift + R), or check public/storage.</p>
                 </div>
             </div>
         </div>
@@ -351,7 +351,7 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
             <div>
                 <label class="text-sm font-medium">Footer copyright</label>
                 <input type="text" name="footer_copyright" value="{{ old('footer_copyright', $settings['footer_copyright']->value ?? '© {year} Huvanti. All Rights Reserved.') }}" class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
-                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1.5">Use {year} to show the current year automatically. Example: © {year} Huvanti. All Rights Reserved.</p>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1.5">Use {year} for the current year.</p>
             </div>
         </div>
 
@@ -422,7 +422,7 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
             <div>
                 <label class="text-xs font-medium text-slate-600 dark:text-slate-400">Comeback time (optional)</label>
                 <input type="datetime-local" name="maintenance_ends_at" value="{{ old('maintenance_ends_at', $settings['maintenance_ends_at']->value ?? '') }}" class="mt-1 h-9 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm w-full sm:w-64">
-                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1.5">Leave empty for no timer. The site reopens automatically when it ends.</p>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1.5">The site reopens automatically when it ends.</p>
             </div>
         </div>
 

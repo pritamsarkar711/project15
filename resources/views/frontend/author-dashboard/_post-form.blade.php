@@ -23,15 +23,15 @@
                      the server generates one from the title (same as before).
                      A title listener auto-fills it while typing a new post. --}}
                 <div class="mt-4">
-                    <label for="post-slug" class="text-sm font-medium text-slate-900 dark:text-white" title="The address of your post: huvanti.com/blog/your-slug">URL slug</label>
+                    <label for="post-slug" class="text-sm font-medium text-slate-900 dark:text-white" title="Your post's address">URL slug</label>
                     <div class="mt-1 flex items-stretch">
                         <span class="hidden sm:flex items-center px-2.5 bg-slate-100 dark:bg-slate-800 border border-r-0 border-slate-200 dark:border-slate-700 text-xs text-slate-500 dark:text-slate-400 select-none" aria-hidden="true">/blog/</span>
                         <input type="text" id="post-slug" name="slug" value="{{ old('slug', $isEdit ? $post->slug : '') }}" maxlength="255"
-                            pattern="[a-zA-Z0-9._\-]+" title="Letters, numbers, hyphens, dots and underscores only. Example: how-to-remove-pilling-from-clothes"
+                            pattern="[a-zA-Z0-9._\-]+" title="Letters, numbers, hyphens, dots and underscores only"
                             placeholder="auto-generated-from-title"
                             class="flex-1 h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/15 outline-none text-sm font-mono text-slate-900 dark:text-white">
                     </div>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Your post's address: huvanti.com/blog/<span class="font-mono">{{ old('slug', $isEdit ? $post->slug : '') ?: 'your-slug' }}</span>. Leave empty to auto-generate from the title. Letters, numbers, hyphens only.</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Leave empty to auto-generate from the title.</p>
                 </div>
 
                 <div class="grid sm:grid-cols-2 gap-4 mt-4">
