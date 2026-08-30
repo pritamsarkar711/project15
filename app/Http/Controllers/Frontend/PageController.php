@@ -4,12 +4,24 @@ namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
 use App\Models\Page;
+use App\Support\StaticPages;
 use Illuminate\Http\Request;
 
 class PageController extends Controller
 {
     public function show($slug)
     {
+        // Built-in pages are canonically served at their named route
+        // (/privacy-policy — the URL the footer links). The generic
+        // /page/{slug} variant used to render a 200 duplicate with its own
+        // self-canonical tag, which created duplicate index entries and 7
+        // orphan URLs (Ahrefs: "Orphan page", "3XX redirect"). Redirect
+        // duplicates permanently so search engines consolidate signals.
+        $canonical = StaticPages::ROUTE_MAP[$slug] ?? null;
+        if ($canonical !== null && \Route::has($canonical)) {
+            return redirect()->route($canonical, [], 301);
+        }
+
         $page = Page::where('slug', $slug)->where('status', 'published')->firstOrFail();
         return view('frontend.pages.show', compact('page'));
     }
@@ -17,7 +29,10 @@ class PageController extends Controller
     public function about()
     {
         $page = Page::where('slug', 'about')->first();
-        return view('frontend.about', compact('page'));
+        // "About Huvanti.com" (17 chars) was flagged "Title too short".
+        $metaTitle = 'About Huvanti — Our Story, Mission & Editorial Team';
+        $metaDescription = 'Learn about Huvanti.com, our editorial mission, our standards and the team behind the articles — independent, reader-first publishing.';
+        return view('frontend.about', compact('page', 'metaTitle', 'metaDescription'));
     }
 
     /**
@@ -25,8 +40,12 @@ class PageController extends Controller
      * missing from the database (a migration has not run yet, or the page was
      * deleted by mistake) the page still renders with complete content
      * instead of a 404. Admin edits always win when the row exists.
+     *
+     * $seoTitle / $seoDescription fix the Ahrefs "Title too short" flags —
+     * bare labels like "Disclaimer" (10 chars) carried straight into <title>.
+     * The layout also applies a generic top-up for anything still short.
      */
-    private function policyPage(string $slug, string $title, string $content)
+    private function policyPage(string $slug, string $title, string $content, ?string $seoTitle = null, ?string $seoDescription = null)
     {
         $page = Page::where('slug', $slug)->first();
 
@@ -38,42 +57,84 @@ class PageController extends Controller
             ];
         }
 
-        return view('frontend.pages.show', compact('page'));
+        return view('frontend.pages.show', compact('page', 'seoTitle', 'seoDescription'));
     }
 
     public function privacy()
     {
-        return $this->policyPage('privacy-policy', 'Privacy Policy', $this->defaultContent('privacy-policy'));
+        return $this->policyPage(
+            'privacy-policy',
+            'Privacy Policy',
+            $this->defaultContent('privacy-policy'),
+            'Privacy Policy — How Huvanti Protects Your Data',
+            'Read how Huvanti collects, uses and protects your personal data: cookies, analytics, advertising partners and your privacy rights, in plain language.'
+        );
     }
 
     public function terms()
     {
-        return $this->policyPage('terms-conditions', 'Terms and Conditions', $this->defaultContent('terms-conditions'));
+        return $this->policyPage(
+            'terms-conditions',
+            'Terms and Conditions',
+            $this->defaultContent('terms-conditions'),
+            'Terms & Conditions — The Rules for Using Huvanti',
+            'The terms and conditions that govern your use of Huvanti.com: acceptable use, content ownership, liability limits and account responsibilities.'
+        );
     }
 
     public function cookie()
     {
-        return $this->policyPage('cookie-policy', 'Cookie Policy', $this->defaultContent('cookie-policy'));
+        return $this->policyPage(
+            'cookie-policy',
+            'Cookie Policy',
+            $this->defaultContent('cookie-policy'),
+            'Cookie Policy — What Huvanti Collects & Why',
+            'Which cookies Huvanti.com sets, what each one does, how long it lasts and how to control or disable cookies in your browser at any time.'
+        );
     }
 
     public function editorial()
     {
-        return $this->policyPage('editorial-policy', 'Editorial Policy', $this->defaultContent('editorial-policy'));
+        return $this->policyPage(
+            'editorial-policy',
+            'Editorial Policy',
+            $this->defaultContent('editorial-policy'),
+            'Editorial Policy — Fact-Checking & Content Standards',
+            'How Huvanti researches, writes, reviews and corrects every article: sourcing rules, independence from advertisers, and our human-editor promise.'
+        );
     }
 
     public function disclaimer()
     {
-        return $this->policyPage('disclaimer', 'Disclaimer', $this->defaultContent('disclaimer'));
+        return $this->policyPage(
+            'disclaimer',
+            'Disclaimer',
+            $this->defaultContent('disclaimer'),
+            'Disclaimer — Accuracy & Liability of Huvanti Content',
+            'What Huvanti content is — and is not: informational use only, external links, affiliate relationships and why our articles are not professional advice.'
+        );
     }
 
     public function affiliateDisclosure()
     {
-        return $this->policyPage('affiliate-disclosure', 'Affiliate Disclosure', $this->defaultContent('affiliate-disclosure'));
+        return $this->policyPage(
+            'affiliate-disclosure',
+            'Affiliate Disclosure',
+            $this->defaultContent('affiliate-disclosure'),
+            'Affiliate Disclosure — How Huvanti Earns Commissions',
+            'How affiliate links work on Huvanti: what we earn, what you pay (nothing extra), and why commissions never influence our recommendations.'
+        );
     }
 
     public function commentPolicy()
     {
-        return $this->policyPage('comment-policy', 'Comment Policy', $this->defaultContent('comment-policy'));
+        return $this->policyPage(
+            'comment-policy',
+            'Comment Policy',
+            $this->defaultContent('comment-policy'),
+            'Comment Policy — Community Guidelines on Huvanti',
+            'The rules for commenting on Huvanti articles: what is welcome, what gets removed, how moderation works and how to report a problem comment.'
+        );
     }
 
     /**

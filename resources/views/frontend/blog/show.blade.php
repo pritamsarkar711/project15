@@ -87,6 +87,10 @@
 @push('head')
 {{-- Article + BreadcrumbList + FAQPage structured data for rich results --}}
 <script type="application/ld+json">{!! $ldJson !!}</script>
+{{-- LCP preload: the featured image is the largest contentful paint on
+     mobile — hinting the browser shaves a full round trip off first load
+     (Ahrefs "Slow page" finding). --}}
+<link rel="preload" as="image" href="{{ $ogImage }}" fetchpriority="high">
 @endpush
 <div class="max-w-[1200px] mx-auto px-4 sm:px-6 py-6">
     <nav class="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-2 flex-wrap mb-4" aria-label="Breadcrumb">

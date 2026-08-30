@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @php
-    $metaTitle = 'Contact ' . setting('site_name','huvanti.com');
+    $metaTitle = 'Contact Huvanti — Questions, Feedback & Support';
     $metaDescription = 'Get in touch with the ' . setting('site_name','huvanti.com') . ' team - questions, feedback, corrections, partnerships or press inquiries.';
 @endphp
 @section('content')

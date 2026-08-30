@@ -150,6 +150,42 @@ class Post extends Model
                 $post->published_at = now();
             }
         });
+
+        // IndexNow instant indexing (fixes Ahrefs "Changed pages not
+        // submitted to IndexNow"): ping the shared IndexNow API whenever a
+        // published post is created/changed or unpublished/deleted, so
+        // search engines refetch within minutes instead of weeks. Runs in
+        // the web request only (the artisan indexnow:submit-all command
+        // covers bulk backfills); best-effort, never blocks or fails saves.
+        static::saved(function ($post) {
+            if (app()->runningInConsole() && !app()->runningUnitTests()) {
+                return; // seeder/migration/tinker noise — skip
+            }
+            $contentFields = ['title','slug','excerpt','content','featured_image','meta_title','meta_description','status','review_status'];
+            if (!$post->wasRecentlyCreated && !$post->wasChanged($contentFields)) {
+                return; // views counter etc. — not interesting to crawlers
+            }
+            $service = app(\App\Services\IndexNowService::class);
+            if ($post->status === 'published' && !self::isFutureScheduled($post)) {
+                $service->submitQuietly([$service->postUrl($post->slug)]);
+            } elseif ($post->wasChanged('status') || $post->wasChanged('slug')) {
+                // Unpublished or slug changed: ask engines to refetch the
+                // old URL — they will see the new location or a 404 and
+                // update their index accordingly.
+                $oldSlug = $post->getOriginal('slug');
+                if ($oldSlug && $oldSlug !== $post->slug) {
+                    $service->submitQuietly([$service->postUrl($oldSlug)]);
+                }
+            }
+        });
+
+        static::deleted(function ($post) {
+            if (app()->runningInConsole()) {
+                return;
+            }
+            $service = app(\App\Services\IndexNowService::class);
+            $service->submitQuietly([$service->postUrl($post->slug)]);
+        });
     }
 
     protected static function isFutureScheduled($post)
