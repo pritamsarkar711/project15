@@ -276,8 +276,51 @@
         catch (e) { return ''; }
     }
 
-    function restore() {
-        // Only restore into a pristine form (never overwrite server-loaded
+    // Ignore snapshots that carry nothing but an empty form: offering
+    // "recovery" of an empty title and an empty editor confused authors.
+    function hasMeaningful(data) {
+        for (var k in data) {
+            if (!Object.prototype.hasOwnProperty.call(data, k)) continue;
+            if (k === '__savedAt') continue;
+            var v = typeof data[k] === 'string' ? data[k].replace(/<[^>]*>/g, '') : '';
+            if (v.trim() !== '') return true;
+        }
+        return false;
+    }
+
+    function fillFromSnapshot(data) {
+        var ed = document.getElementById('editor');
+        var restored = 0;
+        Object.keys(data).forEach(function (key) {
+            if (key === '__savedAt') return;
+            var field = form.querySelector('[name="' + key + '"]');
+            if (field && field.type !== 'file') { field.value = data[key]; restored++; }
+        });
+        // Push content into the rich text editor too. The editor never
+        // listens to textarea events, so plain value assignment leaves
+        // the editor VISUALLY EMPTY while the hidden textarea holds the
+        // text — __huvSet is the editor's official restore bridge.
+        if (ed) {
+            if (typeof ed.__huvSet === 'function') { ed.__huvSet(data['content'] || ''); }
+            else {
+                ed.value = data['content'] || '';
+                ed.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+        }
+        if (restored) {
+            setStatus('Unsaved work restored (saved ' + formatTime(data.__savedAt) + '). Save it or keep writing.');
+            dirtyLocal = false; dirtyServer = true; // push the restored copy to the server too
+        }
+    }
+
+    // Recovery is OPT-IN and always visible. The previous behaviour restored
+    // the snapshot silently into whatever blank form it found — combined
+    // with the navigation handlers below re-writing the snapshot after a
+    // successful save, the author clicked "New post" and their PREVIOUS
+    // post was sitting in the form. The form now always opens BLANK; any
+    // recovered copy is offered as an explicit Restore / Discard choice.
+    function offerRecovery() {
+        // Only offer into a pristine form (never overwrite server-loaded
         // or validation-returned values).
         var title = form.querySelector('[name="title"]');
         var ed = document.getElementById('editor');
@@ -289,27 +332,41 @@
         if (!raw) return;
         var data;
         try { data = JSON.parse(raw); } catch (e) { return; }
-        var restored = 0;
-        Object.keys(data).forEach(function (key) {
-            if (key === '__savedAt') return;
-            var field = form.querySelector('[name="' + key + '"]');
-            if (field && field.type !== 'file') { field.value = data[key]; restored++; }
+        if (!hasMeaningful(data)) { try { localStorage.removeItem(STORAGE_KEY); } catch (e2) {} return; }
+        var when = formatTime(data.__savedAt);
+        var banner = document.createElement('div');
+        banner.className = 'mb-5 flex flex-wrap items-center justify-between gap-3 border border-amber-200 dark:border-amber-500/30 bg-amber-50 dark:bg-amber-500/10 p-4';
+        var left = document.createElement('div');
+        left.className = 'min-w-0';
+        var h = document.createElement('div');
+        h.className = 'text-sm font-semibold text-amber-800 dark:text-amber-300';
+        h.textContent = 'Unsaved work found in this browser';
+        var p = document.createElement('p');
+        p.className = 'text-sm text-amber-700 dark:text-amber-400 mt-0.5 truncate';
+        p.textContent = (data.title ? '\u201C' + data.title + '\u201D' : 'Untitled draft') + (when ? ' — last saved ' + when : '');
+        left.appendChild(h); left.appendChild(p);
+        var right = document.createElement('div');
+        right.className = 'flex items-center gap-2 shrink-0';
+        var restoreBtn = document.createElement('button');
+        restoreBtn.type = 'button';
+        restoreBtn.className = 'inline-flex items-center h-9 px-4 bg-[#0C3B2E] hover:bg-[#072A20] text-white text-xs font-semibold';
+        restoreBtn.textContent = 'Restore it';
+        var discardBtn = document.createElement('button');
+        discardBtn.type = 'button';
+        discardBtn.className = 'inline-flex items-center h-9 px-3 text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10';
+        discardBtn.textContent = 'Discard';
+        right.appendChild(restoreBtn); right.appendChild(discardBtn);
+        banner.appendChild(left); banner.appendChild(right);
+        restoreBtn.addEventListener('click', function () {
+            fillFromSnapshot(data);
+            banner.remove();
         });
-        if (restored) {
-            // Push content into the rich text editor too. The editor never
-            // listens to textarea events, so plain value assignment leaves
-            // the editor VISUALLY EMPTY while the hidden textarea holds the
-            // text — __huvSet is the editor's official restore bridge.
-            if (ed) {
-                if (typeof ed.__huvSet === 'function') { ed.__huvSet(data['content'] || ''); }
-                else {
-                    ed.value = data['content'] || '';
-                    ed.dispatchEvent(new Event('input', { bubbles: true }));
-                }
-            }
-            setStatus('Your last unsaved work in this browser was restored (saved ' + formatTime(data.__savedAt) + ').');
-            dirtyLocal = false; dirtyServer = true; // push the restored copy to the server too
-        }
+        discardBtn.addEventListener('click', function () {
+            try { localStorage.removeItem(STORAGE_KEY); } catch (e2) {}
+            banner.remove();
+            setStatus('Discarded the unsaved copy kept in this browser.');
+        });
+        form.parentNode.insertBefore(banner, form);
     }
 
     form.addEventListener('input', function () { dirtyLocal = true; dirtyServer = true; }, true);
@@ -318,8 +375,10 @@
     // ---- Layer 1: local snapshot every 3 s --------------------------------
     setInterval(function () {
         if (stopped || window.__huvAutosaveStop || !dirtyLocal || document.hidden) return;
+        var data = snapshot();
+        if (!hasMeaningful(data)) return; // never snapshot an empty form
         try {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot()));
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
             dirtyLocal = false;
         } catch (e) { /* storage full/blocked — layer 2 still covers us */ }
     }, 3000);
@@ -375,19 +434,51 @@
     }, 45000);
 
     // Last flush when the tab is hidden or closed (covers power cut mid-typing).
+    // The stop-flag guard is CRITICAL and was the root cause of the "New post
+    // shows my previous post" bug: after a real submit the form's copy is
+    // already saved server-side and the submit handler deleted the local
+    // snapshot — re-writing it here (these handlers fire DURING the submit
+    // navigation) resurrected the just-saved post inside the next "New
+    // post" form.
     document.addEventListener('visibilitychange', function () {
         if (document.visibilityState === 'hidden') {
-            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot())); dirtyLocal = false; } catch (e) {}
+            if (!stopped && !window.__huvAutosaveStop) {
+                var data = snapshot();
+                if (hasMeaningful(data)) {
+                    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); dirtyLocal = false; } catch (e) {}
+                }
+            }
             if (dirtyServer) sendToServer(true);
         }
     });
     window.addEventListener('pagehide', function () {
-        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot())); dirtyLocal = false; } catch (e) {}
+        if (!stopped && !window.__huvAutosaveStop) {
+            var data = snapshot();
+            if (hasMeaningful(data)) {
+                try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); dirtyLocal = false; } catch (e) {}
+            }
+        }
         if (dirtyServer) sendToServer(true);
     });
 
-    // Restore any local snapshot from a previous crashed session.
-    restore();
+    // Back/forward-cache restore: when the browser resurrects this page
+    // from cache AFTER the form was submitted, the fields still hold the
+    // submitted values — the Back button looked like "my saved post is
+    // back in the editor". A submitted form means the data is safe on the
+    // server, so a bfcache restore of a submitted page is blanked.
+    window.addEventListener('pageshow', function (e) {
+        if (!e.persisted || !window.__huvAutosaveStop) return;
+        form.reset();
+        var ed = document.getElementById('editor');
+        if (ed && typeof ed.__huvSet === 'function') ed.__huvSet('');
+        var img = document.getElementById('featured-preview');
+        if (img) { img.classList.add('hidden'); img.removeAttribute('src'); }
+        dirtyLocal = false; dirtyServer = false;
+        setStatus('');
+    });
+
+    // Offer (never force) any local snapshot from a previous session.
+    offerRecovery();
 })();
 
 // FAQ rows
