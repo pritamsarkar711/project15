@@ -11,7 +11,7 @@
             </div>
             <div>
                 <h2 class="text-xl font-bold text-slate-900 dark:text-white">Feedback</h2>
-                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">Share your experience with Huvanti. Your answers help us fix issues and plan what to build next. This takes about two minutes.</p>
+                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">Tell us how to improve Huvanti — takes about two minutes.</p>
             </div>
         </div>
     </div>

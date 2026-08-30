@@ -32,8 +32,9 @@
                 @else
                     <input type="text" name="username" required value="{{ old('username') }}" minlength="3" maxlength="30" pattern="[a-zA-Z0-9._\-]+" autocomplete="off"
                         class="w-full h-11 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/15 outline-none text-sm font-mono text-slate-900 dark:text-white"
+                        title="Letters, numbers, dot, underscore, hyphen only"
                         placeholder="e.g. joe-goldberg">
-                    <p class="text-xs text-amber-600 dark:text-amber-400 mt-1">Choose carefully: this is permanent. Lowercase letters, numbers, dot, underscore and hyphen only.</p>
+                    <p class="text-xs text-amber-600 dark:text-amber-400 mt-1">Permanent — can’t be changed later.</p>
                 @endif
             </div>
             <div>
@@ -63,7 +64,7 @@
                  country shows up (with its flag) on the public author profile,
                  the post byline and the author box. --}}
             <div>
-                <label for="country-select" class="block text-sm font-semibold text-slate-900 dark:text-white mb-1.5 inline-flex items-center gap-1.5 cursor-help" title="Pick the country you are writing from. It appears on your public profile and next to your name on your posts — readers instantly see where you're based. You can update it any time.">
+                <label for="country-select" class="block text-sm font-semibold text-slate-900 dark:text-white mb-1.5 inline-flex items-center gap-1.5 cursor-help" title="Shown on your profile and post byline.">
                     Country
                     <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 16v-4"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 8h.01"/></svg>
                 </label>
@@ -78,7 +79,7 @@
                         @endforeach
                     </select>
                 </div>
-                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Optional. Shown on your public profile with a flag icon.</p>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Optional. Shown with a flag icon.</p>
             </div>
         </div>
         <button type="submit" class="mt-5 h-11 px-6 bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold text-sm transition">Save profile</button>
@@ -161,7 +162,7 @@
         <div class="p-4 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex flex-wrap items-center justify-between gap-3">
             <div>
                 <span class="text-sm font-semibold text-slate-600 dark:text-slate-300 block">Disabled</span>
-                <span class="text-xs text-slate-500 dark:text-slate-400">Add an extra layer of protection to your account.</span>
+                <span class="text-xs text-slate-500 dark:text-slate-400">Extra protection for your account.</span>
             </div>
             <form method="POST" action="{{ route('author.2fa.start') }}">@csrf
                 <button type="submit" class="h-9 px-4 bg-[#0C3B2E] hover:bg-[#072A20] text-white text-sm font-semibold transition">Enable 2FA</button>
@@ -173,7 +174,7 @@
 {{-- Account deletion --}}
 <div class="border border-red-200 dark:border-red-500/30 bg-white dark:bg-slate-900 p-6 mt-6">
     <h3 class="font-bold text-red-800 dark:text-red-300 text-base">Delete account</h3>
-    <p class="text-sm text-red-700 dark:text-red-400 mt-1">This is permanent. Drafts are removed. Published posts stay online under a former author name.</p>
+    <p class="text-sm text-red-700 dark:text-red-400 mt-1">Permanent. Drafts are deleted; published posts stay online.</p>
     <form method="POST" action="{{ route('author.account.delete') }}" class="mt-4 space-y-3" onsubmit="return confirm('Delete your account permanently?')">
         @csrf
         <label class="flex items-start gap-2 text-sm text-red-700 dark:text-red-300">
