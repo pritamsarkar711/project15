@@ -13,8 +13,19 @@
             }catch(e){}
         })();
     </script>
-    <title>{{ $metaTitle ?? ($post->meta_title ?? ($post->title ?? ($page->meta_title ?? ($page->title ?? (setting('site_name','huvanti.com') . ' · ' . setting('site_tagline','Explore Ideas. Inspire Life.')))))) }}</title>
-    <meta name="description" content="{{ $metaDescription ?? ($post->meta_description ?? ($page->meta_description ?? setting('site_description','Huvanti is a multi niche blog covering technology, health, finance, travel, lifestyle and education.'))) }}">
+    @php
+        // Central SEO finalizers: posts render their dashboard-authored
+        // title/description EXACTLY (owner requirement); every other page is
+        // padded when too short so Ahrefs' "Title too short" (13 pages) and
+        // "Meta description too short" (4 pages) stay fixed at the source.
+        $seoIsPost = isset($post);
+        $seoResolvedTitle = $metaTitle ?? ($post->meta_title ?? ($post->title ?? ($page->meta_title ?? ($page->title ?? (setting('site_name','huvanti.com') . ' · ' . setting('site_tagline','Explore Ideas. Inspire Life.'))))));
+        $seoResolvedDescription = $metaDescription ?? ($post->meta_description ?? ($page->meta_description ?? setting('site_description','Huvanti is a multi niche blog covering technology, health, finance, travel, lifestyle and education.')));
+        $seoFinalTitle = \App\Support\Seo::finalizeTitle($seoResolvedTitle, $seoIsPost);
+        $seoFinalDescription = \App\Support\Seo::finalizeDescription($seoResolvedDescription, $seoIsPost);
+    @endphp
+    <title>{{ $seoFinalTitle }}</title>
+    <meta name="description" content="{{ $seoFinalDescription }}">
     @if(isset($robots) && $robots)<meta name="robots" content="{{ $robots }}">@endif
     @php
         // Canonical + og:url: build an ABSOLUTE url from the request's own
@@ -34,8 +45,8 @@
         $seoCanonical = rtrim($seoHost, '/') . $seoPath . ($seoPage > 1 ? '?page=' . $seoPage : '');
         // Open Graph fallbacks mirror the <title>/<description> chain so
         // every page shares something sensible about itself.
-        $seoOgTitle = $metaTitle ?? ($post->meta_title ?? ($post->title ?? ($page->meta_title ?? ($page->title ?? setting('site_name','huvanti.com')))));
-        $seoOgDescription = $metaDescription ?? ($post->meta_description ?? ($page->meta_description ?? setting('site_description','')));
+        $seoOgTitle = $seoFinalTitle;
+        $seoOgDescription = $seoFinalDescription;
     @endphp
     <link rel="canonical" href="{{ $seoCanonical }}">
     <meta property="og:title" content="{{ $seoOgTitle }}">

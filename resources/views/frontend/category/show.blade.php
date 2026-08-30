@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @php
-    $metaTitle = $category->name . ' Articles · ' . setting('site_name','huvanti.com');
+    $metaTitle = $category->name . ' Articles, Guides & Tips | ' . setting('site_name','huvanti.com');
     $metaDescription = $category->description ?: ('Latest ' . $category->name . ' articles, guides and tips from the Huvanti editorial team.');
 @endphp
 @section('content')

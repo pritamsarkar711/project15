@@ -5,7 +5,7 @@
     // block further down; Blade's pre-compiler pairs openers with the first
     // closer it finds GREEDILY, so the inline single-line form here got
     // swallowed into one broken raw block -> PHP parse error -> HTTP 500.
-    $metaTitle = 'Top Contributors · ' . setting('site_name', 'huvanti.com');
+    $metaTitle = 'Top Contributors — The Most Active Writers on Huvanti';
 @endphp
 @section('content')
 <div class="bg-emerald-50/70 dark:bg-[#1e1e1e] border-b border-emerald-100 dark:border-[#2f2f2f]">

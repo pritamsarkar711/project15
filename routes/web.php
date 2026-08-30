@@ -5,7 +5,6 @@ use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Controllers\Frontend\BlogController;
 use App\Http\Controllers\Frontend\PageController;
 use App\Http\Controllers\Frontend\ContactController;
-use App\Http\Controllers\Frontend\SeoController;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\PostController;
@@ -138,11 +137,9 @@ Route::prefix('author-dashboard')->name('author.')->middleware('auth')->group(fu
     Route::post('/account', [AuthorDashboardController::class, 'accountDelete'])->name('account.delete');
 });
 
-// SEO / dynamic text+xml endpoints (settings-driven)
-Route::get('/robots.txt', [SeoController::class, 'robots'])->name('seo.robots');
-Route::get('/ads.txt', [SeoController::class, 'ads'])->name('seo.ads');
-Route::get('/llms.txt', [SeoController::class, 'llms'])->name('seo.llms');
-Route::get('/sitemap.xml', [SeoController::class, 'sitemap'])->name('seo.sitemap');
+// SEO / dynamic text+xml endpoints moved to routes/bots.php (registered
+// WITHOUT the web middleware group so crawlers get no session cookie and
+// the CDN can cache the responses).
 
 // Admin Auth - slug is /manage for security (no Admin link on frontend)
 Route::prefix('manage')->name('admin.')->group(function(){

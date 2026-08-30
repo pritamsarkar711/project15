@@ -47,7 +47,12 @@
                 <a href="/" class="flex items-center mb-3">
                     @include('partials.logo', ['class' => 'h-8', 'textClass' => 'text-[20px]'])
                 </a>
-                <p class="text-sm leading-relaxed text-slate-600 dark:text-slate-400">A curated multi-niche blog for tech, health, finance, travel, lifestyle and education.</p>
+                <p class="text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+                    A curated multi-niche blog for tech, health, finance, travel, lifestyle and education.
+                    <a href="{{ route('about') }}" class="text-slate-700 dark:text-slate-300 underline decoration-slate-400/60 hover:text-[#0C3B2E] dark:hover:text-emerald-300 transition">Learn about Huvanti</a>,
+                    how we work in our <a href="{{ route('editorial') }}" class="text-slate-700 dark:text-slate-300 underline decoration-slate-400/60 hover:text-[#0C3B2E] dark:hover:text-emerald-300 transition">editorial policy</a>
+                    or <a href="{{ route('contact') }}" class="text-slate-700 dark:text-slate-300 underline decoration-slate-400/60 hover:text-[#0C3B2E] dark:hover:text-emerald-300 transition">contact the team</a>.
+                </p>
                 @if($socialEnabled && count($socials) > 0)
                 <div class="flex items-center gap-2 mt-4">
                     @foreach($socials as $key => $s)

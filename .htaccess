@@ -15,6 +15,34 @@ DirectoryIndex index.php index.html
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
+    # -----------------------------------------------------------------
+    # Canonical host & scheme — ONE 301 hop (SEO fix).
+    # 1) http -> https, but ONLY when the request truly arrived over
+    #    plain http. Behind Hostinger's CDN the origin sees http, so the
+    #    X-Forwarded-Proto header decides — checking both prevents a
+    #    redirect loop on the edge.
+    # 2) www -> non-www: www.huvanti.com used to answer 200 with its own
+    #    self-canonical tags (full duplicate content); it must 301 away.
+    # -----------------------------------------------------------------
+    RewriteCond %{HTTPS} off
+    RewriteCond %{HTTP:X-Forwarded-Proto} !https
+    RewriteCond %{HTTP_HOST} ^(www\.)?huvanti\.com$ [NC]
+    RewriteRule ^ https://huvanti.com%{REQUEST_URI} [R=301,L,NE]
+
+    RewriteCond %{HTTP_HOST} ^www\.huvanti\.com$ [NC]
+    RewriteRule ^ https://huvanti.com%{REQUEST_URI} [R=301,L,NE]
+
+    # -----------------------------------------------------------------
+    # Strip trailing slashes at the EDGE, before the internal public/
+    # rewrite. public/.htaccess also strips them, but it runs AFTER that
+    # rewrite and its per-directory prefix turned "/blog/" into a 301 to
+    # "/public/blog" — which then 404'd. Every trailing-slash link to the
+    # site was effectively broken (Ahrefs "3XX redirect" findings).
+    # -----------------------------------------------------------------
+    RewriteCond %{REQUEST_URI} ^(.+)/$
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^ %1 [R=301,L,NE]
+
     # Per-directory rewrites can run again after the internal public/ rewrite.
     # Stop here so /foo never becomes /public/public/... (an HTTP 500 loop).
     # Use L rather than END so public/.htaccess can still route Laravel URLs.

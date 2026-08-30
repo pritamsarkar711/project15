@@ -5,8 +5,9 @@
     // @section('title')/@section('meta-description') blocks were dead code —
     // the layout defines no such yields). og:image must be ABSOLUTE for
     // social scrapers, so build it from the request host like the layout does.
-    $metaTitle = $author->name . ' · Author at ' . setting('site_name', 'Huvanti');
-    $metaDescription = \Illuminate\Support\Str::limit(strip_tags($author->bio ?? 'Author at ' . setting('site_name', 'Huvanti')), 150);
+    $metaTitle = $author->name . ' — Author Profile & Articles | ' . setting('site_name', 'Huvanti');
+    $metaDescription = \Illuminate\Support\Str::limit(strip_tags($author->bio ?? ''), 150)
+        ?: ('Browse all articles published by ' . $author->name . ' on ' . setting('site_name', 'Huvanti') . ' — profile, stats and latest posts in one place.');
     if ($author->author_avatar_path) {
         $ogImage = request()->getSchemeAndHttpHost() . asset('storage/' . $author->author_avatar_path);
     }
