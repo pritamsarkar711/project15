@@ -33,4 +33,26 @@
 @endif
 
 @include('frontend.author-dashboard._post-form', ['post' => $post, 'isEdit' => true])
+
+@if($post->review_status === 'approved' || $post->review_status === 'pending_review')
+@push('scripts')
+<script>
+// This post is locked (published / awaiting review). Make the lock REAL:
+// every control is disabled so the author cannot type edits that can never
+// be saved, and Enter in a field can no longer fire a doomed submit. The
+// autosave layers are stopped too — the server refuses them with 409.
+(function(){
+    var form = document.querySelector('form[data-autosave]');
+    if (!form) return;
+    window.__huvAutosaveStop = true;
+    form.querySelectorAll('input:not([type="hidden"]), select, textarea, button').forEach(function (el) { el.disabled = true; });
+    var c = document.querySelector('.huv-rte-content');
+    if (c) { c.setAttribute('contenteditable', 'false'); c.style.opacity = '0.75'; }
+    var src = document.querySelector('.huv-rte-src');
+    if (src) src.disabled = true;
+    document.querySelectorAll('.huv-rte-btn, .huv-rte-select, .huv-rte-dd-btn').forEach(function (el) { el.disabled = true; });
+})();
+</script>
+@endpush
+@endif
 @endsection

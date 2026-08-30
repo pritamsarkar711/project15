@@ -340,6 +340,43 @@
     // equally sharp on every OS and inherit the text colour.
     var AUTOSAVE_KEY_PREFIX = 'huv-rte-autosave-';
 
+    // Non-blocking toast at MODULE level: also needed by the paste pipeline
+    // (below), which runs outside the editor instance.
+    function editorToast(msg) {
+        var t = document.createElement('div');
+        t.className = 'huv-toast';
+        t.setAttribute('role', 'status');
+        t.textContent = msg;
+        document.body.appendChild(t);
+        setTimeout(function () { if (t.parentNode) t.remove(); }, 6000);
+    }
+
+    // An image pasted INSIDE an HTML payload (Word, Google Docs, another web
+    // page) never passes through _insertImageFile's 1.5 MB file guard — the
+    // clipboard hands us ready-made <img src="data:image/...base64…"> tags
+    // instead. One 8 MB screenshot pasted this way bloated the save POST
+    // past post_max_size and the whole article save ended in a 419/500 with
+    // everything lost. Anything over the same 1.5 MB limit as the upload
+    // path is stripped and the author is told why (1.5 MB of binary encodes
+    // to ~2,097,152 base64 chars, so anything beyond ~2.1M chars is over).
+    function stripOversizeDataImages(html) {
+        if (!html || html.indexOf('data:') === -1) return html;
+        var t = document.createElement('div');
+        t.innerHTML = html;
+        var stripped = 0;
+        t.querySelectorAll('img').forEach(function (img) {
+            var src = img.getAttribute('src') || '';
+            if (src.indexOf('data:') === 0 && src.length > 2100500) {
+                img.remove();
+                stripped++;
+            }
+        });
+        if (stripped) {
+            editorToast(stripped + ' oversized image' + (stripped > 1 ? 's were' : ' was') + ' removed while pasting — images inside the text must be under 1.5 MB. Use the \u201CFeatured Image\u201D uploader for large photos.');
+        }
+        return t.innerHTML;
+    }
+
     // Popovers register an optional cleanup (e.g. find and replace clears
     // its yellow find-marks) that runs whenever any popover/dropdown closes —
     // before this, marks left behind by simply closing the Find pop were
@@ -387,6 +424,15 @@
         var comments = [];
         while (commentWalker.nextNode()) comments.push(commentWalker.currentNode);
         comments.forEach(function (c) { c.remove(); });
+        // Office-XML junk elements (<o:p>, <v:shape>, <w:sdt>, <st1:place>…)
+        // from Word / Excel / Visio paste payloads. The server sanitizer
+        // unwraps unknown tags on save, but the editor must SHOW the author
+        // the same thing that will be stored — so drop the junk up front.
+        var officeJunk = [];
+        t.querySelectorAll('*').forEach(function (n) {
+            if (n.tagName.indexOf(':') !== -1) officeJunk.push(n);
+        });
+        officeJunk.forEach(function (n) { n.remove(); });
         t.querySelectorAll('*').forEach(function (n) {
             [].slice.call(n.attributes).forEach(function (a) {
                 var name = a.name.toLowerCase();
@@ -963,7 +1009,12 @@
                             f.remove();
                         }
                     });
-                    r.insertNode(tmp);
+                    // Insert the CLEANED CHILDREN, not the tmp wrapper: a
+                    // plain div.insertNode() wrapped the selection in a
+                    // <div> that then travelled into the saved markup.
+                    var outFrag = document.createDocumentFragment();
+                    while (tmp.firstChild) outFrag.appendChild(tmp.firstChild);
+                    r.insertNode(outFrag);
                     s.removeAllRanges();
                     s.addRange(r);
                 }
@@ -1161,7 +1212,43 @@
                 });
             });
         });
-        btn('hr', 'hr', 'Horizontal line', function () { cmd('insertHorizontalRule'); });
+        btn('hr', 'hr', 'Horizontal line', function () {
+            // Fully deterministic insertion — no execCommand: Chromium's
+            // insertHorizontalRule does NOTHING inside table cells, emits
+            // junk like <hr id="null">, and no-ops entirely when the focus
+            // dance leaves no caret. Plain node insertion works everywhere.
+            restoreRange();
+            var s = window.getSelection();
+            var anc = s && s.rangeCount ? (s.anchorNode.nodeType === 3 ? s.anchorNode.parentNode : s.anchorNode) : null;
+            var inContent = !!(anc && content.contains(anc));
+            var cell = inContent && anc.closest ? anc.closest('td,th') : null;
+            var hr = document.createElement('hr');
+            var p = document.createElement('p');
+            p.innerHTML = '<br>';
+            if (cell && anc.closest('table') && anc.closest('table').parentNode) {
+                // Caret inside a table: the line goes AFTER the table (an
+                // <hr> inside a cell is never what the author wants).
+                var table = anc.closest('table');
+                table.parentNode.insertBefore(hr, table.nextSibling);
+                hr.parentNode.insertBefore(p, hr.nextSibling);
+            } else if (inContent) {
+                var r = s.getRangeAt(0);
+                r.deleteContents();
+                r.insertNode(hr);
+                hr.parentNode.insertBefore(p, hr.nextSibling);
+            } else {
+                // No usable caret (focus in toolbar, dead range…) — append
+                // at the end of the content instead of doing nothing.
+                content.appendChild(hr);
+                content.appendChild(p);
+            }
+            var r2 = document.createRange();
+            r2.setStart(p, 0);
+            r2.collapse(true);
+            s.removeAllRanges();
+            s.addRange(r2);
+            sync();
+        });
         btn('chars', 'atSign', 'Special characters', function () {
             var anchor = this;
             var html = '<div class="huv-rte-pop-grid" style="grid-template-columns:repeat(8,28px)">' + CHARS.map(function (ch) {
@@ -1534,7 +1621,7 @@
             e.preventDefault();
             var html = e.clipboardData ? e.clipboardData.getData('text/html') : '';
             var text = e.clipboardData ? e.clipboardData.getData('text/plain') : '';
-            if (html) { insertHTML(sanitizeHTML(html)); }
+            if (html) { insertHTML(stripOversizeDataImages(sanitizeHTML(html))); }
             else if (text) {
                 var lines = text.split(/\n{2,}/);
                 if (lines.length > 1) { insertHTML(lines.map(function (l) { return '<p>' + l.replace(/</g, '&lt;').replace(/\n/g, '<br>') + '</p>'; }).join('')); }
@@ -1689,6 +1776,13 @@
         if (!el || el.tagName !== 'TEXTAREA') return null;
         if (el.dataset.huvantiRte === '1') return null;
         el.dataset.huvantiRte = '1';
+        // Enter must create REAL paragraphs. The browser default inside a
+        // contenteditable area is <div> (Chrome/Edge) or <br> (Safari), so
+        // every paragraph an author typed produced inconsistent markup —
+        // bare text nodes and <div>s that the post page then rendered with
+        // no spacing at all. 'p' matches what every professional editor
+        // stores and what the .prose styles on the site expect.
+        try { document.execCommand('defaultParagraphSeparator', false, 'p'); } catch (e) { /* older browsers: browser default stays */ }
         // NOTE: the old "Google Sans" stylesheet injection was removed — that
         // family is not distributed via Google Fonts, so the request 404'd on
         // every page load while the font stack silently fell back anyway.
