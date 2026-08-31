@@ -14,13 +14,13 @@
     <style>
         *,*::before,*::after{box-sizing:border-box}
         body{margin:0;background:#fafafa;color:#1e293b;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center}
-        .box{max-width:460px;width:100%;background:#fff;border:1px solid #e2e8f0;padding:40px 28px}
-        .icon{width:56px;height:56px;background:#fefce8;color:#ca8a04;display:flex;align-items:center;justify-content:center;margin:0 auto 18px}
+        .box{max-width:460px;width:100%;background:#fff;border:1px solid #e2e8f0;border-radius:16px;box-shadow:0 10px 30px -12px rgba(15,23,42,.12);padding:40px 28px}
+        .icon{width:56px;height:56px;background:#fefce8;color:#ca8a04;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;border-radius:9999px}
         .code{font-size:12px;font-weight:700;letter-spacing:.18em;color:#94a3b8;text-transform:uppercase}
         h1{font-size:22px;font-weight:800;margin:10px 0 8px;color:#0f172a}
         p{font-size:14px;line-height:1.65;color:#64748b;margin:0 0 22px}
-        .btn{display:inline-block;background:#0C3B2E;color:#fff;text-decoration:none;font-weight:600;font-size:14px;padding:12px 26px;transition:background .15s}
-        .btn:hover{background:#072A20}
+        .btn{display:inline-block;background:#059669;color:#fff;text-decoration:none;font-weight:600;font-size:14px;padding:12px 26px;border-radius:10px;transition:background .15s}
+        .btn:hover{background:#047857}
         .sub{font-size:12px;color:#94a3b8;margin-top:16px}
         @media (prefers-color-scheme:dark){
             body{background:#121212;color:#e2e8f0}

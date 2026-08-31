@@ -12,10 +12,11 @@
        'Work Sans' here would override the dynamic font setting. */
     --font-sans: inherit;
     /* Deep emerald green primary */
-    --color-primary: #0C3B2E;
-    --color-primary-dark: #072A20;
+    --color-primary: #059669;
+    --color-primary-dark: #047857;
     --color-primary-light: #34D399;
     --color-huvanti: #0C3B2E;
+    --color-huvanti-deep: #07231B;
     --color-huvanti-light: #34D399;
 }
 
@@ -25,18 +26,18 @@ html.dark { color-scheme: dark; }
 /* Smooth theme transition (colors only, no transform lag) */
 body, header, footer, section, article, aside, nav, div, a, button, input, select, textarea {
     transition-property: background-color, border-color, color, fill, stroke;
-    transition-duration: 0.2s;
+    transition-duration: 0.18s;
     transition-timing-function: ease;
 }
 
 /* Custom scrollbar */
 ::-webkit-scrollbar { width: 8px; height: 8px; }
-::-webkit-scrollbar-track { background: #eef0ea; }
-::-webkit-scrollbar-thumb { background: #c9cec4; border-radius:0; }
-::-webkit-scrollbar-thumb:hover { background: #a8b0a3; }
-.dark ::-webkit-scrollbar-track { background: #0f1210; }
-.dark ::-webkit-scrollbar-thumb { background: #2c332e; border-radius:0; }
-.dark ::-webkit-scrollbar-thumb:hover { background: #3d4640; }
+::-webkit-scrollbar-track { background: #f1f5f4; }
+::-webkit-scrollbar-thumb { background: #cbd5d1; border-radius: 8px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3a0; }
+.dark ::-webkit-scrollbar-track { background: #0b100e; }
+.dark ::-webkit-scrollbar-thumb { background: #2a3530; border-radius: 8px; }
+.dark ::-webkit-scrollbar-thumb:hover { background: #3c4a43; }
 
 /* ============ Typing animation for hero headline ============ */
 .typing-text { display: inline; }
@@ -46,8 +47,8 @@ body, header, footer, section, article, aside, nav, div, a, button, input, selec
     min-width: 3px;
     height: 0.85em;
     margin-left: 0.06em;
-    background: #F5C445;
-    border-radius:0;
+    background: #FDE68A;
+    border-radius: 2px;
     vertical-align: -0.08em;
     animation: caret-blink 0.85s step-end infinite;
 }
@@ -62,36 +63,36 @@ body, header, footer, section, article, aside, nav, div, a, button, input, selec
 #search-overlay .search-panel { transition: transform .22s ease, opacity .22s ease; transform: translateY(-14px); opacity: 0; }
 #search-overlay:not(.hidden-overlay) .search-panel { transform: translateY(0); opacity: 1; }
 
-/* Prose styling (light) — editorial reading rhythm */
-.prose h2 { font-size: 1.65rem; font-weight: 800; margin: 2rem 0 1rem; color: #141a16; line-height: 1.25; letter-spacing: -0.02em; }
-.prose h3 { font-size: 1.3rem; font-weight: 700; margin: 1.5rem 0 0.75rem; color: #1d2420; letter-spacing: -0.01em; }
-.prose h4 { font-size: 1.12rem; font-weight: 700; margin: 1.2rem 0 0.5rem; color: #1d2420; }
-.prose p { margin-bottom: 1.1rem; line-height: 1.8; color: #333c36; }
+/* Prose styling (light) — clean reading rhythm */
+.prose h2 { font-size: 1.65rem; font-weight: 800; margin: 2rem 0 1rem; color: #0F172A; line-height: 1.25; letter-spacing: -0.02em; }
+.prose h3 { font-size: 1.3rem; font-weight: 700; margin: 1.5rem 0 0.75rem; color: #1E293B; letter-spacing: -0.01em; }
+.prose h4 { font-size: 1.12rem; font-weight: 700; margin: 1.2rem 0 0.5rem; color: #1E293B; }
+.prose p { margin-bottom: 1.1rem; line-height: 1.8; color: #334155; }
 .prose ul, .prose ol { margin: 1.1rem 0; padding-left: 1.5rem; }
 .prose ul { list-style: disc; }
 .prose ol { list-style: decimal; }
-.prose li { margin-bottom: 0.55rem; color: #333c36; }
-.prose li::marker { color: #0C3B2E; font-weight: 700; }
-.prose a { color: #0C3B2E; text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
-.prose a:hover { color: #072A20; }
-.prose strong { color: #141a16; font-weight: 700; }
-.prose blockquote { border-left: 4px solid #0C3B2E; padding: 1rem 1.4rem; margin: 1.75rem 0; font-style: italic; background: #F3F5EE; border-radius: 0; color: #1d2420; }
+.prose li { margin-bottom: 0.55rem; color: #334155; }
+.prose li::marker { color: #059669; font-weight: 700; }
+.prose a { color: #059669; text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+.prose a:hover { color: #047857; }
+.prose strong { color: #0F172A; font-weight: 700; }
+.prose blockquote { border-left: 4px solid #059669; padding: 1rem 1.4rem; margin: 1.75rem 0; font-style: italic; background: #F0FDF9; border-radius: 0 0.75rem 0.75rem 0; color: #134E4A; }
 /* Images keep the author-chosen size from the editor (width attribute set
-   by drag-resize or the S/M/L/original presets). The old width:100% FORCED
-   every content image to full column width and silently discarded the size
-   the author picked. max-width:100% + height:auto keeps small images at
-   their chosen width and still shrinks big ones on small screens. */
-.prose img { border-radius:0; margin: 1.75rem 0; max-width: 100%; height: auto; }
+   by drag-resize or the S/M/L/original presets). max-width:100% + height:auto
+   keeps small images at their chosen width and still shrinks big ones on
+   small screens. */
+.prose img { border-radius: 0.75rem; margin: 1.75rem 0; max-width: 100%; height: auto; }
 /* Inline SVG icons inserted via the editor's icon picker: sized relative to
    the surrounding text, aligned to the baseline like a glyph. */
 .prose svg.huv-inline-icon { display: inline-block; width: 1.15em; height: 1.15em; vertical-align: -0.2em; }
-.prose code { background: #EFF1E9; color: #0C3B2E; padding: 0.15rem 0.45rem; border-radius:0; font-size: 0.875em; }
-.prose pre { background: #141a16; color: #E8EBE2; padding: 1.1rem 1.25rem; border-radius:0; overflow-x: auto; margin: 1.75rem 0; }
+.prose code { background: #F1F5F9; color: #047857; padding: 0.15rem 0.45rem; border-radius: 0.375rem; font-size: 0.875em; }
+.prose pre { background: #0F172A; color: #E2E8F0; padding: 1.1rem 1.25rem; border-radius: 0.75rem; overflow-x: auto; margin: 1.75rem 0; }
 .prose pre code { background: transparent; color: inherit; padding: 0; }
 .prose table { width: 100%; border-collapse: collapse; margin: 1.75rem 0; font-size: 0.925rem; }
-.prose th, .prose td { border: 1px solid #E0E2D8; padding: 0.6rem 0.85rem; text-align: left; }
-.prose th { background: #F3F5EE; font-weight: 700; color: #141a16; }
-.prose hr { border: 0; border-top: 1px solid #E0E2D8; margin: 2.25rem 0; }
+.prose th, .prose td { border: 1px solid #E2E8F0; padding: 0.6rem 0.85rem; text-align: left; }
+.prose th { background: #F8FAFC; font-weight: 700; color: #0F172A; }
+.prose thead th { border-bottom: 2px solid #CBD5E1; }
+.prose hr { border: 0; border-top: 1px solid #E2E8F0; margin: 2.25rem 0; }
 
 /* --- Mobile overflow & overlap fixes ---------------------------------- */
 /* Wide content inside an article (comparison tables with fixed-width
@@ -121,9 +122,9 @@ body, header, footer, section, article, aside, nav, div, a, button, input, selec
   }
   /* Hint for readers: a table wider than the screen can be swiped. */
   .prose table::-webkit-scrollbar { height: 6px; }
-  .prose table::-webkit-scrollbar-thumb { background: #c9cec4; border-radius: 3px; }
+  .prose table::-webkit-scrollbar-thumb { background: #cbd5d1; border-radius: 3px; }
 }
-.dark .prose table::-webkit-scrollbar-thumb { background: #3d4640; }
+.dark .prose table::-webkit-scrollbar-thumb { background: #3c4a43; }
 /* -----------------------------------------------------------------------
    Mobile overflow ROOT fix: grid/flex items default to min-width:auto, so
    a wide child (comparison table, code block, embed) silently grew its
@@ -138,19 +139,21 @@ body, header, footer, section, article, aside, nav, div, a, button, input, selec
 /* ----------------------------------------------------------------------- */
 
 /* Prose dark mode */
-.dark .prose h2 { color: #F0F2EB; }
-.dark .prose h3 { color: #E4E8DE; }
-.dark .prose h4 { color: #E4E8DE; }
-.dark .prose p { color: #C4CCC2; }
-.dark .prose li { color: #C4CCC2; }
+.dark .prose h2 { color: #F1F5F4; }
+.dark .prose h3 { color: #E2E8E4; }
+.dark .prose h4 { color: #E2E8E4; }
+.dark .prose p { color: #B6C4BC; }
+.dark .prose li { color: #B6C4BC; }
 .dark .prose li::marker { color: #34D399; }
 .dark .prose a { color: #6EE7B7; }
-.dark .prose strong { color: #F0F2EB; }
-.dark .prose blockquote { background: rgba(12,59,46,0.45); border-left-color: #34D399; color: #E4E8DE; }
-.dark .prose code { background: #1e2622; color: #6EE7B7; }
-.dark .prose th, .dark .prose td { border-color: #2c332e; }
-.dark .prose th { background: #1e2622; color: #F0F2EB; }
-.dark .prose hr { border-color: #2c332e; }
+.dark .prose strong { color: #F1F5F4; }
+.dark .prose blockquote { background: rgba(6, 78, 59, 0.25); border-left-color: #34D399; color: #D1FAE5; }
+.dark .prose code { background: #18211d; color: #6EE7B7; }
+.dark .prose th, .dark .prose td { border-color: #26312b; }
+.dark .prose th { background: #18211d; color: #F1F5F4; }
+.dark .prose thead th { border-bottom-color: #3c4a43; }
+.dark .prose hr { border-color: #26312b; }
+.dark .prose img { border: 1px solid #26312b; }
 
 /* Line clamp */
 .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
@@ -165,19 +168,19 @@ body.theme-loading { visibility: hidden; }
 /* ============================================================
    Panel UI polish (admin + author dashboards)
    shadcn-inspired refinement: layered depth, crisp edges,
-   smooth micro-interactions. No border radius anywhere.
+   smooth micro-interactions.
    Colors and fonts untouched.
    Scope: any <body class="panel-ui"> layout.
    ============================================================ */
 
-/* Cards / bordered blocks: subtle layered shadow, no radius */
+/* Cards / bordered blocks: subtle layered shadow */
 .panel-ui main div[class*="bg-white"][class*="border"],
 .panel-ui main div[class*="dark:bg-slate-900"][class*="border"] {
     box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(15, 23, 42, 0.06);
     transition: box-shadow 0.18s ease;
 }
 
-/* Inputs, selects, textareas: square edges, refined focus */
+/* Inputs, selects, textareas: refined focus */
 .panel-ui input:not([type="checkbox"]):not([type="radio"]),
 .panel-ui select,
 .panel-ui textarea {
@@ -217,7 +220,7 @@ body.theme-loading { visibility: hidden; }
 /* Topbar: slightly softer bottom edge */
 .panel-ui header { box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03); }
 
-/* ---- Deeper shadcn-style refinement (no radius, no color/font change) ---- */
+/* ---- Deeper shadcn-style refinement (no color/font change) ---- */
 
 /* Typography: tighter display headings, calmer body rhythm */
 .panel-ui h1, .panel-ui h2, .panel-ui h3 { letter-spacing: -0.01em; }
@@ -242,7 +245,7 @@ body.theme-loading { visibility: hidden; }
 
 /* Native checkbox / radio accent matches the site primary */
 .panel-ui input[type="checkbox"],
-.panel-ui input[type="radio"] { accent-color: #0C3B2E; }
+.panel-ui input[type="radio"] { accent-color: #059669; }
 .dark .panel-ui input[type="checkbox"],
 .dark .panel-ui input[type="radio"] { accent-color: #34D399; }
 
@@ -284,243 +287,203 @@ body.theme-loading { visibility: hidden; }
 .panel-ui ::-webkit-scrollbar-track { background: transparent; }
 
 /* =======================================================================
-   HUVANTI EDITORIAL — public design system
+   HUVANTI GREEN — public design system
    -----------------------------------------------------------------------
-   Direction: premium print-magazine aesthetic on the web.
-   NO gradients. NO border radius. Sharp corners everywhere.
-   Identity built from four flat tones only:
-     paper  #FAFAF7   (page background, light mode)
-     ink    #141A16   (type, borders, dark surfaces)
-     emerald#0C3B2E   (brand primary)
-     signal #F5C445   (single accent: highlights, CTAs, markers)
-   Structure is expressed with hairline rules and hard offset
-   shadows instead of blur or color washes. Everything aligns to
-   a 1280px / 12-col editorial grid.
-   Scope: <body class="site-ui"> in layouts/app.blade.php.
+   Direction: shadcn/ui-quality modern product design.
+   Identity:
+     brand deep   #0C3B2E / #07231B   (hero, footer, CTA surfaces)
+     primary      #059669 emerald-600 (buttons, links, active states)
+     neutrals     slate scale         (text, borders, surfaces)
+     accent       #F59E0B amber       (popular badge, cursor, tiny pops)
+   Depth comes from soft layered shadows and 1px borders; corners are
+   gently rounded (10px controls, 16px cards) — shadcn's calm geometry.
+   Scope: <body> in layouts/app.blade.php (classes used by public views).
    ======================================================================= */
 
-/* 0. Design tokens (light) */
-.site-ui {
-    --ink: #141A16;
-    --ink-soft: #3D463F;
-    --paper: #FAFAF7;
-    --surface: #FFFFFF;
-    --hair: #E4E4DA;
-    --hair-strong: #141A16;
-    --muted: #5C665E;
-    --emerald: #0C3B2E;
-    --emerald-deep: #072A20;
-    --signal: #F5C445;
-    --lift: #141A16;          /* hard offset shadow color on hover */
-    --accent-ink: #141A16;    /* text on signal-yellow surfaces */
-}
-
-/* 0b. Design tokens (dark) */
-.dark .site-ui, .site-ui.dark {
-    --ink: #EDEFEA;
-    --ink-soft: #C2C9C0;
-    --paper: #0D100E;
-    --surface: #141815;
-    --hair: #262C28;
-    --hair-strong: #F0F2EB;
-    --muted: #97A199;
-    --emerald: #34D399;
-    --emerald-deep: #2DD4A0;
-    --signal: #F5C445;
-    --lift: #0A3D2E;
-    --accent-ink: #141A16;
-}
-
-/* 1. Sharp edges EVERYWHERE (public + panels + editor chrome).
-      !important is deliberate: it also beats the inline
-      border-radius styles that legacy post content carries. */
-*, *::before, *::after { border-radius: 0 !important; }
-
-/* 2. Typography rhythm */
+/* 0. Typography rhythm */
 .site-ui h1, .site-ui h2, .site-ui h3, .site-ui h4 {
     letter-spacing: -0.02em;
     text-wrap: balance;
 }
 
-/* 3. Header: paper bar, single structural hairline */
-.site-ui header {
-    box-shadow: none;
-    border-bottom: 1px solid var(--hair);
-    background: color-mix(in srgb, var(--paper) 92%, transparent);
+/* 1. Cards: white surface + hairline + soft shadow (shadcn "card").
+      .card-elev is kept as the shared name so partials (ads, overlays)
+      inherit the language for free. */
+.site-ui .card-elev, .card-elev {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 1rem;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(15, 23, 42, 0.05);
+    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
 }
-.dark .site-ui header { background: color-mix(in srgb, var(--paper) 92%, transparent); }
-
-/* 3b. Nav links: uppercase micro-labels with signal underline */
-.site-ui .navlink {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    height: 64px;
-    padding: 0 14px;
-    font-size: 12.5px;
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--ink-soft);
-    transition: color .15s ease;
+.dark .card-elev {
+    background: #131A17;
+    border-color: #26312B;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.35);
 }
-.site-ui .navlink:hover { color: var(--ink); }
-.site-ui .navlink-active { color: var(--ink); }
-.site-ui .navlink-active::after {
-    content: "";
-    position: absolute;
-    left: 12px;
-    right: 12px;
-    bottom: 0;
-    height: 3px;
-    background: var(--signal);
+/* Interactive lift: soft rise instead of hard offset */
+.lift { transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease; }
+.lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px -8px rgba(15, 23, 42, 0.14), 0 4px 12px -4px rgba(15, 23, 42, 0.08);
+    border-color: #CBD5E1;
 }
-
-/* 4. Footer is always ink — a magazine colophon */
-.site-ui footer.colophon {
-    background: var(--colophon-bg, #101512);
-    color: #E7EAE2;
-    border-top: 4px solid var(--signal);
-}
-
-/* 5. Cards: surface + hairline; hover = hard offset lift.
-      .card-elev is kept as the shared name so older partials
-      (search overlay, ads) inherit the new language for free. */
-.site-ui .card-elev {
-    background: var(--surface);
-    border: 1px solid var(--hair);
-    box-shadow: none;
-    transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
-}
-.dark .site-ui .card-elev {
-    background: var(--surface);
-    border-color: var(--hair);
-    box-shadow: none;
-}
-/* Interactive lift: apply .lift together with .card-elev */
-.site-ui .lift:hover {
-    transform: translate(-3px, -3px);
-    box-shadow: 7px 7px 0 0 var(--lift);
-    border-color: var(--hair-strong);
-}
-.dark .site-ui .lift:hover {
-    box-shadow: 7px 7px 0 0 var(--lift);
-    border-color: #3A443D;
+.dark .lift:hover {
+    box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.55), 0 4px 12px -4px rgba(0, 0, 0, 0.4);
+    border-color: #3A4A42;
 }
 @media (prefers-reduced-motion: reduce) {
-    .site-ui .lift:hover { transform: none; }
+    .lift:hover { transform: none; }
 }
 
-/* 6. Kicker: numbered section micro-label */
-.site-ui .kicker {
+/* 2. Kicker: small pill label above section titles */
+.kicker {
     display: inline-flex;
     align-items: center;
-    gap: 10px;
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: 0.22em;
+    gap: 8px;
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: var(--muted);
+    color: #047857;
+    background: #ECFDF5;
+    border: 1px solid #A7F3D0;
+    border-radius: 9999px;
 }
-.site-ui .kicker::before {
+.kicker::before {
     content: "";
-    width: 22px;
-    height: 3px;
-    background: var(--signal);
+    width: 6px;
+    height: 6px;
+    border-radius: 9999px;
+    background: #10B981;
     flex: none;
 }
-.site-ui .kicker b { color: var(--emerald); font-weight: 800; }
-.dark .site-ui .kicker b { color: var(--emerald); }
+.dark .kicker { color: #6EE7B7; background: rgba(16, 185, 129, 0.1); border-color: rgba(52, 211, 153, 0.25); }
 
-/* 7. Marker: solid signal highlight behind key words */
-.site-ui .marker {
+/* 3. Marker: soft highlight behind key words */
+.marker {
     position: relative;
     display: inline-block;
     z-index: 0;
 }
-.site-ui .marker::before {
+.marker::before {
     content: "";
     position: absolute;
     z-index: -1;
     left: -0.08em;
     right: -0.08em;
-    top: 0.08em;
+    top: 0.1em;
     bottom: 0.02em;
-    background: var(--signal);
+    background: #A7F3D0;
+    border-radius: 0.25rem;
 }
+.dark .marker::before { background: rgba(16, 185, 129, 0.3); }
 
-/* 8. Dot grid texture for hero band (inline SVG dots — no gradients) */
-.site-ui .dotgrid {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26'%3E%3Ccircle cx='1.5' cy='1.5' r='1.5' fill='%23141A16' fill-opacity='0.07'/%3E%3C/svg%3E");
-}
-.dark .site-ui .dotgrid {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26'%3E%3Ccircle cx='1.5' cy='1.5' r='1.5' fill='%23FFFFFF' fill-opacity='0.05'/%3E%3C/svg%3E");
-}
-
-/* 9. Buttons: flat, sharp, pressable */
+/* 4. Buttons (shadcn geometry + brand green) */
 .site-ui .btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
     height: 46px;
-    padding: 0 22px;
-    font-size: 13.5px;
-    font-weight: 700;
-    letter-spacing: 0.02em;
+    padding: 0 24px;
+    font-size: 14.5px;
+    font-weight: 600;
+    line-height: 1;
     border: 1px solid transparent;
+    border-radius: 0.75rem;
     cursor: pointer;
     transition: transform .15s ease, box-shadow .15s ease, background-color .15s ease, color .15s ease, border-color .15s ease;
 }
-.site-ui .btn:active { transform: translate(1px, 1px); }
-.site-ui .btn-primary { background: var(--emerald); color: #FFFFFF; }
-.dark .site-ui .btn-primary { color: #07120D; }
-.site-ui .btn-primary:hover { background: var(--emerald-deep); }
-.dark .site-ui .btn-primary:hover { background: var(--emerald-deep); }
-.site-ui .btn-accent { background: var(--signal); color: var(--accent-ink); }
-.site-ui .btn-accent:hover { background: #EAB63A; }
-.site-ui .btn-outline { background: var(--surface); color: var(--ink); border-color: var(--hair-strong); }
-.site-ui .btn-outline:hover { background: var(--ink); color: var(--paper); }
-.dark .site-ui .btn-outline { border-color: #3A443D; }
-.dark .site-ui .btn-outline:hover { background: var(--ink); color: var(--paper); }
-.site-ui .btn-sm { height: 38px; padding: 0 16px; font-size: 12.5px; }
+.site-ui .btn:active { transform: translateY(1px) scale(0.99); }
+.site-ui .btn-primary { background: #059669; color: #FFFFFF; box-shadow: 0 1px 2px rgba(5, 150, 105, 0.35), 0 4px 14px -4px rgba(5, 150, 105, 0.45); }
+.site-ui .btn-primary:hover { background: #047857; box-shadow: 0 2px 4px rgba(5, 150, 105, 0.35), 0 8px 20px -4px rgba(5, 150, 105, 0.5); }
+.dark .site-ui .btn-primary { background: #10B981; color: #06281D; }
+.dark .site-ui .btn-primary:hover { background: #34D399; }
+.site-ui .btn-accent { background: #F59E0B; color: #451A03; box-shadow: 0 1px 2px rgba(245, 158, 11, 0.4); }
+.site-ui .btn-accent:hover { background: #FCD34D; }
+.site-ui .btn-outline { background: #FFFFFF; color: #0F172A; border-color: #E2E8F0; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05); }
+.site-ui .btn-outline:hover { background: #F8FAFC; border-color: #CBD5E1; }
+.dark .site-ui .btn-outline { background: #131A17; color: #E5EDE9; border-color: #2C3833; }
+.dark .site-ui .btn-outline:hover { background: #1B2420; border-color: #3A4A42; }
+.site-ui .btn-ghost { background: transparent; color: #334155; }
+.site-ui .btn-ghost:hover { background: #F1F5F9; color: #0F172A; }
+.dark .site-ui .btn-ghost { color: #B6C4BC; }
+.dark .site-ui .btn-ghost:hover { background: rgba(148, 163, 184, 0.1); color: #F1F5F4; }
+.site-ui .btn-sm { height: 38px; padding: 0 16px; font-size: 13px; border-radius: 0.625rem; }
 
-/* 10. Fields: surface, hairline, emerald focus */
+/* 5. Fields: rounded, calm border, emerald focus ring */
 .site-ui .field {
     width: 100%;
-    background: var(--surface);
-    border: 1px solid var(--hair);
-    color: var(--ink);
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 0.625rem;
+    color: #0F172A;
     outline: none;
     transition: border-color .15s ease, box-shadow .15s ease;
 }
-.site-ui .field::placeholder { color: var(--muted); }
-.site-ui .field:focus { border-color: var(--emerald); box-shadow: 3px 3px 0 0 var(--signal); }
+.site-ui .field::placeholder { color: #94A3B8; }
+.site-ui .field:focus { border-color: #10B981; box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15); }
+.dark .site-ui .field { background: #131A17; border-color: #2C3833; color: #E5EDE9; }
+.dark .site-ui .field:focus { border-color: #10B981; box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2); }
 
-/* 11. Ticker strip under the hero (pure CSS marquee, reduced-motion safe) */
-.site-ui .ticker { background: var(--ticker-bg, #141A16); color: #F0F2EB; overflow: hidden; }
-.dark .site-ui .ticker { --ticker-bg: #141815; }
-.site-ui .ticker-track {
-    display: flex;
-    width: max-content;
-    animation: ticker-scroll 36s linear infinite;
-}
-.site-ui .ticker:hover .ticker-track { animation-play-state: paused; }
-@keyframes ticker-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-@media (prefers-reduced-motion: reduce) {
-    .site-ui .ticker-track { animation: none; }
-}
-
-/* 12. Editorial index rows (categories, contributors) */
-.site-ui .index-row {
-    display: grid;
+/* 6. Chip: rounded icon tile */
+.chip {
+    display: inline-flex;
     align-items: center;
-    border-top: 1px solid var(--hair);
-    transition: background-color .15s ease, transform .15s ease, box-shadow .15s ease;
+    justify-content: center;
+    background: #ECFDF5;
+    border: 1px solid #A7F3D0;
+    color: #059669;
+    border-radius: 0.75rem;
+    flex: none;
 }
-.site-ui .index-row:hover { background: color-mix(in srgb, var(--signal) 14%, var(--surface)); }
+.dark .chip { background: rgba(16, 185, 129, 0.12); border-color: rgba(52, 211, 153, 0.25); color: #34D399; }
 
-/* 13. Micro-interactions: fast, subtle, never bouncy */
+/* 7. Nav links: calm labels, emerald active pill */
+.site-ui .navlink {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 14px;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 0.625rem;
+    color: #475569;
+    transition: color .15s ease, background-color .15s ease;
+}
+.site-ui .navlink:hover { color: #0F172A; background: #F1F5F9; }
+.dark .site-ui .navlink { color: #9FB0A7; }
+.dark .site-ui .navlink:hover { color: #F1F5F4; background: rgba(148, 163, 184, 0.1); }
+.site-ui .navlink-active { color: #047857; background: #ECFDF5; font-weight: 600; }
+.dark .site-ui .navlink-active { color: #6EE7B7; background: rgba(16, 185, 129, 0.12); }
+
+/* 8. Hero decoration: soft dot texture (inline SVG — no gradients) */
+.dotgrid {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26'%3E%3Ccircle cx='1.5' cy='1.5' r='1.5' fill='%23141A16' fill-opacity='0.06'/%3E%3C/svg%3E");
+}
+.dark .dotgrid {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26'%3E%3Ccircle cx='1.5' cy='1.5' r='1.5' fill='%23FFFFFF' fill-opacity='0.05'/%3E%3C/svg%3E");
+}
+.hero-dots {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28'%3E%3Ccircle cx='1.5' cy='1.5' r='1.5' fill='%23FFFFFF' fill-opacity='0.10'/%3E%3C/svg%3E");
+}
+
+/* 9. Floating hero cards: gentle levitation */
+@keyframes floaty { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+.float-slow { animation: floaty 5s ease-in-out infinite; }
+.float-slower { animation: floaty 6.5s ease-in-out 0.8s infinite; }
+@media (prefers-reduced-motion: reduce) {
+    .float-slow, .float-slower { animation: none; }
+}
+
+/* 10. Footer surface */
+.site-ui footer.colophon {
+    background: #07231B;
+    color: #D7E2DC;
+}
+
+/* 11. Micro-interactions: fast, subtle, never bouncy */
 .site-ui a,
 .site-ui button,
 .site-ui summary {
@@ -530,38 +493,23 @@ body.theme-loading { visibility: hidden; }
 }
 .site-ui button:active { transform: translateY(1px); }
 
-/* 14. Keyboard focus: consistent brand ring on the public site */
+/* 12. Keyboard focus: consistent brand ring on the public site */
 .site-ui a:focus-visible,
 .site-ui button:focus-visible,
 .site-ui summary:focus-visible,
 .site-ui input:focus-visible,
 .site-ui select:focus-visible,
 .site-ui textarea:focus-visible {
-    outline: 2px solid var(--emerald);
+    outline: 2px solid #10B981;
     outline-offset: 2px;
+    border-radius: 0.375rem;
 }
 
-/* 15. Text selection in brand tone */
-.site-ui ::selection { background: rgba(12, 59, 46, 0.16); }
-.dark .site-ui ::selection { background: rgba(52, 211, 153, 0.30); }
+/* 13. Text selection in brand tone */
+.site-ui ::selection { background: rgba(16, 185, 129, 0.2); }
+.dark .site-ui ::selection { background: rgba(52, 211, 153, 0.3); }
 
-/* 16. Article body polish */
-.site-ui .prose img {
-    border: 1px solid var(--hair);
-}
-.dark .site-ui .prose img { border-color: var(--hair); }
-/* Section headings inside articles get a thin editorial rule */
-.site-ui .prose h2 {
-    padding-bottom: 0.4rem;
-    border-bottom: 1px solid var(--hair);
-}
-/* Blockquotes: tighter, calmer */
-.site-ui .prose blockquote { border-left-width: 4px; }
-
-/* 17. Tables: strong head rule */
-.site-ui .prose thead th { border-bottom: 2px solid var(--ink-soft); }
-
-/* 18. Laravel default pagination → editorial pager */
+/* 14. Laravel default pagination → soft pager */
 .site-ui nav[role="navigation"] { margin-top: 0.5rem; }
 .site-ui nav[role="navigation"] a,
 .site-ui nav[role="navigation"] span {
@@ -570,46 +518,57 @@ body.theme-loading { visibility: hidden; }
     justify-content: center;
     min-width: 40px;
     height: 40px;
-    padding: 0 10px;
+    padding: 0 12px;
     margin: 0 4px 4px 0;
-    font-size: 13px;
-    font-weight: 700;
-    background: var(--surface);
-    color: var(--ink-soft);
-    border: 1px solid var(--hair);
+    font-size: 13.5px;
+    font-weight: 600;
+    background: #FFFFFF;
+    color: #475569;
+    border: 1px solid #E2E8F0;
+    border-radius: 0.625rem;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
 }
-.site-ui nav[role="navigation"] a:hover { border-color: var(--hair-strong); color: var(--ink); }
+.site-ui nav[role="navigation"] a:hover { border-color: #10B981; color: #047857; background: #F0FDF9; }
 .site-ui nav[role="navigation"] span[aria-current="page"] {
-    background: var(--ink);
-    color: var(--paper);
-    border-color: var(--hair-strong);
+    background: #059669;
+    color: #FFFFFF;
+    border-color: #059669;
 }
-.dark .site-ui nav[role="navigation"] span[aria-current="page"] { background: var(--signal); color: var(--accent-ink); border-color: var(--signal); }
-.site-ui nav[role="navigation"] span:not([aria-current]):not(.dots) { background: transparent; border-color: transparent; }
+.dark .site-ui nav[role="navigation"] a,
+.dark .site-ui nav[role="navigation"] span {
+    background: #131A17; color: #B6C4BC; border-color: #2C3833;
+}
+.dark .site-ui nav[role="navigation"] a:hover { border-color: #10B981; color: #6EE7B7; background: rgba(16, 185, 129, 0.08); }
+.dark .site-ui nav[role="navigation"] span[aria-current="page"] { background: #10B981; color: #06281D; border-color: #10B981; }
+.site-ui nav[role="navigation"] span:not([aria-current]):not(.dots) { background: transparent; border-color: transparent; box-shadow: none; }
 
-/* 19. Scroll-to-top FAB: square, signal edge */
+/* 15. Scroll-to-top FAB */
 .site-ui #scroll-top {
-    border: 1px solid var(--hair-strong);
-    box-shadow: 4px 4px 0 0 var(--signal);
+    border-radius: 9999px;
+    box-shadow: 0 8px 24px -6px rgba(5, 150, 105, 0.55), 0 2px 6px rgba(5, 150, 105, 0.3);
 }
+.site-ui #scroll-top:hover { transform: translateY(-2px); }
 
-/* 20. Framed media: the signature "plate" treatment */
-.site-ui .plate { border: 2px solid var(--hair-strong); }
-.site-ui .plate-yellow { box-shadow: 10px 10px 0 0 var(--signal); }
-.site-ui .plate-ink { box-shadow: 10px 10px 0 0 var(--lift); }
-@media (max-width: 640px) {
-    .site-ui .plate-yellow, .site-ui .plate-ink { box-shadow: 6px 6px 0 0 var(--signal); }
-    .site-ui .plate-ink { box-shadow: 6px 6px 0 0 var(--lift); }
+/* 16. FAQ / TOC disclosure rows: soft card language */
+.site-ui details.faq-row, details.faq-row {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 0.875rem;
+    transition: border-color .15s ease, box-shadow .15s ease;
 }
+details.faq-row[open] { border-color: #A7F3D0; box-shadow: 0 4px 16px -4px rgba(5, 150, 105, 0.12); }
+.dark details.faq-row { background: #131A17; border-color: #2C3833; }
+.dark details.faq-row[open] { border-color: rgba(52, 211, 153, 0.35); }
 
-/* 21. Category icon chip: bordered square that fills with signal on hover */
-.site-ui .chip {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background: color-mix(in srgb, var(--emerald) 8%, var(--surface));
-    border: 1px solid var(--hair);
-    color: var(--emerald);
-    flex: none;
+/* 17. Header dropdown / popover surface */
+.popover-card {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px -2px rgba(15, 23, 42, 0.05), 0 20px 40px -12px rgba(15, 23, 42, 0.18);
 }
-.dark .site-ui .chip { background: rgba(52, 211, 153, 0.08); }
+.dark .popover-card {
+    background: #131A17;
+    border-color: #2C3833;
+    box-shadow: 0 4px 6px -2px rgba(0, 0, 0, 0.4), 0 20px 40px -12px rgba(0, 0, 0, 0.6);
+}

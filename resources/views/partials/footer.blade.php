@@ -40,29 +40,21 @@
     $copyright = str_replace('{year}', date('Y'), $rawCopyright);
 @endphp
 <footer class="colophon mt-auto">
-    <div class="max-w-[1280px] mx-auto px-4 sm:px-6 pt-12 pb-8">
-        {{-- Giant editorial wordmark: the colophon signature --}}
-        <a href="/" class="block group mb-10 select-none" aria-label="huvanti.com home">
-            <span class="block text-[15vw] sm:text-[12vw] lg:text-[104px] leading-[0.9] font-black tracking-[-0.04em] text-[#F0F2EB] group-hover:text-white transition-colors">
-                HUVANTI<span class="text-[#F5C445] group-hover:inline">.</span>
-            </span>
-        </a>
-
-        <div class="grid grid-cols-2 lg:grid-cols-12 gap-x-8 gap-y-10 border-t border-white/10 pt-10">
+    <div class="max-w-[1280px] mx-auto px-4 sm:px-6 pt-14 pb-8">
+        <div class="grid grid-cols-2 lg:grid-cols-12 gap-x-8 gap-y-10 pb-10">
             <!-- Brand -->
-            <div class="col-span-2 lg:col-span-4 lg:pr-8">
-                <div class="flex items-center gap-2 mb-3">
-                    <span class="w-5 h-[3px] bg-[#F5C445] inline-block"></span>
-                    <span class="text-[11px] font-extrabold tracking-[0.22em] uppercase text-white/60">The Journal</span>
-                </div>
-                <p class="text-sm leading-relaxed text-white/60">
+            <div class="col-span-2 lg:col-span-4 lg:pr-10">
+                <a href="/" class="inline-flex items-center mb-4" aria-label="huvanti.com home">
+                    @include('partials.logo', ['class' => 'h-8', 'onDark' => true])
+                </a>
+                <p class="text-sm leading-relaxed text-white/60 max-w-[340px]">
                     A curated multi-niche blog for tech, health, finance, travel, lifestyle and education.
-                    <a href="{{ route('about') }}" class="text-white/85 underline decoration-[#F5C445]/70 underline-offset-4 hover:text-[#F5C445] transition">Learn about Huvanti</a>,
-                    how we work in our <a href="{{ route('editorial') }}" class="text-white/85 underline decoration-[#F5C445]/70 underline-offset-4 hover:text-[#F5C445] transition">editorial policy</a>
-                    or <a href="{{ route('contact') }}" class="text-white/85 underline decoration-[#F5C445]/70 underline-offset-4 hover:text-[#F5C445] transition">contact the team</a>.
+                    <a href="{{ route('about') }}" class="text-emerald-300/90 underline decoration-emerald-300/40 underline-offset-4 hover:text-emerald-200 transition">Learn about Huvanti</a>,
+                    how we work in our <a href="{{ route('editorial') }}" class="text-emerald-300/90 underline decoration-emerald-300/40 underline-offset-4 hover:text-emerald-200 transition">editorial policy</a>
+                    or <a href="{{ route('contact') }}" class="text-emerald-300/90 underline decoration-emerald-300/40 underline-offset-4 hover:text-emerald-200 transition">contact the team</a>.
                 </p>
                 @if($socialEnabled && count($socials) > 0)
-                <div class="flex items-center gap-2 mt-5">
+                <div class="flex items-center gap-2 mt-6">
                     @foreach($socials as $key => $s)
                         @php
                             $svgPath = match($key) {
@@ -76,7 +68,7 @@
                                 default     => ''
                             };
                         @endphp
-                        <a href="{{ $s['url'] }}" target="_blank" rel="noopener nofollow" class="w-9 h-9 border border-white/20 flex items-center justify-center text-white/70 hover:bg-[#F5C445] hover:text-[#141A16] hover:border-[#F5C445] transition" aria-label="{{ $s['label'] }}">
+                        <a href="{{ $s['url'] }}" target="_blank" rel="noopener nofollow" class="w-9 h-9 rounded-full border border-white/15 flex items-center justify-center text-white/60 hover:bg-emerald-500 hover:text-white hover:border-emerald-500 transition" aria-label="{{ $s['label'] }}">
                             <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor">{!! $svgPath !!}</svg>
                         </a>
                     @endforeach
@@ -85,46 +77,46 @@
             </div>
             <!-- Categories -->
             <div class="lg:col-span-3">
-                <h4 class="text-[11px] font-extrabold tracking-[0.22em] uppercase text-white/50 mb-4 flex items-center gap-2"><span class="w-4 h-[3px] bg-[#F5C445] inline-block"></span>Categories</h4>
+                <h4 class="text-[12px] font-bold tracking-[0.12em] uppercase text-white/40 mb-4">Categories</h4>
                 <div class="flex flex-col items-start gap-2.5 text-sm">
                     @foreach($footerCategories as $cat)
-                        <a href="{{ route('category.show',$cat->slug) }}" class="text-white/65 hover:text-[#F5C445] hover:translate-x-1 transition inline-flex items-center gap-2">
-                            <span class="w-1.5 h-1.5 bg-white/25"></span>{{ $cat->name }}
+                        <a href="{{ route('category.show',$cat->slug) }}" class="text-white/65 hover:text-emerald-300 transition inline-flex items-center gap-2">
+                            <span class="w-1 h-1 rounded-full bg-emerald-400/60"></span>{{ $cat->name }}
                         </a>
                     @endforeach
                 </div>
             </div>
             <!-- Explore -->
             <div class="lg:col-span-2">
-                <h4 class="text-[11px] font-extrabold tracking-[0.22em] uppercase text-white/50 mb-4 flex items-center gap-2"><span class="w-4 h-[3px] bg-[#F5C445] inline-block"></span>Explore</h4>
+                <h4 class="text-[12px] font-bold tracking-[0.12em] uppercase text-white/40 mb-4">Explore</h4>
                 <div class="flex flex-col items-start gap-2.5 text-sm">
-                    <a href="{{ route('about') }}" class="text-white/65 hover:text-[#F5C445] hover:translate-x-1 transition inline-flex items-center gap-2"><span class="w-1.5 h-1.5 bg-white/25"></span>About</a>
-                    <a href="{{ route('contact') }}" class="text-white/65 hover:text-[#F5C445] hover:translate-x-1 transition inline-flex items-center gap-2"><span class="w-1.5 h-1.5 bg-white/25"></span>Contact</a>
-                    <a href="/blog" class="text-white/65 hover:text-[#F5C445] hover:translate-x-1 transition inline-flex items-center gap-2"><span class="w-1.5 h-1.5 bg-white/25"></span>Blog</a>
-                    <a href="{{ route('top.contributors') }}" class="text-white/65 hover:text-[#F5C445] hover:translate-x-1 transition inline-flex items-center gap-2"><span class="w-1.5 h-1.5 bg-white/25"></span>Top Contributors</a>
-                    <a href="/sitemap.xml" class="text-white/65 hover:text-[#F5C445] hover:translate-x-1 transition inline-flex items-center gap-2"><span class="w-1.5 h-1.5 bg-white/25"></span>Sitemap</a>
+                    <a href="{{ route('about') }}" class="text-white/65 hover:text-emerald-300 transition"><span class="w-1 h-1 rounded-full bg-emerald-400/60 mr-2 align-middle"></span>About</a>
+                    <a href="{{ route('contact') }}" class="text-white/65 hover:text-emerald-300 transition"><span class="w-1 h-1 rounded-full bg-emerald-400/60 mr-2 align-middle"></span>Contact</a>
+                    <a href="/blog" class="text-white/65 hover:text-emerald-300 transition"><span class="w-1 h-1 rounded-full bg-emerald-400/60 mr-2 align-middle"></span>Blog</a>
+                    <a href="{{ route('top.contributors') }}" class="text-white/65 hover:text-emerald-300 transition"><span class="w-1 h-1 rounded-full bg-emerald-400/60 mr-2 align-middle"></span>Top Contributors</a>
+                    <a href="/sitemap.xml" class="text-white/65 hover:text-emerald-300 transition"><span class="w-1 h-1 rounded-full bg-emerald-400/60 mr-2 align-middle"></span>Sitemap</a>
                 </div>
             </div>
             <!-- Legal -->
             <div class="lg:col-span-3">
-                <h4 class="text-[11px] font-extrabold tracking-[0.22em] uppercase text-white/50 mb-4 flex items-center gap-2"><span class="w-4 h-[3px] bg-[#F5C445] inline-block"></span>Legal</h4>
+                <h4 class="text-[12px] font-bold tracking-[0.12em] uppercase text-white/40 mb-4">Legal</h4>
                 <div class="grid grid-cols-2 gap-x-4 gap-y-2.5 text-sm">
-                    <a href="{{ route('privacy') }}" class="text-white/65 hover:text-[#F5C445] transition inline-flex items-center gap-2"><span class="w-1.5 h-1.5 bg-white/25"></span>Privacy</a>
-                    <a href="{{ route('terms') }}" class="text-white/65 hover:text-[#F5C445] transition inline-flex items-center gap-2"><span class="w-1.5 h-1.5 bg-white/25"></span>Terms</a>
-                    <a href="{{ route('cookie') }}" class="text-white/65 hover:text-[#F5C445] transition inline-flex items-center gap-2"><span class="w-1.5 h-1.5 bg-white/25"></span>Cookies</a>
-                    <a href="{{ route('editorial') }}" class="text-white/65 hover:text-[#F5C445] transition inline-flex items-center gap-2"><span class="w-1.5 h-1.5 bg-white/25"></span>Editorial</a>
-                    <a href="{{ route('affiliate') }}" class="text-white/65 hover:text-[#F5C445] transition inline-flex items-center gap-2"><span class="w-1.5 h-1.5 bg-white/25"></span>Affiliate</a>
-                    <a href="{{ route('comments.policy') }}" class="text-white/65 hover:text-[#F5C445] transition inline-flex items-center gap-2"><span class="w-1.5 h-1.5 bg-white/25"></span>Comments</a>
-                    <a href="{{ route('disclaimer') }}" class="text-white/65 hover:text-[#F5C445] transition inline-flex items-center gap-2"><span class="w-1.5 h-1.5 bg-white/25"></span>Disclaimer</a>
+                    <a href="{{ route('privacy') }}" class="text-white/65 hover:text-emerald-300 transition">Privacy</a>
+                    <a href="{{ route('terms') }}" class="text-white/65 hover:text-emerald-300 transition">Terms</a>
+                    <a href="{{ route('cookie') }}" class="text-white/65 hover:text-emerald-300 transition">Cookies</a>
+                    <a href="{{ route('editorial') }}" class="text-white/65 hover:text-emerald-300 transition">Editorial</a>
+                    <a href="{{ route('affiliate') }}" class="text-white/65 hover:text-emerald-300 transition">Affiliate</a>
+                    <a href="{{ route('comments.policy') }}" class="text-white/65 hover:text-emerald-300 transition">Comments</a>
+                    <a href="{{ route('disclaimer') }}" class="text-white/65 hover:text-emerald-300 transition">Disclaimer</a>
                 </div>
             </div>
         </div>
         @if($footerAd && trim(strip_tags($footerAd->code ?? '')) !== '')
-        <div class="bg-white/5 border border-white/10 p-4 text-center mt-10">{!! $footerAd->code !!}</div>
+        <div class="bg-white/5 border border-white/10 rounded-xl p-4 text-center mt-4">{!! $footerAd->code !!}</div>
         @endif
-        <div class="border-t border-white/10 mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div class="border-t border-white/10 mt-8 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
             <p class="text-[13px] text-white/45">{!! $copyright !!}</p>
-            <button onclick="window.scrollTo({top:0,behavior:'smooth'})" class="inline-flex items-center gap-2 text-[11px] font-extrabold tracking-[0.2em] uppercase text-white/60 hover:text-[#F5C445] transition">
+            <button onclick="window.scrollTo({top:0,behavior:'smooth'})" class="inline-flex items-center gap-2 h-9 px-4 rounded-full bg-white/5 border border-white/10 text-[12px] font-semibold text-white/70 hover:bg-white/10 hover:text-white transition">
                 Back to top
                 <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
             </button>

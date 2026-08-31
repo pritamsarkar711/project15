@@ -4,11 +4,11 @@
     $metaDescription = ($page->meta_description ?? null) ?: ('Learn about ' . setting('site_name','huvanti.com') . ', our editorial mission and the team behind the articles.');
 @endphp
 @section('content')
-<div class="dotgrid border-b border-[#E4E4DA] dark:border-[#262C28]">
+<div class="bg-slate-50/80 dark:bg-[#0D1411] border-b border-slate-100 dark:border-[#151D19]">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
-        <span class="kicker"><b>01</b> About us</span>
-        <h1 class="mt-4 font-black text-[38px] sm:text-[52px] text-[#141A16] dark:text-[#F0F2EB] tracking-tight leading-[1.03]">Independent words,<br>honest work<span class="text-[#F5C445]">.</span></h1>
-        <p class="mt-4 text-[16px] text-[#5C665E] dark:text-[#97A199] leading-relaxed max-w-xl">Explore Ideas. Inspire Life. — the two sentences this publication was built on.</p>
+        <span class="kicker">About us</span>
+        <h1 class="mt-4 font-extrabold text-[38px] sm:text-[52px] text-slate-900 dark:text-[#F1F5F4] tracking-tight leading-[1.05]">Independent words,<br>honest work<span class="text-emerald-500">.</span></h1>
+        <p class="mt-4 text-[16px] text-slate-500 dark:text-[#8FA398] leading-relaxed max-w-xl">Explore Ideas. Inspire Life. — the two sentences this publication was built on.</p>
     </div>
 </div>
 <div class="max-w-4xl mx-auto px-4 sm:px-6 py-12">

@@ -139,7 +139,7 @@
 
     @stack('head')
 </head>
-<body class="site-ui bg-[#FAFAF7] dark:bg-[#0D100E] text-[#26302A] dark:text-[#EDEFEA] antialiased overflow-x-hidden" style="font-family:{{ \App\Support\SiteFont::cssStack() }}">
+<body class="site-ui bg-white dark:bg-[#0A0F0D] text-[#1E293B] dark:text-[#E5EDE9] antialiased overflow-x-hidden" style="font-family:{{ \App\Support\SiteFont::cssStack() }}">
     @if($gtmId)
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ $gtmId }}" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     @endif
@@ -152,9 +152,12 @@
         <main class="flex-1 w-full">
             @if(session('success'))
                 <div class="max-w-[1280px] mx-auto px-4 sm:px-6 mt-5">
-                    <div class="border border-emerald-700/30 dark:border-emerald-400/30 bg-emerald-50 dark:bg-emerald-400/10 text-emerald-900 dark:text-emerald-200 px-4 py-3 flex items-center justify-between text-sm shadow-[3px_3px_0_0_#F5C445]">
-                        <span class="font-semibold">{{ session('success') }}</span>
-                        <button onclick="this.parentElement.remove()" class="ml-4" aria-label="Dismiss">
+                    <div class="flex items-start gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900 shadow-sm dark:border-emerald-500/25 dark:bg-emerald-500/10 dark:text-emerald-200">
+                        <span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-white">
+                            <svg class="h-3 w-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                        </span>
+                        <span class="font-medium flex-1">{{ session('success') }}</span>
+                        <button onclick="this.closest('div.flex').parentElement.remove()" class="ml-2 rounded-md p-0.5 text-emerald-600 hover:bg-emerald-100 dark:text-emerald-300 dark:hover:bg-emerald-500/15" aria-label="Dismiss">
                             <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                         </button>
                     </div>
@@ -162,7 +165,15 @@
             @endif
             @if(session('error'))
                 <div class="max-w-[1280px] mx-auto px-4 sm:px-6 mt-5">
-                    <div class="border border-red-700/30 dark:border-red-400/30 bg-red-50 dark:bg-red-400/10 text-red-800 dark:text-red-300 px-4 py-3 text-sm shadow-[3px_3px_0_0_#F5C445]">{{ session('error') }}</div>
+                    <div class="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800 shadow-sm dark:border-red-500/25 dark:bg-red-500/10 dark:text-red-300">
+                        <span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-red-500 text-white">
+                            <svg class="h-3 w-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </span>
+                        <span class="font-medium flex-1">{{ session('error') }}</span>
+                        <button onclick="this.closest('div.flex').parentElement.remove()" class="ml-2 rounded-md p-0.5 text-red-500 hover:bg-red-100 dark:text-red-300 dark:hover:bg-red-500/15" aria-label="Dismiss">
+                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    </div>
                 </div>
             @endif
             @yield('content')
@@ -174,7 +185,7 @@
     @include('partials.search-overlay')
 
     <!-- Scroll top (repo pattern: FAB appears after 100px) -->
-    <button id="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" class="fixed bottom-5 right-5 w-11 h-11 bg-[#141A16] dark:bg-[#F5C445] text-white dark:text-[#141A16] hidden items-center justify-center hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none shadow-[4px_4px_0_0_#F5C445] transition z-40" aria-label="Scroll to top">
+    <button id="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" class="fixed bottom-5 right-5 w-11 h-11 bg-emerald-600 dark:bg-emerald-500 text-white dark:text-[#06281D] hidden items-center justify-center shadow-lg transition z-40" aria-label="Scroll to top">
         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7 7"/></svg>
     </button>
 
