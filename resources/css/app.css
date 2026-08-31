@@ -9,14 +9,26 @@
 @theme {
     /* Inherit from body so the admin-chosen font (set inline on <body> via
        SiteFont::cssStack()) cascades to all Tailwind utilities. Hardcoding
-       'Work Sans' here would override the dynamic font setting. */
+       a family here would override the dynamic font setting. */
     --font-sans: inherit;
-    /* Deep emerald green primary */
+    /* Deep emerald green — brand surfaces (hero band, footer, dark buttons) */
     --color-primary: #0C3B2E;
     --color-primary-dark: #072A20;
     --color-primary-light: #34D399;
     --color-huvanti: #0C3B2E;
     --color-huvanti-light: #34D399;
+    /* Fresh action green — interactive accents (primary buttons, links,
+       focus rings, active states), matching modern product-UI references */
+    --color-action: #05B762;
+    --color-action-dark: #049A53;
+    --color-action-soft: #E8F8F0;
+    /* Unified radius scale — one coherent geometry across site, admin and
+       author panels (controls 10px, cards 12-16px, pills fully round) */
+    --radius-sm: 8px;
+    --radius-md: 10px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+    --radius-2xl: 20px;
 }
 
 html { color-scheme: light; }
@@ -29,14 +41,91 @@ body, header, footer, section, article, aside, nav, div, a, button, input, selec
     transition-timing-function: ease;
 }
 
-/* Custom scrollbar */
+/* Custom scrollbar — slim, quiet, rounded thumbs */
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: #f1f5f9; }
-::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius:0; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 999px; }
 ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 .dark ::-webkit-scrollbar-track { background: #0f172a; }
-.dark ::-webkit-scrollbar-thumb { background: #334155; border-radius:0; }
+.dark ::-webkit-scrollbar-thumb { background: #334155; border-radius: 999px; }
 .dark ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+/* Keyboard focus ring — consistent, action-green, never harsh */
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible,
+textarea:focus-visible, summary:focus-visible, [tabindex]:focus-visible {
+    outline: 2px solid rgba(5, 183, 98, 0.55);
+    outline-offset: 2px;
+    border-radius: 6px;
+}
+
+::selection { background: rgba(5, 183, 98, 0.16); }
+
+/* ============ Button system (peermeld-style pill controls) ============ */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    line-height: 1;
+    padding: 0 1.125rem;
+    height: 2.5rem;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background-color .15s ease, border-color .15s ease, color .15s ease, transform .1s ease, box-shadow .15s ease;
+}
+.btn:active { transform: translateY(1px); }
+.btn-primary { background: #05B762; color: #fff; }
+.btn-primary:hover { background: #049A53; }
+.btn-primary:active { background: #038A4A; }
+.btn-dark { background: #111827; color: #fff; }
+.btn-dark:hover { background: #273449; }
+.btn-outline { background: #fff; color: #334155; border: 1px solid #e2e8f0; }
+.btn-outline:hover { border-color: #cbd5e1; background: #f8fafc; }
+.btn-ghost { background: transparent; color: #334155; }
+.btn-ghost:hover { background: #f1f5f9; }
+.btn-sm { height: 2.25rem; padding: 0 0.875rem; font-size: 0.8125rem; }
+.dark .btn-primary { background: #05B762; color: #fff; }
+.dark .btn-primary:hover { background: #049A53; }
+.dark .btn-dark { background: #f1f5f9; color: #0f172a; }
+.dark .btn-dark:hover { background: #fff; }
+.dark .btn-outline { background: transparent; color: #cbd5e1; border-color: #334155; }
+.dark .btn-outline:hover { background: rgba(148, 163, 184, 0.08); border-color: #475569; }
+.dark .btn-ghost { color: #cbd5e1; }
+.dark .btn-ghost:hover { background: rgba(148, 163, 184, 0.1); }
+.btn:disabled { opacity: .5; cursor: not-allowed; transform: none !important; }
+
+/* ============ Keyboard hint chips (Ctrl + K search affordance) ============ */
+.kbd {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.25rem;
+    height: 1.25rem;
+    padding: 0 0.3125rem;
+    border: 1px solid #dbe2ea;
+    background: #fff;
+    border-radius: 6px;
+    color: #64748b;
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1;
+}
+.dark .kbd { border-color: #3b4a5f; background: rgba(148, 163, 184, 0.06); color: #94a3b8; }
+
+/* ============ Soft icon tile (category / feature glyphs) ============ */
+.icon-tile {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-lg);
+    background: var(--color-action-soft);
+    color: #049A53;
+    flex-shrink: 0;
+}
+.dark .icon-tile { background: rgba(5, 183, 98, 0.12); color: #34d399; }
 
 /* ============ Typing animation for hero headline ============ */
 .typing-text { display: inline; }
@@ -46,7 +135,7 @@ body, header, footer, section, article, aside, nav, div, a, button, input, selec
     height: 0.95em;
     margin-left: 4px;
     background: #6EE7B7;
-    border-radius:0;
+    border-radius: 2px;
     vertical-align: -0.12em;
     animation: caret-blink 0.85s step-end infinite;
 }
@@ -70,20 +159,19 @@ body, header, footer, section, article, aside, nav, div, a, button, input, selec
 .prose ul { list-style: disc; }
 .prose ol { list-style: decimal; }
 .prose li { margin-bottom: 0.5rem; color: #334155; }
-.prose a { color: #0C3B2E; text-decoration: underline; text-underline-offset: 4px; }
+.prose a { color: #047857; text-decoration: underline; text-underline-offset: 4px; }
 .prose strong { color: #0f172a; font-weight: 600; }
-.prose blockquote { border-left: 4px solid #0C3B2E; padding: 1rem 1.25rem; margin: 1.5rem 0; font-style: italic; background: #ecfdf5; border-radius: 0 8px 8px 0; color: #1e293b; }
+.prose blockquote { border-left: 4px solid #05B762; padding: 1rem 1.25rem; margin: 1.5rem 0; font-style: italic; background: #f0faf5; border-radius: 0 12px 12px 0; color: #1e293b; }
 /* Images keep the author-chosen size from the editor (width attribute set
-   by drag-resize or the S/M/L/original presets). The old width:100% FORCED
-   every content image to full column width and silently discarded the size
-   the author picked. max-width:100% + height:auto keeps small images at
-   their chosen width and still shrinks big ones on small screens. */
-.prose img { border-radius:0; margin: 1.5rem 0; max-width: 100%; height: auto; }
+   by drag-resize or the S/M/L/original presets). max-width:100% + height:auto
+   keeps small images at their chosen width and still shrinks big ones on
+   small screens. Soft rounded corners match the site geometry. */
+.prose img { border-radius: 12px; margin: 1.5rem 0; max-width: 100%; height: auto; }
 /* Inline SVG icons inserted via the editor's icon picker: sized relative to
    the surrounding text, aligned to the baseline like a glyph. */
 .prose svg.huv-inline-icon { display: inline-block; width: 1.15em; height: 1.15em; vertical-align: -0.2em; }
-.prose code { background: #f1f5f9; color: #0C3B2E; padding: 0.15rem 0.4rem; border-radius:0; font-size: 0.875em; }
-.prose pre { background: #0f172a; color: #e2e8f0; padding: 1rem; border-radius:0; overflow-x: auto; margin: 1.5rem 0; }
+.prose code { background: #f1f5f9; color: #047857; padding: 0.15rem 0.4rem; border-radius: 6px; font-size: 0.875em; }
+.prose pre { background: #0f172a; color: #e2e8f0; padding: 1.1rem 1.25rem; border-radius: 12px; overflow-x: auto; margin: 1.5rem 0; }
 .prose pre code { background: transparent; color: inherit; padding: 0; }
 .prose table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.925rem; }
 .prose th, .prose td { border: 1px solid #e2e8f0; padding: 0.5rem 0.75rem; text-align: left; }
@@ -91,18 +179,11 @@ body, header, footer, section, article, aside, nav, div, a, button, input, selec
 .prose hr { border-color: #e2e8f0; margin: 2rem 0; }
 
 /* --- Mobile overflow & overlap fixes ---------------------------------- */
-/* Wide content inside an article (comparison tables with fixed-width
-   cells, embedded iframes, long code lines) used to push past the card
-   edge on phones: the page then scrolled sideways / content overlapped.
-   Tables become horizontally scrollable blocks INSIDE the article on
-   small screens instead of stretching the page; iframes and videos can
-   never exceed the column width on any screen. */
 .prose iframe,
 .prose embed,
 .prose video {
   max-width: 100%;
 }
-/* Long words / URLs pasted by authors can also force the column wider. */
 .prose,
 .prose td,
 .prose th {
@@ -113,26 +194,19 @@ body, header, footer, section, article, aside, nav, div, a, button, input, selec
     display: block;
     width: 100%;
     max-width: 100%;
-    overflow-x: auto;          /* the table scrolls, the page does not */
+    overflow-x: auto;
     -webkit-overflow-scrolling: touch;
   }
-  /* Hint for readers: a table wider than the screen can be swiped. */
   .prose table::-webkit-scrollbar { height: 6px; }
   .prose table::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
 }
 .dark .prose table::-webkit-scrollbar-thumb { background: #475569; }
-/* -----------------------------------------------------------------------
-   Mobile overflow ROOT fix: grid/flex items default to min-width:auto, so
-   a wide child (comparison table, code block, embed) silently grew its
-   whole grid COLUMN to the child's min-content width (531px on a 390px
-   phone) and the clipped article hid half of every heading/paragraph.
-   Letting grid children shrink keeps every column inside the viewport —
+/* Letting grid children shrink keeps every column inside the viewport —
    wide content then scrolls INSIDE the .prose table blocks above. */
 .grid > * { min-width: 0; }
 /* Anchored headings must not hide behind the sticky header when a reader
    taps a Table of Contents link. */
 .prose h2[id], .prose h3[id] { scroll-margin-top: 84px; }
-/* ----------------------------------------------------------------------- */
 
 /* Prose dark mode */
 .dark .prose h2 { color: #f1f5f9; }
@@ -148,15 +222,27 @@ body, header, footer, section, article, aside, nav, div, a, button, input, selec
 .dark .prose th { background: #1e293b; color: #f1f5f9; }
 .dark .prose hr { border-color: #334155; }
 
-/* ============ Repo-style MUI elevation cards ============ */
+/* ============ Cards: hairline border, calm depth, hover lift ============ */
 .card-elev {
     background: #ffffff;
-    border-radius:0;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.10);
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    border-radius: var(--radius-xl);
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+}
+.card-hover:hover {
+    border-color: rgba(5, 183, 98, 0.35);
+    box-shadow: 0 12px 32px -12px rgba(5, 183, 98, 0.22);
+    transform: translateY(-2px);
 }
 .dark .card-elev {
     background: #1e1e1e;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    border-color: rgba(71, 85, 105, 0.45);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+.dark .card-hover:hover {
+    border-color: rgba(52, 211, 153, 0.4);
+    box-shadow: 0 12px 32px -12px rgba(0, 0, 0, 0.6);
 }
 
 /* Line clamp */
@@ -171,27 +257,27 @@ body.theme-loading { visibility: hidden; }
 
 /* ============================================================
    Panel UI polish (admin + author dashboards)
-   shadcn-inspired refinement: layered depth, crisp edges,
-   smooth micro-interactions. No border radius anywhere.
-   Colors and fonts untouched.
+   Same design language as the public site: coherent radii via
+   the @theme scale, calm borders, green focus, smooth micro-
+   interactions. Colors and fonts untouched.
    Scope: any <body class="panel-ui"> layout.
    ============================================================ */
 
-/* Cards / bordered blocks: subtle layered shadow, no radius */
+/* Cards / bordered blocks: subtle layered shadow */
 .panel-ui main div[class*="bg-white"][class*="border"],
 .panel-ui main div[class*="dark:bg-slate-900"][class*="border"] {
     box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(15, 23, 42, 0.06);
     transition: box-shadow 0.18s ease;
 }
 
-/* Inputs, selects, textareas: square edges, refined focus */
+/* Inputs, selects, textareas: refined focus */
 .panel-ui input:not([type="checkbox"]):not([type="radio"]),
 .panel-ui select,
 .panel-ui textarea {
     transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
 }
 .panel-ui input:focus, .panel-ui select:focus, .panel-ui textarea:focus {
-    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.12);
+    box-shadow: 0 0 0 3px rgba(5, 183, 98, 0.13);
 }
 
 /* Buttons: press feedback + soft hover shadow on primary submits */
@@ -200,7 +286,7 @@ body.theme-loading { visibility: hidden; }
 }
 .panel-ui button:active { transform: translateY(1px); }
 .panel-ui button[type="submit"]:hover {
-    box-shadow: 0 2px 6px rgba(12, 59, 46, 0.22);
+    box-shadow: 0 2px 6px rgba(5, 183, 98, 0.25);
 }
 
 /* Tables: clean row hover in both modes */
@@ -217,28 +303,15 @@ body.theme-loading { visibility: hidden; }
 
 /* Sidebar scrollbar: thin and subtle */
 .panel-ui aside::-webkit-scrollbar { width: 5px; }
-.panel-ui aside::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.35); }
+.panel-ui aside::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.35); border-radius: 999px; }
 .panel-ui aside::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.55); }
 .panel-ui aside::-webkit-scrollbar-track { background: transparent; }
 
 /* Topbar: slightly softer bottom edge */
 .panel-ui header { box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03); }
 
-/* ---- Deeper shadcn-style refinement (no radius, no color/font change) ---- */
-
 /* Typography: tighter display headings, calmer body rhythm */
 .panel-ui h1, .panel-ui h2, .panel-ui h3 { letter-spacing: -0.01em; }
-
-/* Keyboard accessibility: clear focus ring, shadcn-style */
-.panel-ui a:focus-visible,
-.panel-ui button:focus-visible,
-.panel-ui input:focus-visible,
-.panel-ui select:focus-visible,
-.panel-ui textarea:focus-visible,
-.panel-ui summary:focus-visible {
-    outline: 2px solid rgba(16, 185, 129, 0.55);
-    outline-offset: 2px;
-}
 
 /* Inputs: gentle hover response before focus */
 .panel-ui input:not([type="checkbox"]):not([type="radio"]):hover,
@@ -247,9 +320,9 @@ body.theme-loading { visibility: hidden; }
     border-color: rgba(100, 116, 139, 0.5);
 }
 
-/* Native checkbox / radio accent matches the site primary */
+/* Native checkbox / radio accent matches the action green */
 .panel-ui input[type="checkbox"],
-.panel-ui input[type="radio"] { accent-color: #0C3B2E; }
+.panel-ui input[type="radio"] { accent-color: #05B762; }
 .dark .panel-ui input[type="checkbox"],
 .dark .panel-ui input[type="radio"] { accent-color: #34D399; }
 
@@ -264,8 +337,8 @@ body.theme-loading { visibility: hidden; }
 /* Links: comfortable underline offset */
 .panel-ui main a { text-underline-offset: 3px; }
 
-/* Text selection tinted with the site primary */
-.panel-ui ::selection { background: rgba(16, 185, 129, 0.18); }
+/* Text selection tinted with the action green */
+.panel-ui ::selection { background: rgba(5, 183, 98, 0.18); }
 
 /* Tables: stronger head separation, muted uppercase head cells */
 .panel-ui thead th { border-bottom: 2px solid rgba(100, 116, 139, 0.18); }
@@ -286,6 +359,6 @@ body.theme-loading { visibility: hidden; }
 
 /* Scrollbars inside panels: thin, quiet, both axes */
 .panel-ui ::-webkit-scrollbar { width: 8px; height: 8px; }
-.panel-ui ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.4); }
+.panel-ui ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.4); border-radius: 999px; }
 .panel-ui ::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.6); }
 .panel-ui ::-webkit-scrollbar-track { background: transparent; }

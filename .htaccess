@@ -61,7 +61,7 @@ DirectoryIndex index.php index.html
 
 # A unique, cache-independent signal that the corrected deployment is active.
 <IfModule mod_headers.c>
-    Header always set X-Huvanti-Deploy "v51-2026-08-31-restore-previous-design"
+    Header always set X-Huvanti-Deploy "v52-2026-08-31-feed-inspired-polish"
     Header always set X-Content-Type-Options "nosniff"
     Header always set X-Frame-Options "SAMEORIGIN"
     Header always set Referrer-Policy "strict-origin-when-cross-origin"

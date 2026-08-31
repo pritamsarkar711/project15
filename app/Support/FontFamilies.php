@@ -22,6 +22,11 @@ class FontFamilies
     public static function all(): array
     {
         return [
+            'geist' => [
+                'label'  => 'Geist',
+                'css'    => "'Geist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
+                'google' => 'Geist:wght@400;500;600;700;800',
+            ],
             'work-sans' => [
                 'label'  => 'Work Sans',
                 'css'    => "'Work Sans', ui-sans-serif, system-ui, sans-serif",
@@ -105,11 +110,11 @@ class FontFamilies
         ];
     }
 
-    /** Get the data array for a key, falling back to the Inter default. */
+    /** Get the data array for a key, falling back to the Geist default. */
     public static function get(string $key): array
     {
         $all = self::all();
-        return $all[$key] ?? $all['inter'];
+        return $all[$key] ?? $all['geist'];
     }
 
     /** Convenience: the Google Fonts URL for a given key. */
