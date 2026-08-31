@@ -1,26 +1,27 @@
 @extends('layouts.app')
 @php($metaTitle = 'Blog — Latest Articles & Expert Insights | ' . setting('site_name','huvanti.com'))
 @section('content')
-<div class="dotgrid border-b border-[#E4E4DA] dark:border-[#262C28]">
+<div class="bg-slate-50/80 dark:bg-[#0D1411] border-b border-slate-100 dark:border-[#151D19]">
     <div class="max-w-[1280px] mx-auto px-4 sm:px-6 py-12 sm:py-16">
-        <span class="kicker"><b>01</b> The Journal</span>
-        <h1 class="mt-4 text-[40px] sm:text-[56px] font-black text-[#141A16] dark:text-[#F0F2EB] leading-[1.02]">Every story,<br class="sm:hidden"> in one place<span class="text-[#F5C445]">.</span></h1>
-        <p class="mt-4 text-[15px] sm:text-base text-[#5C665E] dark:text-[#97A199] max-w-2xl leading-relaxed">Technology, health, finance, travel, lifestyle and education — reported clearly, reviewed by humans, published weekly.</p>
+        <span class="kicker">The journal</span>
+        <h1 class="mt-4 text-[36px] sm:text-[52px] font-extrabold text-slate-900 dark:text-[#F1F5F4] tracking-tight leading-[1.05]">Every story,<br class="sm:hidden"> in one place<span class="text-emerald-500">.</span></h1>
+        <p class="mt-4 text-[15px] sm:text-base text-slate-500 dark:text-[#8FA398] max-w-2xl leading-relaxed">Technology, health, finance, travel, lifestyle and education — reported clearly, reviewed by humans, published weekly.</p>
 
-        <form action="{{ route('blog.index') }}" method="GET" class="mt-8 max-w-[720px]">
-            <div class="bg-white dark:bg-[#141815] border-2 border-[#141A16] dark:border-[#3A443D] shadow-[7px_7px_0_0_#F5C445] p-2 flex flex-col sm:flex-row gap-2">
+        <form action="{{ route('blog.index') }}" method="GET" class="mt-8 max-w-[760px]">
+            <div class="bg-white dark:bg-[#131A17] border border-slate-200 dark:border-[#2C3833] rounded-2xl shadow-sm p-2 flex flex-col sm:flex-row gap-2">
                 <div class="flex-1 relative min-w-0">
-                    <input type="text" name="q" value="{{ request('q') }}" placeholder="Search posts by title or topic..." autocomplete="off" class="w-full h-11 px-4 bg-[#FAFAF7] dark:bg-[#0D100E] border border-[#E4E4DA] dark:border-[#3A443D] text-[#141A16] dark:text-[#EDEFEA] placeholder:text-[#8B958C] dark:placeholder:text-[#6B756C] text-sm font-medium outline-none focus:border-[#0C3B2E] dark:focus:border-[#34D399]">
+                    <svg class="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-4.35-4.35"/><circle cx="11" cy="11" r="7"/></svg>
+                    <input type="text" name="q" value="{{ request('q') }}" placeholder="Search posts by title or topic..." autocomplete="off" class="w-full h-11 pl-11 pr-4 bg-slate-50 dark:bg-[#0D1411] border border-slate-200 dark:border-[#2C3833] rounded-xl text-slate-900 dark:text-[#E5EDE9] placeholder:text-slate-400 dark:placeholder:text-[#6B7F75] text-sm font-medium outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/15 transition">
                 </div>
-                <select name="category" class="h-11 px-3 bg-[#FAFAF7] dark:bg-[#0D100E] border border-[#E4E4DA] dark:border-[#3A443D] text-[#141A16] dark:text-[#EDEFEA] text-sm font-medium outline-none focus:border-[#0C3B2E] dark:focus:border-[#34D399] sm:w-[190px] shrink-0">
+                <select name="category" class="h-11 px-3.5 bg-slate-50 dark:bg-[#0D1411] border border-slate-200 dark:border-[#2C3833] rounded-xl text-slate-700 dark:text-[#C6D2CB] text-sm font-medium outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/15 transition sm:w-[190px] shrink-0">
                     <option value="">All categories</option>
                     @foreach($categories as $cat)
                         <option value="{{ $cat->slug }}" @selected(request('category')==$cat->slug)>{{ $cat->name }}</option>
                     @endforeach
                 </select>
-                <button type="submit" class="h-11 px-7 bg-[#141A16] hover:bg-[#0C3B2E] text-white text-[12px] font-extrabold uppercase tracking-[0.12em] transition shrink-0">Filter</button>
+                <button type="submit" class="h-11 px-7 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold shadow-sm shadow-emerald-600/25 transition shrink-0">Filter</button>
                 @if(request('q') || request('category'))
-                    <a href="{{ route('blog.index') }}" class="h-11 px-5 bg-white dark:bg-[#141815] border border-[#E4E4DA] dark:border-[#3A443D] text-[#3D463F] dark:text-[#C2C9C0] text-[12px] font-extrabold uppercase tracking-[0.12em] flex items-center justify-center hover:border-[#141A16] dark:hover:border-[#F5C445] transition shrink-0">Clear</a>
+                    <a href="{{ route('blog.index') }}" class="h-11 px-5 rounded-xl border border-slate-200 dark:border-[#2C3833] text-slate-600 dark:text-[#8FA398] text-sm font-semibold flex items-center justify-center hover:bg-slate-50 dark:hover:bg-white/5 transition shrink-0">Clear</a>
                 @endif
             </div>
         </form>
@@ -29,19 +30,19 @@
 
 <div class="max-w-[1280px] mx-auto px-4 sm:px-6 py-12">
     @if($posts->count())
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-7 gap-y-10">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-8">
             @foreach($posts as $p)
-                <article class="group card-elev lift flex flex-col">
-                    <a href="{{ route('blog.show',$p->slug) }}" class="relative h-[200px] overflow-hidden block border-b border-[#E4E4DA] dark:border-[#262C28]">
-                        <img src="{{ storage_image_url($p->featured_image) ?: 'https://picsum.photos/seed/'.$p->slug.'/600/400' }}" alt="{{ image_alt_text($p->featured_image, $p->title) }}" class="w-full h-full object-cover group-hover:scale-[1.03] transition duration-500" loading="lazy" decoding="async">
-                        <span class="absolute top-0 left-0 bg-white dark:bg-[#141815] text-[#0C3B2E] dark:text-[#34D399] text-[10px] font-extrabold tracking-[0.18em] uppercase px-3 py-1.5 border-b border-r border-[#E4E4DA] dark:border-[#262C28]">{{ $p->category->name ?? 'General' }}</span>
+                <article class="group card-elev lift overflow-hidden flex flex-col">
+                    <a href="{{ route('blog.show',$p->slug) }}" class="relative h-[200px] overflow-hidden block">
+                        <img src="{{ storage_image_url($p->featured_image) ?: 'https://picsum.photos/seed/'.$p->slug.'/600/400' }}" alt="{{ image_alt_text($p->featured_image, $p->title) }}" class="w-full h-full object-cover group-hover:scale-[1.04] transition duration-500" loading="lazy" decoding="async">
+                        <span class="absolute top-3 left-3 text-[11.5px] font-bold text-emerald-700 dark:text-emerald-300 bg-white/95 dark:bg-[#0D1411]/95 px-2.5 py-1 rounded-full shadow-sm">{{ $p->category->name ?? 'General' }}</span>
                     </a>
-                    <div class="p-6 flex flex-col flex-1">
-                        <a href="{{ route('blog.show',$p->slug) }}" class="text-[18px] font-bold text-[#141A16] dark:text-[#F0F2EB] leading-snug line-clamp-2 group-hover:text-[#0C3B2E] dark:group-hover:text-[#34D399] transition-colors">{{ $p->title }}</a>
-                        <p class="text-[13.5px] text-[#5C665E] dark:text-[#97A199] mt-3 leading-relaxed line-clamp-2">{{ $p->excerpt }}</p>
-                        <div class="mt-auto pt-4 border-t border-[#E4E4DA] dark:border-[#262C28] flex items-center gap-2 text-[12px] font-medium text-[#8B958C] dark:text-[#6B756C]">
+                    <div class="p-5 flex flex-col flex-1">
+                        <a href="{{ route('blog.show',$p->slug) }}" class="text-[17.5px] font-bold text-slate-900 dark:text-[#F1F5F4] leading-snug line-clamp-2 group-hover:text-emerald-700 dark:group-hover:text-emerald-300 transition-colors">{{ $p->title }}</a>
+                        <p class="text-[13.5px] text-slate-500 dark:text-[#8FA398] mt-2.5 leading-relaxed line-clamp-2 flex-1">{{ $p->excerpt }}</p>
+                        <div class="mt-4 pt-4 border-t border-slate-100 dark:border-[#1F2925] flex items-center gap-2 text-xs font-medium text-slate-400 dark:text-[#6B7F75]">
                             <span>{{ $p->published_at?->format('M d, Y') }}</span>
-                            <span class="w-1 h-1 bg-[#F5C445]"></span>
+                            <span class="w-1 h-1 rounded-full bg-slate-300 dark:bg-[#3A4A42]"></span>
                             <span>{{ $p->reading_time }} min read</span>
                         </div>
                     </div>
@@ -54,7 +55,7 @@
             <span class="chip w-14 h-14 mx-auto mb-4">
                 <svg class="w-7 h-7 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-4.35-4.35"/><circle cx="11" cy="11" r="7"/></svg>
             </span>
-            <p class="text-[15px] font-medium text-[#5C665E] dark:text-[#97A199]">No posts found. Try a different search or category.</p>
+            <p class="text-[15px] font-medium text-slate-500 dark:text-[#8FA398]">No posts found. Try a different search or category.</p>
             <a href="{{ route('blog.index') }}" class="mt-5 btn btn-primary btn-sm mx-auto">View all posts</a>
         </div>
     @endif
