@@ -161,7 +161,7 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
                         <img src="{{ $heroImg ? asset('storage/'.$heroImg) : asset('images/hero-person-harry.png') }}" alt="" class="w-full h-full object-cover" loading="lazy" decoding="async" id="hero-preview-img"
                              onerror="this.style.display='none'; var h=document.getElementById('hero-load-hint'); if(h){h.classList.remove('hidden');}">
                     </div>
-                    <p id="hero-load-hint" class="mt-1.5 text-[11px] text-red-500 hidden">File not reachable. Hard refresh (Ctrl + Shift + R), or check public/storage.</p>
+                    <p id="hero-load-hint" class="mt-1.5 text-[11px] text-amber-600 dark:text-amber-400 hidden">Preview unavailable — the file is missing from public/storage. Re-upload the image to fix it.</p>
                 </div>
             </div>
         </div>

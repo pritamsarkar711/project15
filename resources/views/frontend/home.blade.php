@@ -55,9 +55,9 @@
                 </h1>
                 <p class="mt-4 text-[17px] sm:text-[18px] leading-relaxed text-white/85 max-w-[520px] font-medium">{{ $heroSubtitle }}</p>
                 <form action="{{ route('search') }}" method="GET" class="mt-6 w-full max-w-[520px] min-w-0" autocomplete="off">
-                    <div class="flex items-center w-full min-w-0 bg-white rounded-full p-1.5 pl-5 shadow-[0_10px_30px_rgba(0,0,0,0.25)] overflow-hidden">
+                    <div class="flex items-center w-full min-w-0 bg-white rounded-xl p-1.5 pl-5 shadow-[0_10px_30px_rgba(0,0,0,0.25)] overflow-hidden">
                         <input type="text" name="q" value="{{ request('q') }}" placeholder="{{ $heroSearchPlaceholder }}" autocomplete="off" autocorrect="off" spellcheck="false" class="flex-1 min-w-0 h-10 bg-transparent text-slate-900 border-0 outline-none text-[15px] placeholder:text-slate-400" aria-label="Search articles">
-                        <button type="submit" class="h-10 px-6 sm:px-7 shrink-0 rounded-full bg-[#05B762] hover:bg-[#049A53] text-white text-sm font-semibold transition">Search</button>
+                        <button type="submit" class="h-10 px-6 sm:px-7 shrink-0 rounded-lg bg-[#05B762] hover:bg-[#049A53] text-white text-sm font-semibold transition">Search</button>
                     </div>
                 </form>
             </div>

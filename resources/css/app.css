@@ -23,12 +23,13 @@
     --color-action-dark: #049A53;
     --color-action-soft: #E8F8F0;
     /* Unified radius scale — one coherent geometry across site, admin and
-       author panels (controls 10px, cards 12-16px, pills fully round) */
-    --radius-sm: 8px;
-    --radius-md: 10px;
-    --radius-lg: 12px;
-    --radius-xl: 16px;
-    --radius-2xl: 20px;
+       author panels. Tightened per feedback: controls 6-8px, cards 10-12px,
+       hero surfaces 14px. Only avatars/dots stay fully round. */
+    --radius-sm: 6px;
+    --radius-md: 8px;
+    --radius-lg: 10px;
+    --radius-xl: 12px;
+    --radius-2xl: 14px;
 }
 
 html { color-scheme: light; }
@@ -60,13 +61,13 @@ textarea:focus-visible, summary:focus-visible, [tabindex]:focus-visible {
 
 ::selection { background: rgba(5, 183, 98, 0.16); }
 
-/* ============ Button system (peermeld-style pill controls) ============ */
+/* ============ Button system (soft-rounded product controls) ============ */
 .btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    border-radius: 999px;
+    border-radius: var(--radius-md);
     font-weight: 600;
     font-size: 0.875rem;
     line-height: 1;
@@ -227,7 +228,7 @@ textarea:focus-visible, summary:focus-visible, [tabindex]:focus-visible {
     background: #ffffff;
     border: 1px solid rgba(226, 232, 240, 0.9);
     border-radius: var(--radius-xl);
-    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    box-shadow: 0 1px 4px rgba(15, 23, 42, 0.05);
     transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease;
 }
 .card-hover:hover {
@@ -263,12 +264,35 @@ body.theme-loading { visibility: hidden; }
    Scope: any <body class="panel-ui"> layout.
    ============================================================ */
 
-/* Cards / bordered blocks: subtle layered shadow */
-.panel-ui main div[class*="bg-white"][class*="border"],
-.panel-ui main div[class*="dark:bg-slate-900"][class*="border"] {
-    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(15, 23, 42, 0.06);
+/* Cards / bordered blocks: rounded corners + subtle layered shadow.
+   :where() keeps specificity at zero so every Tailwind utility in the
+   views still wins — this only fills the gaps on un-classed elements. */
+:where(.panel-ui) main div[class*="bg-white"][class*="border"],
+:where(.panel-ui) main div[class*="dark:bg-slate-900"][class*="border"] {
+    border-radius: var(--radius-lg);
+    box-shadow: 0 1px 4px rgba(15, 23, 42, 0.05);
     transition: box-shadow 0.18s ease;
 }
+.dark :where(.panel-ui) main div[class*="bg-white"][class*="border"],
+.dark :where(.panel-ui) main div[class*="dark:bg-slate-900"][class*="border"] {
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+}
+
+/* Inputs / selects / textareas: unified 8px geometry everywhere */
+:where(.panel-ui) input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]),
+:where(.panel-ui) select,
+:where(.panel-ui) textarea {
+    border-radius: var(--radius-md);
+}
+
+/* Buttons: unified 8px geometry (rounded-full buttons keep their class) */
+:where(.panel-ui) button { border-radius: var(--radius-md); }
+
+/* Bordered anchor-controls (filter tabs, pager links) get the same geometry */
+:where(.panel-ui) main a[class*="border"] { border-radius: var(--radius-md); }
+
+/* File upload dropzones (dashed borders) get the same geometry */
+:where(.panel-ui) label[class*="border-dashed"] { border-radius: var(--radius-md); }
 
 /* Inputs, selects, textareas: refined focus */
 .panel-ui input:not([type="checkbox"]):not([type="radio"]),
@@ -341,7 +365,7 @@ body.theme-loading { visibility: hidden; }
 .panel-ui ::selection { background: rgba(5, 183, 98, 0.18); }
 
 /* Tables: stronger head separation, muted uppercase head cells */
-.panel-ui thead th { border-bottom: 2px solid rgba(100, 116, 139, 0.18); }
+:where(.panel-ui) thead th { border-bottom: 2px solid rgba(100, 116, 139, 0.18); }
 
 /* Sidebar: section labels tracked out, icons calm until hover */
 .panel-ui aside nav > div { letter-spacing: 0.16em; }

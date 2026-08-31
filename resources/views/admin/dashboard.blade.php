@@ -51,7 +51,7 @@
                 @forelse($recentPosts as $post)
                     <div class="flex items-center gap-3 py-3">
                         @if($post->featured_image)
-                            <img src="{{ str_starts_with($post->featured_image,'http') ? $post->featured_image : '/storage/'.$post->featured_image }}" class="w-11 h-11 object-cover bg-slate-100 dark:bg-slate-800" alt="" loading="lazy" decoding="async">
+                            <img src="{{ str_starts_with($post->featured_image,'http') ? $post->featured_image : '/storage/'.$post->featured_image }}" class="w-11 h-11 object-cover bg-slate-100 dark:bg-slate-800" alt="" loading="lazy" decoding="async" onerror="this.onerror=null;this.style.visibility='hidden'">
                         @else
                             <div class="w-11 h-11 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 flex items-center justify-center">
                                 <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2Z"/></svg>
@@ -95,13 +95,33 @@
     </div>
 
     <div>
-        <div class="bg-[#0C3B2E] p-5 text-white">
-            <h3 class="font-semibold">Quick Actions</h3>
-            <div class="mt-4 grid grid-cols-2 gap-2">
-                <a href="{{ route('admin.posts.create') }}" class="bg-white text-[#0C3B2E] py-2.5 text-center text-sm font-semibold hover:bg-emerald-50 transition">New Post</a>
-                <a href="{{ route('admin.categories.create') }}" class="bg-white/10 border border-white/20 py-2.5 text-center text-sm font-semibold hover:bg-white/20 transition">New Category</a>
-                <a href="{{ route('admin.settings.index') }}" class="bg-white/10 border border-white/20 py-2.5 text-center text-sm font-semibold hover:bg-white/20 transition">Settings</a>
-                <a href="{{ route('admin.profile.edit') }}" class="bg-white/10 border border-white/20 py-2.5 text-center text-sm font-semibold hover:bg-white/20 transition">Profile</a>
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-[0_1px_4px_rgba(15,23,42,0.05)]">
+            <h3 class="font-semibold text-slate-900 dark:text-white">Quick Actions</h3>
+            <div class="mt-4 grid grid-cols-2 gap-2.5">
+                <a href="{{ route('admin.posts.create') }}" class="group flex flex-col items-start gap-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/40 p-3.5 hover:border-[#05B762]/50 hover:bg-white dark:hover:bg-slate-800 transition">
+                    <span class="icon-tile w-8 h-8 rounded-lg">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z"/></svg>
+                    </span>
+                    <span class="text-sm font-semibold text-slate-700 dark:text-slate-200 group-hover:text-[#049A53] dark:group-hover:text-emerald-300 transition">New Post</span>
+                </a>
+                <a href="{{ route('admin.categories.create') }}" class="group flex flex-col items-start gap-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/40 p-3.5 hover:border-[#05B762]/50 hover:bg-white dark:hover:bg-slate-800 transition">
+                    <span class="icon-tile w-8 h-8 rounded-lg">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z"/></svg>
+                    </span>
+                    <span class="text-sm font-semibold text-slate-700 dark:text-slate-200 group-hover:text-[#049A53] dark:group-hover:text-emerald-300 transition">New Category</span>
+                </a>
+                <a href="{{ route('admin.settings.index') }}" class="group flex flex-col items-start gap-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/40 p-3.5 hover:border-[#05B762]/50 hover:bg-white dark:hover:bg-slate-800 transition">
+                    <span class="icon-tile w-8 h-8 rounded-lg">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.28z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    </span>
+                    <span class="text-sm font-semibold text-slate-700 dark:text-slate-200 group-hover:text-[#049A53] dark:group-hover:text-emerald-300 transition">Settings</span>
+                </a>
+                <a href="{{ route('admin.profile.edit') }}" class="group flex flex-col items-start gap-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/40 p-3.5 hover:border-[#05B762]/50 hover:bg-white dark:hover:bg-slate-800 transition">
+                    <span class="icon-tile w-8 h-8 rounded-lg">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
+                    </span>
+                    <span class="text-sm font-semibold text-slate-700 dark:text-slate-200 group-hover:text-[#049A53] dark:group-hover:text-emerald-300 transition">Profile</span>
+                </a>
             </div>
         </div>
     </div>
