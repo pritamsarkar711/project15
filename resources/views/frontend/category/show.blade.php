@@ -4,37 +4,32 @@
     $metaDescription = $category->description ?: ('Latest ' . $category->name . ' articles, guides and tips from the Huvanti editorial team.');
 @endphp
 @section('content')
-<div class="bg-slate-50/80 dark:bg-[#0D1411] border-b border-slate-100 dark:border-[#151D19]">
-    <div class="max-w-[1280px] mx-auto px-4 sm:px-6 py-12 sm:py-16">
-        <span class="kicker">Section</span>
-        <div class="flex items-center gap-5 mt-4">
-            <span class="chip w-16 h-16 rounded-2xl">
-                @include('partials.category-icon', ['category' => $category, 'class' => 'w-8 h-8'])
-            </span>
-            <div class="min-w-0">
-                <h1 class="font-extrabold text-[34px] sm:text-[48px] text-slate-900 dark:text-[#F1F5F4] tracking-tight leading-none">{{ $category->name }}</h1>
-            </div>
+<div class="max-w-[1200px] mx-auto px-4 sm:px-6 py-8">
+    <div class="flex items-center gap-4 mb-8 card-elev p-5">
+        <div class="w-14 h-14 bg-emerald-50 dark:bg-emerald-400/10 flex items-center justify-center text-[#0C3B2E] dark:text-emerald-300 shrink-0">
+            @include('partials.category-icon', ['category' => $category, 'class' => 'w-7 h-7'])
         </div>
-        <p class="text-[15px] text-slate-500 dark:text-[#8FA398] mt-4 max-w-2xl leading-relaxed">{{ $category->description }}</p>
+        <div class="min-w-0">
+            <h1 class="font-extrabold text-2xl sm:text-[30px] text-slate-900 dark:text-white tracking-tight">{{ $category->name }}</h1>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mt-0.5">{{ $category->description }}</p>
+        </div>
     </div>
-</div>
-<div class="max-w-[1280px] mx-auto px-4 sm:px-6 py-12">
     @if($posts->count())
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-8">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             @foreach($posts as $p)
-                <article class="group card-elev lift overflow-hidden flex flex-col">
-                    <a href="{{ route('blog.show',$p->slug) }}" class="relative h-[200px] overflow-hidden block"><img src="{{ storage_image_url($p->featured_image) ?: 'https://picsum.photos/seed/'.$p->slug.'/600/400' }}" alt="{{ image_alt_text($p->featured_image, $p->title) }}" class="w-full h-full object-cover group-hover:scale-[1.04] transition duration-500" loading="lazy" decoding="async"></a>
+                <article class="group card-elev overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-200 flex flex-col">
+                    <a href="{{ route('blog.show',$p->slug) }}"><img src="{{ storage_image_url($p->featured_image) ?: 'https://picsum.photos/seed/'.$p->slug.'/600/400' }}" alt="{{ image_alt_text($p->featured_image, $p->title) }}" class="w-full h-48 object-cover group-hover:scale-[1.03] transition duration-300" loading="lazy" decoding="async"></a>
                     <div class="p-5 flex flex-col flex-1">
-                        <a href="{{ route('blog.show',$p->slug) }}" class="text-[17.5px] font-bold text-slate-900 dark:text-[#F1F5F4] hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors line-clamp-2 leading-snug">{{ $p->title }}</a>
-                        <p class="text-[13.5px] text-slate-500 dark:text-[#8FA398] line-clamp-2 mt-2.5 leading-relaxed flex-1">{{ $p->excerpt }}</p>
-                        <div class="mt-auto pt-4 border-t border-slate-100 dark:border-[#1F2925] text-xs font-medium text-slate-400 dark:text-[#6B7F75] flex items-center gap-2">{{ $p->published_at->format('M d, Y') }} <span class="w-1 h-1 rounded-full bg-slate-300 dark:bg-[#3A4A42]"></span> {{ $p->reading_time }} min read</div>
+                        <a href="{{ route('blog.show',$p->slug) }}" class="font-semibold text-slate-900 dark:text-white hover:text-[#0C3B2E] dark:hover:text-emerald-300 line-clamp-2">{{ $p->title }}</a>
+                        <p class="text-sm text-slate-500 dark:text-slate-400 line-clamp-2 mt-2">{{ $p->excerpt }}</p>
+                        <div class="text-xs text-slate-400 dark:text-slate-500 mt-3 pt-3 border-t border-slate-100 dark:border-[#2f2f2f]">{{ $p->published_at->format('M d, Y') }} <span class="w-1 h-1 bg-slate-300 dark:bg-slate-600 inline-block mx-1 align-middle"></span> {{ $p->reading_time }} min read</div>
                     </div>
                 </article>
             @endforeach
         </div>
-        <div class="mt-10">{{ $posts->links() }}</div>
+        <div class="mt-8">{{ $posts->links() }}</div>
     @else
-        <div class="text-center py-16 card-elev max-w-xl mx-auto"><p class="text-[15px] font-medium text-slate-500 dark:text-[#8FA398]">No posts in this category yet.</p></div>
+        <div class="text-center py-12 card-elev"><p class="text-slate-500 dark:text-slate-400">No posts in this category yet.</p></div>
     @endif
 </div>
 @endsection

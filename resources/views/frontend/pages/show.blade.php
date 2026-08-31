@@ -7,14 +7,11 @@
     $metaDescription = $seoDescription ?? ($page->meta_description ?? null);
 @endphp
 @section('content')
-<div class="bg-slate-50/80 dark:bg-[#0D1411] border-b border-slate-100 dark:border-[#151D19]">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 py-12 sm:py-14">
-        <span class="kicker">Huvanti</span>
-        <h1 class="mt-4 font-extrabold text-[34px] sm:text-[46px] text-slate-900 dark:text-[#F1F5F4] tracking-tight leading-[1.05]">{{ $page->title }}</h1>
-        <div class="mt-3 text-[13px] font-medium text-slate-400 dark:text-[#6B7F75]">Last updated {{ $page->updated_at->format('M d, Y') }}</div>
+<div class="max-w-4xl mx-auto px-4 sm:px-6 py-10">
+    <div class="card-elev p-6 sm:p-10">
+        <h1 class="font-extrabold text-3xl sm:text-4xl text-slate-900 dark:text-white tracking-tight">{{ $page->title }}</h1>
+        <div class="text-sm text-slate-500 dark:text-slate-400 mt-1">Last updated: {{ $page->updated_at->format('M d, Y') }}</div>
+        <div class="prose dark:prose-invert max-w-none mt-8">{!! $page->content !!}</div>
     </div>
-</div>
-<div class="max-w-4xl mx-auto px-4 sm:px-6 py-12">
-    <div class="prose dark:prose-invert max-w-none">{!! $page->content !!}</div>
 </div>
 @endsection

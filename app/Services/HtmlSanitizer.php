@@ -38,10 +38,7 @@ class HtmlSanitizer
         'img'  => ['src', 'alt', 'title', 'width', 'height', 'loading', 'decoding'],
         'th'   => ['colspan', 'rowspan', 'style'],
         'td'   => ['colspan', 'rowspan', 'style'],
-        // face= is deliberately NOT allowlisted: a stored font face would
-        // override the admin-chosen site font inside published posts. The
-        // editor never sets it from its own UI; it only arrives via pastes.
-        'font' => ['color', 'size', 'style'],
+        'font' => ['color', 'face', 'size', 'style'],
         // Inline SVG icon vocabulary. No href/xlink anywhere, so an SVG can
         // never reference an external resource. (libxml lowercases
         // attribute names — the browser's HTML parser re-adjusts
@@ -89,16 +86,6 @@ class HtmlSanitizer
      *  position styling could pin itself over the whole published article
      *  (or the site header) and no legitimate post content needs it. */
     private const BLOCKED_STYLE_PATTERN = '/(expression|behavior|position\s*:\s*(?:fixed|absolute|sticky)|javascript|vbscript|import\s|url\s*\(\s*["\']?\s*data)/i';
-
-    /** Declarations that are stripped from every allowed style attribute.
-     *  font-family is removed unconditionally: the site font is chosen once
-     *  in the admin panel and must render identically everywhere. Content
-     *  pasted from Google Docs / Word used to smuggle in per-paragraph
-     *  font-family declarations with !important ("Google Sans Text"), which
-     *  made published posts render in a different font than the rest of the
-     *  site — no stylesheet can beat an inline !important, so the
-     *  declaration has to be removed at the HTML level. */
-    private const STRIPPED_STYLE_DECL_PATTERN = '/font-family\s*:[^;]*;?/i';
 
     public static function clean(string $html): string
     {
@@ -153,16 +140,6 @@ class HtmlSanitizer
                 }
                 if (str_starts_with((string) $keep, 'on')) {
                     continue;
-                }
-                if ($keep === 'style') {
-                    // Strip font-family (and any other forbidden declaration
-                    // pattern) while keeping line-height, color, background,
-                    // text-align and the editor's spacing helpers.
-                    $val = preg_replace(self::STRIPPED_STYLE_DECL_PATTERN, '', (string) $val);
-                    $val = trim((string) $val, " ;\t\n\r");
-                    if ($val === '') {
-                        continue;
-                    }
                 }
                 if ($keep === 'style' && preg_match(self::BLOCKED_STYLE_PATTERN, $val)) {
                     continue;

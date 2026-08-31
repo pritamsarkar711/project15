@@ -105,43 +105,30 @@
     <link rel="preconnect" href="https://picsum.photos" crossorigin>
     <link rel="dns-prefetch" href="https://www.googletagmanager.com">
     <link href="{{ \App\Support\SiteFont::googleUrl() }}" rel="stylesheet">
-    {{-- resources/js/app.js is intentionally empty — requesting its built
-         module only fired a pointless (empty) script request on every page
-         view, so only the stylesheet entry is loaded here. --}}
-    {!! \App\Support\ViteAssets::tags(['resources/css/app.css']) !!}
+    {!! \App\Support\ViteAssets::tags(['resources/css/app.css', 'resources/js/app.js']) !!}
 
-    {{-- Google Tag Manager (Admin → Settings → Analytics & Verification).
-         Rendered ONLY for a well-formed container id (GTM-XXXXXX). A wrong
-         value (an email address, a G- id, free text) silently produced a
-         broken request to googletagmanager and console noise in GSC's live
-         URL test — skipping the snippet entirely keeps the page clean until
-         a valid id is stored. --}}
-    @php $gtmId = preg_match('/^GTM-[A-Za-z0-9]+$/', (string) setting('gtm_container_id')) ? setting('gtm_container_id') : null; @endphp
-    @if($gtmId)
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','{{ $gtmId }}');</script>
+    {{-- Google Tag Manager (Admin → Settings → Analytics & Verification) --}}
+    @if(setting('gtm_container_id'))
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','{{ setting('gtm_container_id') }}');</script>
     @endif
 
     {{-- Google Analytics 4 (Search Console GA verification requires the
-         gtag.js snippet inside <head>, so it lives here — not at body end).
-         Only a well-formed measurement id (G-XXXX / GTM-XXXX / AW-XXXX /
-         UA-XXXX) is rendered; the settings field once held an email address,
-         which made gtag.js load with an invalid id on every page view. --}}
-    @php $gaId = preg_match('/^(G|UA|AW|GT)-[A-Za-z0-9_-]+$/', (string) setting('ga_measurement_id')) ? setting('ga_measurement_id') : null; @endphp
-    @if($gaId)
-    <script async src="https://www.googletagmanager.com/gtag/js?id={{ $gaId }}"></script>
+         gtag.js snippet inside <head>, so it lives here — not at body end) --}}
+    @if(setting('ga_measurement_id'))
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ setting('ga_measurement_id') }}"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
-        gtag('config', '{{ $gaId }}');
+        gtag('config', '{{ setting('ga_measurement_id') }}');
     </script>
     @endif
 
     @stack('head')
 </head>
-<body class="site-ui bg-white dark:bg-[#0A0F0D] text-[#1E293B] dark:text-[#E5EDE9] antialiased overflow-x-hidden" style="font-family:{{ \App\Support\SiteFont::cssStack() }}">
-    @if($gtmId)
-    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ $gtmId }}" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<body class="bg-[#fafafa] dark:bg-[#121212] text-slate-800 dark:text-slate-100 antialiased overflow-x-hidden" style="font-family:{{ \App\Support\SiteFont::cssStack() }}">
+    @if(setting('gtm_container_id'))
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ setting('gtm_container_id') }}" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     @endif
     {{-- Admin ⇄ User switch: silent. While the admin browses in user mode the
          site header shows a small "Switch to Admin" button — no banner, no
@@ -151,29 +138,18 @@
 
         <main class="flex-1 w-full">
             @if(session('success'))
-                <div class="max-w-[1280px] mx-auto px-4 sm:px-6 mt-5">
-                    <div class="flex items-start gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900 shadow-sm dark:border-emerald-500/25 dark:bg-emerald-500/10 dark:text-emerald-200">
-                        <span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-white">
-                            <svg class="h-3 w-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                        </span>
-                        <span class="font-medium flex-1">{{ session('success') }}</span>
-                        <button onclick="this.closest('div.flex').parentElement.remove()" class="ml-2 rounded-md p-0.5 text-emerald-600 hover:bg-emerald-100 dark:text-emerald-300 dark:hover:bg-emerald-500/15" aria-label="Dismiss">
+                <div class="max-w-[1200px] mx-auto px-4 sm:px-6 mt-4">
+                    <div class="card-elev text-emerald-800 dark:text-emerald-300 px-4 py-3 flex items-center justify-between text-sm !shadow-none border border-emerald-200 dark:border-emerald-400/20 dark:!bg-[#1e2b24]">
+                        <span class="font-medium">{{ session('success') }}</span>
+                        <button onclick="this.parentElement.remove()" class="ml-4" aria-label="Dismiss">
                             <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                         </button>
                     </div>
                 </div>
             @endif
             @if(session('error'))
-                <div class="max-w-[1280px] mx-auto px-4 sm:px-6 mt-5">
-                    <div class="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800 shadow-sm dark:border-red-500/25 dark:bg-red-500/10 dark:text-red-300">
-                        <span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-red-500 text-white">
-                            <svg class="h-3 w-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                        </span>
-                        <span class="font-medium flex-1">{{ session('error') }}</span>
-                        <button onclick="this.closest('div.flex').parentElement.remove()" class="ml-2 rounded-md p-0.5 text-red-500 hover:bg-red-100 dark:text-red-300 dark:hover:bg-red-500/15" aria-label="Dismiss">
-                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                        </button>
-                    </div>
+                <div class="max-w-[1200px] mx-auto px-4 sm:px-6 mt-4">
+                    <div class="card-elev text-red-700 dark:text-red-300 px-4 py-3 text-sm !shadow-none border border-red-200 dark:border-red-400/20 dark:!bg-[#2b1e1e]">{{ session('error') }}</div>
                 </div>
             @endif
             @yield('content')
@@ -185,8 +161,8 @@
     @include('partials.search-overlay')
 
     <!-- Scroll top (repo pattern: FAB appears after 100px) -->
-    <button id="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" class="fixed bottom-5 right-5 w-11 h-11 bg-emerald-600 dark:bg-emerald-500 text-white dark:text-[#06281D] hidden items-center justify-center shadow-lg transition z-40" aria-label="Scroll to top">
-        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7 7"/></svg>
+    <button id="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" class="fixed bottom-4 right-4 w-10 h-10 bg-[#0C3B2E] dark:bg-emerald-400 text-white dark:text-slate-900 shadow-lg hidden items-center justify-center hover:bg-[#072A20] dark:hover:bg-emerald-300 transition" aria-label="Scroll to top">
+        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
     </button>
 
     @stack('scripts')
