@@ -49,9 +49,9 @@
                 </a>
                 <p class="text-sm leading-relaxed text-slate-600 dark:text-slate-400">
                     A curated multi-niche blog for tech, health, finance, travel, lifestyle and education.
-                    <a href="{{ route('about') }}" class="text-slate-700 dark:text-slate-300 underline decoration-slate-400/60 hover:text-[#0C3B2E] dark:hover:text-emerald-300 transition">Learn about Huvanti</a>,
-                    how we work in our <a href="{{ route('editorial') }}" class="text-slate-700 dark:text-slate-300 underline decoration-slate-400/60 hover:text-[#0C3B2E] dark:hover:text-emerald-300 transition">editorial policy</a>
-                    or <a href="{{ route('contact') }}" class="text-slate-700 dark:text-slate-300 underline decoration-slate-400/60 hover:text-[#0C3B2E] dark:hover:text-emerald-300 transition">contact the team</a>.
+                    <a href="{{ route('about') }}" class="text-slate-700 dark:text-slate-300 underline decoration-slate-400/60 hover:text-[#049A53] dark:hover:text-emerald-300 transition">Learn about Huvanti</a>,
+                    how we work in our <a href="{{ route('editorial') }}" class="text-slate-700 dark:text-slate-300 underline decoration-slate-400/60 hover:text-[#049A53] dark:hover:text-emerald-300 transition">editorial policy</a>
+                    or <a href="{{ route('contact') }}" class="text-slate-700 dark:text-slate-300 underline decoration-slate-400/60 hover:text-[#049A53] dark:hover:text-emerald-300 transition">contact the team</a>.
                 </p>
                 @if($socialEnabled && count($socials) > 0)
                 <div class="flex items-center gap-2 mt-4">
@@ -80,8 +80,8 @@
                 <h4 class="text-sm font-bold text-slate-900 dark:text-white mb-3">Categories</h4>
                 <div class="flex flex-col gap-2 text-sm">
                     @foreach($footerCategories as $cat)
-                        <a href="{{ route('category.show',$cat->slug) }}" class="inline-flex items-center gap-2.5 text-slate-600 dark:text-slate-400 hover:text-[#0C3B2E] dark:hover:text-emerald-300 transition">
-                            <span class="w-7 h-7 bg-white dark:bg-[#2a2a2a] border border-slate-200 dark:border-[#383838] flex items-center justify-center text-[#0C3B2E] dark:text-emerald-300 shrink-0">
+                        <a href="{{ route('category.show',$cat->slug) }}" class="inline-flex items-center gap-2.5 text-slate-600 dark:text-slate-400 hover:text-[#049A53] dark:hover:text-emerald-300 transition">
+                            <span class="w-7 h-7 rounded-lg bg-white dark:bg-[#2a2a2a] border border-slate-200 dark:border-[#383838] flex items-center justify-center text-[#049A53] dark:text-emerald-300 shrink-0">
                                 @include('partials.category-icon', ['category' => $cat, 'class' => 'w-3.5 h-3.5'])
                             </span>{{ $cat->name }}
                         </a>
@@ -92,28 +92,28 @@
             <div>
                 <h4 class="text-sm font-bold text-slate-900 dark:text-white mb-3">Explore</h4>
                 <div class="flex flex-col gap-2 text-sm">
-                    <a href="{{ route('about') }}" class="inline-flex items-center gap-2.5 text-slate-600 dark:text-slate-400 hover:text-[#0C3B2E] dark:hover:text-emerald-300 transition"><span class="w-1.5 h-1.5 bg-[#0C3B2E] dark:bg-emerald-300 shrink-0"></span>About</a>
-                    <a href="{{ route('contact') }}" class="inline-flex items-center gap-2.5 text-slate-600 dark:text-slate-400 hover:text-[#0C3B2E] dark:hover:text-emerald-300 transition"><span class="w-1.5 h-1.5 bg-[#0C3B2E] dark:bg-emerald-300 shrink-0"></span>Contact</a>
-                    <a href="/blog" class="inline-flex items-center gap-2.5 text-slate-600 dark:text-slate-400 hover:text-[#0C3B2E] dark:hover:text-emerald-300 transition"><span class="w-1.5 h-1.5 bg-[#0C3B2E] dark:bg-emerald-300 shrink-0"></span>Blog</a>
-                    <a href="/sitemap.xml" class="inline-flex items-center gap-2.5 text-slate-600 dark:text-slate-400 hover:text-[#0C3B2E] dark:hover:text-emerald-300 transition"><span class="w-1.5 h-1.5 bg-[#0C3B2E] dark:bg-emerald-300 shrink-0"></span>Sitemap</a>
+                    <a href="{{ route('about') }}" class="inline-flex items-center gap-2.5 text-slate-600 dark:text-slate-400 hover:text-[#049A53] dark:hover:text-emerald-300 transition"><span class="w-1.5 h-1.5 rounded-full bg-[#05B762] dark:bg-emerald-300 shrink-0"></span>About</a>
+                    <a href="{{ route('contact') }}" class="inline-flex items-center gap-2.5 text-slate-600 dark:text-slate-400 hover:text-[#049A53] dark:hover:text-emerald-300 transition"><span class="w-1.5 h-1.5 rounded-full bg-[#05B762] dark:bg-emerald-300 shrink-0"></span>Contact</a>
+                    <a href="/blog" class="inline-flex items-center gap-2.5 text-slate-600 dark:text-slate-400 hover:text-[#049A53] dark:hover:text-emerald-300 transition"><span class="w-1.5 h-1.5 rounded-full bg-[#05B762] dark:bg-emerald-300 shrink-0"></span>Blog</a>
+                    <a href="/sitemap.xml" class="inline-flex items-center gap-2.5 text-slate-600 dark:text-slate-400 hover:text-[#049A53] dark:hover:text-emerald-300 transition"><span class="w-1.5 h-1.5 rounded-full bg-[#05B762] dark:bg-emerald-300 shrink-0"></span>Sitemap</a>
                 </div>
             </div>
             <!-- Legal -->
             <div>
                 <h4 class="text-sm font-bold text-slate-900 dark:text-white mb-3">Legal</h4>
                 <div class="flex flex-col gap-2 text-sm">
-                    <a href="{{ route('privacy') }}" class="inline-flex items-center gap-2.5 text-slate-600 dark:text-slate-400 hover:text-[#0C3B2E] dark:hover:text-emerald-300 transition"><span class="w-1.5 h-1.5 bg-[#0C3B2E] dark:bg-emerald-300 shrink-0"></span>Privacy</a>
-                    <a href="{{ route('terms') }}" class="inline-flex items-center gap-2.5 text-slate-600 dark:text-slate-400 hover:text-[#0C3B2E] dark:hover:text-emerald-300 transition"><span class="w-1.5 h-1.5 bg-[#0C3B2E] dark:bg-emerald-300 shrink-0"></span>Terms</a>
-                    <a href="{{ route('cookie') }}" class="inline-flex items-center gap-2.5 text-slate-600 dark:text-slate-400 hover:text-[#0C3B2E] dark:hover:text-emerald-300 transition"><span class="w-1.5 h-1.5 bg-[#0C3B2E] dark:bg-emerald-300 shrink-0"></span>Cookies</a>
-                    <a href="{{ route('editorial') }}" class="inline-flex items-center gap-2.5 text-slate-600 dark:text-slate-400 hover:text-[#0C3B2E] dark:hover:text-emerald-300 transition"><span class="w-1.5 h-1.5 bg-[#0C3B2E] dark:bg-emerald-300 shrink-0"></span>Editorial</a>
-                    <a href="{{ route('affiliate') }}" class="inline-flex items-center gap-2.5 text-slate-600 dark:text-slate-400 hover:text-[#0C3B2E] dark:hover:text-emerald-300 transition"><span class="w-1.5 h-1.5 bg-[#0C3B2E] dark:bg-emerald-300 shrink-0"></span>Affiliate</a>
-                    <a href="{{ route('comments.policy') }}" class="inline-flex items-center gap-2.5 text-slate-600 dark:text-slate-400 hover:text-[#0C3B2E] dark:hover:text-emerald-300 transition"><span class="w-1.5 h-1.5 bg-[#0C3B2E] dark:bg-emerald-300 shrink-0"></span>Comment Policy</a>
-                    <a href="{{ route('disclaimer') }}" class="inline-flex items-center gap-2.5 text-slate-600 dark:text-slate-400 hover:text-[#0C3B2E] dark:hover:text-emerald-300 transition"><span class="w-1.5 h-1.5 bg-[#0C3B2E] dark:bg-emerald-300 shrink-0"></span>Disclaimer</a>
+                    <a href="{{ route('privacy') }}" class="inline-flex items-center gap-2.5 text-slate-600 dark:text-slate-400 hover:text-[#049A53] dark:hover:text-emerald-300 transition"><span class="w-1.5 h-1.5 rounded-full bg-[#05B762] dark:bg-emerald-300 shrink-0"></span>Privacy</a>
+                    <a href="{{ route('terms') }}" class="inline-flex items-center gap-2.5 text-slate-600 dark:text-slate-400 hover:text-[#049A53] dark:hover:text-emerald-300 transition"><span class="w-1.5 h-1.5 rounded-full bg-[#05B762] dark:bg-emerald-300 shrink-0"></span>Terms</a>
+                    <a href="{{ route('cookie') }}" class="inline-flex items-center gap-2.5 text-slate-600 dark:text-slate-400 hover:text-[#049A53] dark:hover:text-emerald-300 transition"><span class="w-1.5 h-1.5 rounded-full bg-[#05B762] dark:bg-emerald-300 shrink-0"></span>Cookies</a>
+                    <a href="{{ route('editorial') }}" class="inline-flex items-center gap-2.5 text-slate-600 dark:text-slate-400 hover:text-[#049A53] dark:hover:text-emerald-300 transition"><span class="w-1.5 h-1.5 rounded-full bg-[#05B762] dark:bg-emerald-300 shrink-0"></span>Editorial</a>
+                    <a href="{{ route('affiliate') }}" class="inline-flex items-center gap-2.5 text-slate-600 dark:text-slate-400 hover:text-[#049A53] dark:hover:text-emerald-300 transition"><span class="w-1.5 h-1.5 rounded-full bg-[#05B762] dark:bg-emerald-300 shrink-0"></span>Affiliate</a>
+                    <a href="{{ route('comments.policy') }}" class="inline-flex items-center gap-2.5 text-slate-600 dark:text-slate-400 hover:text-[#049A53] dark:hover:text-emerald-300 transition"><span class="w-1.5 h-1.5 rounded-full bg-[#05B762] dark:bg-emerald-300 shrink-0"></span>Comment Policy</a>
+                    <a href="{{ route('disclaimer') }}" class="inline-flex items-center gap-2.5 text-slate-600 dark:text-slate-400 hover:text-[#049A53] dark:hover:text-emerald-300 transition"><span class="w-1.5 h-1.5 rounded-full bg-[#05B762] dark:bg-emerald-300 shrink-0"></span>Disclaimer</a>
                 </div>
             </div>
         </div>
         @if($footerAd && trim(strip_tags($footerAd->code ?? '')) !== '')
-        <div class="bg-amber-50/60 dark:bg-[#2a2a2a] p-4 text-center mt-8">{!! $footerAd->code !!}</div>
+        <div class="bg-amber-50/60 dark:bg-[#2a2a2a] p-4 text-center mt-8 rounded-xl">{!! $footerAd->code !!}</div>
         @endif
         <div class="border-t border-slate-200 dark:border-[#2f2f2f] mt-8 pt-6 text-center">
             <p class="text-sm text-slate-600 dark:text-slate-400">{!! $copyright !!}</p>

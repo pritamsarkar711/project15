@@ -4,9 +4,9 @@
     <div class="search-panel relative bg-white dark:bg-[#1e1e1e] shadow-2xl border-b border-slate-200 dark:border-[#383838] max-h-[90vh] overflow-y-auto overscroll-contain">
         <div class="max-w-[1200px] mx-auto px-4 sm:px-6 py-6 sm:py-8">
             <div class="flex items-center gap-2 sm:gap-3 min-w-0">
-                <form action="{{ route('search') }}" method="GET" class="flex-1 flex items-center bg-slate-100 dark:bg-[#2a2a2a] px-3 sm:px-5 min-w-0 overflow-hidden" onsubmit="return submitSearch(this)">
+                <form action="{{ route('search') }}" method="GET" class="flex-1 flex items-center bg-slate-100 dark:bg-[#2a2a2a] rounded-full px-3 sm:px-5 min-w-0 overflow-hidden" onsubmit="return submitSearch(this)">
                     <input type="text" id="search-overlay-input" name="q" autocomplete="off" placeholder="Search articles, topics, ideas..." class="flex-1 min-w-0 h-12 sm:h-14 bg-transparent border-0 outline-none text-[15px] sm:text-lg text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500" aria-label="Search">
-                    <button type="submit" class="h-9 sm:h-10 px-4 sm:px-6 ml-2 sm:ml-3 shrink-0 bg-[#0C3B2E] hover:bg-[#072A20] text-white text-sm font-semibold transition whitespace-nowrap">Search</button>
+                    <button type="submit" class="h-9 sm:h-10 px-4 sm:px-6 ml-2 sm:ml-3 shrink-0 rounded-full bg-[#05B762] hover:bg-[#049A53] text-white text-sm font-semibold transition whitespace-nowrap">Search</button>
                 </form>
                 <button onclick="closeSearch()" class="w-10 h-10 sm:w-11 sm:h-11 bg-slate-100 dark:bg-[#2a2a2a] hover:bg-slate-200 dark:hover:bg-[#333] flex items-center justify-center text-slate-600 dark:text-slate-300 shrink-0" aria-label="Close search">
                     <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>

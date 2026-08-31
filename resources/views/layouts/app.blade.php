@@ -139,7 +139,7 @@
         <main class="flex-1 w-full">
             @if(session('success'))
                 <div class="max-w-[1200px] mx-auto px-4 sm:px-6 mt-4">
-                    <div class="card-elev text-emerald-800 dark:text-emerald-300 px-4 py-3 flex items-center justify-between text-sm !shadow-none border border-emerald-200 dark:border-emerald-400/20 dark:!bg-[#1e2b24]">
+                    <div class="card-elev text-emerald-800 dark:text-emerald-300 px-4 py-3 flex items-center justify-between text-sm !shadow-none border border-emerald-200 dark:border-emerald-400/20 dark:!bg-[#1e2b24] rounded-xl">
                         <span class="font-medium">{{ session('success') }}</span>
                         <button onclick="this.parentElement.remove()" class="ml-4" aria-label="Dismiss">
                             <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -161,7 +161,7 @@
     @include('partials.search-overlay')
 
     <!-- Scroll top (repo pattern: FAB appears after 100px) -->
-    <button id="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" class="fixed bottom-4 right-4 w-10 h-10 bg-[#0C3B2E] dark:bg-emerald-400 text-white dark:text-slate-900 shadow-lg hidden items-center justify-center hover:bg-[#072A20] dark:hover:bg-emerald-300 transition" aria-label="Scroll to top">
+    <button id="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" class="fixed bottom-5 right-5 w-11 h-11 rounded-full bg-[#05B762] dark:bg-emerald-400 text-white dark:text-slate-900 shadow-lg shadow-[#05B762]/30 hidden items-center justify-center hover:bg-[#049A53] dark:hover:bg-emerald-300 transition" aria-label="Scroll to top">
         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
     </button>
 

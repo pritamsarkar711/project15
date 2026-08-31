@@ -23,19 +23,19 @@
                     $profileUrl = $author->username ? route('author.profile', $author->username) : null;
                     $avatar = $author->author_avatar_path ? asset('storage/'.$author->author_avatar_path) : null;
                 @endphp
-                <article class="card-elev p-5 flex items-start gap-4 hover:shadow-xl transition-all duration-200">
+                <article class="card-elev card-hover p-5 flex items-start gap-4">
                     <div class="relative shrink-0">
                         @if($avatar)
-                            <img src="{{ $avatar }}" alt="{{ $author->name }}" class="w-14 h-14 object-cover border border-slate-200 dark:border-[#383838]" loading="lazy" decoding="async">
+                            <img src="{{ $avatar }}" alt="{{ $author->name }}" class="w-14 h-14 rounded-full object-cover border border-slate-200 dark:border-[#383838]" loading="lazy" decoding="async">
                         @else
-                            <div class="w-14 h-14 bg-[#0C3B2E] text-white flex items-center justify-center font-extrabold text-lg">{{ strtoupper(substr($author->name, 0, 1)) }}</div>
+                            <div class="w-14 h-14 rounded-full bg-[#0C3B2E] text-white flex items-center justify-center font-extrabold text-lg">{{ strtoupper(substr($author->name, 0, 1)) }}</div>
                         @endif
-                        <span class="absolute -top-2 -left-2 w-6 h-6 bg-[#F5C445] text-slate-900 text-[11px] font-extrabold flex items-center justify-center">{{ $i + 1 }}</span>
+                        <span class="absolute -top-2 -left-2 w-6 h-6 rounded-full bg-[#05B762] text-white text-[11px] font-extrabold flex items-center justify-center ring-2 ring-white dark:ring-[#1e1e1e]">{{ $i + 1 }}</span>
                     </div>
                     <div class="flex-1 min-w-0">
                         <div class="flex items-center gap-1.5 flex-wrap">
                             @if($profileUrl)
-                                <a href="{{ $profileUrl }}" class="font-bold text-slate-900 dark:text-white hover:text-[#0C3B2E] dark:hover:text-emerald-300 truncate">{{ $author->name }}</a>
+                                <a href="{{ $profileUrl }}" class="font-bold text-slate-900 dark:text-white hover:text-[#049A53] dark:hover:text-emerald-300 transition-colors truncate">{{ $author->name }}</a>
                             @else
                                 <span class="font-bold text-slate-900 dark:text-white truncate">{{ $author->name }}</span>
                             @endif
@@ -47,7 +47,7 @@
                         @endif
                         <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">{{ number_format($author->posts_count) }} published {{ Str::plural('article', $author->posts_count) }}</p>
                         @if($profileUrl)
-                            <a href="{{ $profileUrl }}" class="inline-flex items-center gap-1 mt-2 text-xs font-semibold text-[#0C3B2E] dark:text-emerald-300 hover:underline">View profile
+                            <a href="{{ $profileUrl }}" class="inline-flex items-center gap-1 mt-2 text-xs font-semibold text-[#049A53] dark:text-emerald-300 hover:underline">View profile
                                 <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12l-7.5 7.5M21 12H3"/></svg>
                             </a>
                         @endif

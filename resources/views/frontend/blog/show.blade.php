@@ -112,8 +112,8 @@
                 <div class="relative h-[240px] sm:h-[360px] overflow-hidden">
                     <img src="{{ $featuredImageUrl }}" alt="{{ $featuredImageAlt }}" class="w-full h-full object-cover" decoding="async" fetchpriority="high">
                     <div class="absolute top-3 left-3 flex items-center gap-2">
-                        @if($post->category)<span class="text-xs font-semibold bg-white/95 dark:bg-[#1e1e1e]/90 text-[#0C3B2E] dark:text-emerald-300 px-2.5 py-1 border border-slate-200 dark:border-[#383838] shadow-sm">{{ $post->category->name }}</span>@endif
-                        @if($post->is_featured)<span class="text-xs font-bold bg-[#F5C445] text-slate-900 px-2.5 py-1">Popular</span>@endif
+                        @if($post->category)<span class="text-xs font-semibold bg-white/95 dark:bg-[#1e1e1e]/90 text-[#049A53] dark:text-emerald-300 px-3 py-1 rounded-full border border-slate-200 dark:border-[#383838] shadow-sm">{{ $post->category->name }}</span>@endif
+                        @if($post->is_featured)<span class="text-xs font-bold bg-[#F5C445] text-slate-900 px-3 py-1 rounded-full shadow-sm">Popular</span>@endif
                     </div>
                 </div>
 
@@ -121,11 +121,11 @@
                     <h1 class="text-[28px] sm:text-[32px] font-extrabold leading-tight tracking-tight text-slate-900 dark:text-white">{{ $post->title }}</h1>
                     @if($post->excerpt)<p class="text-[15px] leading-relaxed text-slate-600 dark:text-slate-400 mt-3">{{ $post->excerpt }}</p>@endif
 
-                    <div class="flex flex-wrap items-center gap-3 mt-6 p-4 bg-emerald-50/80 dark:bg-[#2a2a2a]/60 border border-emerald-100 dark:border-[#383838]">
+                    <div class="flex flex-wrap items-center gap-3 mt-6 p-4 bg-emerald-50/80 dark:bg-[#2a2a2a]/60 border border-emerald-100 dark:border-[#383838] rounded-xl">
                         @if($authorProfileUrl)<a href="{{ $authorProfileUrl }}" class="flex items-center gap-3 group" aria-label="View author profile">@else<div class="flex items-center gap-3">@endif
-                            <img src="{{ $authorAvatar }}" alt="{{ $authorName }}" class="w-10 h-10 object-cover border border-white dark:border-[#383838] shadow-sm {{ $authorProfileUrl ? 'group-hover:ring-2 group-hover:ring-[#0C3B2E] dark:group-hover:ring-emerald-400 transition' : '' }}" loading="lazy" decoding="async">
+                            <img src="{{ $authorAvatar }}" alt="{{ $authorName }}" class="w-10 h-10 rounded-full object-cover border border-white dark:border-[#383838] shadow-sm {{ $authorProfileUrl ? 'group-hover:ring-2 group-hover:ring-[#05B762] dark:group-hover:ring-emerald-400 transition' : '' }}" loading="lazy" decoding="async">
                             <div class="flex-1 min-w-0">
-                                <div class="flex items-center gap-1.5 flex-wrap {{ $authorProfileUrl ? 'group-hover:text-[#0C3B2E] dark:group-hover:text-emerald-300 transition' : '' }}">
+                                <div class="flex items-center gap-1.5 flex-wrap {{ $authorProfileUrl ? 'group-hover:text-[#049A53] dark:group-hover:text-emerald-300 transition' : '' }}">
                                     <span class="text-sm font-semibold text-slate-900 dark:text-white">{{ $authorName }}</span>
                                     @if($post->user)
                                         @include('partials.country-flag', ['user' => $post->user, 'class' => 'w-4 h-3'])
@@ -135,9 +135,9 @@
                             </div>
                         @if($authorProfileUrl)</a>@else</div>@endif
                         <div class="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400 flex-wrap">
-                            <span class="inline-flex items-center gap-1.5 bg-white dark:bg-[#1e1e1e] border border-slate-200 dark:border-[#383838] px-2.5 py-1"><svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 2v4"/><path stroke-linecap="round" stroke-linejoin="round" d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18"/></svg> {{ $post->published_at?->format('M d, Y') }}</span>
-                            <span class="inline-flex items-center gap-1.5 bg-white dark:bg-[#1e1e1e] border border-slate-200 dark:border-[#383838] px-2.5 py-1"><svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2"/></svg> {{ $post->reading_time }} min read</span>
-                            <span class="inline-flex items-center gap-1.5 bg-white dark:bg-[#1e1e1e] border border-slate-200 dark:border-[#383838] px-2.5 py-1"><svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg> {{ $post->views }} views</span>
+                            <span class="inline-flex items-center gap-1.5 bg-white dark:bg-[#1e1e1e] border border-slate-200 dark:border-[#383838] px-3 py-1 rounded-full"><svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 2v4"/><path stroke-linecap="round" stroke-linejoin="round" d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18"/></svg> {{ $post->published_at?->format('M d, Y') }}</span>
+                            <span class="inline-flex items-center gap-1.5 bg-white dark:bg-[#1e1e1e] border border-slate-200 dark:border-[#383838] px-3 py-1 rounded-full"><svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2"/></svg> {{ $post->reading_time }} min read</span>
+                            <span class="inline-flex items-center gap-1.5 bg-white dark:bg-[#1e1e1e] border border-slate-200 dark:border-[#383838] px-3 py-1 rounded-full"><svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg> {{ $post->views }} views</span>
                         </div>
                     </div>
 
@@ -159,7 +159,7 @@
                         <a href="https://wa.me/?text={{ $shareText }}%20{{ $shareUrl }}" target="_blank" rel="noopener" class="w-10 h-10 rounded-full bg-[#25D366] text-white flex items-center justify-center hover:scale-110 transition shadow-sm" aria-label="Share on WhatsApp">
                             <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
                         </a>
-                        <button type="button" id="copy-link-btn" data-url="{{ url()->current() }}" class="w-10 h-10 rounded-full bg-purple-600 hover:bg-purple-700 text-white flex items-center justify-center hover:scale-110 transition shadow-sm" aria-label="Copy link" title="Copy link">
+                        <button type="button" id="copy-link-btn" data-url="{{ url()->current() }}" class="w-10 h-10 rounded-full bg-slate-700 hover:bg-slate-600 dark:bg-slate-500 dark:hover:bg-slate-400 text-white flex items-center justify-center hover:scale-110 transition shadow-sm" aria-label="Copy link" title="Copy link">
                             <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path stroke-linecap="round" stroke-linejoin="round" d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
                         </button>
                     </div>
@@ -169,12 +169,12 @@
                              <details> pattern as the FAQ accordion below:
                              tap the header (or the chevron icon) to hide or
                              show the list. Open by default. --}}
-                        <details class="mt-6 bg-emerald-50/80 dark:bg-[#2a2a2a]/60 border border-emerald-100 dark:border-[#383838] group" open>
+                        <details class="mt-6 bg-emerald-50/80 dark:bg-[#2a2a2a]/60 border border-emerald-100 dark:border-[#383838] rounded-xl group" open>
                             <summary class="flex items-center justify-between p-4 cursor-pointer list-none select-none [&::-webkit-details-marker]:hidden hover:bg-emerald-50 dark:hover:bg-[#333]/60 transition">
                                 <span class="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2">
-                                    <svg class="w-4 h-4 text-[#0C3B2E] dark:text-emerald-300 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16"/><path stroke-linecap="round" stroke-linejoin="round" d="M4 12h16"/><path stroke-linecap="round" stroke-linejoin="round" d="M4 18h16"/></svg> Table of Contents
+                                    <svg class="w-4 h-4 text-[#049A53] dark:text-emerald-300 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16"/><path stroke-linecap="round" stroke-linejoin="round" d="M4 12h16"/><path stroke-linecap="round" stroke-linejoin="round" d="M4 18h16"/></svg> Table of Contents
                                 </span>
-                                <span class="w-7 h-7 bg-white dark:bg-slate-700 border border-emerald-100 dark:border-[#383838] flex items-center justify-center shrink-0 transition-transform duration-200 group-open:rotate-180">
+                                <span class="w-7 h-7 rounded-full bg-white dark:bg-slate-700 border border-emerald-100 dark:border-[#383838] flex items-center justify-center shrink-0 transition-transform duration-200 group-open:rotate-180">
                                     <svg class="w-4 h-4 text-slate-600 dark:text-slate-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                                 </span>
                             </summary>
@@ -220,16 +220,16 @@
             <div class="card-elev p-6">
                 <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
                     <span class="w-8 h-8 bg-emerald-50 dark:bg-emerald-400/10 flex items-center justify-center">
-                        <svg class="w-4 h-4 text-[#0C3B2E] dark:text-emerald-300 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 17h.01"/></svg>
+                        <svg class="w-4 h-4 text-[#049A53] dark:text-emerald-300 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 17h.01"/></svg>
                     </span>
                     Frequently Asked Questions
                 </h3>
                 <div class="space-y-2" id="faq-accordion">
                     @foreach($post->faqs as $faq)
-                        <details class="group border border-slate-200 dark:border-[#383838] bg-white dark:bg-[#2a2a2a]">
+                        <details class="group border border-slate-200 dark:border-[#383838] bg-white dark:bg-[#2a2a2a] rounded-xl overflow-hidden">
                             <summary class="flex items-center justify-between p-4 cursor-pointer list-none hover:bg-slate-50 dark:hover:bg-[#333]/60 transition select-none [&::-webkit-details-marker]:hidden">
                                 <span class="text-sm font-medium text-slate-900 dark:text-white pr-4">{{ $faq->question }}</span>
-                                <span class="w-7 h-7 bg-slate-100 dark:bg-slate-700 flex items-center justify-center shrink-0 transition-transform group-open:rotate-180"><svg class="w-4 h-4 text-slate-600 dark:text-slate-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></span>
+                                <span class="w-7 h-7 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center shrink-0 transition-transform group-open:rotate-180"><svg class="w-4 h-4 text-slate-600 dark:text-slate-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></span>
                             </summary>
                             <div class="px-4 pb-4 text-sm leading-relaxed text-slate-600 dark:text-slate-400 border-t border-slate-100 dark:border-[#383838] pt-3 bg-slate-50 dark:bg-[#2a2a2a]/50">{{ $faq->answer }}</div>
                         </details>
@@ -249,7 +249,7 @@
             <form method="POST" action="{{ route('blog.react', $post->slug) }}" class="inline">
                 @csrf
                 <input type="hidden" name="reaction" value="like">
-                <button type="submit" title="{{ $myReaction === 'like' ? 'Remove your like' : 'Like this post' }}" class="inline-flex items-center gap-2 h-11 px-5 text-sm font-bold transition cursor-pointer border {{ $myReaction === 'like' ? 'bg-emerald-600 border-emerald-600 text-white shadow-sm' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-emerald-400 hover:text-emerald-600 dark:hover:text-emerald-300' }}">
+                <button type="submit" title="{{ $myReaction === 'like' ? 'Remove your like' : 'Like this post' }}" class="inline-flex items-center gap-2 h-11 px-5 rounded-full text-sm font-bold transition cursor-pointer border {{ $myReaction === 'like' ? 'bg-[#05B762] border-[#05B762] text-white shadow-sm' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-[#05B762] hover:text-[#049A53] dark:hover:text-emerald-300' }}">
                     <svg class="w-[18px] h-[18px]" fill="{{ $myReaction === 'like' ? 'currentColor' : 'none' }}" stroke="currentColor" stroke-width="{{ $myReaction === 'like' ? '0' : '2' }}" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"/></svg>
                     <span class="ml-1 px-2 py-0.5 text-xs font-bold {{ $myReaction === 'like' ? 'bg-white/20 text-white' : 'bg-emerald-50 dark:bg-emerald-400/10 text-emerald-700 dark:text-emerald-300' }}">{{ number_format($likesCount) }}</span>
                 </button>
@@ -257,17 +257,17 @@
             <form method="POST" action="{{ route('blog.react', $post->slug) }}" class="inline">
                 @csrf
                 <input type="hidden" name="reaction" value="dislike">
-                <button type="submit" title="{{ $myReaction === 'dislike' ? 'Remove your dislike' : 'Dislike this post' }}" class="inline-flex items-center gap-2 h-11 px-5 text-sm font-bold transition cursor-pointer border {{ $myReaction === 'dislike' ? 'bg-rose-600 border-rose-600 text-white shadow-sm' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-rose-400 hover:text-rose-600 dark:hover:text-rose-300' }}">
+                <button type="submit" title="{{ $myReaction === 'dislike' ? 'Remove your dislike' : 'Dislike this post' }}" class="inline-flex items-center gap-2 h-11 px-5 rounded-full text-sm font-bold transition cursor-pointer border {{ $myReaction === 'dislike' ? 'bg-rose-600 border-rose-600 text-white shadow-sm' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-rose-400 hover:text-rose-600 dark:hover:text-rose-300' }}">
                     <svg class="w-[18px] h-[18px]" fill="{{ $myReaction === 'dislike' ? 'currentColor' : 'none' }}" stroke="currentColor" stroke-width="{{ $myReaction === 'dislike' ? '0' : '2' }}" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 14V2"/><path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z"/></svg>
                     <span class="ml-1 px-2 py-0.5 text-xs font-bold {{ $myReaction === 'dislike' ? 'bg-white/20 text-white' : 'bg-rose-50 dark:bg-rose-400/10 text-rose-600 dark:text-rose-300' }}">{{ number_format($dislikesCount) }}</span>
                 </button>
             </form>
         @else
-            <a href="{{ route('login') }}" title="Sign in to react" class="inline-flex items-center gap-2 h-11 px-5 text-sm font-bold transition border bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-emerald-400 hover:text-emerald-600 dark:hover:text-emerald-300">
+            <a href="{{ route('login') }}" title="Sign in to react" class="inline-flex items-center gap-2 h-11 px-5 rounded-full text-sm font-bold transition border bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-[#05B762] hover:text-[#049A53] dark:hover:text-emerald-300">
                 <svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"/></svg>
                 <span class="ml-1 px-2 py-0.5 text-xs font-bold bg-emerald-50 dark:bg-emerald-400/10 text-emerald-700 dark:text-emerald-300">{{ number_format($likesCount) }}</span>
             </a>
-            <a href="{{ route('login') }}" title="Sign in to react" class="inline-flex items-center gap-2 h-11 px-5 text-sm font-bold transition border bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-rose-400 hover:text-rose-600 dark:hover:text-rose-300">
+            <a href="{{ route('login') }}" title="Sign in to react" class="inline-flex items-center gap-2 h-11 px-5 rounded-full text-sm font-bold transition border bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-rose-400 hover:text-rose-600 dark:hover:text-rose-300">
                 <svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 14V2"/><path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z"/></svg>
                 <span class="ml-1 px-2 py-0.5 text-xs font-bold bg-rose-50 dark:bg-rose-400/10 text-rose-600 dark:text-rose-300">{{ number_format($dislikesCount) }}</span>
             </a>
@@ -285,13 +285,13 @@
             <div class="card-elev p-6">
                 <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
                     <span class="w-8 h-8 bg-emerald-50 dark:bg-emerald-400/10 flex items-center justify-center">
-                        <svg class="w-4 h-4 text-[#0C3B2E] dark:text-emerald-300 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        <svg class="w-4 h-4 text-[#049A53] dark:text-emerald-300 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                     </span>
                     About the Author
                 </h3>
                 <div class="flex gap-4">
                     @if($authorProfileUrl)<a href="{{ $authorProfileUrl }}" class="shrink-0 group" aria-label="View author profile">@endif
-                        <img src="{{ $authorAvatar }}" alt="{{ $authorName }}" class="w-14 h-14 rounded-full object-cover border-2 border-emerald-100 dark:border-[#383838] shadow-sm {{ $authorProfileUrl ? 'group-hover:ring-2 group-hover:ring-[#0C3B2E] dark:group-hover:ring-emerald-400 transition' : '' }}" loading="lazy" decoding="async">
+                        <img src="{{ $authorAvatar }}" alt="{{ $authorName }}" class="w-14 h-14 rounded-full object-cover border-2 border-emerald-100 dark:border-[#383838] shadow-sm {{ $authorProfileUrl ? 'rounded-full group-hover:ring-2 group-hover:ring-[#05B762] dark:group-hover:ring-emerald-400 transition' : '' }}" loading="lazy" decoding="async">
                     @if($authorProfileUrl)</a>@endif
                     <div class="flex-1 min-w-0">
                         <div class="flex items-center gap-1.5 flex-wrap">
@@ -320,7 +320,7 @@
                             @if(auth()->check() && $post->user && auth()->id() !== $post->user->id)
                                 <form method="POST" action="{{ route('author.follow', $post->user->username) }}" class="inline">
                                     @csrf
-                                    <button type="submit" class="inline-flex items-center gap-1.5 h-9 px-4 text-xs font-semibold border transition cursor-pointer {{ $followingAuthor ? 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700' : 'bg-white dark:bg-[#2a2a2a] text-[#0C3B2E] dark:text-emerald-300 border-[#0C3B2E] dark:border-emerald-400/40 hover:bg-[#0C3B2E]/5 dark:hover:bg-emerald-400/10' }}">
+                                    <button type="submit" class="inline-flex items-center gap-1.5 h-9 px-4 text-xs font-semibold rounded-full border transition cursor-pointer {{ $followingAuthor ? 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700' : 'bg-white dark:bg-[#2a2a2a] text-[#049A53] dark:text-emerald-300 border-[#05B762] dark:border-emerald-400/40 hover:bg-[#05B762]/5 dark:hover:bg-emerald-400/10' }}">
                                         <svg class="w-3.5 h-3.5" fill="{{ $followingAuthor ? 'currentColor' : 'none' }}" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z"/></svg>
                                         {{ $followingAuthor ? 'Following' : 'Follow' }}
                                     </button>
@@ -344,7 +344,7 @@
             <div class="card-elev p-6">
                 <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
                     <span class="w-8 h-8 bg-emerald-50 dark:bg-emerald-400/10 flex items-center justify-center">
-                        <svg class="w-4 h-4 text-[#0C3B2E] dark:text-emerald-300 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>
+                        <svg class="w-4 h-4 text-[#049A53] dark:text-emerald-300 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>
                     </span>
                     Comments <span class="text-sm font-normal text-slate-500 dark:text-slate-400">({{ $topComments->count() }})</span>
                 </h3>
@@ -377,7 +377,7 @@
                             <div class="flex items-center gap-2">
                                 <span class="w-8 h-8 bg-[#0C3B2E] text-white flex items-center justify-center text-sm font-bold">{{ strtoupper(substr($c->name,0,1)) }}</span>
                                 <div><div class="text-sm font-medium text-slate-900 dark:text-white">{{ $c->name }}</div><div class="text-xs text-slate-500 dark:text-slate-400">{{ $c->created_at->format('M d, Y') }}</div></div>
-                                <button type="button" onclick="replyTo({{ $c->id }}, '{{ addslashes($c->name) }}')" class="ml-auto text-xs font-semibold text-[#0C3B2E] dark:text-emerald-300 hover:underline inline-flex items-center gap-1">
+                                <button type="button" onclick="replyTo({{ $c->id }}, '{{ addslashes($c->name) }}')" class="ml-auto text-xs font-semibold text-[#049A53] dark:text-emerald-300 hover:underline inline-flex items-center gap-1">
                                     <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m15 10 5 5-5 5"/><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v7a4 4 0 0 0 4 4h12"/></svg> Reply
                                 </button>
                             </div>
@@ -386,10 +386,10 @@
                             @if($replies->count())
                                 <div class="mt-3 ml-10 space-y-2 border-l-2 border-emerald-100 dark:border-[#383838] pl-4">
                                     @foreach($replies as $r)
-                                        <div class="bg-white dark:bg-[#1e1e1e] p-3 border border-slate-200 dark:border-[#383838]">
+                                        <div class="bg-white dark:bg-[#1e1e1e] p-3 border border-slate-200 dark:border-[#383838] rounded-lg">
                                             <div class="flex items-center gap-2">
                                                 <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m15 10 5 5-5 5"/><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v7a4 4 0 0 0 4 4h12"/></svg>
-                                                <span class="w-6 h-6 bg-emerald-100 dark:bg-emerald-400/20 text-[#0C3B2E] dark:text-emerald-300 flex items-center justify-center text-xs font-bold">{{ strtoupper(substr($r->name,0,1)) }}</span>
+                                                <span class="w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-400/20 text-[#049A53] dark:text-emerald-300 flex items-center justify-center text-xs font-bold">{{ strtoupper(substr($r->name,0,1)) }}</span>
                                                 <div><div class="text-xs font-medium text-slate-900 dark:text-white">{{ $r->name }}</div><div class="text-[11px] text-slate-500 dark:text-slate-400">{{ $r->created_at->format('M d, Y') }}</div></div>
                                             </div>
                                             <p class="text-sm text-slate-700 dark:text-slate-300 mt-1.5 leading-relaxed">{{ $r->content }}</p>
@@ -399,7 +399,7 @@
                             @endif
                         </div>
                     @empty
-                        <div class="text-center py-6 bg-slate-50 dark:bg-[#2a2a2a] border border-dashed border-slate-200 dark:border-[#383838]"><p class="text-sm text-slate-500 dark:text-slate-400">No comments yet. Be the first to share your thoughts!</p></div>
+                        <div class="text-center py-6 bg-slate-50 dark:bg-[#2a2a2a] border border-dashed border-slate-200 dark:border-[#383838] rounded-xl"><p class="text-sm text-slate-500 dark:text-slate-400">No comments yet. Be the first to share your thoughts!</p></div>
                     @endforelse
                 </div>
             </div>
@@ -409,14 +409,14 @@
             @if($related->count())
                 <div class="card-elev p-4 lg:sticky lg:top-20">
                     <h3 class="text-sm font-semibold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
-                        <svg class="w-4 h-4 text-[#0C3B2E] dark:text-emerald-300 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M14 2v4a2 2 0 0 0 2 2h4"/><path stroke-linecap="round" stroke-linejoin="round" d="M10 9H8"/><path stroke-linecap="round" stroke-linejoin="round" d="M16 13H8"/><path stroke-linecap="round" stroke-linejoin="round" d="M16 17H8"/></svg>
+                        <svg class="w-4 h-4 text-[#049A53] dark:text-emerald-300 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M14 2v4a2 2 0 0 0 2 2h4"/><path stroke-linecap="round" stroke-linejoin="round" d="M10 9H8"/><path stroke-linecap="round" stroke-linejoin="round" d="M16 13H8"/><path stroke-linecap="round" stroke-linejoin="round" d="M16 17H8"/></svg>
                         Related Posts
                     </h3>
                     <div class="space-y-3">
                         @foreach($related as $r)
                             <a href="{{ route('blog.show',$r->slug) }}" class="flex gap-3 group">
-                                <img src="{{ storage_image_url($r->featured_image) ?: 'https://picsum.photos/seed/'.$r->slug.'/200/200' }}" class="w-14 h-14 object-cover shrink-0" alt="{{ image_alt_text($r->featured_image, $r->title) }}" loading="lazy" decoding="async">
-                                <div><h4 class="text-sm font-medium text-slate-900 dark:text-white group-hover:text-[#0C3B2E] dark:group-hover:text-emerald-300 line-clamp-2 leading-snug">{{ $r->title }}</h4><span class="text-xs text-slate-500 dark:text-slate-400">{{ $r->reading_time }} min read</span></div>
+                                <img src="{{ storage_image_url($r->featured_image) ?: 'https://picsum.photos/seed/'.$r->slug.'/200/200' }}" class="w-14 h-14 object-cover shrink-0 rounded-lg" alt="{{ image_alt_text($r->featured_image, $r->title) }}" loading="lazy" decoding="async">
+                                <div><h4 class="text-sm font-medium text-slate-900 dark:text-white group-hover:text-[#049A53] dark:group-hover:text-emerald-300 transition-colors line-clamp-2 leading-snug">{{ $r->title }}</h4><span class="text-xs text-slate-500 dark:text-slate-400">{{ $r->reading_time }} min read</span></div>
                             </a>
                         @endforeach
                     </div>
@@ -426,14 +426,14 @@
             @if($popular->count())
                 <div class="card-elev p-4">
                     <h3 class="text-sm font-semibold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
-                        <svg class="w-4 h-4 text-[#0C3B2E] dark:text-emerald-300 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.362 5.214A8.252 8.252 0 0 1 12 21 8.25 8.25 0 0 1 6.038 7.047 8.287 8.287 0 0 0 9 9.601a8.983 8.983 0 0 1 3.361-6.867 8.21 8.21 0 0 0 3 2.48Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 18a3.75 3.75 0 0 0 .495-7.468 5.99 5.99 0 0 0-1.925 3.547 5.975 5.975 0 0 1-2.133-1.001A3.75 3.75 0 0 0 12 18Z"/></svg>
+                        <svg class="w-4 h-4 text-[#049A53] dark:text-emerald-300 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.362 5.214A8.252 8.252 0 0 1 12 21 8.25 8.25 0 0 1 6.038 7.047 8.287 8.287 0 0 0 9 9.601a8.983 8.983 0 0 1 3.361-6.867 8.21 8.21 0 0 0 3 2.48Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 18a3.75 3.75 0 0 0 .495-7.468 5.99 5.99 0 0 0-1.925 3.547 5.975 5.975 0 0 1-2.133-1.001A3.75 3.75 0 0 0 12 18Z"/></svg>
                         Popular Posts
                     </h3>
                     <div class="space-y-3">
                         @foreach($popular as $i => $p)
                             <a href="{{ route('blog.show',$p->slug) }}" class="flex gap-3 group">
-                                <span class="w-6 h-6 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">{{ $i + 1 }}</span>
-                                <div class="min-w-0"><h4 class="text-sm font-medium text-slate-900 dark:text-white group-hover:text-[#0C3B2E] dark:group-hover:text-emerald-300 line-clamp-2 leading-snug">{{ $p->title }}</h4><span class="text-xs text-slate-500 dark:text-slate-400">{{ number_format($p->views) }} views</span></div>
+                                <span class="w-6 h-6 rounded-full bg-emerald-50 dark:bg-emerald-400/10 text-[#049A53] dark:text-emerald-300 text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">{{ $i + 1 }}</span>
+                                <div class="min-w-0"><h4 class="text-sm font-medium text-slate-900 dark:text-white group-hover:text-[#049A53] dark:group-hover:text-emerald-300 transition-colors line-clamp-2 leading-snug">{{ $p->title }}</h4><span class="text-xs text-slate-500 dark:text-slate-400">{{ number_format($p->views) }} views</span></div>
                             </a>
                         @endforeach
                     </div>
@@ -442,7 +442,7 @@
             {{-- Sidebar categories (live icons) --}}
             <div class="card-elev p-4">
                 <h3 class="text-sm font-semibold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
-                    <svg class="w-4 h-4 text-[#0C3B2E] dark:text-emerald-300 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/></svg>
+                    <svg class="w-4 h-4 text-[#049A53] dark:text-emerald-300 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/></svg>
                     Categories
                 </h3>
                 <div class="space-y-1">
@@ -458,14 +458,14 @@
                         } catch (\Throwable $e) { $sidebarCategories = collect(); }
                     @endphp
                     @foreach($sidebarCategories as $cat)
-                        <a href="{{ route('category.show',$cat->slug) }}" class="flex items-center justify-between p-2 hover:bg-slate-50 dark:hover:bg-[#2a2a2a] transition group">
+                        <a href="{{ route('category.show',$cat->slug) }}" class="flex items-center justify-between p-2 hover:bg-slate-50 dark:hover:bg-[#2a2a2a] rounded-lg transition group">
                             <span class="flex items-center gap-2.5 text-slate-700 dark:text-slate-300">
-                                <span class="w-8 h-8 bg-emerald-50 dark:bg-emerald-400/10 flex items-center justify-center text-[#0C3B2E] dark:text-emerald-300 shrink-0">
+                                <span class="icon-tile w-8 h-8">
                                     @include('partials.category-icon', ['category' => $cat, 'class' => 'w-4 h-4'])
                                 </span>
-                                <span class="text-sm font-medium group-hover:text-[#0C3B2E] dark:group-hover:text-emerald-300">{{ $cat->name }}</span>
+                                <span class="text-sm font-medium group-hover:text-[#049A53] dark:group-hover:text-emerald-300 transition-colors">{{ $cat->name }}</span>
                             </span>
-                            <span class="text-xs bg-slate-100 dark:bg-[#2a2a2a] text-slate-600 dark:text-slate-400 px-2 py-0.5">{{ $cat->published_posts_count }}</span>
+                            <span class="text-xs bg-slate-100 dark:bg-[#2a2a2a] text-slate-600 dark:text-slate-400 px-2 py-0.5 rounded-full">{{ $cat->published_posts_count }}</span>
                         </a>
                     @endforeach
                 </div>
