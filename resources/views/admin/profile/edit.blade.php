@@ -9,7 +9,7 @@
 @section('content')
 <div class="w-full space-y-6">
     {{-- Author profile --}}
-    <form method="POST" action="{{ route('admin.profile.update') }}" enctype="multipart/form-data" class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-5">
+    <form method="POST" action="{{ route('admin.profile.update') }}" enctype="multipart/form-data" class="panel-card p-6 space-y-5">
         @csrf
         <h3 class="font-semibold text-slate-900 dark:text-white">Author profile</h3>
         <div class="flex items-center gap-4">
@@ -84,11 +84,11 @@
                 @endforeach
             </div>
         </div>
-        <button type="submit" class="h-11 px-6 bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold transition">Save profile</button>
+        <button type="submit" class="h-11 px-6 rounded-lg bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold transition">Save profile</button>
     </form>
 
     {{-- Login credentials --}}
-    <form method="POST" action="{{ route('admin.profile.update') }}" enctype="multipart/form-data" class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-5">
+    <form method="POST" action="{{ route('admin.profile.update') }}" enctype="multipart/form-data" class="panel-card p-6 space-y-5">
         @csrf
         <input type="hidden" name="name" value="{{ $user->name }}">
         <input type="hidden" name="bio" value="{{ $user->bio }}">
@@ -111,7 +111,7 @@
                 <input type="password" name="password_confirmation" class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm" autocomplete="new-password">
             </div>
         </div>
-        <button type="submit" class="h-11 px-6 bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold transition">Update credentials</button>
+        <button type="submit" class="h-11 px-6 rounded-lg bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold transition">Update credentials</button>
     </form>
 </div>
 @push('scripts')

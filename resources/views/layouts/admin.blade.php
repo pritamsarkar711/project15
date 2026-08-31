@@ -21,14 +21,14 @@
          attribute they decode correctly, matching the frontend layout. --}}
     @stack('head')
 </head>
-<body class="panel-ui min-h-screen bg-slate-100 text-slate-900 dark:bg-[#0f172a] dark:text-slate-100 flex overflow-x-hidden" style="font-family:{{ \App\Support\SiteFont::cssStack() }}">
+<body class="panel-ui min-h-screen bg-[#f6f7fa] text-slate-900 dark:bg-[#0d0f13] dark:text-slate-100 flex overflow-x-hidden" style="font-family:{{ \App\Support\SiteFont::cssStack() }}">
     <!-- Sidebar -->
-    <aside id="admin-sidebar" class="fixed inset-y-0 left-0 w-[250px] bg-slate-900 dark:bg-slate-950 text-slate-300 flex flex-col z-40 transform lg:translate-x-0 -translate-x-full transition-transform duration-300 overflow-y-auto no-scrollbar border-r border-black/30">
-        <div class="h-[64px] flex items-center gap-3 px-5 border-b border-white/10 shrink-0">
-            <div class="w-9 h-9 bg-[#0C3B2E] flex items-center justify-center text-white" aria-hidden="true">
+    <aside id="admin-sidebar" class="fixed inset-y-0 left-0 w-[250px] bg-[#101319] dark:bg-[#0b0d11] text-slate-300 flex flex-col z-40 transform lg:translate-x-0 -translate-x-full transition-transform duration-300 overflow-y-auto no-scrollbar border-r border-black/40">
+        <div class="h-[64px] flex items-center gap-3 px-5 border-b border-white/8 shrink-0">
+            <div class="w-9 h-9 bg-[#0C3B2E] rounded-lg flex items-center justify-center text-white" aria-hidden="true">
                 <svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
             </div>
-            <div class="font-extrabold text-white leading-none">Admin</div>
+            <div class="font-extrabold text-white leading-none tracking-tight">Admin<span class="block text-[10px] font-semibold text-slate-500 mt-1 tracking-wide">huvanti.com</span></div>
         </div>
 
         <nav class="flex-1 p-3 space-y-1 text-sm font-medium">
@@ -139,19 +139,19 @@
 
     <div class="flex-1 lg:ml-[250px] min-w-0 flex flex-col min-h-screen">
         <!-- Topbar -->
-        <header class="sticky top-0 z-30 h-[64px] flex items-center justify-between px-4 sm:px-6 gap-4 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
+        <header class="sticky top-0 z-30 h-[64px] flex items-center justify-between px-4 sm:px-6 gap-4 bg-white dark:bg-[#14171d] border-b border-[#e6e8ee] dark:border-[#22262e]">
             <div class="flex items-center gap-3 min-w-0">
-                <button id="admin-menu-toggle" class="lg:hidden w-9 h-9 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-200">
+                <button id="admin-menu-toggle" class="lg:hidden w-9 h-9 rounded-lg bg-[#f1f3f7] dark:bg-[#1c1f26] flex items-center justify-center text-slate-700 dark:text-slate-200">
                     <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
                 </button>
-                <h1 class="font-bold text-lg leading-none truncate">@yield('title','Dashboard')</h1>
+                <h1 class="font-bold text-[17px] leading-none truncate tracking-tight">@yield('title','Dashboard')</h1>
             </div>
-            <div class="flex items-center gap-2 sm:gap-3">
-                <button onclick="toggleAdminTheme()" id="admin-theme-btn" title="Toggle theme" class="w-9 h-9 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center justify-center">
+            <div class="flex items-center gap-2 sm:gap-2.5">
+                <button onclick="toggleAdminTheme()" id="admin-theme-btn" title="Toggle theme" class="w-9 h-9 rounded-lg border border-[#e6e8ee] dark:border-[#2c313c] bg-white dark:bg-[#14171d] text-slate-600 dark:text-slate-300 hover:bg-[#f7f8fa] dark:hover:bg-[#1c1f26] flex items-center justify-center transition">
                     <svg class="w-[18px] h-[18px] hidden dark:block shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
                     <svg class="w-[18px] h-[18px] block dark:hidden shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
                 </button>
-                <a href="{{ url('/') }}" class="inline-flex items-center justify-center gap-2 h-9 px-3 sm:px-4 text-sm font-semibold text-white rounded-full bg-[#05B762] hover:bg-[#049A53] transition" aria-label="View Site" title="View Site">
+                <a href="{{ url('/') }}" class="inline-flex items-center justify-center gap-2 h-9 px-3.5 text-[13px] font-semibold text-white rounded-lg bg-[#05B762] hover:bg-[#049A53] transition" aria-label="View Site" title="View Site">
                     <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 3h6m0 0v6m0-6L10 14M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
                     <span class="hidden sm:inline">View Site</span>
                 </a>
@@ -160,7 +160,7 @@
                      Only visible to the real admin; never exposes admin to users. --}}
                 <form method="POST" action="{{ route('admin.switch-role') }}" class="inline">
                     @csrf
-                    <button type="submit" title="Browse the site as a regular user from your own account" aria-label="Switch to User" class="inline-flex items-center justify-center gap-2 h-9 px-3 sm:px-4 text-sm font-semibold rounded-full text-[#049A53] dark:text-emerald-300 border border-[#05B762] dark:border-emerald-500/40 hover:bg-[#05B762]/5 dark:hover:bg-emerald-500/10 transition cursor-pointer">
+                    <button type="submit" title="Browse the site as a regular user from your own account" aria-label="Switch to User" class="inline-flex items-center justify-center gap-2 h-9 px-3.5 text-[13px] font-semibold rounded-lg text-[#047a43] dark:text-emerald-300 border border-[#05B762]/50 dark:border-emerald-500/40 hover:bg-[#05B762]/5 dark:hover:bg-emerald-500/10 transition cursor-pointer">
                         <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path stroke-linecap="round" stroke-linejoin="round" d="m16 11 2 2 4-4"/></svg>
                         <span class="hidden lg:inline">Switch to User</span>
                     </button>
@@ -168,7 +168,7 @@
             </div>
         </header>
 
-        <main class="flex-1 p-4 sm:p-6 lg:p-7">
+        <main class="flex-1 p-4 sm:p-6 lg:p-7 w-full max-w-[1440px] mx-auto">
             {{-- Breadcrumbs slot (pages can push `admin-breadcrumbs` with a list) --}}
             @yield('admin-breadcrumbs')
             @if(session('success'))
@@ -191,8 +191,8 @@
             @yield('content')
         </main>
 
-        <footer class="px-6 py-3 text-center text-[11px] font-medium tracking-wide text-slate-400 dark:text-slate-600 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">
-            Admin
+        <footer class="px-6 py-3.5 text-center text-[11px] font-medium tracking-wide text-slate-400 dark:text-slate-600 bg-white dark:bg-[#14171d] border-t border-[#e6e8ee] dark:border-[#22262e]">
+            Huvanti Admin · v54
         </footer>
     </div>
 

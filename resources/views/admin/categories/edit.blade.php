@@ -16,7 +16,7 @@
         <h2 class="font-semibold">Edit Category</h2>
     </div>
 
-    <form method="POST" action="{{ route('admin.categories.update', $category) }}" class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-5">
+    <form method="POST" action="{{ route('admin.categories.update', $category) }}" class="panel-card p-6 space-y-5">
         @csrf @method('PUT')
         <div class="grid sm:grid-cols-2 gap-4">
             <div>
@@ -46,7 +46,7 @@
             <label class="flex items-center gap-2 text-sm h-10"><input type="checkbox" name="is_active" value="1" @checked(old('is_active', $category->is_active)) class="border-slate-300 dark:border-slate-600 text-emerald-600 focus:ring-emerald-500"> Active (visible on site)</label>
         </div>
         <div class="flex gap-2">
-            <button type="submit" class="h-11 px-6 bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold transition">Save Changes</button>
+            <button type="submit" class="h-11 px-6 rounded-lg bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold transition">Save Changes</button>
             <a href="{{ route('admin.categories.index') }}" class="h-11 px-6 inline-flex items-center font-semibold border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition">Cancel</a>
         </div>
     </form>

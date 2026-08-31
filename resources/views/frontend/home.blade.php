@@ -29,6 +29,15 @@
     $heroSearchPlaceholder = setting('hero_search_placeholder', 'Search articles, topics, ideas...');
     $heroImgSetting = setting('hero_person_image');
     $heroImgUrl = $heroImgSetting ? asset('storage/'.$heroImgSetting) : asset('images/hero-person-harry.png');
+    // Home metrics strip: honest counts computed from live data (no fake numbers).
+    try {
+        $statPosts = \App\Models\Post::where('status','published')->count();
+        $statCats = \App\Models\Category::live()->count();
+        $statViews = (int) \App\Models\Post::where('status','published')->sum('views');
+        $statAuthors = \App\Models\User::where('role','author')->count() + 1;
+    } catch (\Throwable $e) {
+        $statPosts = 0; $statCats = 0; $statViews = 0; $statAuthors = 0;
+    }
 @endphp
 <section class="relative overflow-hidden bg-[#0C3B2E] dark:bg-[#07231B] text-white">
     <div class="max-w-[1200px] mx-auto px-4 sm:px-6 relative">
@@ -44,22 +53,29 @@
             </div>
 
             <!-- Right: text -->
-            <div class="order-2 lg:pl-6 py-12 sm:py-14 lg:py-20 min-w-0">
-                <span class="inline-flex items-center gap-2 text-xs font-semibold tracking-wide uppercase bg-white/10 border border-white/15 text-emerald-100 px-3.5 py-1.5 mb-4 rounded-full">
-                    {{-- Single star icon for the "Fresh reads every week" badge --}}
+            <div class="order-2 lg:pl-6 py-12 sm:py-14 lg:py-16 min-w-0">
+                <span class="inline-flex items-center gap-2 text-[11px] font-semibold tracking-wide uppercase bg-white/10 border border-white/15 text-emerald-100 px-3 py-1.5 mb-4 rounded-full">
                     <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/></svg>
                     Fresh reads every week
                 </span>
-                <h1 class="text-[34px] sm:text-[42px] lg:text-[48px] font-extrabold leading-[1.15] tracking-tight min-h-[2.4em] sm:min-h-[2.2em]">
+                <h1 class="text-[34px] sm:text-[42px] lg:text-[48px] font-extrabold leading-[1.12] tracking-[-0.03em] min-h-[2.4em] sm:min-h-[2.2em]">
                     <span id="typing-text" class="typing-text">{{ $heroPhrase1 }}</span><span class="typing-cursor" aria-hidden="true"></span>
                 </h1>
-                <p class="mt-4 text-[17px] sm:text-[18px] leading-relaxed text-white/85 max-w-[520px] font-medium">{{ $heroSubtitle }}</p>
+                <p class="mt-4 text-[16px] sm:text-[17px] leading-relaxed text-white/80 max-w-[520px]">{{ $heroSubtitle }}</p>
                 <form action="{{ route('search') }}" method="GET" class="mt-6 w-full max-w-[520px] min-w-0" autocomplete="off">
-                    <div class="flex items-center w-full min-w-0 bg-white rounded-xl p-1.5 pl-5 shadow-[0_10px_30px_rgba(0,0,0,0.25)] overflow-hidden">
+                    <div class="flex items-center w-full min-w-0 bg-white rounded-xl p-1.5 pl-4 shadow-[0_10px_30px_rgba(0,0,0,0.25)] overflow-hidden">
+                        <svg class="w-4 h-4 text-slate-400 shrink-0 mr-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-4.35-4.35"/><circle cx="11" cy="11" r="7"/></svg>
                         <input type="text" name="q" value="{{ request('q') }}" placeholder="{{ $heroSearchPlaceholder }}" autocomplete="off" autocorrect="off" spellcheck="false" class="flex-1 min-w-0 h-10 bg-transparent text-slate-900 border-0 outline-none text-[15px] placeholder:text-slate-400" aria-label="Search articles">
                         <button type="submit" class="h-10 px-6 sm:px-7 shrink-0 rounded-lg bg-[#05B762] hover:bg-[#049A53] text-white text-sm font-semibold transition">Search</button>
                     </div>
                 </form>
+                <!-- Trust strip: real numbers, quiet presentation -->
+                <div class="mt-7 flex flex-wrap items-center gap-x-5 gap-y-2 text-[13px] text-white/65">
+                    <span class="inline-flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-[#F5C445]"></span><b class="text-white font-semibold">{{ number_format($statPosts) }}</b> articles</span>
+                    <span class="inline-flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-[#34D399]"></span><b class="text-white font-semibold">{{ number_format($statCats) }}</b> topics</span>
+                    <span class="inline-flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-[#6EE7B7]"></span><b class="text-white font-semibold">{{ number_format($statViews) }}</b> reads</span>
+                    <span class="inline-flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-[#FDE68A]"></span><b class="text-white font-semibold">{{ number_format($statAuthors) }}</b> writers</span>
+                </div>
             </div>
         </div>
     </div>
@@ -84,121 +100,158 @@
     </div>
 @endif
 
-<!-- Categories (repo pattern: centered cards, large icon, hover lift) -->
-<section id="categories" class="max-w-[1200px] mx-auto px-4 sm:px-6 py-12">
-    <h2 class="text-[26px] sm:text-[32px] font-bold text-slate-900 dark:text-white tracking-tight">Browse Categories</h2>
-    <p class="text-sm text-slate-600 dark:text-slate-400 mt-1.5">Explore topics curated by our editors.</p>
+<!-- Categories: left-aligned product cards with counts -->
+<section id="categories" class="max-w-[1200px] mx-auto px-4 sm:px-6 pt-12 pb-4">
+    <div class="flex items-end justify-between gap-4 flex-wrap">
+        <div>
+            <h2 class="text-[24px] sm:text-[28px] font-bold text-slate-900 dark:text-white tracking-[-0.025em]">Browse Categories</h2>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1.5">Topics curated by our editors.</p>
+        </div>
+        <a href="/blog" class="hidden sm:inline-flex items-center gap-1.5 text-sm font-semibold text-[#047a43] dark:text-emerald-300 hover:text-[#038A4A] transition">All posts
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-6-6 6 6-6 6"/></svg>
+        </a>
+    </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-7">
         @foreach($categories as $cat)
-            <a href="{{ route('category.show',$cat->slug) }}" class="group card-elev card-hover p-6 text-center flex flex-col items-center">
-                <span class="icon-tile w-12 h-12 group-hover:scale-110 transition-transform duration-200">
-                    @include('partials.category-icon', ['category' => $cat, 'class' => 'w-6 h-6'])
+            <a href="{{ route('category.show',$cat->slug) }}" class="group card-elev card-hover p-5 flex items-start gap-4">
+                <span class="icon-tile w-11 h-11 group-hover:scale-105 transition-transform duration-200">
+                    @include('partials.category-icon', ['category' => $cat, 'class' => 'w-5 h-5'])
                 </span>
-                <h3 class="text-[17px] font-semibold text-slate-900 dark:text-white mt-3.5">{{ $cat->name }}</h3>
-                <p class="mt-1.5 text-sm text-slate-600 dark:text-slate-400 leading-relaxed line-clamp-2 max-w-[280px]">{{ $cat->description }}</p>
-                <span class="mt-3.5 text-xs font-semibold text-[#049A53] dark:text-emerald-300 inline-flex items-center gap-1">Explore
-                    <svg class="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-6-6 6 6-6 6"/></svg>
+                <span class="flex-1 min-w-0">
+                    <span class="flex items-center justify-between gap-2">
+                        <span class="text-[15px] font-semibold text-slate-900 dark:text-white truncate">{{ $cat->name }}</span>
+                        <svg class="w-4 h-4 text-slate-300 dark:text-slate-600 group-hover:text-[#05B762] group-hover:translate-x-0.5 transition shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-6-6 6 6-6 6"/></svg>
+                    </span>
+                    <span class="block mt-1 text-[13px] text-slate-500 dark:text-slate-400 leading-relaxed line-clamp-2">{{ $cat->description }}</span>
                 </span>
             </a>
         @endforeach
     </div>
 </section>
 
-<!-- Latest Posts (generous whitespace, repo grid rhythm) -->
-<section class="max-w-[1200px] mx-auto px-4 sm:px-6 pb-14">
-    <div class="flex items-center gap-2.5 mb-7">
-        <span class="icon-tile w-9 h-9">
-            <svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m22 7-8.5 5.5a4 4 0 0 1-3 0L2 7"/><rect width="20" height="14" x="2" y="5" rx="2"/></svg>
-        </span>
-        <h2 class="text-[26px] sm:text-[32px] font-bold text-slate-900 dark:text-white tracking-tight">Latest Posts</h2>
+<!-- Featured + Latest: feed-grade editorial block -->
+<section class="max-w-[1200px] mx-auto px-4 sm:px-6 py-10">
+    <div class="flex items-end justify-between gap-4 flex-wrap">
+        <div>
+            <h2 class="text-[24px] sm:text-[28px] font-bold text-slate-900 dark:text-white tracking-[-0.025em]">Latest Posts</h2>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1.5">Fresh stories from our writers.</p>
+        </div>
     </div>
 
     @if($featuredPosts->count() > 0)
-        <div class="grid lg:grid-cols-12 gap-6 mb-8">
+        <div class="grid lg:grid-cols-12 gap-4 mt-7 mb-4">
             @php $big = $featuredPosts->first(); @endphp
-            <a href="{{ route('blog.show',$big->slug) }}" class="lg:col-span-7 group relative overflow-hidden bg-[#0C3B2E] min-h-[360px] flex flex-col justify-end p-8 rounded-2xl">
+            <a href="{{ route('blog.show',$big->slug) }}" class="lg:col-span-7 group relative overflow-hidden bg-[#0C3B2E] min-h-[360px] flex flex-col justify-end p-7 rounded-2xl">
                 <img src="{{ storage_image_url($big->featured_image) ?: 'https://picsum.photos/seed/'.$big->slug.'/900/600' }}" alt="{{ image_alt_text($big->featured_image, $big->title) }}" class="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:opacity-60 group-hover:scale-[1.02] transition duration-300" loading="lazy" decoding="async">
                 <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
                 <div class="relative">
                     <div class="flex items-center gap-2 mb-3 flex-wrap">
-                        <span class="text-xs font-semibold bg-white text-slate-900 px-3 py-1 rounded-full">{{ $big->category->name ?? 'Featured' }}</span>
+                        <span class="badge badge-ink">{{ $big->category->name ?? 'Featured' }}</span>
                         <span class="text-xs text-white/85">{{ $big->published_at?->format('M d, Y') }} <span class="w-1 h-1 bg-white/50 inline-block mx-1 align-middle rounded-full"></span> {{ $big->reading_time }} min read</span>
                     </div>
-                    <h3 class="text-[24px] font-bold leading-tight text-white">{{ $big->title }}</h3>
-                    <p class="text-sm text-white/80 mt-2.5 line-clamp-2 max-w-[560px]">{{ $big->excerpt }}</p>
+                    <h3 class="text-[23px] font-bold leading-snug text-white tracking-[-0.015em]">{{ $big->title }}</h3>
+                    <p class="text-sm text-white/75 mt-2.5 line-clamp-2 max-w-[540px]">{{ $big->excerpt }}</p>
                 </div>
             </a>
-            <div class="lg:col-span-5 grid gap-6">
+            <div class="lg:col-span-5 card divide-y divide-[#eef0f4] dark:divide-[#22262e] overflow-hidden">
+                <div class="px-5 py-3.5 border-b border-[#eef0f4] dark:border-[#22262e] flex items-center gap-2">
+                    <span class="w-1.5 h-1.5 rounded-full bg-[#05B762]"></span>
+                    <span class="text-[13px] font-bold text-slate-900 dark:text-white tracking-tight">Editor's picks</span>
+                </div>
                 @foreach($featuredPosts->skip(1)->take(2) as $fp)
-                    <a href="{{ route('blog.show',$fp->slug) }}" class="group card-elev card-hover p-5 flex gap-4 items-center">
-                        <img src="{{ storage_image_url($fp->featured_image) ?: 'https://picsum.photos/seed/'.$fp->slug.'/400/300' }}" class="w-[120px] h-[100px] object-cover shrink-0 rounded-lg" alt="{{ image_alt_text($fp->featured_image, $fp->title) }}" loading="lazy" decoding="async">
-                        <div class="flex flex-col min-w-0">
-                            <span class="text-xs font-semibold text-[#049A53] dark:text-emerald-300 uppercase tracking-wide">{{ $fp->category->name ?? 'Story' }}</span>
-                            <h4 class="text-[15px] font-semibold text-slate-900 dark:text-white leading-snug mt-1.5 line-clamp-2 group-hover:text-[#049A53] dark:group-hover:text-emerald-300">{{ $fp->title }}</h4>
-                            <span class="text-xs text-slate-500 dark:text-slate-400 mt-auto pt-2">{{ $fp->published_at?->format('M d') }} <span class="w-1 h-1 bg-slate-300 dark:bg-slate-600 inline-block mx-1 align-middle rounded-full"></span> {{ $fp->reading_time }} min read</span>
-                        </div>
+                    <a href="{{ route('blog.show',$fp->slug) }}" class="group flex gap-4 items-center p-4 hover:bg-[#f8f9fb] dark:hover:bg-[#1c1f26] transition">
+                        <img src="{{ storage_image_url($fp->featured_image) ?: 'https://picsum.photos/seed/'.$fp->slug.'/400/300' }}" class="w-[96px] h-[80px] object-cover shrink-0 rounded-lg border border-[#eef0f4] dark:border-[#2c313c]" alt="{{ image_alt_text($fp->featured_image, $fp->title) }}" loading="lazy" decoding="async">
+                        <span class="flex flex-col min-w-0">
+                            <span class="text-[11px] font-bold text-[#047a43] dark:text-emerald-300 uppercase tracking-[0.06em]">{{ $fp->category->name ?? 'Story' }}</span>
+                            <span class="text-[14.5px] font-semibold text-slate-900 dark:text-white leading-snug mt-1 line-clamp-2 group-hover:text-[#047a43] dark:group-hover:text-emerald-300 transition-colors">{{ $fp->title }}</span>
+                            <span class="text-xs text-slate-400 dark:text-slate-500 mt-auto pt-2">{{ $fp->published_at?->format('M d') }} <span class="w-1 h-1 bg-slate-300 dark:bg-slate-600 inline-block mx-1 align-middle rounded-full"></span> {{ $fp->reading_time }} min read</span>
+                        </span>
                     </a>
                 @endforeach
+                <a href="/blog" class="flex items-center justify-center gap-1.5 text-[13px] font-semibold text-[#047a43] dark:text-emerald-300 py-3 hover:bg-[#f8f9fb] dark:hover:bg-[#1c1f26] transition border-t border-[#eef0f4] dark:border-[#22262e]">View all posts
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-6-6 6 6-6 6"/></svg>
+                </a>
             </div>
         </div>
     @endif
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5 mt-6">
         @foreach($latestPosts as $lp)
             <article class="group card-elev card-hover overflow-hidden flex flex-col">
-                <a href="{{ route('blog.show',$lp->slug) }}" class="relative h-[190px] overflow-hidden block">
+                <a href="{{ route('blog.show',$lp->slug) }}" class="relative h-[185px] overflow-hidden block">
                     <img src="{{ storage_image_url($lp->featured_image) ?: 'https://picsum.photos/seed/'.$lp->slug.'/600/400' }}" alt="{{ image_alt_text($lp->featured_image, $lp->title) }}" class="w-full h-full object-cover group-hover:scale-[1.03] transition duration-300" loading="lazy" decoding="async">
-                    @if($lp->is_featured)<span class="absolute top-3 right-3 text-xs font-bold bg-[#F5C445] text-slate-900 px-3 py-1 rounded-full shadow-sm">Popular</span>@endif
+                    @if($lp->is_featured)<span class="absolute top-3 right-3 badge" style="background:#F5C445;color:#16181d;">Popular</span>@endif
                 </a>
                 <div class="p-5 flex flex-col flex-1">
-                    <span class="text-xs font-semibold text-[#049A53] dark:text-emerald-300 uppercase tracking-wide">{{ $lp->category->name ?? 'General' }}</span>
-                    <a href="{{ route('blog.show',$lp->slug) }}" class="mt-2.5 text-[17px] font-semibold text-slate-900 dark:text-white leading-snug line-clamp-2 group-hover:text-[#049A53] dark:group-hover:text-emerald-300 transition-colors">{{ $lp->title }}</a>
-                    <p class="text-sm text-slate-600 dark:text-slate-400 mt-3 leading-relaxed line-clamp-2">{{ $lp->excerpt }}</p>
-                    <div class="mt-4 pt-4 border-t border-slate-100 dark:border-[#2f2f2f] flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+                    <div class="flex items-center gap-2">
+                        <span class="chip">{{ $lp->category->name ?? 'General' }}</span>
+                    </div>
+                    <a href="{{ route('blog.show',$lp->slug) }}" class="mt-2.5 text-[16.5px] font-bold text-slate-900 dark:text-white leading-snug tracking-[-0.01em] line-clamp-2 group-hover:text-[#047a43] dark:group-hover:text-emerald-300 transition-colors">{{ $lp->title }}</a>
+                    <p class="text-[13.5px] text-slate-500 dark:text-slate-400 mt-2.5 leading-relaxed line-clamp-2">{{ $lp->excerpt }}</p>
+                    <div class="mt-auto pt-4 flex items-center gap-2 text-xs text-slate-400 dark:text-slate-500">
                         <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2"/></svg>
                         <span>{{ $lp->published_at?->format('M d, Y') }}</span>
                         <span class="w-1 h-1 bg-slate-300 dark:bg-slate-600 rounded-full"></span>
                         <span>{{ $lp->reading_time }} min read</span>
+                        <svg class="w-4 h-4 ml-auto text-slate-300 dark:text-slate-600 group-hover:text-[#05B762] group-hover:translate-x-0.5 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-6-6 6 6-6 6"/></svg>
                     </div>
                 </div>
             </article>
         @endforeach
     </div>
 
-    <div class="text-center mt-10">
-        <a href="{{ route('blog.index') }}" class="btn btn-primary">
+    <div class="text-center mt-9">
+        <a href="{{ route('blog.index') }}" class="btn btn-primary btn-lg">
             Browse all posts
             <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-6-6 6 6-6 6"/></svg>
         </a>
     </div>
 </section>
 
-<!-- Why Huvanti (tinted band, 3-up grid) -->
-<section class="max-w-[1200px] mx-auto px-4 sm:px-6 pb-16">
-    <div class="bg-emerald-50 dark:bg-[#1e2b24] p-6 sm:p-8 rounded-2xl">
-        <h3 class="text-[22px] font-bold text-slate-900 dark:text-white tracking-tight">Why Huvanti?</h3>
-        <div class="grid sm:grid-cols-3 gap-5 mt-5">
-            <div class="card-elev p-5">
+<!-- Why Huvanti: hairline feature row on white -->
+<section class="max-w-[1200px] mx-auto px-4 sm:px-6 pb-6">
+    <div class="card-elev p-6 sm:p-8">
+        <div class="grid sm:grid-cols-3 gap-6 sm:gap-8">
+            <div class="flex flex-col sm:border-l border-[#eef0f4] dark:border-[#22262e] sm:pl-6 sm:first:border-l-0 sm:first:pl-0">
                 <span class="icon-tile w-10 h-10">
                     <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20h9"/><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
                 </span>
-                <h4 class="text-sm font-semibold text-slate-900 dark:text-white mt-3">Thoughtfully edited</h4>
-                <p class="text-sm text-slate-600 dark:text-slate-400 mt-1.5 leading-relaxed">Every article is researched and reviewed by our editorial team before it goes live.</p>
+                <h4 class="text-[15px] font-bold text-slate-900 dark:text-white mt-3.5 tracking-tight">Thoughtfully edited</h4>
+                <p class="text-[13.5px] text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">Every article is researched and reviewed by our editorial team before it goes live.</p>
             </div>
-            <div class="card-elev p-5">
+            <div class="flex flex-col sm:border-l border-[#eef0f4] dark:border-[#22262e] sm:pl-6 sm:first:border-l-0 sm:first:pl-0">
                 <span class="icon-tile w-10 h-10">
                     <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 7v14"/><path stroke-linecap="round" stroke-linejoin="round" d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>
                 </span>
-                <h4 class="text-sm font-semibold text-slate-900 dark:text-white mt-3">Clean reading</h4>
-                <p class="text-sm text-slate-600 dark:text-slate-400 mt-1.5 leading-relaxed">No pop ups, no clutter, just content that respects your time and attention.</p>
+                <h4 class="text-[15px] font-bold text-slate-900 dark:text-white mt-3.5 tracking-tight">Clean reading</h4>
+                <p class="text-[13.5px] text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">No pop ups, no clutter, just content that respects your time and attention.</p>
             </div>
-            <div class="card-elev p-5">
+            <div class="flex flex-col sm:border-l border-[#eef0f4] dark:border-[#22262e] sm:pl-6 sm:first:border-l-0 sm:first:pl-0">
                 <span class="icon-tile w-10 h-10">
                     <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.57 3.91a2 2 0 0 0 1.66 0l8.57-3.9a1 1 0 0 0 0-1.84z"/><path stroke-linecap="round" stroke-linejoin="round" d="m6.08 9.5-3.5 1.6a1 1 0 0 0 0 1.81l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9a1 1 0 0 0 0-1.83l-3.5-1.59"/><path stroke-linecap="round" stroke-linejoin="round" d="m6.08 14.5-3.5 1.6a1 1 0 0 0 0 1.81l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9a1 1 0 0 0 0-1.83l-3.5-1.59"/></svg>
                 </span>
-                <h4 class="text-sm font-semibold text-slate-900 dark:text-white mt-3">Multi niche, unified</h4>
-                <p class="text-sm text-slate-600 dark:text-slate-400 mt-1.5 leading-relaxed">Technology, health, finance, travel, lifestyle and education, all in one place.</p>
+                <h4 class="text-[15px] font-bold text-slate-900 dark:text-white mt-3.5 tracking-tight">Multi niche, unified</h4>
+                <p class="text-[13.5px] text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">Technology, health, finance, travel, lifestyle and education, all in one place.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Write-for-us band: forest CTA with clear action -->
+<section class="max-w-[1200px] mx-auto px-4 sm:px-6 pb-14">
+    <div class="relative overflow-hidden bg-[#0C3B2E] dark:bg-[#0a2f25] rounded-2xl px-6 sm:px-10 py-9 sm:py-11 text-white">
+        <div class="absolute -right-16 -top-16 w-64 h-64 rounded-full bg-white/5 pointer-events-none" aria-hidden="true"></div>
+        <div class="absolute -right-6 top-10 w-28 h-28 rounded-full bg-[#F5C445]/15 pointer-events-none" aria-hidden="true"></div>
+        <div class="relative flex flex-col lg:flex-row lg:items-center gap-6 lg:gap-10">
+            <div class="flex-1 min-w-0">
+                <span class="badge" style="background:rgba(245,196,69,.18);color:#F5C445;">Write for us</span>
+                <h3 class="text-[22px] sm:text-[26px] font-bold tracking-[-0.025em] mt-3">Have a story worth telling?</h3>
+                <p class="text-sm text-white/75 mt-2 max-w-[520px] leading-relaxed">Join Huvanti as a writer. Publish across six niches, reach curious readers and build your byline — our editors review every draft within days.</p>
+            </div>
+            <div class="flex items-center gap-3 shrink-0 flex-wrap">
+                <a href="{{ route('register') }}" class="btn bg-white text-[#0C3B2E] hover:bg-[#F5C445] hover:text-[#16181d]">Become a writer</a>
+                <a href="{{ route('contact') }}" class="btn btn-ghost text-white hover:bg-white/10">Contact team</a>
             </div>
         </div>
     </div>

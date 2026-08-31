@@ -93,105 +93,101 @@
 <link rel="preload" as="image" href="{{ $ogImage }}" fetchpriority="high">
 @endpush
 <div class="max-w-[1200px] mx-auto px-4 sm:px-6 py-6">
-    <nav class="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-2 flex-wrap mb-4" aria-label="Breadcrumb">
-        <a href="/" class="hover:text-slate-900 dark:hover:text-white inline-flex items-center gap-1"><svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg> Home</a>
-        <span class="text-slate-300 dark:text-slate-600">/</span>
-        <a href="{{ route('blog.index') }}" class="hover:text-slate-900 dark:hover:text-white">Blog</a>
+    <nav class="text-[13px] text-slate-400 dark:text-slate-500 flex items-center gap-1.5 flex-wrap mb-5" aria-label="Breadcrumb">
+        <a href="/" class="hover:text-[#047a43] dark:hover:text-emerald-300 transition">Home</a>
+        <svg class="w-3.5 h-3.5 text-slate-300 dark:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 6 6 6-6 6"/></svg>
+        <a href="{{ route('blog.index') }}" class="hover:text-[#047a43] dark:hover:text-emerald-300 transition">Blog</a>
         @if($post->category)
-            <span class="text-slate-300 dark:text-slate-600">/</span>
-            <a href="{{ route('category.show',$post->category->slug) }}" class="hover:text-slate-900 dark:hover:text-white">{{ $post->category->name }}</a>
+            <svg class="w-3.5 h-3.5 text-slate-300 dark:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 6 6 6-6 6"/></svg>
+            <a href="{{ route('category.show',$post->category->slug) }}" class="hover:text-[#047a43] dark:hover:text-emerald-300 transition">{{ $post->category->name }}</a>
         @endif
-        <span class="text-slate-300 dark:text-slate-600">/</span>
-        <span class="text-slate-900 dark:text-white font-medium line-clamp-1">{{ $post->title }}</span>
     </nav>
 
     <div class="grid lg:grid-cols-12 gap-8">
         <div class="lg:col-span-8 space-y-6">
-            {{-- Article card --}}
-            <article class="card-elev overflow-hidden">
-                <div class="relative h-[240px] sm:h-[360px] overflow-hidden">
-                    <img src="{{ $featuredImageUrl }}" alt="{{ $featuredImageAlt }}" class="w-full h-full object-cover" decoding="async" fetchpriority="high">
-                    <div class="absolute top-3 left-3 flex items-center gap-2">
-                        @if($post->category)<span class="text-xs font-semibold bg-white/95 dark:bg-[#1e1e1e]/90 text-[#049A53] dark:text-emerald-300 px-3 py-1 rounded-full border border-slate-200 dark:border-[#383838] shadow-sm">{{ $post->category->name }}</span>@endif
-                        @if($post->is_featured)<span class="text-xs font-bold bg-[#F5C445] text-slate-900 px-3 py-1 rounded-full shadow-sm">Popular</span>@endif
-                    </div>
+            {{-- Article head: clean title block above the frame (product-page anatomy) --}}
+            <header class="min-w-0">
+                <div class="flex items-center gap-2 mb-3.5 flex-wrap">
+                    @if($post->category)<a href="{{ route('category.show',$post->category->slug) }}" class="chip">{{ $post->category->name }}</a>@endif
+                    @if($post->is_featured)<span class="badge" style="background:#FDF3CE;color:#8a6d1a;">Popular</span>@endif
+                </div>
+                <h1 class="text-[28px] sm:text-[34px] lg:text-[38px] font-extrabold leading-[1.15] tracking-[-0.03em] text-slate-900 dark:text-white">{{ $post->title }}</h1>
+                @if($post->excerpt)<p class="text-[16px] leading-relaxed text-slate-500 dark:text-slate-400 mt-3.5 max-w-[640px]">{{ $post->excerpt }}</p>@endif
+                <div class="flex flex-wrap items-center gap-x-4 gap-y-2.5 mt-5 pb-5 border-b border-[#e6e8ee] dark:border-[#22262e]">
+                    <span class="flex items-center gap-2.5 min-w-0">
+                        <img src="{{ $authorAvatar }}" alt="{{ $authorName }}" class="w-9 h-9 rounded-full object-cover border border-[#e6e8ee] dark:border-[#2c313c]" loading="lazy" decoding="async">
+                        <span class="flex items-center gap-1.5 flex-wrap text-sm">
+                            @if($authorProfileUrl)
+                                <a href="{{ $authorProfileUrl }}" class="font-semibold text-slate-900 dark:text-white hover:text-[#047a43] dark:hover:text-emerald-300 transition">{{ $authorName }}</a>
+                            @else
+                                <span class="font-semibold text-slate-900 dark:text-white">{{ $authorName }}</span>
+                            @endif
+                            @if($post->user)
+                                @include('partials.country-flag', ['user' => $post->user, 'class' => 'w-4 h-3'])
+                                {!! $post->user->badgeHtml() !!}
+                            @endif
+                        </span>
+                    </span>
+                    <span class="hidden sm:block w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-600"></span>
+                    <span class="inline-flex items-center gap-1.5 text-[13px] text-slate-500 dark:text-slate-400"><svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 2v4"/><path stroke-linecap="round" stroke-linejoin="round" d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18"/></svg> {{ $post->published_at?->format('M d, Y') }}</span>
+                    <span class="inline-flex items-center gap-1.5 text-[13px] text-slate-500 dark:text-slate-400"><svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2"/></svg> {{ $post->reading_time }} min read</span>
+                    <span class="inline-flex items-center gap-1.5 text-[13px] text-slate-500 dark:text-slate-400"><svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg> {{ number_format($post->views) }} views</span>
+                </div>
+            </header>
+
+            <article class="min-w-0">
+                <div class="relative overflow-hidden rounded-2xl border border-[#e6e8ee] dark:border-[#262a33] bg-[#f1f3f7] dark:bg-[#1c1f26]">
+                    <img src="{{ $featuredImageUrl }}" alt="{{ $featuredImageAlt }}" class="w-full max-h-[460px] object-cover" decoding="async" fetchpriority="high" onerror="this.onerror=null;this.style.display='none'">
                 </div>
 
-                <div class="p-6">
-                    <h1 class="text-[28px] sm:text-[32px] font-extrabold leading-tight tracking-tight text-slate-900 dark:text-white">{{ $post->title }}</h1>
-                    @if($post->excerpt)<p class="text-[15px] leading-relaxed text-slate-600 dark:text-slate-400 mt-3">{{ $post->excerpt }}</p>@endif
-
-                    <div class="flex flex-wrap items-center gap-3 mt-6 p-4 bg-emerald-50/80 dark:bg-[#2a2a2a]/60 border border-emerald-100 dark:border-[#383838] rounded-xl">
-                        @if($authorProfileUrl)<a href="{{ $authorProfileUrl }}" class="flex items-center gap-3 group" aria-label="View author profile">@else<div class="flex items-center gap-3">@endif
-                            <img src="{{ $authorAvatar }}" alt="{{ $authorName }}" class="w-10 h-10 rounded-full object-cover border border-white dark:border-[#383838] shadow-sm {{ $authorProfileUrl ? 'group-hover:ring-2 group-hover:ring-[#05B762] dark:group-hover:ring-emerald-400 transition' : '' }}" loading="lazy" decoding="async">
-                            <div class="flex-1 min-w-0">
-                                <div class="flex items-center gap-1.5 flex-wrap {{ $authorProfileUrl ? 'group-hover:text-[#049A53] dark:group-hover:text-emerald-300 transition' : '' }}">
-                                    <span class="text-sm font-semibold text-slate-900 dark:text-white">{{ $authorName }}</span>
-                                    @if($post->user)
-                                        @include('partials.country-flag', ['user' => $post->user, 'class' => 'w-4 h-3'])
-                                        {!! $post->user->badgeHtml() !!}
-                                    @endif
-                                </div>
-                            </div>
-                        @if($authorProfileUrl)</a>@else</div>@endif
-                        <div class="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400 flex-wrap">
-                            <span class="inline-flex items-center gap-1.5 bg-white dark:bg-[#1e1e1e] border border-slate-200 dark:border-[#383838] px-3 py-1 rounded-full"><svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 2v4"/><path stroke-linecap="round" stroke-linejoin="round" d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18"/></svg> {{ $post->published_at?->format('M d, Y') }}</span>
-                            <span class="inline-flex items-center gap-1.5 bg-white dark:bg-[#1e1e1e] border border-slate-200 dark:border-[#383838] px-3 py-1 rounded-full"><svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2"/></svg> {{ $post->reading_time }} min read</span>
-                            <span class="inline-flex items-center gap-1.5 bg-white dark:bg-[#1e1e1e] border border-slate-200 dark:border-[#383838] px-3 py-1 rounded-full"><svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg> {{ $post->views }} views</span>
-                        </div>
-                    </div>
-
-                    {{-- Share: circular icons + working copy link --}}
-                    <div class="flex flex-wrap items-center gap-2.5 mt-5">
-                        <span class="text-xs font-semibold tracking-wide text-slate-500 dark:text-slate-400 uppercase mr-1">Share:</span>
-                        <a href="https://twitter.com/intent/tweet?text={{ $shareText }}&url={{ $shareUrl }}" target="_blank" rel="noopener" class="w-10 h-10 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 flex items-center justify-center hover:scale-110 transition shadow-sm" aria-label="Share on X">
-                            <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-                        </a>
-                        <a href="https://www.facebook.com/sharer/sharer.php?u={{ $shareUrl }}" target="_blank" rel="noopener" class="w-10 h-10 rounded-full bg-[#1877F2] text-white flex items-center justify-center hover:scale-110 transition shadow-sm" aria-label="Share on Facebook">
-                            <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-                        </a>
-                        <a href="https://pinterest.com/pin/create/button/?url={{ $shareUrl }}&description={{ $shareText }}" target="_blank" rel="noopener" class="w-10 h-10 rounded-full bg-[#E60023] text-white flex items-center justify-center hover:scale-110 transition shadow-sm" aria-label="Share on Pinterest">
-                            <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738.098.119.112.224.083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.632-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg>
-                        </a>
-                        <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ $shareUrl }}" target="_blank" rel="noopener" class="w-10 h-10 rounded-full bg-[#0A66C2] text-white flex items-center justify-center hover:scale-110 transition shadow-sm" aria-label="Share on LinkedIn">
-                            <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.634-1.85 3.364-1.85 3.604 0 4.268 2.37 4.268 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.777 13.019H3.56V9h3.554v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.454C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-                        </a>
-                        <a href="https://wa.me/?text={{ $shareText }}%20{{ $shareUrl }}" target="_blank" rel="noopener" class="w-10 h-10 rounded-full bg-[#25D366] text-white flex items-center justify-center hover:scale-110 transition shadow-sm" aria-label="Share on WhatsApp">
-                            <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-                        </a>
-                        <button type="button" id="copy-link-btn" data-url="{{ url()->current() }}" class="w-10 h-10 rounded-full bg-slate-700 hover:bg-slate-600 dark:bg-slate-500 dark:hover:bg-slate-400 text-white flex items-center justify-center hover:scale-110 transition shadow-sm" aria-label="Copy link" title="Copy link">
-                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path stroke-linecap="round" stroke-linejoin="round" d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-                        </button>
-                    </div>
+                {{-- Share: quiet square buttons, brand color on hover --}}
+                <div class="flex flex-wrap items-center gap-2 mt-5">
+                    <span class="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-[0.06em] mr-1.5">Share</span>
+                    <a href="https://twitter.com/intent/tweet?text={{ $shareText }}&url={{ $shareUrl }}" target="_blank" rel="noopener" class="btn-icon border border-[#e6e8ee] dark:border-[#2c313c] hover:!bg-[#000] hover:!text-white hover:!border-transparent" aria-label="Share on X">
+                        <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                    </a>
+                    <a href="https://www.facebook.com/sharer/sharer.php?u={{ $shareUrl }}" target="_blank" rel="noopener" class="btn-icon border border-[#e6e8ee] dark:border-[#2c313c] hover:!bg-[#1877F2] hover:!text-white hover:!border-transparent" aria-label="Share on Facebook">
+                        <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                    </a>
+                    <a href="https://pinterest.com/pin/create/button/?url={{ $shareUrl }}&description={{ $shareText }}" target="_blank" rel="noopener" class="btn-icon border border-[#e6e8ee] dark:border-[#2c313c] hover:!bg-[#E60023] hover:!text-white hover:!border-transparent" aria-label="Share on Pinterest">
+                        <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738.098.119.112.224.083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.632-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg>
+                    </a>
+                    <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ $shareUrl }}" target="_blank" rel="noopener" class="btn-icon border border-[#e6e8ee] dark:border-[#2c313c] hover:!bg-[#0A66C2] hover:!text-white hover:!border-transparent" aria-label="Share on LinkedIn">
+                        <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.634-1.85 3.364-1.85 3.604 0 4.268 2.37 4.268 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.777 13.019H3.56V9h3.554v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.454C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                    </a>
+                    <a href="https://wa.me/?text={{ $shareText }}%20{{ $shareUrl }}" target="_blank" rel="noopener" class="btn-icon border border-[#e6e8ee] dark:border-[#2c313c] hover:!bg-[#25D366] hover:!text-white hover:!border-transparent" aria-label="Share on WhatsApp">
+                        <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                    </a>
+                    <button type="button" id="copy-link-btn" data-url="{{ url()->current() }}" class="btn-icon border border-[#e6e8ee] dark:border-[#2c313c] hover:!bg-[#05B762] hover:!text-white hover:!border-transparent" aria-label="Copy link" title="Copy link">
+                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path stroke-linecap="round" stroke-linejoin="round" d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                    </button>
+                </div>
 
                     @if(count($toc) > 0)
-                        {{-- Collapsible Table of Contents — same native
-                             <details> pattern as the FAQ accordion below:
-                             tap the header (or the chevron icon) to hide or
-                             show the list. Open by default. --}}
-                        <details class="mt-6 bg-emerald-50/80 dark:bg-[#2a2a2a]/60 border border-emerald-100 dark:border-[#383838] rounded-xl group" open>
-                            <summary class="flex items-center justify-between p-4 cursor-pointer list-none select-none [&::-webkit-details-marker]:hidden hover:bg-emerald-50 dark:hover:bg-[#333]/60 transition">
-                                <span class="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+                        {{-- Collapsible Table of Contents — native <details> pattern --}}
+                        <details class="mt-6 widget group" open>
+                            <summary class="flex items-center justify-between px-5 py-3.5 cursor-pointer list-none select-none [&::-webkit-details-marker]:hidden hover:bg-[#f8f9fb] dark:hover:bg-[#1c1f26] transition rounded-t-[inherit]">
+                                <span class="text-[13px] font-bold text-slate-900 dark:text-white flex items-center gap-2 tracking-tight">
                                     <svg class="w-4 h-4 text-[#049A53] dark:text-emerald-300 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16"/><path stroke-linecap="round" stroke-linejoin="round" d="M4 12h16"/><path stroke-linecap="round" stroke-linejoin="round" d="M4 18h16"/></svg> Table of Contents
                                 </span>
-                                <span class="w-7 h-7 rounded-full bg-white dark:bg-slate-700 border border-emerald-100 dark:border-[#383838] flex items-center justify-center shrink-0 transition-transform duration-200 group-open:rotate-180">
-                                    <svg class="w-4 h-4 text-slate-600 dark:text-slate-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                <span class="w-7 h-7 rounded-full bg-[#f7f8fa] dark:bg-[#1c1f26] border border-[#e6e8ee] dark:border-[#2c313c] flex items-center justify-center shrink-0 transition-transform duration-200 group-open:rotate-180">
+                                    <svg class="w-4 h-4 text-slate-500 dark:text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                                 </span>
                             </summary>
-                            <ol class="px-4 pb-4 pt-3 border-t border-emerald-100 dark:border-[#383838] space-y-1 list-decimal list-inside text-sm text-slate-700 dark:text-slate-300">
-                                @foreach($toc as $item)<li><a href="#{{ $item['id'] }}" class="hover:text-[#0C3B2E] dark:hover:text-emerald-300 hover:underline">{{ $item['title'] }}</a></li>@endforeach
+                            <ol class="px-5 pb-4 pt-3 border-t border-[#eef0f4] dark:border-[#22262e] space-y-1.5 list-decimal list-inside text-sm text-slate-600 dark:text-slate-300">
+                                @foreach($toc as $item)<li><a href="#{{ $item['id'] }}" class="hover:text-[#047a43] dark:hover:text-emerald-300 hover:underline underline-offset-4">{{ $item['title'] }}</a></li>@endforeach
                             </ol>
                         </details>
                     @endif
 
                     @if($post->is_affiliate)
-                        <div class="mt-6 bg-purple-600 text-white p-4">
+                        <div class="mt-6 border border-amber-200 dark:border-[#453a26] bg-amber-50/70 dark:bg-[#1f1c14] text-slate-700 dark:text-slate-300 p-4 rounded-xl">
                             <div class="flex items-start gap-3">
-                                <span class="w-9 h-9 bg-white/15 flex items-center justify-center shrink-0">
-                                    <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><path d="m15 9-6 6"/><circle cx="9.5" cy="9.5" r=".5" fill="currentColor"/><circle cx="14.5" cy="14.5" r=".5" fill="currentColor"/></svg>
+                                <span class="icon-tile w-8 h-8 !rounded-lg shrink-0" style="background:#FDF3CE;color:#8a6d1a;">
+                                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><path d="m15 9-6 6"/><circle cx="9.5" cy="9.5" r=".5" fill="currentColor"/><circle cx="14.5" cy="14.5" r=".5" fill="currentColor"/></svg>
                                 </span>
-                                <div class="text-sm leading-relaxed">
-                                    <strong>Affiliate disclosure:</strong> Some links on this page are affiliate links. If you buy through them, we may earn a small commission at no extra cost to you. Read our <a href="{{ route('editorial') }}" class="underline font-semibold hover:text-emerald-100">full disclosure</a>.
+                                <div class="text-[13px] leading-relaxed">
+                                    <strong class="text-slate-900 dark:text-white">Affiliate disclosure:</strong> Some links on this page are affiliate links. If you buy through them, we may earn a small commission at no extra cost to you. Read our <a href="{{ route('editorial') }}" class="underline underline-offset-4 font-semibold hover:text-[#047a43] dark:hover:text-emerald-300">full disclosure</a>.
                                 </div>
                             </div>
                         </div>
@@ -205,33 +201,32 @@
                         $tags = array_slice($tags, 0, 8);
                     @endphp
                     @if(count($tags) > 0)
-                        <div class="flex items-center gap-2 flex-wrap mt-6 pt-5 border-t border-slate-100 dark:border-[#383838]">
-                            <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Tags</span>
+                        <div class="flex items-center gap-2 flex-wrap mt-7 pt-6 border-t border-[#eef0f4] dark:border-[#22262e]">
+                            <span class="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-[0.06em]">Tags</span>
                             @foreach($tags as $tag)
-                                <a href="{{ route('search', ['q' => $tag]) }}" class="text-xs font-medium bg-slate-100 dark:bg-[#2a2a2a] text-slate-700 dark:text-slate-300 px-3 py-1.5 rounded-full hover:bg-emerald-50 dark:hover:bg-emerald-400/10 hover:text-emerald-700 dark:hover:text-emerald-300 transition"># {{ $tag }}</a>
+                                <a href="{{ route('search', ['q' => $tag]) }}" class="text-xs font-medium bg-[#f7f8fa] dark:bg-[#1c1f26] text-slate-600 dark:text-slate-300 border border-[#e6e8ee] dark:border-[#2c313c] px-3 py-1.5 rounded-lg hover:border-[#05B762]/50 hover:text-[#047a43] dark:hover:text-emerald-300 hover:bg-[#E8F8F0]/50 dark:hover:bg-[#14171d] transition"># {{ $tag }}</a>
                             @endforeach
                         </div>
                     @endif
-                </div>
             </article>
 
             {{-- FAQ --}}
             @if($post->faqs->count() > 0)
-            <div class="card-elev p-6">
-                <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
-                    <span class="w-8 h-8 bg-emerald-50 dark:bg-emerald-400/10 flex items-center justify-center">
+            <div class="widget p-5">
+                <h3 class="text-[15px] font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2.5 tracking-tight">
+                    <span class="icon-tile w-8 h-8 !rounded-lg">
                         <svg class="w-4 h-4 text-[#049A53] dark:text-emerald-300 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 17h.01"/></svg>
                     </span>
                     Frequently Asked Questions
                 </h3>
                 <div class="space-y-2" id="faq-accordion">
                     @foreach($post->faqs as $faq)
-                        <details class="group border border-slate-200 dark:border-[#383838] bg-white dark:bg-[#2a2a2a] rounded-xl overflow-hidden">
-                            <summary class="flex items-center justify-between p-4 cursor-pointer list-none hover:bg-slate-50 dark:hover:bg-[#333]/60 transition select-none [&::-webkit-details-marker]:hidden">
+                        <details class="group border border-[#e6e8ee] dark:border-[#2c313c] bg-white dark:bg-[#14171d] rounded-xl overflow-hidden">
+                            <summary class="flex items-center justify-between p-4 cursor-pointer list-none hover:bg-[#f8f9fb] dark:hover:bg-[#1c1f26] transition select-none [&::-webkit-details-marker]:hidden">
                                 <span class="text-sm font-medium text-slate-900 dark:text-white pr-4">{{ $faq->question }}</span>
-                                <span class="w-7 h-7 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center shrink-0 transition-transform group-open:rotate-180"><svg class="w-4 h-4 text-slate-600 dark:text-slate-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></span>
+                                <span class="w-7 h-7 rounded-full bg-[#f7f8fa] dark:bg-[#1c1f26] border border-[#e6e8ee] dark:border-[#2c313c] flex items-center justify-center shrink-0 transition-transform group-open:rotate-180"><svg class="w-4 h-4 text-slate-500 dark:text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></span>
                             </summary>
-                            <div class="px-4 pb-4 text-sm leading-relaxed text-slate-600 dark:text-slate-400 border-t border-slate-100 dark:border-[#383838] pt-3 bg-slate-50 dark:bg-[#2a2a2a]/50">{{ $faq->answer }}</div>
+                            <div class="px-4 pb-4 text-sm leading-relaxed text-slate-600 dark:text-slate-400 border-t border-[#eef0f4] dark:border-[#22262e] pt-3">{{ $faq->answer }}</div>
                         </details>
                     @endforeach
                 </div>
@@ -242,7 +237,7 @@
                  after the content + FAQ. Clicking the active button removes
                  your reaction; the other button switches it. --}}
 <div class="card-elev py-8 text-center">
-    <h3 class="text-base font-bold text-slate-900 dark:text-white">Was this helpful?</h3>
+    <h3 class="text-base font-bold text-slate-900 dark:text-white tracking-tight">Was this helpful?</h3>
     <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Your feedback helps other readers.</p>
     <div class="flex items-center justify-center gap-3 mt-5">
         @auth
@@ -283,8 +278,8 @@
                 $authorSocials = $author ? $author->socialProfiles() : [];
             @endphp
             <div class="card-elev p-6">
-                <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-                    <span class="w-8 h-8 bg-emerald-50 dark:bg-emerald-400/10 flex items-center justify-center">
+                <h3 class="text-[15px] font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2.5 tracking-tight">
+                    <span class="icon-tile w-8 h-8 !rounded-lg">
                         <svg class="w-4 h-4 text-[#049A53] dark:text-emerald-300 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                     </span>
                     About the Author
@@ -342,20 +337,20 @@
 
             {{-- Comments separate container (new icon + reply system) --}}
             <div class="card-elev p-6">
-                <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                    <span class="w-8 h-8 bg-emerald-50 dark:bg-emerald-400/10 flex items-center justify-center">
+                <h3 class="text-[15px] font-bold text-slate-900 dark:text-white flex items-center gap-2.5 tracking-tight">
+                    <span class="icon-tile w-8 h-8 !rounded-lg">
                         <svg class="w-4 h-4 text-[#049A53] dark:text-emerald-300 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>
                     </span>
-                    Comments <span class="text-sm font-normal text-slate-500 dark:text-slate-400">({{ $topComments->count() }})</span>
+                    Comments <span class="text-sm font-normal text-slate-400 dark:text-slate-500">({{ $topComments->count() }})</span>
                 </h3>
                 <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">Your email stays private. Comments are moderated.</p>
-                @if(session('success'))<div class="mt-3 bg-emerald-50 dark:bg-emerald-400/10 border border-emerald-200 dark:border-emerald-400/20 text-emerald-800 dark:text-emerald-300 px-4 py-3 text-sm">{{ session('success') }}</div>@endif
+                @if(session('success'))<div class="mt-3 bg-emerald-50 dark:bg-emerald-400/10 border border-emerald-200 dark:border-emerald-400/20 text-emerald-800 dark:text-emerald-300 px-4 py-3 text-sm rounded-lg">{{ session('success') }}</div>@endif
 
                 {{-- Comment form --}}
-                <form action="{{ route('blog.comment.store',$post->slug) }}" method="POST" class="mt-4 bg-slate-50 dark:bg-[#2a2a2a] border border-slate-200 dark:border-[#383838] p-4" id="comment-form">
+                <form action="{{ route('blog.comment.store',$post->slug) }}" method="POST" class="mt-4 bg-[#f8f9fb] dark:bg-[#14171d] border border-[#e6e8ee] dark:border-[#2c313c] p-4 rounded-xl" id="comment-form">
                     @csrf
                     <input type="hidden" name="parent_id" id="reply-parent-id" value="">
-                    <div id="replying-to" class="hidden mb-3 text-xs flex items-center gap-2 bg-emerald-50 dark:bg-emerald-400/10 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-400/20 px-3 py-2">
+                    <div id="replying-to" class="hidden mb-3 text-xs flex items-center gap-2 bg-[#E8F8F0] dark:bg-emerald-400/10 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-400/20 px-3 py-2 rounded-lg">
                         <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m15 10 5 5-5 5"/><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v7a4 4 0 0 0 4 4h12"/></svg>
                         Replying to <b id="replying-to-name" class="font-semibold"></b>
                         <button type="button" onclick="cancelReply()" class="ml-auto" aria-label="Cancel reply">
@@ -363,34 +358,33 @@
                         </button>
                     </div>
                     <div class="grid sm:grid-cols-2 gap-3">
-                        <div><label class="text-sm font-medium text-slate-700 dark:text-slate-300">Name *</label><input type="text" name="name" required value="{{ old('name') }}" class="mt-1 w-full h-10 px-3 bg-white dark:bg-[#1e1e1e] border border-slate-200 dark:border-[#383838] text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-emerald-300 dark:focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 dark:focus:ring-emerald-400/10 outline-none text-sm">@error('name')<p class="text-xs text-red-600 dark:text-red-400 mt-1">{{ $message }}</p>@enderror</div>
-                        <div><label class="text-sm font-medium text-slate-700 dark:text-slate-300">Email * <span class="text-slate-400 font-normal">(private)</span></label><input type="email" name="email" required value="{{ old('email') }}" class="mt-1 w-full h-10 px-3 bg-white dark:bg-[#1e1e1e] border border-slate-200 dark:border-[#383838] text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-emerald-300 dark:focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 dark:focus:ring-emerald-400/10 outline-none text-sm">@error('email')<p class="text-xs text-red-600 dark:text-red-400 mt-1">{{ $message }}</p>@enderror</div>
+                        <div><label class="label">Name *</label><input type="text" name="name" required value="{{ old('name') }}" class="input">@error('name')<p class="text-xs text-red-600 dark:text-red-400 mt-1">{{ $message }}</p>@enderror</div>
+                        <div><label class="label">Email * <span class="text-slate-400 font-normal">(private)</span></label><input type="email" name="email" required value="{{ old('email') }}" class="input">@error('email')<p class="text-xs text-red-600 dark:text-red-400 mt-1">{{ $message }}</p>@enderror</div>
                     </div>
-                    <div class="mt-3"><label class="text-sm font-medium text-slate-700 dark:text-slate-300">Comment *</label><textarea name="content" required rows="4" class="mt-1 w-full px-3 py-2 bg-white dark:bg-[#1e1e1e] border border-slate-200 dark:border-[#383838] text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-emerald-300 dark:focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 dark:focus:ring-emerald-400/10 outline-none text-sm" placeholder="Share your thoughts...">{{ old('content') }}</textarea>@error('content')<p class="text-xs text-red-600 dark:text-red-400 mt-1">{{ $message }}</p>@enderror</div>
-                    <button type="submit" class="mt-3 h-10 px-6 bg-[#0C3B2E] hover:bg-[#072A20] text-white text-sm font-semibold transition">Post comment</button>
+                    <div class="mt-3"><label class="label">Comment *</label><textarea name="content" required rows="4" class="input" placeholder="Share your thoughts...">{{ old('content') }}</textarea>@error('content')<p class="text-xs text-red-600 dark:text-red-400 mt-1">{{ $message }}</p>@enderror</div>
+                    <button type="submit" class="btn btn-dark mt-3">Post comment</button>
                 </form>
 
                 {{-- Threaded comments --}}
                 <div class="mt-6 space-y-3">
                     @forelse($topComments as $c)
-                        <div class="bg-slate-50 dark:bg-[#2a2a2a] border border-slate-200 dark:border-[#383838] p-4">
-                            <div class="flex items-center gap-2">
-                                <span class="w-8 h-8 bg-[#0C3B2E] text-white flex items-center justify-center text-sm font-bold">{{ strtoupper(substr($c->name,0,1)) }}</span>
-                                <div><div class="text-sm font-medium text-slate-900 dark:text-white">{{ $c->name }}</div><div class="text-xs text-slate-500 dark:text-slate-400">{{ $c->created_at->format('M d, Y') }}</div></div>
-                                <button type="button" onclick="replyTo({{ $c->id }}, '{{ addslashes($c->name) }}')" class="ml-auto text-xs font-semibold text-[#049A53] dark:text-emerald-300 hover:underline inline-flex items-center gap-1">
+                        <div class="border border-[#e6e8ee] dark:border-[#2c313c] bg-white dark:bg-[#14171d] p-4 rounded-xl">
+                            <div class="flex items-center gap-2.5">
+                                <span class="avatar w-8 h-8 !bg-[#0C3B2E] dark:!bg-[#E8F8F0] text-white dark:text-[#0C3B2E] text-xs font-bold">{{ strtoupper(substr($c->name,0,1)) }}</span>
+                                <div><div class="text-sm font-semibold text-slate-900 dark:text-white">{{ $c->name }}</div><div class="text-xs text-slate-400 dark:text-slate-500">{{ $c->created_at->format('M d, Y') }}</div></div>
+                                <button type="button" onclick="replyTo({{ $c->id }}, '{{ addslashes($c->name) }}')" class="ml-auto text-xs font-semibold text-[#047a43] dark:text-emerald-300 hover:underline inline-flex items-center gap-1">
                                     <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m15 10 5 5-5 5"/><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v7a4 4 0 0 0 4 4h12"/></svg> Reply
                                 </button>
                             </div>
-                            <p class="text-sm text-slate-700 dark:text-slate-300 mt-2 leading-relaxed">{{ $c->content }}</p>
+                            <p class="text-sm text-slate-700 dark:text-slate-300 mt-2.5 leading-relaxed">{{ $c->content }}</p>
                             @php $replies = $post->approvedComments->where('parent_id', $c->id); @endphp
                             @if($replies->count())
-                                <div class="mt-3 ml-10 space-y-2 border-l-2 border-emerald-100 dark:border-[#383838] pl-4">
+                                <div class="mt-3 ml-10 space-y-2 border-l-2 border-[#eef0f4] dark:border-[#2c313c] pl-4">
                                     @foreach($replies as $r)
-                                        <div class="bg-white dark:bg-[#1e1e1e] p-3 border border-slate-200 dark:border-[#383838] rounded-lg">
+                                        <div class="bg-[#f8f9fb] dark:bg-[#1c1f26] p-3 border border-[#eef0f4] dark:border-[#22262e] rounded-lg">
                                             <div class="flex items-center gap-2">
-                                                <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m15 10 5 5-5 5"/><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v7a4 4 0 0 0 4 4h12"/></svg>
-                                                <span class="w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-400/20 text-[#049A53] dark:text-emerald-300 flex items-center justify-center text-xs font-bold">{{ strtoupper(substr($r->name,0,1)) }}</span>
-                                                <div><div class="text-xs font-medium text-slate-900 dark:text-white">{{ $r->name }}</div><div class="text-[11px] text-slate-500 dark:text-slate-400">{{ $r->created_at->format('M d, Y') }}</div></div>
+                                                <span class="avatar w-6 h-6 text-[10px] !bg-[#E8F8F0] dark:!bg-emerald-400/15 text-[#047a43] dark:text-emerald-300">{{ strtoupper(substr($r->name,0,1)) }}</span>
+                                                <div><div class="text-xs font-semibold text-slate-900 dark:text-white">{{ $r->name }}</div><div class="text-[11px] text-slate-400 dark:text-slate-500">{{ $r->created_at->format('M d, Y') }}</div></div>
                                             </div>
                                             <p class="text-sm text-slate-700 dark:text-slate-300 mt-1.5 leading-relaxed">{{ $r->content }}</p>
                                         </div>
@@ -399,7 +393,7 @@
                             @endif
                         </div>
                     @empty
-                        <div class="text-center py-6 bg-slate-50 dark:bg-[#2a2a2a] border border-dashed border-slate-200 dark:border-[#383838] rounded-xl"><p class="text-sm text-slate-500 dark:text-slate-400">No comments yet. Be the first to share your thoughts!</p></div>
+                        <div class="text-center py-7 bg-[#f8f9fb] dark:bg-[#14171d] border border-dashed border-[#dfe3ea] dark:border-[#2c313c] rounded-xl"><p class="text-sm text-slate-500 dark:text-slate-400">No comments yet. Be the first to share your thoughts!</p></div>
                     @endforelse
                 </div>
             </div>
@@ -407,16 +401,16 @@
 
         <aside class="lg:col-span-4 space-y-4">
             @if($related->count())
-                <div class="card-elev p-4 lg:sticky lg:top-20">
-                    <h3 class="text-sm font-semibold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
+                <div class="widget lg:sticky lg:top-20 overflow-hidden">
+                    <div class="widget-head">
                         <svg class="w-4 h-4 text-[#049A53] dark:text-emerald-300 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M14 2v4a2 2 0 0 0 2 2h4"/><path stroke-linecap="round" stroke-linejoin="round" d="M10 9H8"/><path stroke-linecap="round" stroke-linejoin="round" d="M16 13H8"/><path stroke-linecap="round" stroke-linejoin="round" d="M16 17H8"/></svg>
                         Related Posts
-                    </h3>
-                    <div class="space-y-3">
+                    </div>
+                    <div class="p-4 space-y-3.5">
                         @foreach($related as $r)
                             <a href="{{ route('blog.show',$r->slug) }}" class="flex gap-3 group">
-                                <img src="{{ storage_image_url($r->featured_image) ?: 'https://picsum.photos/seed/'.$r->slug.'/200/200' }}" class="w-14 h-14 object-cover shrink-0 rounded-lg" alt="{{ image_alt_text($r->featured_image, $r->title) }}" loading="lazy" decoding="async">
-                                <div><h4 class="text-sm font-medium text-slate-900 dark:text-white group-hover:text-[#049A53] dark:group-hover:text-emerald-300 transition-colors line-clamp-2 leading-snug">{{ $r->title }}</h4><span class="text-xs text-slate-500 dark:text-slate-400">{{ $r->reading_time }} min read</span></div>
+                                <img src="{{ storage_image_url($r->featured_image) ?: 'https://picsum.photos/seed/'.$r->slug.'/200/200' }}" class="w-14 h-14 object-cover shrink-0 rounded-lg border border-[#eef0f4] dark:border-[#2c313c]" alt="{{ image_alt_text($r->featured_image, $r->title) }}" loading="lazy" decoding="async">
+                                <div class="min-w-0"><h4 class="text-sm font-semibold text-slate-900 dark:text-white group-hover:text-[#047a43] dark:group-hover:text-emerald-300 transition-colors line-clamp-2 leading-snug">{{ $r->title }}</h4><span class="text-xs text-slate-400 dark:text-slate-500">{{ $r->reading_time }} min read</span></div>
                             </a>
                         @endforeach
                     </div>
@@ -424,28 +418,28 @@
             @endif
             {{-- Popular posts: most viewed across the site --}}
             @if($popular->count())
-                <div class="card-elev p-4">
-                    <h3 class="text-sm font-semibold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
+                <div class="widget overflow-hidden">
+                    <div class="widget-head">
                         <svg class="w-4 h-4 text-[#049A53] dark:text-emerald-300 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.362 5.214A8.252 8.252 0 0 1 12 21 8.25 8.25 0 0 1 6.038 7.047 8.287 8.287 0 0 0 9 9.601a8.983 8.983 0 0 1 3.361-6.867 8.21 8.21 0 0 0 3 2.48Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 18a3.75 3.75 0 0 0 .495-7.468 5.99 5.99 0 0 0-1.925 3.547 5.975 5.975 0 0 1-2.133-1.001A3.75 3.75 0 0 0 12 18Z"/></svg>
                         Popular Posts
-                    </h3>
-                    <div class="space-y-3">
+                    </div>
+                    <div class="p-4 space-y-3.5">
                         @foreach($popular as $i => $p)
                             <a href="{{ route('blog.show',$p->slug) }}" class="flex gap-3 group">
-                                <span class="w-6 h-6 rounded-full bg-emerald-50 dark:bg-emerald-400/10 text-[#049A53] dark:text-emerald-300 text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">{{ $i + 1 }}</span>
-                                <div class="min-w-0"><h4 class="text-sm font-medium text-slate-900 dark:text-white group-hover:text-[#049A53] dark:group-hover:text-emerald-300 transition-colors line-clamp-2 leading-snug">{{ $p->title }}</h4><span class="text-xs text-slate-500 dark:text-slate-400">{{ number_format($p->views) }} views</span></div>
+                                <span class="w-6 h-6 rounded-full bg-[#E8F8F0] dark:bg-emerald-400/10 text-[#047a43] dark:text-emerald-300 text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">{{ $i + 1 }}</span>
+                                <div class="min-w-0"><h4 class="text-sm font-semibold text-slate-900 dark:text-white group-hover:text-[#047a43] dark:group-hover:text-emerald-300 transition-colors line-clamp-2 leading-snug">{{ $p->title }}</h4><span class="text-xs text-slate-400 dark:text-slate-500">{{ number_format($p->views) }} views</span></div>
                             </a>
                         @endforeach
                     </div>
                 </div>
             @endif
             {{-- Sidebar categories (live icons) --}}
-            <div class="card-elev p-4">
-                <h3 class="text-sm font-semibold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
+            <div class="widget overflow-hidden">
+                <div class="widget-head">
                     <svg class="w-4 h-4 text-[#049A53] dark:text-emerald-300 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/></svg>
                     Categories
-                </h3>
-                <div class="space-y-1">
+                </div>
+                <div class="p-3 space-y-0.5">
                     {{-- Live categories only (active + has published posts), with
                          published-post counts. Avoids empty category links and
                          the N+1 query the old ->posts->count() caused.

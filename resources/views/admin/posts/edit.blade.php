@@ -20,7 +20,7 @@
     @endif
     <div class="grid lg:grid-cols-12 gap-6">
         <div class="lg:col-span-8 space-y-5">
-            <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+            <div class="panel-card p-6">
                 <label class="text-sm font-semibold">Title *</label>
                 <input type="text" name="title" required value="{{ old('title', $post->title) }}" class="mt-1 w-full h-11 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/15 outline-none text-sm">
                 <div class="grid sm:grid-cols-2 gap-4 mt-4">
@@ -46,7 +46,7 @@
                 </div>
             </div>
 
-            <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+            <div class="panel-card p-6">
                 <h3 class="font-semibold mb-3">FAQ</h3>
                 <div id="faqs">
                     @forelse(old('faqs', $post->faqs->map(fn($f)=>['question'=>$f->question,'answer'=>$f->answer])->toArray()) as $idx => $faq)
@@ -67,7 +67,7 @@
         </div>
 
         <div class="lg:col-span-4 space-y-5">
-            <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+            <div class="panel-card p-6">
                 <h3 class="font-semibold mb-3">Publish</h3>
                 <select name="status" class="w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
                     <option value="draft" @selected(old('status', $post->status)=='draft')>Draft</option>
@@ -79,12 +79,12 @@
                 <div class="mt-2 text-xs text-slate-500 dark:text-slate-400">{{ $post->reading_time }} min read · {{ number_format($post->views) }} views</div>
                 <label class="flex items-center gap-2 mt-3 text-sm"><input type="checkbox" name="is_featured" value="1" @checked($post->is_featured) class="border-slate-300 dark:border-slate-600 text-emerald-600 focus:ring-emerald-500"> Featured post</label>
                 <label class="flex items-center gap-2 mt-2 text-sm"><input type="checkbox" name="allow_comments" value="1" @checked($post->allow_comments) class="border-slate-300 dark:border-slate-600 text-emerald-600 focus:ring-emerald-500"> Allow comments</label>
-                <button type="submit" class="w-full mt-4 h-11 bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold transition">Update Post</button>
+                <button type="submit" class="w-full mt-4 h-11 rounded-lg bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold transition">Update Post</button>
                 <p id="autosave-status" class="mt-3 text-[11px] font-medium text-slate-400 dark:text-slate-500" aria-live="polite"></p>
                 <a href="{{ route('admin.posts.index') }}" class="block text-center mt-2 text-sm text-slate-500 dark:text-slate-400 hover:underline">Cancel</a>
             </div>
 
-            <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+            <div class="panel-card p-6">
                 <h3 class="font-semibold mb-3">Featured Image</h3>
                 @if($post->featured_image)
                     <img id="featured-preview" src="{{ str_starts_with($post->featured_image,'http') ? $post->featured_image : '/storage/'.$post->featured_image }}" class="w-full h-40 object-cover mb-3 border border-slate-200 dark:border-slate-700" alt="" loading="lazy" decoding="async">
@@ -100,7 +100,7 @@
                 <input type="text" name="featured_image_url" value="{{ old('featured_image_url') }}" placeholder="https://..." class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
             </div>
 
-            <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+            <div class="panel-card p-6">
                 <h3 class="font-semibold mb-3">SEO</h3>
                 <input type="text" name="meta_title" value="{{ old('meta_title', $post->meta_title) }}" placeholder="Meta title" class="w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
                 <textarea name="meta_description" rows="2" placeholder="Meta description" class="mt-2 w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">{{ old('meta_description', $post->meta_description) }}</textarea>

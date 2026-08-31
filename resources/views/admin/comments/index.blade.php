@@ -12,7 +12,7 @@
         @php $tabs = ['all'=>'All','pending'=>'Pending','approved'=>'Approved','rejected'=>'Rejected','spam'=>'Spam']; @endphp
         @foreach($tabs as $key => $label)
             <a href="{{ route('admin.comments.index', $key !== 'all' ? ['status'=>$key] : []) }}"
-               class="h-9 px-4 inline-flex items-center gap-2 text-sm font-medium border transition {{ (request('status')==$key || (!request('status') && $key=='all')) ? 'bg-[#0C3B2E] text-white border-[#0C3B2E]' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800' }}">
+               class="h-9 px-3.5 inline-flex items-center gap-2 text-[13px] font-semibold rounded-lg transition {{ (request('status')==$key || (!request('status') && $key=='all')) ? 'bg-[#16181d] text-white dark:bg-white dark:text-[#101319]' : 'bg-white dark:bg-[#14171d] border border-[#e6e8ee] dark:border-[#2c313c] text-slate-600 dark:text-slate-300 hover:bg-[#f7f8fa] dark:hover:bg-[#1c1f26]' }}">
                 {{ $label }} <span class="text-xs opacity-70">{{ $counts[$key] }}</span>
             </a>
         @endforeach
@@ -32,7 +32,7 @@
     </form>
 </div>
 
-<div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden">
+<div class="panel-card overflow-hidden">
     <div class="divide-y divide-slate-100 dark:divide-slate-800">
         @forelse($comments as $c)
             <div class="p-4 sm:p-5">
@@ -42,7 +42,7 @@
                             <input type="checkbox" name="ids[]" value="{{ $c->id }}" form="bulk-delete-form" class="bulk-comment-check w-4 h-4 shrink-0 text-emerald-600 border-slate-300 dark:border-slate-600" aria-label="Select comment">
                             <span class="text-sm font-semibold">{{ $c->name }}</span>
                             <span class="text-xs text-slate-500 dark:text-slate-400">{{ $c->email }}</span>
-                            <span class="text-[11px] font-semibold px-2 py-0.5 {{ $c->status=='pending' ? 'bg-amber-100 text-amber-700 dark:bg-amber-400/10 dark:text-amber-300' : ($c->status=='approved' ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300') }}">{{ $c->status }}</span>
+                            <span class="badge {{ $c->status=='pending' ? 'badge-amber' : ($c->status=='approved' ? 'badge-green' : 'badge-slate') }}">{{ $c->status }}</span>
                         </div>
                         <div class="text-sm text-slate-600 dark:text-slate-300 mt-1">{{ $c->content }}</div>
                         <div class="text-xs text-slate-400 dark:text-slate-500 mt-1">
@@ -87,7 +87,7 @@
                                         <div class="flex items-center gap-2">
                                             <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m15 10 5 5-5 5"/><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v7a4 4 0 0 0 4 4h12"/></svg>
                                             <span class="text-sm font-semibold">{{ $reply->name }}</span>
-                                            <span class="text-[11px] font-semibold px-2 py-0.5 {{ $reply->status=='pending' ? 'bg-amber-100 text-amber-700 dark:bg-amber-400/10 dark:text-amber-300' : ($reply->status=='approved' ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300') }}">{{ $reply->status }}</span>
+                                            <span class="badge {{ $reply->status=='pending' ? 'badge-amber' : ($reply->status=='approved' ? 'badge-green' : 'badge-slate') }}">{{ $reply->status }}</span>
                                         </div>
                                         <div class="text-sm text-slate-600 dark:text-slate-300 mt-1">{{ $reply->content }}</div>
                                         <div class="text-xs text-slate-400 dark:text-slate-500 mt-1">{{ $reply->created_at->diffForHumans() }}</div>
@@ -117,7 +117,7 @@
             <p class="p-10 text-center text-sm text-slate-500 dark:text-slate-400">No comments found.</p>
         @endforelse
     </div>
-    <div class="p-4 border-t border-slate-100 dark:border-slate-800">{{ $comments->links() }}</div>
+    <div class="p-4 border-t border-[#eef0f4] dark:border-[#22262e]">{{ $comments->links() }}</div>
 </div>
 
 {{-- Bulk-selection JS: keeps the "Delete selected (N)" counter in sync --}}

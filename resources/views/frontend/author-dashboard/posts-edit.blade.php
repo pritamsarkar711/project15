@@ -3,7 +3,7 @@
 @section('title', 'Edit post')
 
 @section('content')
-<div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 sm:p-6 mb-5">
+<div class="panel-card p-5 sm:p-6 mb-5">
     <div class="flex flex-wrap items-center justify-between gap-3">
         <div>
             <h2 class="text-lg font-bold text-slate-900 dark:text-white">Edit post</h2>
@@ -17,7 +17,7 @@
             </p>
         </div>
         @if($post->review_status === 'approved')
-            <a href="{{ route('blog.show', $post->slug) }}" target="_blank" rel="noopener" class="inline-flex items-center gap-2 h-9 px-4 bg-[#0C3B2E] hover:bg-[#072A20] text-white text-xs font-semibold">
+            <a href="{{ route('blog.show', $post->slug) }}" target="_blank" rel="noopener" class="inline-flex items-center gap-2 h-9 px-4 rounded-lg bg-[#0C3B2E] hover:bg-[#072A20] text-white text-xs font-semibold">
                 <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 3h6m0 0v6m0-6L10 14M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
                 View live
             </a>

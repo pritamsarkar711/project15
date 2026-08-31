@@ -8,10 +8,10 @@
         $categories = collect();
     }
 @endphp
-<header class="sticky top-0 z-40 bg-white/95 dark:bg-[#1e1e1e]/95 backdrop-blur border-b border-slate-200/70 dark:border-[#2f2f2f]">
+<header class="sticky top-0 z-40 bg-white/92 dark:bg-[#0f1115]/92 backdrop-blur border-b border-[#e6e8ee] dark:border-[#22262e]">
     <div class="max-w-[1200px] mx-auto px-4 sm:px-6">
-        <div class="flex items-center h-16 gap-3">
-            <button id="mobile-menu-btn" class="w-10 h-10 flex items-center justify-center lg:hidden text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#2a2a2a] rounded-lg transition" aria-label="Open menu" aria-controls="mobile-drawer" aria-expanded="false">
+        <div class="flex items-center h-14 sm:h-16 gap-3">
+            <button id="mobile-menu-btn" class="w-9 h-9 flex items-center justify-center lg:hidden text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#1c1f26] rounded-lg transition" aria-label="Open menu" aria-controls="mobile-drawer" aria-expanded="false">
                 <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
             </button>
             <a href="/" class="flex items-center shrink-0" aria-label="huvanti.com home">
@@ -24,7 +24,7 @@
                         Categories
                         <svg class="w-4 h-4 opacity-60 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m6 9 6 6 6-6"/></svg>
                     </button>
-                    <div id="categories-menu" class="hidden absolute left-0 top-full mt-2 w-[480px] max-w-[calc(100vw-2rem)] card-elev shadow-[0_16px_40px_-12px_rgba(15,23,42,0.18)] dark:shadow-black/50 p-2 z-50">
+                    <div id="categories-menu" class="hidden absolute left-0 top-full mt-2 w-[480px] max-w-[calc(100vw-2rem)] card p-2 z-50 shadow-[0_12px_36px_-12px_rgba(16,24,40,0.22)] dark:shadow-black/50">
                         <div class="grid grid-cols-2 gap-1">
                             @foreach($categories as $cat)
                                 <a href="{{ route('category.show',$cat->slug) }}" class="flex items-center gap-3 p-2.5 hover:bg-slate-50 dark:hover:bg-[#2a2a2a] rounded-lg transition">
@@ -47,16 +47,16 @@
                 @endif
                 <a href="/contact" class="px-3 py-2 text-sm font-medium rounded-lg text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#2a2a2a] transition {{ request()->is('contact') ? 'text-slate-900 dark:text-white font-semibold bg-slate-100 dark:bg-[#2a2a2a]' : '' }}">Contact</a>
             </nav>
-            <div class="ml-auto flex items-center gap-2">
-                <button onclick="openSearch()" class="hidden md:flex items-center gap-2 h-9 pl-3 pr-2 w-52 lg:w-60 rounded-xl border border-slate-200 bg-slate-50/70 hover:border-slate-300 hover:bg-white dark:border-[#3b4a5f] dark:bg-[#242424] dark:hover:border-[#475569] text-slate-400 dark:text-slate-500 text-sm transition" aria-label="Search">
+            <div class="ml-auto flex items-center gap-1.5">
+                <button onclick="openSearch()" class="hidden md:flex items-center gap-2 h-9 pl-3 pr-2 w-52 lg:w-64 rounded-lg border border-[#e6e8ee] bg-[#f7f8fa] hover:border-[#c9cfda] hover:bg-white dark:border-[#2c313c] dark:bg-[#14171d] dark:hover:border-[#3a4150] text-slate-400 dark:text-slate-500 text-sm transition" aria-label="Search">
                     <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-4.35-4.35"/><circle cx="11" cy="11" r="7"/></svg>
                     <span class="flex-1 text-left truncate">Search Huvanti...</span>
                     <span class="kbd">Ctrl</span><span class="kbd">K</span>
                 </button>
-                <button onclick="openSearch()" class="md:hidden w-10 h-10 flex items-center justify-center text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#2a2a2a] rounded-lg transition" aria-label="Search">
+                <button onclick="openSearch()" class="md:hidden w-9 h-9 flex items-center justify-center text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#1c1f26] rounded-lg transition" aria-label="Search">
                     <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-4.35-4.35"/><circle cx="11" cy="11" r="7"/></svg>
                 </button>
-                <button onclick="toggleTheme()" class="w-10 h-10 flex items-center justify-center text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#2a2a2a] rounded-lg transition" aria-label="Toggle theme">
+                <button onclick="toggleTheme()" class="w-9 h-9 flex items-center justify-center text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#1c1f26] rounded-lg transition" aria-label="Toggle theme">
                     <svg class="w-5 h-5 dark:hidden shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.002 9.002 0 0012 21a9.002 9.002 0 008.354-5.646z"/></svg>
                     <svg class="w-5 h-5 hidden dark:block shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
                 </button>
@@ -77,8 +77,8 @@
                         </a>
                     @endif
                 @else
-                    <a href="{{ route('login') }}" class="hidden sm:inline-flex items-center h-9 px-4 text-sm font-medium rounded-lg text-slate-600 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#2a2a2a] transition">Sign in</a>
-                    <a href="{{ route('register') }}" class="hidden sm:inline-flex items-center h-9 px-4 text-sm font-semibold rounded-lg bg-slate-900 hover:bg-slate-700 dark:bg-white dark:hover:bg-slate-200 dark:text-slate-900 text-white transition">Sign up</a>
+                    <a href="{{ route('login') }}" class="hidden sm:inline-flex items-center h-9 px-3.5 text-sm font-medium rounded-lg text-slate-600 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#1c1f26] transition">Sign in</a>
+                    <a href="{{ route('register') }}" class="hidden sm:inline-flex items-center h-8 px-4 text-[13px] font-semibold rounded-lg bg-[#16181d] hover:bg-[#05B762] dark:bg-white dark:hover:bg-[#05B762] dark:hover:text-white text-white dark:text-[#101319] transition">Sign up</a>
                 @endif
             </div>
         </div>
@@ -92,8 +92,8 @@
 --}}
 <div id="mobile-drawer" class="fixed inset-0 z-50 hidden lg:hidden" aria-hidden="true">
     <div id="mobile-backdrop" class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"></div>
-    <div id="mobile-panel" class="absolute left-0 top-0 bottom-0 w-[280px] max-w-[85vw] bg-white dark:bg-[#1e1e1e] shadow-2xl overflow-y-auto overscroll-contain">
-        <div class="h-16 px-4 flex items-center justify-between border-b border-slate-200 dark:border-[#2f2f2f]">
+    <div id="mobile-panel" class="absolute left-0 top-0 bottom-0 w-[300px] max-w-[85vw] bg-white dark:bg-[#0f1115] shadow-2xl overflow-y-auto overscroll-contain">
+        <div class="h-16 px-4 flex items-center justify-between border-b border-[#e6e8ee] dark:border-[#22262e]">
             <a href="/" class="flex items-center">
                 @include('partials.logo', ['class' => 'h-7', 'textClass' => 'text-[19px]'])
             </a>

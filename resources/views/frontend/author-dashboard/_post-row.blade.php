@@ -32,7 +32,7 @@ $reviewBadge = match($post->review_status) {
         @if($post->review_status === 'draft' || $post->review_status === 'returned')
             <a href="{{ route('author.posts.edit', $post->id) }}" class="px-3 h-9 inline-flex items-center text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800">Edit</a>
             <form method="POST" action="{{ route('author.posts.submit', $post->id) }}">@csrf
-                <button type="submit" class="px-3 h-9 inline-flex items-center text-xs font-semibold bg-[#0C3B2E] hover:bg-[#072A20] text-white">Submit</button>
+                <button type="submit" class="px-3 h-9 inline-flex items-center text-xs font-semibold rounded-lg bg-[#0C3B2E] hover:bg-[#072A20] text-white">Submit</button>
             </form>
             <form method="POST" action="{{ route('author.posts.destroy', $post->id) }}" onsubmit="return confirm('Delete this draft permanently?')">@csrf @method('DELETE')
                 <button type="submit" class="px-3 h-9 inline-flex items-center text-xs font-semibold text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10">Delete</button>
