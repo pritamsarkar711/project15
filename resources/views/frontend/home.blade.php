@@ -36,10 +36,10 @@
             <!-- Left: hero image — hidden on mobile, grounded on desktop -->
             <div class="hidden lg:flex items-end justify-center lg:justify-start relative order-1 self-end">
                 <div class="relative flex items-end">
-                    {{-- Yellow organic shape behind the person --}}
-                    <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-[44%] w-[340px] h-[340px] lg:w-[400px] lg:h-[400px] bg-[#FDE68A] rounded-[2.5rem] rotate-3 pointer-events-none" aria-hidden="true"></div>
-                    <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-[44%] w-[340px] h-[340px] lg:w-[400px] lg:h-[400px] bg-[#FACC15]/70 rounded-[2.5rem] -rotate-2 pointer-events-none" aria-hidden="true" style="border-radius:42% 58% 55% 45% / 44% 38% 62% 56%"></div>
-                    <img src="{{ $heroImgUrl }}" alt="Featured" class="relative block w-[420px] lg:w-[460px] h-[420px] lg:h-[480px] object-cover object-top translate-y-3 pointer-events-none select-none" loading="eager" decoding="async" onerror="this.style.display='none'">
+                    {{-- Solid color block behind the person: flat editorial
+                         poster look (no gradients, no rounded shapes). --}}
+                    <div class="absolute left-1/2 top-1/2 -translate-x-[38%] -translate-y-[52%] w-[340px] h-[340px] lg:w-[400px] lg:h-[400px] bg-[#FACC15] pointer-events-none" aria-hidden="true"></div>
+                    <img src="{{ $heroImgUrl }}" alt="Featured" class="relative block w-[420px] lg:w-[460px] h-[420px] lg:h-[480px] object-cover object-top translate-y-3 pointer-events-none select-none border-[10px] border-white dark:border-[#26332d]" loading="eager" decoding="async" onerror="this.style.display='none'">
                 </div>
             </div>
 
@@ -117,7 +117,7 @@
             @php $big = $featuredPosts->first(); @endphp
             <a href="{{ route('blog.show',$big->slug) }}" class="lg:col-span-7 group relative overflow-hidden bg-[#0C3B2E] min-h-[360px] flex flex-col justify-end p-8">
                 <img src="{{ storage_image_url($big->featured_image) ?: 'https://picsum.photos/seed/'.$big->slug.'/900/600' }}" alt="{{ image_alt_text($big->featured_image, $big->title) }}" class="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:opacity-60 transition" loading="lazy" decoding="async">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                <div class="absolute inset-0 bg-black/45"></div>
                 <div class="relative">
                     <div class="flex items-center gap-2 mb-3 flex-wrap">
                         <span class="text-xs font-semibold bg-white text-slate-900 px-2.5 py-1">{{ $big->category->name ?? 'Featured' }}</span>

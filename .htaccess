@@ -61,7 +61,7 @@ DirectoryIndex index.php index.html
 
 # A unique, cache-independent signal that the corrected deployment is active.
 <IfModule mod_headers.c>
-    Header always set X-Huvanti-Deploy "v47-2026-08-30-author-panel-editor-fixes"
+    Header always set X-Huvanti-Deploy "v48-2026-08-31-premium-ui-bugfixes"
     Header always set X-Content-Type-Options "nosniff"
     Header always set X-Frame-Options "SAMEORIGIN"
     Header always set Referrer-Policy "strict-origin-when-cross-origin"

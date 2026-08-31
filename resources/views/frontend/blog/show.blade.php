@@ -551,7 +551,7 @@ function cancelReply(){
 // Affiliate / outbound click tracking: records clicks on external links so
 // authors can see click counts and click rate on their Revenue page.
 (function(){
-    var postSlug = {{ json_encode($post->slug) }};
+    var postSlug = @json($post->slug);
     if (!postSlug) return;
     document.querySelectorAll('.prose a[href], .ad-in-article a[href], a.ad-link').forEach(function(a){
         a.addEventListener('click', function(){

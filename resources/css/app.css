@@ -289,3 +289,98 @@ body.theme-loading { visibility: hidden; }
 .panel-ui ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.4); }
 .panel-ui ::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.6); }
 .panel-ui ::-webkit-scrollbar-track { background: transparent; }
+
+/* ============================================================
+   SITE UI — premium editorial layer (public pages)
+   Owner design direction: NO gradients, NO border radius
+   anywhere. Sharp corners, flat solid surfaces, hairline
+   borders, confident typography, quiet micro-interactions.
+   Fonts and brand colors stay exactly as configured.
+   Scope: <body class="site-ui"> in layouts/app.blade.php.
+   ============================================================ */
+
+/* 1. Sharp edges EVERYWHERE (public + panels + editor chrome).
+      !important is deliberate: it also beats the inline
+      border-radius styles that legacy post content carries. */
+*, *::before, *::after { border-radius: 0 !important; }
+
+/* 2. Typography rhythm: tight display headings, balanced lines */
+.site-ui h1, .site-ui h2, .site-ui h3, .site-ui h4 {
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+}
+
+/* 3. Header: crisp hairline edge instead of a floating shadow */
+.site-ui header {
+    box-shadow: none;
+    border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+}
+.dark .site-ui header { border-bottom-color: rgba(255, 255, 255, 0.07); }
+
+/* 4. Footer: aligned hairline */
+.site-ui footer { border-top-color: rgba(15, 23, 42, 0.10); }
+.dark .site-ui footer { border-top-color: rgba(255, 255, 255, 0.08); }
+
+/* 5. Cards: hairline border + one quiet shadow layer (no radius) */
+.site-ui .card-elev {
+    border: 1px solid rgba(15, 23, 42, 0.07);
+    box-shadow: 0 1px 2px rgba(2, 6, 23, 0.05);
+}
+.dark .site-ui .card-elev {
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+}
+
+/* 6. Micro-interactions: fast, subtle, never bouncy */
+.site-ui a,
+.site-ui button,
+.site-ui summary {
+    transition-property: background-color, border-color, color, box-shadow, transform, opacity;
+    transition-duration: 0.15s;
+    transition-timing-function: ease;
+}
+.site-ui button:active { transform: translateY(1px); }
+
+/* 7. Keyboard focus: consistent brand ring on the public site */
+.site-ui a:focus-visible,
+.site-ui button:focus-visible,
+.site-ui summary:focus-visible,
+.site-ui input:focus-visible,
+.site-ui select:focus-visible,
+.site-ui textarea:focus-visible {
+    outline: 2px solid #0C3B2E;
+    outline-offset: 2px;
+}
+.dark .site-ui a:focus-visible,
+.dark .site-ui button:focus-visible,
+.dark .site-ui summary:focus-visible,
+.dark .site-ui input:focus-visible,
+.dark .site-ui select:focus-visible,
+.dark .site-ui textarea:focus-visible {
+    outline-color: #34D399;
+}
+
+/* 8. Text selection in brand tone */
+.site-ui ::selection { background: rgba(12, 59, 46, 0.14); }
+.dark .site-ui ::selection { background: rgba(52, 211, 153, 0.28); }
+
+/* 9. Article body polish */
+.site-ui .prose img {
+    border: 1px solid rgba(15, 23, 42, 0.08);
+}
+.dark .site-ui .prose img { border-color: rgba(255, 255, 255, 0.09); }
+/* Section headings inside articles get a thin editorial rule */
+.site-ui .prose h2 {
+    padding-bottom: 0.35rem;
+    border-bottom: 1px solid rgba(15, 23, 42, 0.07);
+}
+.dark .site-ui .prose h2 { border-bottom-color: rgba(255, 255, 255, 0.08); }
+/* Blockquotes: tighter, calmer */
+.site-ui .prose blockquote { border-left-width: 3px; }
+
+/* 10. Tables: strong head rule (mirrors panel-ui tables) */
+.site-ui .prose thead th { border-bottom: 2px solid rgba(100, 116, 139, 0.25); }
+
+/* 11. Scroll-to-top FAB: square with hairline edge */
+.site-ui #scroll-top { border: 1px solid rgba(255, 255, 255, 0.18); }
+.dark .site-ui #scroll-top { border-color: rgba(0, 0, 0, 0.3); }
