@@ -10,7 +10,7 @@ $reviewBadge = match($post->review_status) {
 <div class="flex items-center gap-4 p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
     <div class="w-14 h-14 bg-slate-100 dark:bg-slate-800 shrink-0 overflow-hidden">
         @if($post->featured_image)
-            <img src="{{ str_starts_with($post->featured_image, 'http') ? $post->featured_image : '/storage/'.$post->featured_image }}" class="w-full h-full object-cover" alt="" loading="lazy">
+            <img src="{{ str_starts_with($post->featured_image, 'http') ? $post->featured_image : '/storage/'.$post->featured_image }}" class="w-full h-full object-cover" alt="" loading="lazy" onerror="this.onerror=null;this.style.visibility='hidden'">
         @endif
     </div>
     <div class="flex-1 min-w-0">

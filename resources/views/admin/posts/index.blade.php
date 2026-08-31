@@ -99,7 +99,7 @@
                         <td class="px-4 py-3">
                             <div class="flex items-center gap-3">
                                 @if($post->featured_image)
-                                    <img src="{{ str_starts_with($post->featured_image,'http') ? $post->featured_image : '/storage/'.$post->featured_image }}" class="w-10 h-10 object-cover bg-slate-100 dark:bg-slate-800" alt="" loading="lazy" decoding="async">
+                                    <img src="{{ str_starts_with($post->featured_image,'http') ? $post->featured_image : '/storage/'.$post->featured_image }}" class="w-10 h-10 object-cover bg-slate-100 dark:bg-slate-800" alt="" loading="lazy" decoding="async" onerror="this.onerror=null;this.style.visibility='hidden'">
                                 @else
                                     <div class="w-10 h-10 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 flex items-center justify-center">
                                         <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2Z"/></svg>

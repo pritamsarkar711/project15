@@ -17,6 +17,28 @@
         Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
     </IfModule>
 
+    # ------------------------------------------------------------------
+    # Cache policy — visitors must NEVER need a hard refresh (Ctrl+Shift+R)
+    # after a deploy. HTML pages carry `Cache-Control: no-cache, private`
+    # (emitted by the framework), so every normal load revalidates the page
+    # and instantly picks up newly hashed assets. Static assets are split:
+    #   - content-hashed Vite bundles (app-xxxxxxxx.css/js): cache forever
+    #   - fonts: cache forever
+    #   - images: 7 days (uploads use unique filenames, so new uploads are
+    #     always fresh URLs)
+    # ------------------------------------------------------------------
+    <IfModule mod_headers.c>
+        <FilesMatch "\.[0-9a-f]{8}\.(css|js)$">
+            Header set Cache-Control "public, max-age=31536000, immutable"
+        </FilesMatch>
+        <FilesMatch "\.(woff2?|ttf|otf)$">
+            Header set Cache-Control "public, max-age=31536000, immutable"
+        </FilesMatch>
+        <FilesMatch "\.(jpg|jpeg|png|gif|webp|avif|svg|ico)$">
+            Header set Cache-Control "public, max-age=604800"
+        </FilesMatch>
+    </IfModule>
+
     # Block dotfiles (.env, .git, etc.)
     RewriteRule (^\.|/\.) - [F]
 

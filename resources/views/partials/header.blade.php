@@ -48,7 +48,7 @@
                 <a href="/contact" class="px-3 py-2 text-sm font-medium rounded-lg text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#2a2a2a] transition {{ request()->is('contact') ? 'text-slate-900 dark:text-white font-semibold bg-slate-100 dark:bg-[#2a2a2a]' : '' }}">Contact</a>
             </nav>
             <div class="ml-auto flex items-center gap-2">
-                <button onclick="openSearch()" class="hidden md:flex items-center gap-2 h-9 pl-3 pr-2 w-52 lg:w-60 rounded-full border border-slate-200 bg-slate-50/70 hover:border-slate-300 hover:bg-white dark:border-[#3b4a5f] dark:bg-[#242424] dark:hover:border-[#475569] text-slate-400 dark:text-slate-500 text-sm transition" aria-label="Search">
+                <button onclick="openSearch()" class="hidden md:flex items-center gap-2 h-9 pl-3 pr-2 w-52 lg:w-60 rounded-xl border border-slate-200 bg-slate-50/70 hover:border-slate-300 hover:bg-white dark:border-[#3b4a5f] dark:bg-[#242424] dark:hover:border-[#475569] text-slate-400 dark:text-slate-500 text-sm transition" aria-label="Search">
                     <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-4.35-4.35"/><circle cx="11" cy="11" r="7"/></svg>
                     <span class="flex-1 text-left truncate">Search Huvanti...</span>
                     <span class="kbd">Ctrl</span><span class="kbd">K</span>
@@ -64,21 +64,21 @@
                     @if(auth()->user()->browsingAsUser())
                         <form method="POST" action="{{ route('switch-back-to-admin') }}" class="hidden sm:block">
                             @csrf
-                            <button type="submit" class="inline-flex items-center h-9 px-4 text-xs font-semibold rounded-full bg-amber-400 hover:bg-amber-300 text-slate-900 transition cursor-pointer">
+                            <button type="submit" class="inline-flex items-center h-9 px-4 text-xs font-semibold rounded-lg bg-amber-400 hover:bg-amber-300 text-slate-900 transition cursor-pointer">
                                 Switch to Admin
                             </button>
                         </form>
-                        <a href="{{ route('author.dashboard') }}" class="hidden sm:inline-flex items-center h-9 px-4 text-xs font-semibold rounded-full bg-[#05B762] hover:bg-[#049A53] text-white transition">
+                        <a href="{{ route('author.dashboard') }}" class="hidden sm:inline-flex items-center h-9 px-4 text-xs font-semibold rounded-lg bg-[#05B762] hover:bg-[#049A53] text-white transition">
                             Dashboard
                         </a>
                     @else
-                        <a href="{{ auth()->user()->role === 'admin' ? route('admin.dashboard') : route('author.dashboard') }}" class="hidden sm:inline-flex items-center h-9 px-4 text-xs font-semibold rounded-full bg-[#05B762] hover:bg-[#049A53] text-white transition">
+                        <a href="{{ auth()->user()->role === 'admin' ? route('admin.dashboard') : route('author.dashboard') }}" class="hidden sm:inline-flex items-center h-9 px-4 text-xs font-semibold rounded-lg bg-[#05B762] hover:bg-[#049A53] text-white transition">
                             {{ auth()->user()->role === 'admin' ? 'Admin' : 'Dashboard' }}
                         </a>
                     @endif
                 @else
-                    <a href="{{ route('login') }}" class="hidden sm:inline-flex items-center h-9 px-4 text-sm font-medium rounded-full text-slate-600 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#2a2a2a] transition">Sign in</a>
-                    <a href="{{ route('register') }}" class="hidden sm:inline-flex items-center h-9 px-4 text-sm font-semibold rounded-full bg-slate-900 hover:bg-slate-700 dark:bg-white dark:hover:bg-slate-200 dark:text-slate-900 text-white transition">Sign up</a>
+                    <a href="{{ route('login') }}" class="hidden sm:inline-flex items-center h-9 px-4 text-sm font-medium rounded-lg text-slate-600 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#2a2a2a] transition">Sign in</a>
+                    <a href="{{ route('register') }}" class="hidden sm:inline-flex items-center h-9 px-4 text-sm font-semibold rounded-lg bg-slate-900 hover:bg-slate-700 dark:bg-white dark:hover:bg-slate-200 dark:text-slate-900 text-white transition">Sign up</a>
                 @endif
             </div>
         </div>

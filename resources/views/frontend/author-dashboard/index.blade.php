@@ -99,15 +99,35 @@
         </div>
     </div>
 
-    {{-- Quick actions: same green card as the admin dashboard --}}
+    {{-- Quick actions: calm card in the shared design language --}}
     <div>
-        <div class="bg-[#0C3B2E] p-5 text-white">
-            <h3 class="font-semibold">Quick Actions</h3>
-            <div class="mt-4 grid grid-cols-2 gap-2">
-                <a href="{{ route('author.posts.create') }}" class="bg-white text-[#0C3B2E] py-2.5 text-center text-sm font-semibold hover:bg-emerald-50 transition">New Post</a>
-                <a href="{{ route('author.posts.index') }}" class="bg-white/10 border border-white/20 py-2.5 text-center text-sm font-semibold hover:bg-white/20 transition">My Posts</a>
-                <a href="{{ route('author.rules') }}" class="bg-white/10 border border-white/20 py-2.5 text-center text-sm font-semibold hover:bg-white/20 transition">Posting Rules</a>
-                <a href="{{ route('author.profile.edit') }}" class="bg-white/10 border border-white/20 py-2.5 text-center text-sm font-semibold hover:bg-white/20 transition">Profile</a>
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-[0_1px_4px_rgba(15,23,42,0.05)]">
+            <h3 class="font-semibold text-slate-900 dark:text-white">Quick Actions</h3>
+            <div class="mt-4 grid grid-cols-2 gap-2.5">
+                <a href="{{ route('author.posts.create') }}" class="group flex flex-col items-start gap-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/40 p-3.5 hover:border-[#05B762]/50 hover:bg-white dark:hover:bg-slate-800 transition">
+                    <span class="icon-tile w-8 h-8 rounded-lg">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z"/></svg>
+                    </span>
+                    <span class="text-sm font-semibold text-slate-700 dark:text-slate-200 group-hover:text-[#049A53] dark:group-hover:text-emerald-300 transition">New Post</span>
+                </a>
+                <a href="{{ route('author.posts.index') }}" class="group flex flex-col items-start gap-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/40 p-3.5 hover:border-[#05B762]/50 hover:bg-white dark:hover:bg-slate-800 transition">
+                    <span class="icon-tile w-8 h-8 rounded-lg">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+                    </span>
+                    <span class="text-sm font-semibold text-slate-700 dark:text-slate-200 group-hover:text-[#049A53] dark:group-hover:text-emerald-300 transition">My Posts</span>
+                </a>
+                <a href="{{ route('author.rules') }}" class="group flex flex-col items-start gap-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/40 p-3.5 hover:border-[#05B762]/50 hover:bg-white dark:hover:bg-slate-800 transition">
+                    <span class="icon-tile w-8 h-8 rounded-lg">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
+                    </span>
+                    <span class="text-sm font-semibold text-slate-700 dark:text-slate-200 group-hover:text-[#049A53] dark:group-hover:text-emerald-300 transition">Posting Rules</span>
+                </a>
+                <a href="{{ route('author.profile.edit') }}" class="group flex flex-col items-start gap-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/40 p-3.5 hover:border-[#05B762]/50 hover:bg-white dark:hover:bg-slate-800 transition">
+                    <span class="icon-tile w-8 h-8 rounded-lg">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
+                    </span>
+                    <span class="text-sm font-semibold text-slate-700 dark:text-slate-200 group-hover:text-[#049A53] dark:group-hover:text-emerald-300 transition">Profile</span>
+                </a>
             </div>
         </div>
         <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 mt-5">
