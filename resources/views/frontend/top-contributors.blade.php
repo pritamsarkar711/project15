@@ -8,56 +8,52 @@
     $metaTitle = 'Top Contributors — The Most Active Writers on Huvanti';
 @endphp
 @section('content')
-<div class="bg-emerald-50/70 dark:bg-[#1e1e1e] border-b border-emerald-100 dark:border-[#2f2f2f]">
-    <div class="max-w-[1200px] mx-auto px-4 sm:px-6 py-8 sm:py-10">
-        <h1 class="text-[30px] sm:text-[36px] font-extrabold text-slate-900 dark:text-white tracking-tight">Top Contributors</h1>
-        <p class="text-sm text-slate-600 dark:text-slate-400 mt-2 max-w-2xl">The twenty most active authors on Huvanti, ranked by published articles.</p>
+<div class="dotgrid border-b border-[#E4E4DA] dark:border-[#262C28]">
+    <div class="max-w-[1280px] mx-auto px-4 sm:px-6 py-12 sm:py-16">
+        <span class="kicker"><b>01</b> The bylines</span>
+        <h1 class="mt-4 font-black text-[36px] sm:text-[52px] text-[#141A16] dark:text-[#F0F2EB] tracking-tight leading-[1.03]">Top contributors<span class="text-[#F5C445]">.</span></h1>
+        <p class="mt-4 text-[15px] text-[#5C665E] dark:text-[#97A199] max-w-2xl leading-relaxed">The twenty most active authors on Huvanti, ranked by published articles.</p>
     </div>
 </div>
 
-<div class="max-w-[1200px] mx-auto px-4 sm:px-6 py-10">
+<div class="max-w-[1280px] mx-auto px-4 sm:px-6 py-12">
     @if($contributors->count())
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="border-b border-[#E4E4DA] dark:border-[#262C28]">
             @foreach($contributors as $i => $author)
                 @php
                     $profileUrl = $author->username ? route('author.profile', $author->username) : null;
                     $avatar = $author->author_avatar_path ? asset('storage/'.$author->author_avatar_path) : null;
                 @endphp
-                <article class="card-elev p-5 flex items-start gap-4 hover:shadow-xl transition-all duration-200">
-                    <div class="relative shrink-0">
+                <a {{ $profileUrl ? 'href="'.$profileUrl.'"' : 'href="#"' }} class="index-row group grid grid-cols-[52px_56px_1fr_28px] sm:grid-cols-[72px_64px_1fr_auto_36px] items-center gap-3 sm:gap-5 py-4 px-2 sm:px-4">
+                    <span class="text-[26px] sm:text-[30px] font-black tabular-nums leading-none {{ $i < 3 ? 'text-[#F5C445]' : 'text-[#D8D8CC] dark:text-[#3A443D]' }} group-hover:text-[#0C3B2E] dark:group-hover:text-[#34D399] transition-colors select-none">{{ str_pad($i + 1, 2, '0', STR_PAD_LEFT) }}</span>
+                    <span class="relative shrink-0">
                         @if($avatar)
-                            <img src="{{ $avatar }}" alt="{{ $author->name }}" class="w-14 h-14 object-cover border border-slate-200 dark:border-[#383838]" loading="lazy" decoding="async">
+                            <img src="{{ $avatar }}" alt="{{ $author->name }}" class="w-12 h-12 sm:w-14 sm:h-14 object-cover plate" loading="lazy" decoding="async">
                         @else
-                            <div class="w-14 h-14 bg-[#0C3B2E] text-white flex items-center justify-center font-extrabold text-lg">{{ strtoupper(substr($author->name, 0, 1)) }}</div>
+                            <span class="w-12 h-12 sm:w-14 sm:h-14 bg-[#0C3B2E] text-white flex items-center justify-center font-black text-lg plate">{{ strtoupper(substr($author->name, 0, 1)) }}</span>
                         @endif
-                        <span class="absolute -top-2 -left-2 w-6 h-6 bg-[#F5C445] text-slate-900 text-[11px] font-extrabold flex items-center justify-center">{{ $i + 1 }}</span>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <div class="flex items-center gap-1.5 flex-wrap">
-                            @if($profileUrl)
-                                <a href="{{ $profileUrl }}" class="font-bold text-slate-900 dark:text-white hover:text-[#0C3B2E] dark:hover:text-emerald-300 truncate">{{ $author->name }}</a>
-                            @else
-                                <span class="font-bold text-slate-900 dark:text-white truncate">{{ $author->name }}</span>
-                            @endif
+                    </span>
+                    <span class="min-w-0">
+                        <span class="flex items-center gap-2 flex-wrap">
+                            <span class="font-extrabold text-[16px] text-[#141A16] dark:text-[#F0F2EB] truncate group-hover:text-[#0C3B2E] dark:group-hover:text-[#34D399] transition-colors">{{ $author->name }}</span>
                             @include('partials.country-flag', ['user' => $author, 'class' => 'w-4 h-3'])
                             {!! $author->badgeHtml() !!}
-                        </div>
+                        </span>
                         @if($author->role_title)
-                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{{ $author->role_title }}</p>
+                            <span class="block text-[12px] text-[#8B958C] dark:text-[#6B756C] mt-0.5 font-medium">{{ $author->role_title }}</span>
                         @endif
-                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">{{ number_format($author->posts_count) }} published {{ Str::plural('article', $author->posts_count) }}</p>
-                        @if($profileUrl)
-                            <a href="{{ $profileUrl }}" class="inline-flex items-center gap-1 mt-2 text-xs font-semibold text-[#0C3B2E] dark:text-emerald-300 hover:underline">View profile
-                                <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12l-7.5 7.5M21 12H3"/></svg>
-                            </a>
-                        @endif
-                    </div>
-                </article>
+                        <span class="block text-[12.5px] text-[#5C665E] dark:text-[#97A199] mt-1 font-semibold">{{ number_format($author->posts_count) }} published {{ Str::plural('article', $author->posts_count) }}</span>
+                    </span>
+                    <span class="hidden sm:inline-flex text-[11px] font-extrabold tracking-[0.16em] uppercase text-[#8B958C] dark:text-[#6B756C] group-hover:text-[#0C3B2E] dark:group-hover:text-[#34D399] transition">Profile</span>
+                    <span class="text-[#141A16] dark:text-[#F0F2EB] justify-self-end transition-transform group-hover:translate-x-1.5">
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </span>
+                </a>
             @endforeach
         </div>
     @else
-        <div class="text-center py-12 card-elev">
-            <p class="text-sm text-slate-600 dark:text-slate-400">No contributors yet. Published articles will appear here.</p>
+        <div class="text-center py-16 card-elev max-w-xl mx-auto">
+            <p class="text-[15px] font-medium text-[#5C665E] dark:text-[#97A199]">No contributors yet. Published articles will appear here.</p>
         </div>
     @endif
 </div>

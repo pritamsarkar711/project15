@@ -4,28 +4,29 @@
 @php($metaTitle = "Sorry, We Couldn't Find That Page | Huvanti")
 
 @section('content')
-<div class="max-w-[1200px] mx-auto px-4 sm:px-6 py-20 text-center">
-    <p class="text-[64px] sm:text-[96px] font-extrabold leading-none text-[#0C3B2E] dark:text-emerald-300 select-none">404</p>
-    <h1 class="mt-2 text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">We couldn't find that page</h1>
-    <p class="mt-3 text-sm sm:text-base text-slate-600 dark:text-slate-400 max-w-xl mx-auto leading-relaxed">
+<div class="max-w-[1280px] mx-auto px-4 sm:px-6 py-20 sm:py-28 text-center dotgrid">
+    <p class="kicker justify-center">Error 404</p>
+    <p class="mt-6 text-[110px] sm:text-[170px] font-black leading-none text-[#141A16] dark:text-[#F0F2EB] select-none tracking-tight">4<span class="marker">0</span>4</p>
+    <h1 class="mt-4 text-[24px] sm:text-[32px] font-black text-[#141A16] dark:text-[#F0F2EB]">We couldn't find that page</h1>
+    <p class="mt-3 text-[15px] text-[#5C665E] dark:text-[#97A199] max-w-md mx-auto leading-relaxed">
         The link may be broken, or the article may have been moved or deleted.
         Try one of the pages below — or search for what you were looking for.
     </p>
 
-    <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
-        <a href="{{ url('/') }}" class="h-11 px-6 inline-flex items-center bg-[#0C3B2E] hover:bg-[#072A20] dark:bg-emerald-400 dark:hover:bg-emerald-300 text-white dark:text-slate-900 text-sm font-bold transition shadow-sm">
+    <div class="mt-9 flex flex-wrap items-center justify-center gap-3">
+        <a href="{{ url('/') }}" class="btn btn-primary btn-sm">
             Go to homepage
         </a>
-        <a href="{{ url('/blog') }}" class="h-11 px-6 inline-flex items-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:border-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 text-sm font-bold transition">
+        <a href="{{ url('/blog') }}" class="btn btn-outline btn-sm">
             Browse all articles
         </a>
     </div>
 
-    <nav class="mt-10 text-sm text-slate-500 dark:text-slate-400 flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
-        <a href="{{ url('/about') }}" class="hover:text-emerald-700 dark:hover:text-emerald-300 hover:underline">About us</a>
-        <a href="{{ url('/contact') }}" class="hover:text-emerald-700 dark:hover:text-emerald-300 hover:underline">Contact</a>
-        <a href="{{ url('/privacy-policy') }}" class="hover:text-emerald-700 dark:hover:text-emerald-300 hover:underline">Privacy Policy</a>
-        <a href="{{ url('/editorial-policy') }}" class="hover:text-emerald-700 dark:hover:text-emerald-300 hover:underline">Editorial Policy</a>
+    <nav class="mt-12 text-[12px] font-bold text-[#8B958C] dark:text-[#6B756C] flex flex-wrap items-center justify-center gap-x-6 gap-y-2 uppercase tracking-[0.14em]">
+        <a href="{{ url('/about') }}" class="hover:text-[#0C3B2E] dark:hover:text-[#34D399] hover:underline underline-offset-4">About us</a>
+        <a href="{{ url('/contact') }}" class="hover:text-[#0C3B2E] dark:hover:text-[#34D399] hover:underline underline-offset-4">Contact</a>
+        <a href="{{ url('/privacy-policy') }}" class="hover:text-[#0C3B2E] dark:hover:text-[#34D399] hover:underline underline-offset-4">Privacy Policy</a>
+        <a href="{{ url('/editorial-policy') }}" class="hover:text-[#0C3B2E] dark:hover:text-[#34D399] hover:underline underline-offset-4">Editorial Policy</a>
     </nav>
 </div>
 @endsection

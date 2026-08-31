@@ -16,7 +16,7 @@ class ViteAssets
 {
     /** Last-resort hashed filenames shipped in public/build/. */
     private const FALLBACK = [
-        'resources/css/app.css' => 'assets/app-a69d3712.css',
+        'resources/css/app.css' => 'assets/app-391cee70.css',
     ];
 
     public static function tags(array $entrypoints): HtmlString
