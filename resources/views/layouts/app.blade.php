@@ -105,30 +105,43 @@
     <link rel="preconnect" href="https://picsum.photos" crossorigin>
     <link rel="dns-prefetch" href="https://www.googletagmanager.com">
     <link href="{{ \App\Support\SiteFont::googleUrl() }}" rel="stylesheet">
-    {!! \App\Support\ViteAssets::tags(['resources/css/app.css', 'resources/js/app.js']) !!}
+    {{-- resources/js/app.js is intentionally empty — requesting its built
+         module only fired a pointless (empty) script request on every page
+         view, so only the stylesheet entry is loaded here. --}}
+    {!! \App\Support\ViteAssets::tags(['resources/css/app.css']) !!}
 
-    {{-- Google Tag Manager (Admin → Settings → Analytics & Verification) --}}
-    @if(setting('gtm_container_id'))
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','{{ setting('gtm_container_id') }}');</script>
+    {{-- Google Tag Manager (Admin → Settings → Analytics & Verification).
+         Rendered ONLY for a well-formed container id (GTM-XXXXXX). A wrong
+         value (an email address, a G- id, free text) silently produced a
+         broken request to googletagmanager and console noise in GSC's live
+         URL test — skipping the snippet entirely keeps the page clean until
+         a valid id is stored. --}}
+    @php $gtmId = preg_match('/^GTM-[A-Za-z0-9]+$/', (string) setting('gtm_container_id')) ? setting('gtm_container_id') : null; @endphp
+    @if($gtmId)
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','{{ $gtmId }}');</script>
     @endif
 
     {{-- Google Analytics 4 (Search Console GA verification requires the
-         gtag.js snippet inside <head>, so it lives here — not at body end) --}}
-    @if(setting('ga_measurement_id'))
-    <script async src="https://www.googletagmanager.com/gtag/js?id={{ setting('ga_measurement_id') }}"></script>
+         gtag.js snippet inside <head>, so it lives here — not at body end).
+         Only a well-formed measurement id (G-XXXX / GTM-XXXX / AW-XXXX /
+         UA-XXXX) is rendered; the settings field once held an email address,
+         which made gtag.js load with an invalid id on every page view. --}}
+    @php $gaId = preg_match('/^(G|UA|AW|GT)-[A-Za-z0-9_-]+$/', (string) setting('ga_measurement_id')) ? setting('ga_measurement_id') : null; @endphp
+    @if($gaId)
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ $gaId }}"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
-        gtag('config', '{{ setting('ga_measurement_id') }}');
+        gtag('config', '{{ $gaId }}');
     </script>
     @endif
 
     @stack('head')
 </head>
-<body class="bg-[#fafafa] dark:bg-[#121212] text-slate-800 dark:text-slate-100 antialiased overflow-x-hidden" style="font-family:{{ \App\Support\SiteFont::cssStack() }}">
-    @if(setting('gtm_container_id'))
-    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ setting('gtm_container_id') }}" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<body class="site-ui bg-[#fafafa] dark:bg-[#121212] text-slate-800 dark:text-slate-100 antialiased overflow-x-hidden" style="font-family:{{ \App\Support\SiteFont::cssStack() }}">
+    @if($gtmId)
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ $gtmId }}" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     @endif
     {{-- Admin ⇄ User switch: silent. While the admin browses in user mode the
          site header shows a small "Switch to Admin" button — no banner, no
