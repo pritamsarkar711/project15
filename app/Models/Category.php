@@ -13,7 +13,7 @@ class Category extends Model
 
     /** Color no longer managed in admin — default to the brand green. */
     protected $attributes = [
-        'color' => '#0C3B2E',
+        'color' => '#173A2A',
         'icon' => 'newspaper',
     ];
 

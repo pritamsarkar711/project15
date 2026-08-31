@@ -105,11 +105,11 @@ class User extends Authenticatable
 
         return match ($type) {
             // Admin: purple verified badge.
-            'admin'  => '<span class="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-600 text-white" title="Verified site administrator">'.$seal.'Admin</span>',
+            'admin'  => '<span class="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#16181d] text-white" title="Verified site administrator">'.$seal.'Admin</span>',
             // 100+ published posts: yellow badge (authors only).
             'top'    => '<span class="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-400 text-slate-900" title="Top author, 100+ published posts">'.$seal.'Top Author</span>',
             // 10+ published posts: green badge (authors only).
-            default  => '<span class="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500 text-white" title="Verified author, 10+ published posts">'.$seal.'Author</span>',
+            default  => '<span class="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#2E7856] text-white" title="Verified author, 10+ published posts">'.$seal.'Author</span>',
         };
     }
 

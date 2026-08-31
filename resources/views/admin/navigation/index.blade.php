@@ -18,7 +18,7 @@
             <option value="mobile">Mobile Hamburger</option>
             <option value="footer">Footer</option>
         </select>
-        <button type="submit" class="h-10 px-4 rounded-lg bg-[#0C3B2E] hover:bg-[#072A20] text-white text-sm font-semibold transition">Add</button>
+        <button type="submit" class="h-10 px-4 rounded-lg bg-[#2E7856] hover:bg-[#27654A] text-white text-sm font-semibold transition">Add</button>
     </div>
 </form>
 

@@ -43,20 +43,20 @@
         <div class="panel-card p-6 space-y-4">
             <h3 class="font-semibold">ads.txt</h3>
             <textarea name="ads_txt_content" rows="5" placeholder="google.com, pub-0000000000000000, DIRECT, f08c47fec0942fa0" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-mono placeholder:font-sans">{{ old('ads_txt_content', $settings['ads_txt_content']->value ?? '') }}</textarea>
-            <p class="text-xs text-slate-400 dark:text-slate-500">Served live at <a href="{{ url('ads.txt') }}" target="_blank" class="text-emerald-700 dark:text-emerald-300 hover:underline">{{ url('ads.txt') }}</a></p>
+            <p class="text-xs text-slate-400 dark:text-slate-500">Served live at <a href="{{ url('ads.txt') }}" target="_blank" class="text-[#1F513A] dark:text-[#6FB393] hover:underline">{{ url('ads.txt') }}</a></p>
         </div>
 
         <div class="panel-card p-6 space-y-4">
             <h3 class="font-semibold">robots.txt</h3>
             <textarea name="robots_txt_content" rows="5" placeholder="User-agent: *
 Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-mono placeholder:font-sans">{{ old('robots_txt_content', $settings['robots_txt_content']->value ?? '') }}</textarea>
-            <p class="text-xs text-slate-400 dark:text-slate-500">Optional. Appended to the auto-generated robots.txt. Served at <a href="{{ url('robots.txt') }}" target="_blank" class="text-emerald-700 dark:text-emerald-300 hover:underline">{{ url('robots.txt') }}</a></p>
+            <p class="text-xs text-slate-400 dark:text-slate-500">Optional. Appended to the auto-generated robots.txt. Served at <a href="{{ url('robots.txt') }}" target="_blank" class="text-[#1F513A] dark:text-[#6FB393] hover:underline">{{ url('robots.txt') }}</a></p>
         </div>
 
         <div class="panel-card p-6 space-y-4">
             <h3 class="font-semibold">llms.txt</h3>
             <textarea name="llms_txt_content" rows="5" placeholder="Extra markdown appended to llms.txt" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">{{ old('llms_txt_content', $settings['llms_txt_content']->value ?? '') }}</textarea>
-            <p class="text-xs text-slate-400 dark:text-slate-500">Optional. Appended to the auto-generated llms.txt. Served at <a href="{{ url('llms.txt') }}" target="_blank" class="text-emerald-700 dark:text-emerald-300 hover:underline">{{ url('llms.txt') }}</a></p>
+            <p class="text-xs text-slate-400 dark:text-slate-500">Optional. Appended to the auto-generated llms.txt. Served at <a href="{{ url('llms.txt') }}" target="_blank" class="text-[#1F513A] dark:text-[#6FB393] hover:underline">{{ url('llms.txt') }}</a></p>
         </div>
 
         <div class="panel-card p-6 space-y-4">
@@ -65,13 +65,13 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
                 <label class="inline-flex items-center gap-2 cursor-pointer">
                     <span class="relative inline-flex shrink-0">
                         <input type="checkbox" name="google_enabled" value="1" {{ old('google_enabled', $settings['google_enabled']->value ?? '0') === '1' ? 'checked' : '' }} class="peer sr-only">
-                        <span class="block w-11 h-6 rounded-full bg-slate-200 dark:bg-slate-700 peer-checked:bg-[#0C3B2E] transition-colors"></span>
+                        <span class="block w-11 h-6 rounded-full bg-slate-200 dark:bg-slate-700 peer-checked:bg-[#2E7856] transition-colors"></span>
                         <span class="pointer-events-none absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform peer-checked:translate-x-5"></span>
                     </span>
-                    <span class="text-sm font-medium {{ ($settings['google_enabled']->value ?? '0') === '1' ? 'text-emerald-700 dark:text-emerald-300' : 'text-slate-500' }}">{{ ($settings['google_enabled']->value ?? '0') === '1' ? 'Enabled' : 'Disabled' }}</span>
+                    <span class="text-sm font-medium {{ ($settings['google_enabled']->value ?? '0') === '1' ? 'text-[#1F513A] dark:text-[#6FB393]' : 'text-slate-500' }}">{{ ($settings['google_enabled']->value ?? '0') === '1' ? 'Enabled' : 'Disabled' }}</span>
                 </label>
             </div>
-            <p class="text-xs text-slate-500 dark:text-slate-400">Sign-in with Google. Create credentials at <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener" class="text-emerald-700 dark:text-emerald-300 hover:underline">Google Cloud Console</a>. Redirect URI: <span class="font-mono bg-slate-100 dark:bg-slate-800 px-1">{{ url('/auth/google/callback') }}</span></p>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Sign-in with Google. Create credentials at <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener" class="text-[#1F513A] dark:text-[#6FB393] hover:underline">Google Cloud Console</a>. Redirect URI: <span class="font-mono bg-slate-100 dark:bg-slate-800 px-1">{{ url('/auth/google/callback') }}</span></p>
             <div class="grid sm:grid-cols-2 gap-4">
                 <div>
                     <label class="text-sm font-medium">Client ID</label>
@@ -84,7 +84,7 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
             </div>
         </div>
 
-        <button type="submit" class="h-11 px-6 rounded-lg bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold transition">Save Integrations</button>
+        <button type="submit" class="h-11 px-6 rounded-lg bg-[#2E7856] hover:bg-[#27654A] text-white font-semibold transition">Save Integrations</button>
     </form>
 
 @elseif(request('tab') === 'appearance')
@@ -102,7 +102,7 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
                 </select>
             </div>
         </div>
-        <button type="submit" class="h-11 px-6 rounded-lg bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold transition">Save</button>
+        <button type="submit" class="h-11 px-6 rounded-lg bg-[#2E7856] hover:bg-[#27654A] text-white font-semibold transition">Save</button>
     </form>
 
 @elseif(request('tab') === 'hero')
@@ -136,7 +136,7 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
             <div class="grid sm:grid-cols-2 gap-5 items-start">
                 <div>
                     <label class="text-sm font-medium">Upload</label>
-                    <label for="hero_person_image_file" class="mt-2 flex items-center justify-center h-24 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg cursor-pointer hover:border-[#0C3B2E] hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
+                    <label for="hero_person_image_file" class="mt-2 flex items-center justify-center h-24 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg cursor-pointer hover:border-[#173A2A] hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
                         <input type="file" name="hero_person_image_file" id="hero_person_image_file" accept="image/jpeg,image/png,image/gif,image/webp,image/bmp" class="hidden">
                         <div class="text-center" id="hero-upload-hint">
                             <svg class="w-6 h-6 mx-auto text-slate-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg>
@@ -144,11 +144,11 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
                             <p class="text-[10px] text-slate-400 mt-0.5">JPG, PNG, GIF, WebP or BMP · max 4 MB</p>
                         </div>
                     </label>
-                    <p class="mt-2 text-xs font-medium text-emerald-700 dark:text-emerald-300 hidden" id="hero-file-name"></p>
+                    <p class="mt-2 text-xs font-medium text-[#1F513A] dark:text-[#6FB393] hidden" id="hero-file-name"></p>
                     <label class="mt-3 inline-flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300 cursor-pointer">
                         <span class="relative inline-flex shrink-0">
                             <input type="checkbox" name="hero_remove_image" value="1" class="peer sr-only">
-                            <span class="block w-11 h-6 rounded-full bg-slate-200 dark:bg-slate-700 peer-checked:bg-[#0C3B2E] transition-colors"></span>
+                            <span class="block w-11 h-6 rounded-full bg-slate-200 dark:bg-slate-700 peer-checked:bg-[#2E7856] transition-colors"></span>
                             <span class="pointer-events-none absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform peer-checked:translate-x-5"></span>
                         </span>
                         Remove image (use default)
@@ -157,7 +157,7 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
                 <div>
                     <label class="text-sm font-medium">Preview</label>
                     @php $heroImg = $settings['hero_person_image']->value ?? null; @endphp
-                    <div class="mt-2 w-32 h-32 rounded-xl overflow-hidden bg-[#0C3B2E] flex items-center justify-center relative">
+                    <div class="mt-2 w-32 h-32 rounded-xl overflow-hidden bg-[#173A2A] flex items-center justify-center relative">
                         <img src="{{ $heroImg ? asset('storage/'.$heroImg) : asset('images/hero-person-harry.png') }}" alt="" class="w-full h-full object-cover" loading="lazy" decoding="async" id="hero-preview-img"
                              onerror="this.style.display='none'; var h=document.getElementById('hero-load-hint'); if(h){h.classList.remove('hidden');}">
                     </div>
@@ -166,7 +166,7 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
             </div>
         </div>
 
-        <button type="submit" class="h-11 px-6 rounded-lg bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold transition">Save</button>
+        <button type="submit" class="h-11 px-6 rounded-lg bg-[#2E7856] hover:bg-[#27654A] text-white font-semibold transition">Save</button>
     </form>
 
 @elseif(request('tab') === 'ads')
@@ -183,10 +183,10 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
                 <label class="inline-flex items-center gap-2 cursor-pointer">
                     <span class="relative inline-flex shrink-0">
                         <input type="checkbox" name="ads_enabled" value="1" {{ old('ads_enabled', $settings['ads_enabled']->value ?? '0') === '1' ? 'checked' : '' }} class="peer sr-only">
-                        <span class="block w-11 h-6 rounded-full bg-slate-200 dark:bg-slate-700 peer-checked:bg-[#0C3B2E] transition-colors"></span>
+                        <span class="block w-11 h-6 rounded-full bg-slate-200 dark:bg-slate-700 peer-checked:bg-[#2E7856] transition-colors"></span>
                         <span class="pointer-events-none absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform peer-checked:translate-x-5"></span>
                     </span>
-                    <span class="text-sm font-semibold {{ ($settings['ads_enabled']->value ?? '0') === '1' ? 'text-emerald-700 dark:text-emerald-300' : 'text-slate-500 dark:text-slate-400' }}">{{ ($settings['ads_enabled']->value ?? '0') === '1' ? 'Enabled' : 'Disabled' }}</span>
+                    <span class="text-sm font-semibold {{ ($settings['ads_enabled']->value ?? '0') === '1' ? 'text-[#1F513A] dark:text-[#6FB393]' : 'text-slate-500 dark:text-slate-400' }}">{{ ($settings['ads_enabled']->value ?? '0') === '1' ? 'Enabled' : 'Disabled' }}</span>
                 </label>
             </div>
         </div>
@@ -201,7 +201,7 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
                     <input type="number" name="ad_paragraph_frequency" min="1" max="10" value="{{ old('ad_paragraph_frequency', $settings['ad_paragraph_frequency']->value ?? '2') }}" class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
                 </div>
             </div>
-            <p class="text-xs text-slate-500 mt-2">Manage ads on the <a href="{{ route('admin.ads.index') }}" class="text-emerald-700 dark:text-emerald-300 hover:underline">Advertisements page</a>.</p>
+            <p class="text-xs text-slate-500 mt-2">Manage ads on the <a href="{{ route('admin.ads.index') }}" class="text-[#1F513A] dark:text-[#6FB393] hover:underline">Advertisements page</a>.</p>
         </div>
 
         <div class="panel-card p-6 space-y-4">
@@ -212,14 +212,14 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
                 <label class="inline-flex items-center gap-2 cursor-pointer">
                     <span class="relative inline-flex shrink-0">
                         <input type="checkbox" name="revenue_enabled" value="1" {{ old('revenue_enabled', $settings['revenue_enabled']->value ?? '0') === '1' ? 'checked' : '' }} class="peer sr-only">
-                        <span class="block w-11 h-6 rounded-full bg-slate-200 dark:bg-slate-700 peer-checked:bg-[#0C3B2E] transition-colors"></span>
+                        <span class="block w-11 h-6 rounded-full bg-slate-200 dark:bg-slate-700 peer-checked:bg-[#2E7856] transition-colors"></span>
                         <span class="pointer-events-none absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform peer-checked:translate-x-5"></span>
                     </span>
-                    <span class="text-sm font-semibold {{ ($settings['revenue_enabled']->value ?? '0') === '1' ? 'text-emerald-700 dark:text-emerald-300' : 'text-slate-500 dark:text-slate-400' }}">{{ ($settings['revenue_enabled']->value ?? '0') === '1' ? 'Enabled' : 'Disabled' }}</span>
+                    <span class="text-sm font-semibold {{ ($settings['revenue_enabled']->value ?? '0') === '1' ? 'text-[#1F513A] dark:text-[#6FB393]' : 'text-slate-500 dark:text-slate-400' }}">{{ ($settings['revenue_enabled']->value ?? '0') === '1' ? 'Enabled' : 'Disabled' }}</span>
                 </label>
             </div>
         </div>
-        <button type="submit" class="h-11 px-6 rounded-lg bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold transition">Save Ad Settings</button>
+        <button type="submit" class="h-11 px-6 rounded-lg bg-[#2E7856] hover:bg-[#27654A] text-white font-semibold transition">Save Ad Settings</button>
     </form>
 
 @elseif(request('tab') === 'email')
@@ -281,13 +281,13 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
                     <label class="text-sm font-medium">Password</label>
                     <input type="password" name="mail_password" value="" placeholder="{{ $passwordIsSet ? '••••••••• (configured, leave blank to keep)' : 'Paste SMTP password' }}" autocomplete="new-password" class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-mono placeholder:font-sans">
                     <label class="mt-2 inline-flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300 cursor-pointer">
-                        <input type="checkbox" name="mail_remove_password" value="1" class="text-emerald-600">
+                        <input type="checkbox" name="mail_remove_password" value="1" class="text-[#27654A]">
                         Remove stored password
                     </label>
                 </div>
             </div>
             <p class="text-xs text-slate-500 mt-1 pt-2 border-t border-slate-200 dark:border-slate-700">
-                Gmail: use an <a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noopener" class="text-emerald-700 dark:text-emerald-300 hover:underline">App Password</a>.
+                Gmail: use an <a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noopener" class="text-[#1F513A] dark:text-[#6FB393] hover:underline">App Password</a>.
             </p>
         </div>
 
@@ -305,7 +305,7 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
             </div>
         </div>
 
-        <button type="submit" class="h-11 px-6 rounded-lg bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold transition">Save SMTP Settings</button>
+        <button type="submit" class="h-11 px-6 rounded-lg bg-[#2E7856] hover:bg-[#27654A] text-white font-semibold transition">Save SMTP Settings</button>
     </form>
 
     {{-- Test email form — separate POST so it doesn't conflict with the save form. --}}
@@ -359,7 +359,7 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
             <div class="flex items-center justify-between">
                 <h3 class="font-semibold">Social Links</h3>
                 <label class="inline-flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300 cursor-pointer">
-                    <input type="checkbox" name="social_enabled" value="1" {{ old('social_enabled', $settings['social_enabled']->value ?? '1') === '1' ? 'checked' : '' }} class="text-emerald-600">
+                    <input type="checkbox" name="social_enabled" value="1" {{ old('social_enabled', $settings['social_enabled']->value ?? '1') === '1' ? 'checked' : '' }} class="text-[#27654A]">
                     Show in footer
                 </label>
             </div>
@@ -392,10 +392,10 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
                 <label class="inline-flex items-center gap-2 cursor-pointer shrink-0">
                     <span class="relative inline-flex shrink-0">
                         <input type="checkbox" name="top_contributors_enabled" value="1" {{ $tcOn ? 'checked' : '' }} class="peer sr-only">
-                        <span class="block w-11 h-6 rounded-full bg-slate-200 dark:bg-slate-700 peer-checked:bg-[#0C3B2E] transition-colors"></span>
+                        <span class="block w-11 h-6 rounded-full bg-slate-200 dark:bg-slate-700 peer-checked:bg-[#2E7856] transition-colors"></span>
                         <span class="pointer-events-none absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform peer-checked:translate-x-5"></span>
                     </span>
-                    <span class="text-sm font-medium {{ $tcOn ? 'text-emerald-700 dark:text-emerald-300' : 'text-slate-500' }}">{{ $tcOn ? 'Enabled' : 'Disabled' }}</span>
+                    <span class="text-sm font-medium {{ $tcOn ? 'text-[#1F513A] dark:text-[#6FB393]' : 'text-slate-500' }}">{{ $tcOn ? 'Enabled' : 'Disabled' }}</span>
                 </label>
             </div>
             <p class="text-xs text-slate-500 dark:text-slate-400">Shows the Top Contributors page and its header link.</p>
@@ -412,10 +412,10 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
                 <label class="inline-flex items-center gap-2 cursor-pointer shrink-0">
                     <span class="relative inline-flex shrink-0">
                         <input type="checkbox" name="maintenance_enabled" value="1" {{ $maintenanceOn ? 'checked' : '' }} class="peer sr-only">
-                        <span class="block w-11 h-6 rounded-full bg-slate-200 dark:bg-slate-700 peer-checked:bg-[#0C3B2E] transition-colors"></span>
+                        <span class="block w-11 h-6 rounded-full bg-slate-200 dark:bg-slate-700 peer-checked:bg-[#2E7856] transition-colors"></span>
                         <span class="pointer-events-none absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform peer-checked:translate-x-5"></span>
                     </span>
-                    <span class="text-sm font-medium {{ $maintenanceOn ? 'text-emerald-700 dark:text-emerald-300' : 'text-slate-500' }}">{{ $maintenanceOn ? 'Enabled' : 'Disabled' }}</span>
+                    <span class="text-sm font-medium {{ $maintenanceOn ? 'text-[#1F513A] dark:text-[#6FB393]' : 'text-slate-500' }}">{{ $maintenanceOn ? 'Enabled' : 'Disabled' }}</span>
                 </label>
             </div>
             <p class="text-xs text-slate-500 dark:text-slate-400">Visitors see a maintenance page. Admin keeps full access.</p>
@@ -438,7 +438,7 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
                             <span class="text-xs text-slate-400" id="logo-light-preview">No logo uploaded yet</span>
                         @endif
                     </div>
-                    <label class="mt-2 flex items-center justify-center h-16 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg cursor-pointer hover:border-[#0C3B2E] hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
+                    <label class="mt-2 flex items-center justify-center h-16 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg cursor-pointer hover:border-[#173A2A] hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
                         <input type="file" name="site_logo_light_file" accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml" class="hidden" data-preview="logo-light">
                         <span class="text-xs text-slate-500">Upload (JPG/PNG/WebP/SVG)</span>
                     </label>
@@ -452,7 +452,7 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
                             <span class="text-xs text-slate-500" id="logo-dark-preview">No logo uploaded yet</span>
                         @endif
                     </div>
-                    <label class="mt-2 flex items-center justify-center h-16 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg cursor-pointer hover:border-[#0C3B2E] hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
+                    <label class="mt-2 flex items-center justify-center h-16 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg cursor-pointer hover:border-[#173A2A] hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
                         <input type="file" name="site_logo_dark_file" accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml" class="hidden" data-preview="logo-dark">
                         <span class="text-xs text-slate-500">Upload (JPG/PNG/WebP/SVG)</span>
                     </label>
@@ -466,7 +466,7 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
                             <img src="{{ asset('images/favicon.png') }}" class="w-8 h-8 object-contain" alt="" id="favicon-preview">
                         @endif
                     </div>
-                    <label class="mt-2 flex items-center justify-center h-16 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg cursor-pointer hover:border-[#0C3B2E] hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
+                    <label class="mt-2 flex items-center justify-center h-16 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg cursor-pointer hover:border-[#173A2A] hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
                         <input type="file" name="site_favicon_file" accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml,image/x-icon" class="hidden" data-preview="favicon">
                         <span class="text-xs text-slate-500">Upload (PNG/JPG/SVG/ICO)</span>
                     </label>
@@ -474,7 +474,7 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
             </div>
         </div>
 
-        <button type="submit" class="h-11 px-6 rounded-lg bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold transition">Save</button>
+        <button type="submit" class="h-11 px-6 rounded-lg bg-[#2E7856] hover:bg-[#27654A] text-white font-semibold transition">Save</button>
     </form>
 @endif
 
@@ -494,14 +494,14 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
                 var file = heroInput.files[0];
                 if (!file.type.startsWith('image/') || file.type === 'image/heic' || file.type === 'image/heif' || file.type === 'image/avif') {
                     heroName.textContent = '"' + file.name + '" is not a supported format. Please use JPG, PNG, GIF, WebP or BMP.';
-                    heroName.classList.remove('hidden', 'text-emerald-700', 'dark:text-emerald-300');
+                    heroName.classList.remove('hidden', 'text-[#1F513A]', 'dark:text-[#6FB393]');
                     heroName.classList.add('text-red-600', 'dark:text-red-400');
                     heroInput.value = '';
                     return;
                 }
                 if (file.size > 4 * 1024 * 1024) {
                     heroName.textContent = '"' + file.name + '" is ' + (file.size / (1024 * 1024)).toFixed(1) + ' MB. Please pick an image smaller than 4 MB, then click Save.';
-                    heroName.classList.remove('hidden', 'text-emerald-700', 'dark:text-emerald-300');
+                    heroName.classList.remove('hidden', 'text-[#1F513A]', 'dark:text-[#6FB393]');
                     heroName.classList.add('text-red-600', 'dark:text-red-400');
                     heroInput.value = '';
                     return;
@@ -510,7 +510,7 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
                 if (heroName) {
                     heroName.textContent = file.name + ' selected. Click Save to apply.';
                     heroName.classList.remove('hidden', 'text-red-600', 'dark:text-red-400');
-                    heroName.classList.add('text-emerald-700', 'dark:text-emerald-300');
+                    heroName.classList.add('text-[#1F513A]', 'dark:text-[#6FB393]');
                 }
             }
         });
@@ -526,7 +526,7 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
             if (file.type === 'image/svg+xml' || file.type === 'image/x-icon') {
                 // SVG/ICO: just confirm the pick (object URLs work for these too)
                 if (el && el.tagName === 'IMG') { el.src = URL.createObjectURL(file); }
-                else if (wrap) { wrap.innerHTML = '<span class="text-xs font-medium text-emerald-700 dark:text-emerald-300">' + file.name + ' selected. Click Save.</span>'; }
+                else if (wrap) { wrap.innerHTML = '<span class="text-xs font-medium text-[#1F513A] dark:text-[#6FB393]">' + file.name + ' selected. Click Save.</span>'; }
                 return;
             }
             if (el && el.tagName === 'IMG') {

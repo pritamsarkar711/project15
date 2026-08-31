@@ -28,11 +28,11 @@
                                     <div class="font-medium text-slate-900 dark:text-white">{{ $fb->user->name ?? 'Unknown' }}</div>
                                     <div class="text-xs text-slate-500 dark:text-slate-400">{{ $fb->user->email ?? '' }}</div>
                                 </td>
-                                <td class="px-4 py-3"><span class="px-2 py-1 bg-emerald-50 dark:bg-emerald-400/10 text-emerald-700 dark:text-emerald-300 text-xs font-medium">{{ $fb->overall_experience }}</span></td>
+                                <td class="px-4 py-3"><span class="px-2 py-1 bg-[#F0F7F3] dark:bg-[#57A37E]/10 text-[#1F513A] dark:text-[#6FB393] text-xs font-medium">{{ $fb->overall_experience }}</span></td>
                                 <td class="px-4 py-3 text-slate-700 dark:text-slate-300">{{ $fb->profile_ease }}</td>
                                 <td class="px-4 py-3 text-slate-700 dark:text-slate-300">{{ $fb->publishing_ease }}</td>
                                 <td class="px-4 py-3 text-slate-500 dark:text-slate-400 text-xs">{{ $fb->created_at->format('M d, Y') }}</td>
-                                <td class="px-4 py-3 text-right"><a href="{{ route('admin.feedback.show', $fb) }}" class="text-emerald-700 dark:text-emerald-300 hover:underline text-xs font-semibold">View</a></td>
+                                <td class="px-4 py-3 text-right"><a href="{{ route('admin.feedback.show', $fb) }}" class="text-[#1F513A] dark:text-[#6FB393] hover:underline text-xs font-semibold">View</a></td>
                             </tr>
                         @endforeach
                     </tbody>

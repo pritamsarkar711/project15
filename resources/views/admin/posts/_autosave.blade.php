@@ -79,7 +79,7 @@
         right.className = 'flex items-center gap-2 shrink-0';
         var restoreBtn = document.createElement('button');
         restoreBtn.type = 'button';
-        restoreBtn.className = 'inline-flex items-center h-9 px-4 bg-[#0C3B2E] hover:bg-[#072A20] text-white text-xs font-semibold';
+        restoreBtn.className = 'inline-flex items-center h-9 px-4 bg-[#2E7856] hover:bg-[#27654A] text-white text-xs font-semibold';
         restoreBtn.textContent = 'Restore it';
         var discardBtn = document.createElement('button');
         discardBtn.type = 'button';

@@ -17,7 +17,7 @@
                 <img id="avatar-preview" src="{{ '/storage/'.$user->author_avatar_path }}" class="w-20 h-20 rounded-full object-cover border border-slate-200 dark:border-slate-700" alt="" loading="lazy" decoding="async">
             @else
                 <img id="avatar-preview" src="#" alt="" class="hidden w-20 h-20 rounded-full object-cover border border-slate-200 dark:border-slate-700" loading="lazy" decoding="async">
-                <div id="avatar-initial" class="w-20 h-20 rounded-full bg-[#0C3B2E] text-white flex items-center justify-center text-2xl font-extrabold">{{ strtoupper(substr($user->name,0,1)) }}</div>
+                <div id="avatar-initial" class="w-20 h-20 rounded-full bg-[#173A2A] text-white flex items-center justify-center text-2xl font-extrabold">{{ strtoupper(substr($user->name,0,1)) }}</div>
             @endif
             <div>
                 <label class="cursor-pointer inline-flex items-center gap-2 h-10 px-4 text-sm font-semibold border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition">
@@ -84,7 +84,7 @@
                 @endforeach
             </div>
         </div>
-        <button type="submit" class="h-11 px-6 rounded-lg bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold transition">Save profile</button>
+        <button type="submit" class="h-11 px-6 rounded-lg bg-[#2E7856] hover:bg-[#27654A] text-white font-semibold transition">Save profile</button>
     </form>
 
     {{-- Login credentials --}}
@@ -111,7 +111,7 @@
                 <input type="password" name="password_confirmation" class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm" autocomplete="new-password">
             </div>
         </div>
-        <button type="submit" class="h-11 px-6 rounded-lg bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold transition">Update credentials</button>
+        <button type="submit" class="h-11 px-6 rounded-lg bg-[#2E7856] hover:bg-[#27654A] text-white font-semibold transition">Update credentials</button>
     </form>
 </div>
 @push('scripts')

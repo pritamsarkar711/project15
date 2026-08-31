@@ -17,7 +17,7 @@
             <div class="panel-card p-6">
                 <label class="text-sm font-semibold text-slate-900 dark:text-white">Title *</label>
                 <input type="text" name="title" required value="{{ old('title', $isEdit ? $post->title : '') }}" maxlength="255"
-                    class="mt-1 w-full h-11 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/15 outline-none text-sm text-slate-900 dark:text-white">
+                    class="mt-1 w-full h-11 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none text-sm text-slate-900 dark:text-white">
 
                 {{-- URL slug: authors can pick the post's address. Left empty,
                      the server generates one from the title (same as before).
@@ -29,7 +29,7 @@
                         <input type="text" id="post-slug" name="slug" value="{{ old('slug', $isEdit ? $post->slug : '') }}" maxlength="255"
                             pattern="[a-zA-Z0-9._\-]+" title="Letters, numbers, hyphens, dots and underscores only"
                             placeholder="auto-generated-from-title"
-                            class="flex-1 h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/15 outline-none text-sm font-mono text-slate-900 dark:text-white">
+                            class="flex-1 h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none text-sm font-mono text-slate-900 dark:text-white">
                     </div>
                     <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Leave empty to auto-generate from the title.</p>
                 </div>
@@ -90,7 +90,7 @@
                         </div>
                     @endforeach
                 </div>
-                <button type="button" onclick="addFaq()" class="mt-3 text-sm font-semibold text-emerald-700 dark:text-emerald-300 hover:underline">Add another FAQ</button>
+                <button type="button" onclick="addFaq()" class="mt-3 text-sm font-semibold text-[#1F513A] dark:text-[#6FB393] hover:underline">Add another FAQ</button>
             </div>
         </div>
 
@@ -120,7 +120,7 @@
                         <button type="submit" name="action" value="save_draft" class="w-full h-11 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 font-semibold text-sm transition">
                             Save as draft
                         </button>
-                        <button type="submit" name="action" value="submit" @disabled(! $canSubmit) class="w-full h-11 rounded-lg bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold text-sm transition disabled:opacity-50 disabled:cursor-not-allowed">
+                        <button type="submit" name="action" value="submit" @disabled(! $canSubmit) class="w-full h-11 rounded-lg bg-[#2E7856] hover:bg-[#27654A] text-white font-semibold text-sm transition disabled:opacity-50 disabled:cursor-not-allowed">
                             {{ $isEdit && $post->review_status === 'returned' ? 'Resubmit for review' : 'Submit for review' }}
                         </button>
                     </div>
@@ -134,7 +134,7 @@
             <div class="panel-card p-6">
                 <h3 class="font-semibold mb-3 text-slate-900 dark:text-white">Featured Image</h3>
                 <img id="featured-preview" src="{{ $isEdit && $post->featured_image ? (str_starts_with($post->featured_image, 'http') ? $post->featured_image : '/storage/'.$post->featured_image) : '#' }}" alt="" class="{{ $isEdit && $post->featured_image ? '' : 'hidden' }} w-full h-40 object-cover mb-3 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" loading="lazy" decoding="async">
-                <label class="block w-full cursor-pointer border border-dashed border-slate-300 dark:border-slate-600 py-4 text-center text-sm text-slate-500 dark:text-slate-400 hover:border-emerald-500 hover:text-emerald-700 dark:hover:text-emerald-300 transition">
+                <label class="block w-full cursor-pointer border border-dashed border-slate-300 dark:border-slate-600 py-4 text-center text-sm text-slate-500 dark:text-slate-400 hover:border-[#2E7856] hover:text-[#1F513A] dark:hover:text-[#6FB393] transition">
                     <svg class="w-5 h-5 mx-auto mb-1 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 3h6m0 0v6m0-6L10 14M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
                     Click to upload
                     <input type="file" name="featured_image" accept="image/*" class="hidden" onchange="previewFeatured(this)">
@@ -148,7 +148,7 @@
                     <span class="text-sm text-slate-700 dark:text-slate-300">This post contains affiliate links</span>
                     <span class="relative inline-flex shrink-0">
                         <input type="checkbox" name="is_affiliate" value="1" @checked(old('is_affiliate', $isEdit && $post->is_affiliate)) class="peer sr-only">
-                        <span class="block w-11 h-6 rounded-full bg-slate-200 dark:bg-slate-700 peer-checked:bg-[#0C3B2E] transition-colors"></span>
+                        <span class="block w-11 h-6 rounded-full bg-slate-200 dark:bg-slate-700 peer-checked:bg-[#2E7856] transition-colors"></span>
                         <span class="pointer-events-none absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform peer-checked:translate-x-5"></span>
                     </span>
                 </label>
@@ -349,7 +349,7 @@
         right.className = 'flex items-center gap-2 shrink-0';
         var restoreBtn = document.createElement('button');
         restoreBtn.type = 'button';
-        restoreBtn.className = 'inline-flex items-center h-9 px-4 bg-[#0C3B2E] hover:bg-[#072A20] text-white text-xs font-semibold';
+        restoreBtn.className = 'inline-flex items-center h-9 px-4 bg-[#2E7856] hover:bg-[#27654A] text-white text-xs font-semibold';
         restoreBtn.textContent = 'Restore it';
         var discardBtn = document.createElement('button');
         discardBtn.type = 'button';

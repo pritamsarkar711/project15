@@ -57,3 +57,7 @@ database/*.sqlite-journal
 storage/framework/.huvanti_deploy_version
 storage/framework/.migrations_last_check
 storage/logs/last-web-error.json
+
+# local audit screenshots / third-party reference captures
+shots-*/
+peermeld-ref/

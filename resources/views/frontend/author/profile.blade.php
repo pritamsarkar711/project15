@@ -21,9 +21,9 @@
             @php
                 $avatarUrl = $author->author_avatar_path
                     ? asset('storage/'.$author->author_avatar_path)
-                    : 'https://ui-avatars.com/api/?name='.urlencode($author->name).'&size=200&background=0C3B2E&color=fff&font-size=0.45&bold=true';
+                    : 'https://ui-avatars.com/api/?name='.urlencode($author->name).'&size=200&background=173A2A&color=fff&font-size=0.45&bold=true';
             @endphp
-            <img src="{{ $avatarUrl }}" alt="{{ $author->name }}" class="w-28 h-28 rounded-full object-cover border-4 border-emerald-100 dark:border-[#383838] shadow-sm shrink-0" loading="lazy" decoding="async">
+            <img src="{{ $avatarUrl }}" alt="{{ $author->name }}" class="w-28 h-28 rounded-full object-cover border-4 border-[#E3F0E9] dark:border-[#383838] shadow-sm shrink-0" loading="lazy" decoding="async">
 
             <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-2 flex-wrap">
@@ -74,12 +74,12 @@
                 <div class="flex items-center gap-2 mt-5 flex-wrap">
                     @if(auth()->check() && auth()->id() === $author->id)
                         @if(auth()->user()->role === 'admin')
-                            <a href="{{ route('admin.profile.edit') }}" class="h-9 px-5 rounded-lg inline-flex items-center gap-2 text-sm font-semibold bg-[#05B762] text-white hover:bg-[#049A53] transition">
+                            <a href="{{ route('admin.profile.edit') }}" class="h-9 px-5 rounded-lg inline-flex items-center gap-2 text-sm font-semibold bg-[#2E7856] text-white hover:bg-[#27654A] transition">
                                 <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Z"/></svg>
                                 Edit profile
                             </a>
                         @else
-                            <a href="{{ route('author.profile.edit') }}" class="h-9 px-5 rounded-lg inline-flex items-center gap-2 text-sm font-semibold bg-[#05B762] text-white hover:bg-[#049A53] transition">
+                            <a href="{{ route('author.profile.edit') }}" class="h-9 px-5 rounded-lg inline-flex items-center gap-2 text-sm font-semibold bg-[#2E7856] text-white hover:bg-[#27654A] transition">
                                 <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Z"/></svg>
                                 Edit profile
                             </a>
@@ -87,13 +87,13 @@
                     @elseif(auth()->check())
                         <form method="POST" action="{{ route('author.follow', $author->username) }}">
                             @csrf
-                            <button type="submit" class="h-9 px-5 inline-flex items-center gap-2 text-sm font-semibold {{ $isFollowing ? 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700' : 'bg-[#05B762] text-white hover:bg-[#049A53]' }} rounded-lg transition cursor-pointer">
+                            <button type="submit" class="h-9 px-5 inline-flex items-center gap-2 text-sm font-semibold {{ $isFollowing ? 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700' : 'bg-[#2E7856] text-white hover:bg-[#27654A]' }} rounded-lg transition cursor-pointer">
                                 <svg class="w-4 h-4" fill="{{ $isFollowing ? 'currentColor' : 'none' }}" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z"/></svg>
                                 {{ $isFollowing ? 'Following' : 'Follow' }}
                             </button>
                         </form>
                     @else
-                        <a href="{{ route('login') }}" class="h-9 px-5 rounded-lg inline-flex items-center gap-2 text-sm font-semibold bg-[#05B762] text-white hover:bg-[#049A53] transition">
+                        <a href="{{ route('login') }}" class="h-9 px-5 rounded-lg inline-flex items-center gap-2 text-sm font-semibold bg-[#2E7856] text-white hover:bg-[#27654A] transition">
                             <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z"/></svg>
                             Follow
                         </a>
@@ -126,7 +126,7 @@
                     <span class="absolute top-3 left-3 chip chip-white shadow-sm">{{ $post->category->name ?? 'General' }}</span>
                 </a>
                 <div class="p-5 flex flex-col flex-1">
-                    <a href="{{ route('blog.show', $post->slug) }}" class="text-[16px] font-bold text-slate-900 dark:text-white leading-snug tracking-[-0.01em] line-clamp-2 group-hover:text-[#047a43] dark:group-hover:text-emerald-300 transition-colors">{{ $post->title }}</a>
+                    <a href="{{ route('blog.show', $post->slug) }}" class="text-[16px] font-bold text-slate-900 dark:text-white leading-snug tracking-[-0.01em] line-clamp-2 group-hover:text-[#2E7856] dark:group-hover:text-[#6FB393] transition-colors">{{ $post->title }}</a>
                     <div class="mt-auto pt-4 flex items-center gap-2 text-xs text-slate-400 dark:text-slate-500">
                         <span>{{ $post->published_at?->format('M d, Y') }}</span>
                         <span class="w-1 h-1 bg-slate-300 dark:bg-slate-600 rounded-full"></span>
