@@ -9,7 +9,7 @@
 @section('content')
 <div class="flex justify-between items-center mb-5">
     <h2 class="font-semibold">All Pages</h2>
-    <a href="{{ route('admin.pages.create') }}" class="h-9 px-4 rounded-lg bg-[#0C3B2E] hover:bg-[#072A20] text-white text-sm font-semibold inline-flex items-center gap-1.5">
+    <a href="{{ route('admin.pages.create') }}" class="h-9 px-4 rounded-lg bg-[#2E7856] hover:bg-[#27654A] text-white text-sm font-semibold inline-flex items-center gap-1.5">
         <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14m-7-7h14"/></svg> New Page
     </a>
 </div>
@@ -31,7 +31,7 @@
                                 <a href="{{ route('page.show', $page->slug) }}" target="_blank" title="View" class="w-8 h-8 rounded-lg border border-[#e6e8ee] dark:border-[#2c313c] bg-white dark:bg-[#14171d] text-slate-600 dark:text-slate-300 hover:bg-[#f7f8fa] dark:hover:bg-[#1c1f26] flex items-center justify-center">
                                     <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7Z"/></svg>
                                 </a>
-                                <a href="{{ route('admin.pages.edit', $page) }}" title="Edit" class="w-8 h-8 rounded-lg bg-[#0C3B2E] hover:bg-[#072A20] text-white flex items-center justify-center">
+                                <a href="{{ route('admin.pages.edit', $page) }}" title="Edit" class="w-8 h-8 rounded-lg bg-[#2E7856] hover:bg-[#27654A] text-white flex items-center justify-center">
                                     <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m18 5 2.47 2.47a1 1 0 0 1 0 1.41L18 11.34 12.66 6l2.42-2.42a1 1 0 0 1 1.41 0ZM11.95 6.7 4.7 13.96a1 1 0 0 0-.29.7V18a1 1 0 0 0 1 1h3.32a1 1 0 0 0 .7-.29l7.26-7.25Z"/></svg>
                                 </a>
                                 <form method="POST" action="{{ route('admin.pages.destroy', $page) }}" onsubmit="return confirm('Delete this page?')">@csrf @method('DELETE')

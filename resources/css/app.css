@@ -11,25 +11,24 @@
        SiteFont::cssStack()) cascades to all Tailwind utilities. Hardcoding
        a family here would override the dynamic font setting. */
     --font-sans: inherit;
-    /* Deep emerald green — brand surfaces (hero band, footer, dark buttons) */
-    --color-primary: #0C3B2E;
-    --color-primary-dark: #072A20;
-    --color-primary-light: #34D399;
-    --color-huvanti: #0C3B2E;
-    --color-huvanti-light: #34D399;
-    /* Fresh action green — interactive accents (primary buttons, links,
-       focus rings, active states) */
-    --color-action: #05B762;
-    --color-action-dark: #049A53;
-    --color-action-soft: #E8F8F0;
-    /* Unified radius scale — one coherent geometry across site, admin and
-       author panels. Tight geometry per feedback: controls 6-8px, inputs 8px,
-       cards 12-14px. Only avatars/dots stay fully round. */
+    /* ONE brand green: #2E7856 and its own tints/shades only.
+       Deep band = the dark shade (hero, CTA, sidebar logo tiles); soft = the
+       light tint (icon tiles, chips, badges); bright = dark-mode accents. */
+    --color-primary: #173A2A;
+    --color-primary-dark: #0F2A1E;
+    --color-primary-light: #6FB393;
+    --color-huvanti: #173A2A;
+    --color-huvanti-light: #6FB393;
+    --color-action: #2E7856;
+    --color-action-dark: #27654A;
+    --color-action-soft: #E9F2EE;
+    /* Unified radius scale — reduced again per feedback: controls 6-8px,
+       cards 10px, wide bands 12px. Only avatars/dots stay fully round. */
     --radius-sm: 6px;
     --radius-md: 8px;
     --radius-lg: 10px;
-    --radius-xl: 12px;
-    --radius-2xl: 14px;
+    --radius-xl: 10px;
+    --radius-2xl: 12px;
 }
 
 html { color-scheme: light; }
@@ -50,15 +49,36 @@ body, header, footer, section, article, aside, nav, div, a, button, input, selec
 .dark ::-webkit-scrollbar-thumb { background: #333a46; }
 .dark ::-webkit-scrollbar-thumb:hover { background: #465061; }
 
-/* Keyboard focus ring — consistent, action-green, never harsh */
+/* NO focus ring / glow / focus-state styling anywhere on the site — the
+   user explicitly asked for clean, quiet inputs. Browsers never draw their
+   default outline on these elements either (outline: none + no box-shadow). */
+a:focus, button:focus, input:focus, select:focus, textarea:focus,
+summary:focus, [tabindex]:focus, [contenteditable]:focus,
 a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible,
-textarea:focus-visible, summary:focus-visible, [tabindex]:focus-visible {
-    outline: 2px solid rgba(5, 183, 98, 0.55);
-    outline-offset: 2px;
-    border-radius: 6px;
+textarea:focus-visible, summary:focus-visible, [tabindex]:focus-visible,
+[contenteditable]:focus-visible {
+    outline: none;
+    box-shadow: none;
 }
 
-::selection { background: rgba(5, 183, 98, 0.16); }
+::selection { background: rgba(46, 120, 86, 0.16); }
+
+/* Panel inputs are white on light canvas (peermeld-style). These rules live
+   OUTSIDE any cascade layer on purpose: utilities like bg-slate-50 sit in
+   the utilities layer and would otherwise always win (layers beat
+   specificity). Unlayered, they take effect on every panel input at once;
+   dark mode is handled by the .dark rule below. The RTE source textarea is
+   excluded — it must stay a dark code surface. */
+.panel-ui input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]):not([type="color"]):not(.huv-rte-src),
+.panel-ui select,
+.panel-ui textarea:not(.huv-rte-src) {
+    background-color: #fff;
+}
+.dark .panel-ui input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]):not([type="color"]):not(.huv-rte-src),
+.dark .panel-ui select,
+.dark .panel-ui textarea:not(.huv-rte-src) {
+    background-color: #101319;
+}
 
 @layer components {
 /* ============================================================
@@ -88,9 +108,9 @@ textarea:focus-visible, summary:focus-visible, [tabindex]:focus-visible {
     transition: background-color .15s ease, border-color .15s ease, color .15s ease, transform .1s ease, box-shadow .15s ease;
 }
 .btn:active { transform: translateY(1px); }
-.btn-primary { background: #05B762; color: #fff; }
-.btn-primary:hover { background: #049A53; }
-.btn-primary:active { background: #038A4A; }
+.btn-primary { background: #2E7856; color: #fff; }
+.btn-primary:hover { background: #27654A; }
+.btn-primary:active { background: #1F513A; }
 .btn-dark { background: #16181d; color: #fff; }
 .btn-dark:hover { background: #2a2e37; }
 .btn-outline { background: #fff; color: #3f4654; border: 1px solid #dfe3ea; }
@@ -101,8 +121,8 @@ textarea:focus-visible, summary:focus-visible, [tabindex]:focus-visible {
 .btn-danger:hover { background: #fef2f2; border-color: #fca5a5; }
 .btn-sm { height: 2.125rem; padding: 0 0.75rem; font-size: 0.8125rem; }
 .btn-lg { height: 2.75rem; padding: 0 1.375rem; font-size: 0.9375rem; }
-.dark .btn-primary { background: #05B762; color: #fff; }
-.dark .btn-primary:hover { background: #049A53; }
+.dark .btn-primary { background: #2E7856; color: #fff; }
+.dark .btn-primary:hover { background: #35865F; }
 .dark .btn-dark { background: #e6e8ee; color: #101319; }
 .dark .btn-dark:hover { background: #fff; }
 .dark .btn-outline { background: transparent; color: #c3c9d4; border-color: #2c313c; }
@@ -155,10 +175,10 @@ textarea:focus-visible, summary:focus-visible, [tabindex]:focus-visible {
     justify-content: center;
     border-radius: var(--radius-lg);
     background: var(--color-action-soft);
-    color: #049A53;
+    color: #2E7856;
     flex-shrink: 0;
 }
-.dark .icon-tile { background: rgba(5, 183, 98, 0.12); color: #34d399; }
+.dark .icon-tile { background: rgba(46, 120, 86, 0.18); color: #6FB393; }
 .icon-tile-muted { background: #eef0f4; color: #5b6472; }
 .dark .icon-tile-muted { background: rgba(148, 163, 184, 0.1); color: #aab3c2; }
 
@@ -256,12 +276,14 @@ textarea:focus-visible, summary:focus-visible, [tabindex]:focus-visible {
     transition: border-color .15s ease, box-shadow .15s ease;
 }
 .input::placeholder { color: #98a1b0; }
-.input:focus { border-color: #05B762; box-shadow: 0 0 0 3px rgba(5, 183, 98, 0.12); }
+/* Focus is intentionally invisible (see note at top): no border change,
+   no glow, no ring — the caret is the only focus affordance. */
+.input:focus { border-color: #dfe3ea; outline: none; box-shadow: none; }
 textarea.input { height: auto; min-height: 7rem; padding: 0.625rem 0.875rem; line-height: 1.6; }
 select.input { appearance: none; background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7482' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.75rem center; padding-right: 2.25rem; }
 .dark .input { background: #101319; border-color: #2c313c; color: #e6e8ee; }
 .dark .input::placeholder { color: #6b7482; }
-.dark .input:focus { border-color: #05B762; }
+.dark .input:focus { border-color: #2c313c; }
 .dark select.input { background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238b94a3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); }
 
 /* Form label + hint */
@@ -283,13 +305,13 @@ select.input { appearance: none; background-image: url("data:image/svg+xml;chars
     line-height: 1.4;
     white-space: nowrap;
 }
-.badge-green { background: #E8F8F0; color: #047a43; }
+.badge-green { background: #E9F2EE; color: #1F513A; }
 .badge-amber { background: #FEF3C7; color: #92600a; }
 .badge-red { background: #FEE2E2; color: #b91c1c; }
 .badge-blue { background: #DBEAFE; color: #1d4ed8; }
 .badge-slate { background: #eef0f4; color: #5b6472; }
 .badge-ink { background: #16181d; color: #fff; }
-.dark .badge-green { background: rgba(5, 183, 98, 0.14); color: #4ade80; }
+.dark .badge-green { background: rgba(46, 120, 86, 0.22); color: #8CC7AA; }
 .dark .badge-amber { background: rgba(245, 158, 11, 0.14); color: #fbbf24; }
 .dark .badge-red { background: rgba(239, 68, 68, 0.14); color: #f87171; }
 .dark .badge-blue { background: rgba(59, 130, 246, 0.14); color: #93c5fd; }
@@ -303,15 +325,15 @@ select.input { appearance: none; background-image: url("data:image/svg+xml;chars
     gap: 0.3125rem;
     padding: 0.25rem 0.625rem;
     border-radius: var(--radius-sm);
-    background: #E8F8F0;
-    color: #047a43;
+    background: #E9F2EE;
+    color: #1F513A;
     font-size: 0.6875rem;
     font-weight: 700;
     letter-spacing: 0.02em;
 }
-.dark .chip { background: rgba(5, 183, 98, 0.13); color: #4ade80; }
-.chip-white { background: #fff; color: #047a43; border: 1px solid #e6e8ee; }
-.dark .chip-white { background: rgba(22, 24, 29, 0.92); color: #4ade80; border-color: #2c313c; }
+.dark .chip { background: rgba(46, 120, 86, 0.22); color: #8CC7AA; }
+.chip-white { background: #fff; color: #1F513A; border: 1px solid #e6e8ee; }
+.dark .chip-white { background: rgba(22, 24, 29, 0.92); color: #8CC7AA; border-color: #2c313c; }
 
 /* ---------- Page head (title + lede block on list pages) ---------- */
 .page-head { padding: 2rem 0 1.5rem; }
@@ -420,7 +442,7 @@ select.input { appearance: none; background-image: url("data:image/svg+xml;chars
     width: 3px;
     height: 0.95em;
     margin-left: 4px;
-    background: #6EE7B7;
+    background: #6FB393;
     border-radius: 2px;
     vertical-align: -0.12em;
     animation: caret-blink 0.85s step-end infinite;
@@ -445,13 +467,13 @@ select.input { appearance: none; background-image: url("data:image/svg+xml;chars
 .prose ul { list-style: disc; }
 .prose ol { list-style: decimal; }
 .prose li { margin-bottom: 0.5rem; color: #3f4654; line-height: 1.7; }
-.prose a { color: #047a43; text-decoration: underline; text-underline-offset: 4px; text-decoration-color: rgba(4, 122, 67, 0.35); }
-.prose a:hover { text-decoration-color: #047a43; }
+.prose a { color: #2E7856; text-decoration: underline; text-underline-offset: 4px; text-decoration-color: rgba(46, 120, 86, 0.35); }
+.prose a:hover { text-decoration-color: #2E7856; }
 .prose strong { color: #101319; font-weight: 650; }
-.prose blockquote { border-left: 3px solid #05B762; padding: 0.875rem 1.25rem; margin: 1.6rem 0; font-style: italic; background: #f8f9fb; border-radius: 0 var(--radius-lg) var(--radius-lg) 0; color: #3f4654; }
+.prose blockquote { border-left: 3px solid #2E7856; padding: 0.875rem 1.25rem; margin: 1.6rem 0; font-style: italic; background: #f8f9fb; border-radius: 0 var(--radius-lg) var(--radius-lg) 0; color: #3f4654; }
 .prose img { border-radius: var(--radius-xl); border: 1px solid #e6e8ee; margin: 1.6rem 0; max-width: 100%; height: auto; }
 .prose svg.huv-inline-icon { display: inline-block; width: 1.15em; height: 1.15em; vertical-align: -0.2em; }
-.prose code { background: #eef0f4; color: #047a43; padding: 0.15rem 0.4rem; border-radius: 6px; font-size: 0.875em; }
+.prose code { background: #eef0f4; color: #1F513A; padding: 0.15rem 0.4rem; border-radius: 6px; font-size: 0.875em; }
 .prose pre { background: #101319; color: #dde3ec; padding: 1.1rem 1.25rem; border-radius: var(--radius-xl); overflow-x: auto; margin: 1.6rem 0; border: 1px solid #262a33; }
 .prose pre code { background: transparent; color: inherit; padding: 0; }
 .prose table { width: 100%; border-collapse: collapse; margin: 1.6rem 0; font-size: 0.925rem; }
@@ -495,10 +517,10 @@ select.input { appearance: none; background-image: url("data:image/svg+xml;chars
 .dark .prose h4 { color: #e6e8ee; }
 .dark .prose p { color: #b9c1cd; }
 .dark .prose li { color: #b9c1cd; }
-.dark .prose a { color: #6EE7B7; }
+.dark .prose a { color: #8CC7AA; }
 .dark .prose strong { color: #f2f4f8; }
-.dark .prose blockquote { background: rgba(148, 163, 184, 0.06); border-left-color: #34D399; color: #c3c9d4; }
-.dark .prose code { background: rgba(148, 163, 184, 0.12); color: #6EE7B7; }
+.dark .prose blockquote { background: rgba(148, 163, 184, 0.06); border-left-color: #6FB393; color: #c3c9d4; }
+.dark .prose code { background: rgba(148, 163, 184, 0.12); color: #8CC7AA; }
 .dark .prose th, .dark .prose td { border-color: #262a33; }
 .dark .prose th { background: rgba(148, 163, 184, 0.05); color: #f2f4f8; }
 .dark .prose hr { border-color: #262a33; }
@@ -534,16 +556,16 @@ body.theme-loading { visibility: hidden; }
 .panel-ui textarea {
     transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
 }
+/* Focus stays completely quiet in panels too (see the global note). */
 .panel-ui input:focus, .panel-ui select:focus, .panel-ui textarea:focus {
-    box-shadow: 0 0 0 3px rgba(5, 183, 98, 0.13);
+    outline: none;
+    box-shadow: none;
 }
 .panel-ui button {
     transition: background-color 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
 }
 .panel-ui button:active { transform: translateY(1px); }
-.panel-ui button[type="submit"]:hover {
-    box-shadow: 0 2px 6px rgba(5, 183, 98, 0.25);
-}
+/* (no glow on primary-button hover — quiet product feel) */
 
 /* Tables: clean row hover in both modes */
 .panel-ui table { border-collapse: collapse; }
@@ -571,9 +593,9 @@ body.theme-loading { visibility: hidden; }
 
 /* Native checkbox / radio accent matches the action green */
 .panel-ui input[type="checkbox"],
-.panel-ui input[type="radio"] { accent-color: #05B762; }
+.panel-ui input[type="radio"] { accent-color: #2E7856; }
 .dark .panel-ui input[type="checkbox"],
-.dark .panel-ui input[type="radio"] { accent-color: #34D399; }
+.dark .panel-ui input[type="radio"] { accent-color: #6FB393; }
 
 .panel-ui button:disabled {
     opacity: 0.5;
@@ -582,7 +604,7 @@ body.theme-loading { visibility: hidden; }
     box-shadow: none !important;
 }
 .panel-ui main a { text-underline-offset: 3px; }
-.panel-ui ::selection { background: rgba(5, 183, 98, 0.18); }
+.panel-ui ::selection { background: rgba(46, 120, 86, 0.18); }
 
 :where(.panel-ui) thead th { border-bottom: 1px solid rgba(100, 116, 139, 0.25); }
 

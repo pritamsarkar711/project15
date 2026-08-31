@@ -4,12 +4,12 @@
     <div class="search-panel relative bg-white dark:bg-[#0f1115] shadow-2xl border-b border-[#e6e8ee] dark:border-[#22262e] max-h-[90vh] overflow-y-auto overscroll-contain">
         <div class="max-w-[1200px] mx-auto px-4 sm:px-6 py-6 sm:py-8">
             <div class="flex items-center gap-2 sm:gap-3 min-w-0">
-                <form action="{{ route('search') }}" method="GET" class="flex-1 flex items-center bg-[#f7f8fa] dark:bg-[#14171d] border border-[#e6e8ee] dark:border-[#2c313c] focus-within:border-[#05B762] rounded-xl px-3 sm:px-4 min-w-0 overflow-hidden transition" onsubmit="return submitSearch(this)">
+                <form action="{{ route('search') }}" method="GET" class="flex-1 flex items-center bg-[#f7f8fa] dark:bg-[#14171d] border border-[#e6e8ee] dark:border-[#2c313c] focus-within:border-[#2E7856] rounded-xl px-3 sm:px-4 min-w-0 overflow-hidden transition" onsubmit="return submitSearch(this)">
                     <input type="text" id="search-overlay-input" name="q" autocomplete="off" placeholder="Search articles, topics, ideas..." class="flex-1 min-w-0 h-12 sm:h-14 bg-transparent border-0 outline-none text-[15px] sm:text-lg text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500" aria-label="Search">
-                    <button type="submit" class="h-9 sm:h-10 px-4 sm:px-6 ml-2 sm:ml-3 shrink-0 rounded-lg bg-[#05B762] hover:bg-[#049A53] text-white text-sm font-semibold transition whitespace-nowrap">Search</button>
+                    <button type="submit" class="h-9 sm:h-10 px-4 sm:px-6 ml-2 sm:ml-3 shrink-0 rounded-lg bg-[#2E7856] hover:bg-[#27654A] text-white text-sm font-semibold transition whitespace-nowrap">Search</button>
                 </form>
                 <button onclick="closeSearch()" class="btn-icon !w-11 !h-11 sm:!w-12 sm:!h-12 border border-[#e6e8ee] dark:border-[#2c313c] shrink-0" aria-label="Close search">
-                    <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
             </div>
             <div class="mt-5">
@@ -20,8 +20,8 @@
                         catch (\Throwable $e) { $overlayCategories = collect(); }
                     @endphp
                     @foreach($overlayCategories as $cat)
-                        <a href="{{ route('category.show',$cat->slug) }}" onclick="closeSearch()" class="inline-flex items-center gap-2 px-3.5 h-10 bg-white dark:bg-[#14171d] border border-[#e6e8ee] dark:border-[#2c313c] rounded-lg text-sm font-medium text-slate-700 dark:text-slate-300 hover:border-[#05B762]/50 hover:text-[#047a43] dark:hover:text-emerald-300 hover:bg-[#E8F8F0]/40 dark:hover:bg-[#14171d] transition">
-                            <span class="text-[#049A53] dark:text-emerald-300">@include('partials.category-icon', ['category' => $cat, 'class' => 'w-4 h-4'])</span>
+                        <a href="{{ route('category.show',$cat->slug) }}" onclick="closeSearch()" class="inline-flex items-center gap-2 px-3.5 h-10 bg-white dark:bg-[#14171d] border border-[#e6e8ee] dark:border-[#2c313c] rounded-lg text-sm font-medium text-slate-700 dark:text-slate-300 hover:border-[#2E7856]/50 hover:text-[#2E7856] dark:hover:text-[#6FB393] hover:bg-[#E9F2EE]/40 dark:hover:bg-[#14171d] transition">
+                            <span class="text-[#27654A] dark:text-[#6FB393]">@include('partials.category-icon', ['category' => $cat, 'class' => 'w-4 h-4'])</span>
                             {{ $cat->name }}
                         </a>
                     @endforeach

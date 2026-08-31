@@ -43,10 +43,10 @@
                 <label class="text-sm font-medium">Sort order</label>
                 <input type="number" name="sort_order" min="0" value="{{ old('sort_order', $category->sort_order) }}" class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
             </div>
-            <label class="flex items-center gap-2 text-sm h-10"><input type="checkbox" name="is_active" value="1" @checked(old('is_active', $category->is_active)) class="border-slate-300 dark:border-slate-600 text-emerald-600 focus:ring-emerald-500"> Active (visible on site)</label>
+            <label class="flex items-center gap-2 text-sm h-10"><input type="checkbox" name="is_active" value="1" @checked(old('is_active', $category->is_active)) class="border-slate-300 dark:border-slate-600 text-[#27654A]"> Active (visible on site)</label>
         </div>
         <div class="flex gap-2">
-            <button type="submit" class="h-11 px-6 rounded-lg bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold transition">Save Changes</button>
+            <button type="submit" class="h-11 px-6 rounded-lg bg-[#2E7856] hover:bg-[#27654A] text-white font-semibold transition">Save Changes</button>
             <a href="{{ route('admin.categories.index') }}" class="h-11 px-6 inline-flex items-center font-semibold border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition">Cancel</a>
         </div>
     </form>

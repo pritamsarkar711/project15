@@ -11,7 +11,7 @@
         .box{max-width:400px;width:100%;background:#fff;border:1px solid #e2e8f0;padding:32px 24px}
         h1{font-size:20px;font-weight:700;margin:0 0 8px;color:#0f172a}
         p{font-size:14px;color:#64748b;margin:0 0 20px}
-        .btn{display:inline-block;background:#0C3B2E;color:#fff;text-decoration:none;font-weight:600;font-size:14px;padding:10px 22px}
+        .btn{display:inline-block;background:#173A2A;color:#fff;text-decoration:none;font-weight:600;font-size:14px;padding:10px 22px}
         @media(prefers-color-scheme:dark){body{background:#121212;color:#e2e8f0}.box{background:#1e1e1e;border-color:#2f2f2f}h1{color:#f1f5f9}}
     </style>
 </head>

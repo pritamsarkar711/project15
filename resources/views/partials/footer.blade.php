@@ -49,9 +49,9 @@
                 </a>
                 <p class="text-sm leading-relaxed text-slate-500 dark:text-slate-400">
                     A curated multi-niche blog for tech, health, finance, travel, lifestyle and education.
-                    <a href="{{ route('about') }}" class="text-slate-700 dark:text-slate-300 underline decoration-[#d3d8e0] underline-offset-4 hover:text-[#047a43] dark:hover:text-emerald-300 transition">Learn about Huvanti</a>,
-                    how we work in our <a href="{{ route('editorial') }}" class="text-slate-700 dark:text-slate-300 underline decoration-[#d3d8e0] underline-offset-4 hover:text-[#047a43] dark:hover:text-emerald-300 transition">editorial policy</a>
-                    or <a href="{{ route('contact') }}" class="text-slate-700 dark:text-slate-300 underline decoration-[#d3d8e0] underline-offset-4 hover:text-[#047a43] dark:hover:text-emerald-300 transition">contact the team</a>.
+                    <a href="{{ route('about') }}" class="text-slate-700 dark:text-slate-300 underline decoration-[#d3d8e0] underline-offset-4 hover:text-[#2E7856] dark:hover:text-[#6FB393] transition">Learn about Huvanti</a>,
+                    how we work in our <a href="{{ route('editorial') }}" class="text-slate-700 dark:text-slate-300 underline decoration-[#d3d8e0] underline-offset-4 hover:text-[#2E7856] dark:hover:text-[#6FB393] transition">editorial policy</a>
+                    or <a href="{{ route('contact') }}" class="text-slate-700 dark:text-slate-300 underline decoration-[#d3d8e0] underline-offset-4 hover:text-[#2E7856] dark:hover:text-[#6FB393] transition">contact the team</a>.
                 </p>
                 @if($socialEnabled && count($socials) > 0)
                 <div class="flex items-center gap-1.5 mt-5">
@@ -80,7 +80,7 @@
                 <h4 class="text-[13px] font-bold text-slate-900 dark:text-white mb-3.5 tracking-tight">Categories</h4>
                 <div class="flex flex-col gap-2.5 text-sm">
                     @foreach($footerCategories as $cat)
-                        <a href="{{ route('category.show',$cat->slug) }}" class="text-slate-500 dark:text-slate-400 hover:text-[#047a43] dark:hover:text-emerald-300 transition">{{ $cat->name }}</a>
+                        <a href="{{ route('category.show',$cat->slug) }}" class="text-slate-500 dark:text-slate-400 hover:text-[#2E7856] dark:hover:text-[#6FB393] transition">{{ $cat->name }}</a>
                     @endforeach
                 </div>
             </div>
@@ -88,24 +88,24 @@
             <div class="lg:col-span-2">
                 <h4 class="text-[13px] font-bold text-slate-900 dark:text-white mb-3.5 tracking-tight">Explore</h4>
                 <div class="flex flex-col gap-2.5 text-sm">
-                    <a href="{{ route('about') }}" class="text-slate-500 dark:text-slate-400 hover:text-[#047a43] dark:hover:text-emerald-300 transition">About</a>
-                    <a href="{{ route('contact') }}" class="text-slate-500 dark:text-slate-400 hover:text-[#047a43] dark:hover:text-emerald-300 transition">Contact</a>
-                    <a href="/blog" class="text-slate-500 dark:text-slate-400 hover:text-[#047a43] dark:hover:text-emerald-300 transition">Blog</a>
-                    <a href="/top-contributors" class="text-slate-500 dark:text-slate-400 hover:text-[#047a43] dark:hover:text-emerald-300 transition">Top Contributors</a>
-                    <a href="/sitemap.xml" class="text-slate-500 dark:text-slate-400 hover:text-[#047a43] dark:hover:text-emerald-300 transition">Sitemap</a>
+                    <a href="{{ route('about') }}" class="text-slate-500 dark:text-slate-400 hover:text-[#2E7856] dark:hover:text-[#6FB393] transition">About</a>
+                    <a href="{{ route('contact') }}" class="text-slate-500 dark:text-slate-400 hover:text-[#2E7856] dark:hover:text-[#6FB393] transition">Contact</a>
+                    <a href="/blog" class="text-slate-500 dark:text-slate-400 hover:text-[#2E7856] dark:hover:text-[#6FB393] transition">Blog</a>
+                    <a href="/top-contributors" class="text-slate-500 dark:text-slate-400 hover:text-[#2E7856] dark:hover:text-[#6FB393] transition">Top Contributors</a>
+                    <a href="/sitemap.xml" class="text-slate-500 dark:text-slate-400 hover:text-[#2E7856] dark:hover:text-[#6FB393] transition">Sitemap</a>
                 </div>
             </div>
             <!-- Legal -->
             <div class="lg:col-span-2">
                 <h4 class="text-[13px] font-bold text-slate-900 dark:text-white mb-3.5 tracking-tight">Legal</h4>
                 <div class="flex flex-col gap-2.5 text-sm">
-                    <a href="{{ route('privacy') }}" class="text-slate-500 dark:text-slate-400 hover:text-[#047a43] dark:hover:text-emerald-300 transition">Privacy</a>
-                    <a href="{{ route('terms') }}" class="text-slate-500 dark:text-slate-400 hover:text-[#047a43] dark:hover:text-emerald-300 transition">Terms</a>
-                    <a href="{{ route('cookie') }}" class="text-slate-500 dark:text-slate-400 hover:text-[#047a43] dark:hover:text-emerald-300 transition">Cookies</a>
-                    <a href="{{ route('editorial') }}" class="text-slate-500 dark:text-slate-400 hover:text-[#047a43] dark:hover:text-emerald-300 transition">Editorial</a>
-                    <a href="{{ route('affiliate') }}" class="text-slate-500 dark:text-slate-400 hover:text-[#047a43] dark:hover:text-emerald-300 transition">Affiliate</a>
-                    <a href="{{ route('comments.policy') }}" class="text-slate-500 dark:text-slate-400 hover:text-[#047a43] dark:hover:text-emerald-300 transition">Comment Policy</a>
-                    <a href="{{ route('disclaimer') }}" class="text-slate-500 dark:text-slate-400 hover:text-[#047a43] dark:hover:text-emerald-300 transition">Disclaimer</a>
+                    <a href="{{ route('privacy') }}" class="text-slate-500 dark:text-slate-400 hover:text-[#2E7856] dark:hover:text-[#6FB393] transition">Privacy</a>
+                    <a href="{{ route('terms') }}" class="text-slate-500 dark:text-slate-400 hover:text-[#2E7856] dark:hover:text-[#6FB393] transition">Terms</a>
+                    <a href="{{ route('cookie') }}" class="text-slate-500 dark:text-slate-400 hover:text-[#2E7856] dark:hover:text-[#6FB393] transition">Cookies</a>
+                    <a href="{{ route('editorial') }}" class="text-slate-500 dark:text-slate-400 hover:text-[#2E7856] dark:hover:text-[#6FB393] transition">Editorial</a>
+                    <a href="{{ route('affiliate') }}" class="text-slate-500 dark:text-slate-400 hover:text-[#2E7856] dark:hover:text-[#6FB393] transition">Affiliate</a>
+                    <a href="{{ route('comments.policy') }}" class="text-slate-500 dark:text-slate-400 hover:text-[#2E7856] dark:hover:text-[#6FB393] transition">Comment Policy</a>
+                    <a href="{{ route('disclaimer') }}" class="text-slate-500 dark:text-slate-400 hover:text-[#2E7856] dark:hover:text-[#6FB393] transition">Disclaimer</a>
                 </div>
             </div>
         </div>
@@ -114,7 +114,12 @@
         @endif
         <div class="border-t border-[#e6e8ee] dark:border-[#22262e] mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
             <p class="text-[13px] text-slate-500 dark:text-slate-400">{!! $copyright !!}</p>
-            <p class="text-[13px] text-slate-400 dark:text-slate-500 flex items-center gap-1.5">Explore Ideas. <span class="w-1 h-1 rounded-full bg-[#05B762] inline-block"></span> Inspire Life.</p>
+            <p class="text-[13px] text-slate-400 dark:text-slate-500 flex items-center gap-1.5">
+                Build By
+                <a href="https://hirepritam.vercel.app/" target="_blank" rel="noopener" class="inline-flex items-center gap-1 font-semibold text-slate-600 dark:text-slate-300 hover:text-[#2E7856] dark:hover:text-[#8CC7AA] transition">Joe
+                    <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M7 17 17 7m0 0H8m9 0v9"/></svg>
+                </a>
+            </p>
         </div>
     </div>
 </footer>

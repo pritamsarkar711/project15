@@ -1,6 +1,6 @@
 {{-- Maintenance mode page — HTTP 503. Deliberately SELF-CONTAINED (no layout,
    no partials) so it renders even if everything else is broken while the
-   admin updates the site. Site design: Inter, #0C3B2E dark green, emerald
+   admin updates the site. Site design: Inter, #173A2A dark green, emerald
    accents, square corners. Minimal content per design brief: logo + timer. --}}
 <!DOCTYPE html>
 <html lang="en">
@@ -16,14 +16,14 @@
         body{margin:0;background:#fafafa;color:#1e293b;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center}
         .logo{margin-bottom:40px}
         .timer{display:flex;gap:10px;align-items:flex-start;justify-content:center}
-        .cell{background:#0C3B2E;color:#fff;min-width:78px;padding:14px 6px 10px}
+        .cell{background:#173A2A;color:#fff;min-width:78px;padding:14px 6px 10px}
         .cell .num{font-size:30px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums}
-        .cell .lab{font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#86efac;margin-top:6px}
-        .sep{font-size:26px;font-weight:800;color:#0C3B2E;line-height:1.4;user-select:none}
+        .cell .lab{font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#9ED0B6;margin-top:6px}
+        .sep{font-size:26px;font-weight:800;color:#173A2A;line-height:1.4;user-select:none}
         .soon{margin-top:26px;font-size:13px;font-weight:500;color:#64748b}
         @media (prefers-color-scheme: dark){
             body{background:#121212;color:#e2e8f0}
-            .sep{color:#34d399}
+            .sep{color:#6FB393}
             .soon{color:#94a3b8}
         }
         @media (max-width:420px){.cell{min-width:62px;padding:12px 4px 8px}.cell .num{font-size:24px}}
@@ -40,7 +40,7 @@
         @if($logo)
             <img src="{{ asset('storage/'.$logo) }}" alt="{{ $siteName }}" class="h-9 w-auto" loading="eager">
         @else
-            <span style="font-size:24px;font-weight:800;letter-spacing:-.02em;color:#0f172a">{{ preg_replace('/\.com$/i','', $siteName) }}<span style="color:#059669;font-weight:500">{{ str_ends_with(strtolower($siteName), '.com') ? '.com' : '' }}</span></span>
+            <span style="font-size:24px;font-weight:800;letter-spacing:-.02em;color:#0f172a">{{ preg_replace('/\.com$/i','', $siteName) }}<span style="color:#27654A;font-weight:500">{{ str_ends_with(strtolower($siteName), '.com') ? '.com' : '' }}</span></span>
         @endif
     </div>
 

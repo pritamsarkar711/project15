@@ -82,7 +82,7 @@ class EnsureSiteIsLive
                 .'<title>'.htmlspecialchars(Setting::get('site_name', 'Huvanti')).'</title></head>'
                 .'<body style="margin:0;font-family:Inter,system-ui,sans-serif;display:flex;'
                 .'align-items:center;justify-content:center;min-height:100vh;text-align:center">'
-                .'<p style="color:#0C3B2E;font-weight:600">We will be back soon.</p></body></html>';
+                .'<p style="color:#173A2A;font-weight:600">We will be back soon.</p></body></html>';
         }
 
         return response($content, 503, $headers);

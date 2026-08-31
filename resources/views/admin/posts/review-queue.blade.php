@@ -42,10 +42,10 @@
                     <div class="flex flex-col gap-2 shrink-0">
                         @if($post->review_status === 'pending_review' || $post->review_status === 'returned')
                             <a href="{{ route('admin.posts.edit', $post) }}" class="px-3 h-9 inline-flex items-center text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800">Open editor</a>
-                            <button type="button" data-open-review="{{ $post->id }}" class="px-3 h-9 inline-flex items-center text-xs font-semibold rounded-lg bg-[#0C3B2E] hover:bg-[#072A20] text-white">Review & approve</button>
+                            <button type="button" data-open-review="{{ $post->id }}" class="px-3 h-9 inline-flex items-center text-xs font-semibold rounded-lg bg-[#2E7856] hover:bg-[#27654A] text-white">Review & approve</button>
                             <button type="button" data-open-return="{{ $post->id }}" class="px-3 h-9 inline-flex items-center text-xs font-semibold text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-500/10">Return with note</button>
                         @else
-                            <a href="{{ route('blog.show', $post->slug) }}" target="_blank" class="px-3 h-9 inline-flex items-center text-xs font-semibold text-[#0C3B2E] dark:text-emerald-300 hover:underline">View live</a>
+                            <a href="{{ route('blog.show', $post->slug) }}" target="_blank" class="px-3 h-9 inline-flex items-center text-xs font-semibold text-[#173A2A] dark:text-[#6FB393] hover:underline">View live</a>
                         @endif
                     </div>
                 </div>
@@ -83,7 +83,7 @@
                             <label class="flex items-center gap-2"><input type="checkbox" name="is_affiliate" value="1" @checked($post->is_affiliate)> Affiliate</label>
                             <label class="flex items-center gap-2"><input type="checkbox" name="allow_comments" value="1" @checked($post->allow_comments)> Allow comments</label>
                         </div>
-                        <button type="submit" class="h-10 px-4 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold">Approve & publish</button>
+                        <button type="submit" class="h-10 px-4 bg-[#27654A] hover:bg-[#1F513A] text-white text-xs font-semibold">Approve & publish</button>
                     </form>
 
                     <form method="POST" action="{{ route('admin.posts.return', $post) }}" class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 space-y-3">

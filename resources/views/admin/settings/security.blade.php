@@ -30,13 +30,13 @@
                 <form method="POST" action="{{ route('admin.settings.2fa.confirm') }}" class="flex flex-wrap gap-2">
                     @csrf
                     <input type="text" name="two_factor_code" inputmode="numeric" maxlength="6" required placeholder="123456" class="h-11 w-40 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-mono tracking-widest text-center placeholder:tracking-normal placeholder:font-sans">
-                    <button type="submit" class="h-11 px-6 rounded-lg bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold text-sm transition">Confirm & Enable</button>
+                    <button type="submit" class="h-11 px-6 rounded-lg bg-[#2E7856] hover:bg-[#27654A] text-white font-semibold text-sm transition">Confirm & Enable</button>
                     <button type="submit" formaction="{{ route('admin.settings.2fa.disable') }}" formnovalidate class="h-11 px-6 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 font-semibold text-sm transition">Cancel setup</button>
                 </form>
             </div>
         @elseif($user->google2fa_secret)
-            <div class="mt-4 p-4 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/30 flex flex-wrap items-center justify-between gap-3">
-                <div class="flex items-center gap-2 text-sm font-semibold text-emerald-800 dark:text-emerald-300">
+            <div class="mt-4 p-4 bg-[#F0F7F3] dark:bg-[#2E7856]/10 border border-[#C7E0D4] dark:border-[#2E7856]/30 flex flex-wrap items-center justify-between gap-3">
+                <div class="flex items-center gap-2 text-sm font-semibold text-[#173A2A] dark:text-[#6FB393]">
                     <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path stroke-linecap="round" stroke-linejoin="round" d="m9 11 3 3L22 4"/></svg>
                     Enabled. A 6-digit code is required at login.
                 </div>
@@ -48,7 +48,7 @@
             <div class="mt-4 p-4 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex flex-wrap items-center justify-between gap-3">
                 <span class="text-sm font-semibold text-slate-600 dark:text-slate-300">Disabled</span>
                 <form method="POST" action="{{ route('admin.settings.2fa.start') }}">@csrf
-                    <button type="submit" class="h-9 px-4 rounded-lg bg-[#0C3B2E] hover:bg-[#072A20] text-white text-sm font-semibold transition">Enable 2FA</button>
+                    <button type="submit" class="h-9 px-4 rounded-lg bg-[#2E7856] hover:bg-[#27654A] text-white text-sm font-semibold transition">Enable 2FA</button>
                 </form>
             </div>
         @endif

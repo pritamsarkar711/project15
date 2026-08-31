@@ -17,7 +17,7 @@
         <div class="lg:col-span-8 space-y-5">
             <div class="panel-card p-6">
                 <label class="text-sm font-semibold">Title *</label>
-                <input type="text" name="title" required value="{{ old('title') }}" class="mt-1 w-full h-11 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/15 outline-none text-sm">
+                <input type="text" name="title" required value="{{ old('title') }}" class="mt-1 w-full h-11 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none text-sm">
                 <div class="grid sm:grid-cols-2 gap-4 mt-4">
                     <div>
                         <label class="text-sm font-medium">Slug (auto if empty)</label>
@@ -49,7 +49,7 @@
                         <textarea name="faqs[0][answer]" placeholder="Answer" rows="2" class="px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-sm"></textarea>
                     </div>
                 </div>
-                <button type="button" onclick="addFaq()" class="text-sm font-semibold text-emerald-700 dark:text-emerald-300 hover:underline">+ Add FAQ</button>
+                <button type="button" onclick="addFaq()" class="text-sm font-semibold text-[#1F513A] dark:text-[#6FB393] hover:underline">+ Add FAQ</button>
             </div>
         </div>
 
@@ -64,16 +64,16 @@
                 </select>
                 <label class="text-sm font-medium mt-3 block">Schedule (optional)</label>
                 <input type="datetime-local" name="scheduled_at" value="{{ old('scheduled_at') }}" class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
-                <label class="flex items-center gap-2 mt-3 text-sm"><input type="checkbox" name="is_featured" value="1" class="border-slate-300 dark:border-slate-600 text-emerald-600 focus:ring-emerald-500"> Featured post</label>
-                <label class="flex items-center gap-2 mt-2 text-sm"><input type="checkbox" name="allow_comments" value="1" checked class="border-slate-300 dark:border-slate-600 text-emerald-600 focus:ring-emerald-500"> Allow comments</label>
-                <button type="submit" class="w-full mt-4 h-11 rounded-lg bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold transition">Create Post</button>
+                <label class="flex items-center gap-2 mt-3 text-sm"><input type="checkbox" name="is_featured" value="1" class="border-slate-300 dark:border-slate-600 text-[#27654A]"> Featured post</label>
+                <label class="flex items-center gap-2 mt-2 text-sm"><input type="checkbox" name="allow_comments" value="1" checked class="border-slate-300 dark:border-slate-600 text-[#27654A]"> Allow comments</label>
+                <button type="submit" class="w-full mt-4 h-11 rounded-lg bg-[#2E7856] hover:bg-[#27654A] text-white font-semibold transition">Create Post</button>
                 <p id="autosave-status" class="mt-3 text-[11px] font-medium text-slate-400 dark:text-slate-500" aria-live="polite"></p>
             </div>
 
             <div class="panel-card p-6">
                 <h3 class="font-semibold mb-3">Featured Image</h3>
                 <img id="featured-preview" src="#" alt="" class="hidden w-full h-40 object-cover mb-3 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" loading="lazy" decoding="async">
-                <label class="block w-full cursor-pointer border border-dashed border-slate-300 dark:border-slate-600 py-4 text-center text-sm text-slate-500 dark:text-slate-400 hover:border-emerald-500 hover:text-emerald-700 dark:hover:text-emerald-300 transition">
+                <label class="block w-full cursor-pointer border border-dashed border-slate-300 dark:border-slate-600 py-4 text-center text-sm text-slate-500 dark:text-slate-400 hover:border-[#2E7856] hover:text-[#1F513A] dark:hover:text-[#6FB393] transition">
                     <svg class="w-5 h-5 mx-auto mb-1 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 3h6m0 0v6m0-6L10 14M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
                     Click to upload (JPG/PNG/WebP, auto-converted)
                     <input type="file" name="featured_image" accept="image/*" class="hidden" onchange="previewFeatured(this)">

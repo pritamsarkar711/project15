@@ -16,7 +16,7 @@
             <div class="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 text-red-700 dark:text-red-400 px-4 py-3 text-sm mb-4 rounded-xl">{{ $errors->first() }}</div>
         @endif
         @if(session('success'))
-            <div class="bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/30 text-emerald-800 dark:text-emerald-300 px-4 py-3 text-sm mb-4 rounded-xl">{{ session('success') }}</div>
+            <div class="bg-[#F0F7F3] dark:bg-[#2E7856]/10 border border-[#C7E0D4] dark:border-[#2E7856]/30 text-[#173A2A] dark:text-[#6FB393] px-4 py-3 text-sm mb-4 rounded-xl">{{ session('success') }}</div>
         @endif
 
         <form method="POST" action="{{ route('register.post') }}" class="space-y-4">
@@ -64,7 +64,7 @@
 
         <p class="text-sm text-slate-600 dark:text-slate-400 text-center mt-6">
             Already have an account?
-            <a href="{{ route('login') }}" class="font-semibold text-[#047a43] dark:text-emerald-300 hover:underline underline-offset-4">Sign in</a>
+            <a href="{{ route('login') }}" class="font-semibold text-[#2E7856] dark:text-[#6FB393] hover:underline underline-offset-4">Sign in</a>
         </p>
         <p class="text-[11px] text-slate-500 dark:text-slate-500 text-center mt-3 leading-relaxed">
             By creating an account you agree to our

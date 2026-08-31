@@ -5,7 +5,7 @@
 
 @section('content')
 <div class="max-w-[1200px] mx-auto px-4 sm:px-6 py-20 text-center">
-    <p class="text-[64px] sm:text-[96px] font-extrabold leading-none text-[#05B762] dark:text-emerald-300 select-none tracking-tight">404</p>
+    <p class="text-[64px] sm:text-[96px] font-extrabold leading-none text-[#2E7856] dark:text-[#6FB393] select-none tracking-tight">404</p>
     <h1 class="mt-2 text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">We couldn't find that page</h1>
     <p class="mt-3 text-sm sm:text-base text-slate-600 dark:text-slate-400 max-w-xl mx-auto leading-relaxed">
         The link may be broken, or the article may have been moved or deleted.
@@ -22,10 +22,10 @@
     </div>
 
     <nav class="mt-10 text-sm text-slate-500 dark:text-slate-400 flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
-        <a href="{{ url('/about') }}" class="hover:text-emerald-700 dark:hover:text-emerald-300 hover:underline">About us</a>
-        <a href="{{ url('/contact') }}" class="hover:text-emerald-700 dark:hover:text-emerald-300 hover:underline">Contact</a>
-        <a href="{{ url('/privacy-policy') }}" class="hover:text-emerald-700 dark:hover:text-emerald-300 hover:underline">Privacy Policy</a>
-        <a href="{{ url('/editorial-policy') }}" class="hover:text-emerald-700 dark:hover:text-emerald-300 hover:underline">Editorial Policy</a>
+        <a href="{{ url('/about') }}" class="hover:text-[#1F513A] dark:hover:text-[#6FB393] hover:underline">About us</a>
+        <a href="{{ url('/contact') }}" class="hover:text-[#1F513A] dark:hover:text-[#6FB393] hover:underline">Contact</a>
+        <a href="{{ url('/privacy-policy') }}" class="hover:text-[#1F513A] dark:hover:text-[#6FB393] hover:underline">Privacy Policy</a>
+        <a href="{{ url('/editorial-policy') }}" class="hover:text-[#1F513A] dark:hover:text-[#6FB393] hover:underline">Editorial Policy</a>
     </nav>
 </div>
 @endsection
