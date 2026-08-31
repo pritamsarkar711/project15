@@ -21,15 +21,15 @@
          decode correctly, matching the admin + frontend layouts. --}}
     @stack('head')
 </head>
-<body class="panel-ui min-h-screen bg-slate-100 text-slate-900 dark:bg-[#0f172a] dark:text-slate-100 flex overflow-x-hidden" style="font-family:{{ \App\Support\SiteFont::cssStack() }}">
+<body class="panel-ui min-h-screen bg-[#f6f7fa] text-slate-900 dark:bg-[#0d0f13] dark:text-slate-100 flex overflow-x-hidden" style="font-family:{{ \App\Support\SiteFont::cssStack() }}">
     {{-- Sidebar: identical structure and styling to the admin panel --}}
-    <aside id="author-sidebar" class="fixed inset-y-0 left-0 w-[250px] bg-slate-900 dark:bg-slate-950 text-slate-300 flex flex-col z-40 transform lg:translate-x-0 -translate-x-full transition-transform duration-300 overflow-y-auto no-scrollbar border-r border-black/30">
-        <div class="h-[64px] flex items-center gap-3 px-5 border-b border-white/10 shrink-0">
-            <div class="w-9 h-9 bg-[#0C3B2E] flex items-center justify-center text-white" aria-hidden="true">
+    <aside id="author-sidebar" class="fixed inset-y-0 left-0 w-[250px] bg-[#101319] dark:bg-[#0b0d11] text-slate-300 flex flex-col z-40 transform lg:translate-x-0 -translate-x-full transition-transform duration-300 overflow-y-auto no-scrollbar border-r border-black/40">
+        <div class="h-[64px] flex items-center gap-3 px-5 border-b border-white/8 shrink-0">
+            <div class="w-9 h-9 bg-[#0C3B2E] rounded-lg flex items-center justify-center text-white" aria-hidden="true">
                 <svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Z"/><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 19.5-3-3"/></svg>
             </div>
             <div>
-                <div class="font-extrabold text-white leading-none">Author</div>
+                <div class="font-extrabold text-white leading-none tracking-tight">Author</div>
                 <div class="text-[10px] font-semibold tracking-[0.2em] text-slate-500 mt-1">{{ auth()->user()->name ?? 'Panel' }}</div>
             </div>
         </div>
@@ -100,7 +100,7 @@
 
     <div class="flex-1 lg:ml-[250px] min-w-0 flex flex-col min-h-screen">
         {{-- Topbar: identical to the admin panel --}}
-        <header class="sticky top-0 z-30 h-[64px] flex items-center justify-between px-4 sm:px-6 gap-4 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
+        <header class="sticky top-0 z-30 h-[64px] flex items-center justify-between px-4 sm:px-6 gap-4 bg-white dark:bg-[#14171d] border-b border-[#e6e8ee] dark:border-[#22262e]">
             <div class="flex items-center gap-3 min-w-0">
                 <button id="author-menu-toggle" class="lg:hidden w-9 h-9 bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-200">
                     <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
@@ -152,7 +152,7 @@
             @yield('content')
         </main>
 
-        <footer class="px-6 py-3 text-center text-[11px] font-medium tracking-wide text-slate-400 dark:text-slate-600 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">© {{ date('Y') }} {{ setting('site_name', 'Huvanti') }}</footer>
+        <footer class="px-6 py-3.5 text-center text-[11px] font-medium tracking-wide text-slate-400 dark:text-slate-600 bg-white dark:bg-[#14171d] border-t border-[#e6e8ee] dark:border-[#22262e]">© {{ date('Y') }} {{ setting('site_name', 'Huvanti') }}</footer>
     </div>
 
     {{-- Back-to-top FAB, same as the admin panel --}}

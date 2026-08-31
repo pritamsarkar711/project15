@@ -8,7 +8,7 @@
     </div>
 
     @if($feedbacks->count())
-        <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden">
+        <div class="panel-card overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full text-sm">
                     <thead class="bg-slate-50 dark:bg-slate-800/50 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
@@ -41,7 +41,7 @@
         </div>
         <div class="mt-4">{{ $feedbacks->links() }}</div>
     @else
-        <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-10 text-center">
+        <div class="panel-card p-10 text-center">
             <p class="text-sm text-slate-500 dark:text-slate-400">No feedback yet.</p>
         </div>
     @endif

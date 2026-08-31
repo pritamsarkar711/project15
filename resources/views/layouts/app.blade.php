@@ -126,7 +126,7 @@
 
     @stack('head')
 </head>
-<body class="bg-[#fafafa] dark:bg-[#121212] text-slate-800 dark:text-slate-100 antialiased overflow-x-hidden" style="font-family:{{ \App\Support\SiteFont::cssStack() }}">
+<body class="bg-[#f7f8fa] dark:bg-[#0f1115] text-slate-800 dark:text-slate-100 antialiased overflow-x-hidden" style="font-family:{{ \App\Support\SiteFont::cssStack() }}">
     @if(setting('gtm_container_id'))
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ setting('gtm_container_id') }}" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     @endif
@@ -139,9 +139,9 @@
         <main class="flex-1 w-full">
             @if(session('success'))
                 <div class="max-w-[1200px] mx-auto px-4 sm:px-6 mt-4">
-                    <div class="card-elev text-emerald-800 dark:text-emerald-300 px-4 py-3 flex items-center justify-between text-sm !shadow-none border border-emerald-200 dark:border-emerald-400/20 dark:!bg-[#1e2b24] rounded-xl">
-                        <span class="font-medium">{{ session('success') }}</span>
-                        <button onclick="this.parentElement.remove()" class="ml-4" aria-label="Dismiss">
+                    <div class="text-emerald-800 dark:text-emerald-300 pl-4 pr-3 py-3 flex items-center justify-between text-sm border border-emerald-200 dark:border-emerald-400/20 bg-emerald-50 dark:!bg-[#12211b] rounded-xl">
+                        <span class="font-medium flex items-center gap-2"><svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.5 11 14.5 15 10.5"/><circle cx="12" cy="12" r="9"/></svg>{{ session('success') }}</span>
+                        <button onclick="this.parentElement.remove()" class="ml-4 w-7 h-7 flex items-center justify-center rounded-md hover:bg-emerald-100 dark:hover:bg-emerald-400/10" aria-label="Dismiss">
                             <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                         </button>
                     </div>
@@ -149,7 +149,12 @@
             @endif
             @if(session('error'))
                 <div class="max-w-[1200px] mx-auto px-4 sm:px-6 mt-4">
-                    <div class="card-elev text-red-700 dark:text-red-300 px-4 py-3 text-sm !shadow-none border border-red-200 dark:border-red-400/20 dark:!bg-[#2b1e1e]">{{ session('error') }}</div>
+                    <div class="text-red-700 dark:text-red-300 pl-4 pr-3 py-3 flex items-center justify-between text-sm border border-red-200 dark:border-red-400/20 bg-red-50 dark:!bg-[#241417] rounded-xl">
+                        <span class="font-medium flex items-center gap-2"><svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01"/></svg>{{ session('error') }}</span>
+                        <button onclick="this.parentElement.remove()" class="ml-4 w-7 h-7 flex items-center justify-center rounded-md hover:bg-red-100 dark:hover:bg-red-400/10" aria-label="Dismiss">
+                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    </div>
                 </div>
             @endif
             @yield('content')
@@ -161,7 +166,7 @@
     @include('partials.search-overlay')
 
     <!-- Scroll top (repo pattern: FAB appears after 100px) -->
-    <button id="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" class="fixed bottom-5 right-5 w-11 h-11 rounded-full bg-[#05B762] dark:bg-emerald-400 text-white dark:text-slate-900 shadow-lg shadow-[#05B762]/30 hidden items-center justify-center hover:bg-[#049A53] dark:hover:bg-emerald-300 transition" aria-label="Scroll to top">
+    <button id="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" class="fixed bottom-5 right-5 w-11 h-11 rounded-full bg-[#16181d] dark:bg-[#e6e8ee] text-white dark:text-[#101319] shadow-lg shadow-black/20 hidden items-center justify-center hover:bg-[#05B762] dark:hover:bg-[#05B762] dark:hover:text-white transition" aria-label="Scroll to top">
         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
     </button>
 

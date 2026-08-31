@@ -3,7 +3,7 @@
 @section('content')
 <div class="w-full">
     <a href="{{ route('admin.feedback.index') }}" class="text-sm text-emerald-700 dark:text-emerald-300 hover:underline">Back to feedback</a>
-    <div class="mt-4 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+    <div class="mt-4 panel-card p-6">
         <div class="flex items-start justify-between gap-4">
             <div>
                 <div class="text-lg font-bold text-slate-900 dark:text-white">{{ $feedback->user->name ?? 'Unknown' }}</div>

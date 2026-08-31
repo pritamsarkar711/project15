@@ -16,7 +16,7 @@ class ViteAssets
 {
     /** Last-resort hashed filenames shipped in public/build/. */
     private const FALLBACK = [
-        'resources/css/app.css' => 'assets/app-6f396a20.css',
+        'resources/css/app.css' => 'assets/app-43a08f0e.css',
         'resources/js/app.js' => 'assets/app-BvRk9kiK.js',
     ];
 

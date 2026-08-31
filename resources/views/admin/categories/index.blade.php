@@ -12,12 +12,12 @@
         <h2 class="font-semibold">All Categories</h2>
         <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Shown on the site when <span class="font-semibold text-emerald-700 dark:text-emerald-300">enabled</span> with at least <span class="font-semibold text-emerald-700 dark:text-emerald-300">one published post</span>.</p>
     </div>
-    <a href="{{ route('admin.categories.create') }}" class="h-9 px-4 bg-[#0C3B2E] hover:bg-[#072A20] text-white text-sm font-semibold inline-flex items-center gap-1.5">
+    <a href="{{ route('admin.categories.create') }}" class="h-9 px-4 rounded-lg bg-[#0C3B2E] hover:bg-[#072A20] text-white text-sm font-semibold inline-flex items-center gap-1.5">
         <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14m-7-7h14"/></svg> New Category
     </a>
 </div>
 
-<div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 sm:p-5">
+<div class="panel-card p-4 sm:p-5">
     <div id="category-list" class="space-y-2">
         @forelse($categories as $cat)
             <div class="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700" data-id="{{ $cat->id }}">
@@ -50,11 +50,11 @@
                         @endif
                     </button>
                 </form>
-                <a href="{{ route('admin.categories.edit', $cat) }}" title="Edit" class="w-8 h-8 bg-[#0C3B2E] hover:bg-[#072A20] text-white flex items-center justify-center shrink-0">
+                <a href="{{ route('admin.categories.edit', $cat) }}" title="Edit" class="w-8 h-8 rounded-lg bg-[#0C3B2E] hover:bg-[#072A20] text-white flex items-center justify-center shrink-0">
                     <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m18 5 2.47 2.47a1 1 0 0 1 0 1.41L18 11.34 12.66 6l2.42-2.42a1 1 0 0 1 1.41 0ZM11.95 6.7 4.7 13.96a1 1 0 0 0-.29.7V18a1 1 0 0 0 1 1h3.32a1 1 0 0 0 .7-.29l7.26-7.25Z"/></svg>
                 </a>
                 <form method="POST" action="{{ route('admin.categories.destroy', $cat) }}" onsubmit="return confirm('Delete this category?')">@csrf @method('DELETE')
-                    <button type="submit" title="Delete" class="w-8 h-8 bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-500/30 flex items-center justify-center">
+                    <button type="submit" title="Delete" class="w-8 h-8 rounded-lg bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-500/30 flex items-center justify-center">
                         <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                     </button>
                 </form>

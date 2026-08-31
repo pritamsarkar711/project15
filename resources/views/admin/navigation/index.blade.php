@@ -7,7 +7,7 @@
 @endsection
 
 @section('content')
-<form method="POST" action="{{ route('admin.navigation.store') }}" class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 mb-6">
+<form method="POST" action="{{ route('admin.navigation.store') }}" class="panel-card p-5 mb-6">
     @csrf
     <h3 class="font-semibold mb-3">Add Menu Item</h3>
     <div class="grid sm:grid-cols-4 gap-3">
@@ -18,13 +18,13 @@
             <option value="mobile">Mobile Hamburger</option>
             <option value="footer">Footer</option>
         </select>
-        <button type="submit" class="h-10 px-4 bg-[#0C3B2E] hover:bg-[#072A20] text-white text-sm font-semibold transition">Add</button>
+        <button type="submit" class="h-10 px-4 rounded-lg bg-[#0C3B2E] hover:bg-[#072A20] text-white text-sm font-semibold transition">Add</button>
     </div>
 </form>
 
 <div class="grid lg:grid-cols-2 gap-5">
     @foreach([['header-list','Header Navigation',$header],['mobile-list','Mobile Navigation',$mobile]] as [$listId,$title,$items])
-        <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
+        <div class="panel-card p-5">
             <h3 class="font-semibold mb-3 flex items-center justify-between">{{ $title }} <span class="text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 px-2 py-1">{{ $items->count() }} items</span></h3>
             <div id="{{ $listId }}" class="space-y-2">
                 @forelse($items as $item)
@@ -47,7 +47,7 @@
     @endforeach
 </div>
 
-<div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 mt-5">
+<div class="panel-card p-5 mt-5">
     <h3 class="font-semibold mb-3">Footer Navigation</h3>
     <div id="footer-list" class="flex flex-wrap gap-2">
         @forelse($footer as $item)

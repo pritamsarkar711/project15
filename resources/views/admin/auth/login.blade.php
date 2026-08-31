@@ -17,7 +17,7 @@
 <body class="min-h-screen bg-slate-100 dark:bg-[#0f172a] flex items-center justify-center p-4" style="font-family:{{ \App\Support\SiteFont::cssStack() }}">
     <div class="w-full max-w-[400px] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm p-7 sm:p-8 text-slate-900 dark:text-slate-100">
         <div class="text-center mb-7">
-            <div class="w-12 h-12 bg-[#0C3B2E] flex items-center justify-center mx-auto text-white" aria-hidden="true">
+            <div class="w-12 h-12 bg-[#0C3B2E] rounded-xl flex items-center justify-center mx-auto text-white" aria-hidden="true">
                 <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
             </div>
             <h1 class="font-extrabold text-2xl mt-3">Admin</h1>
@@ -52,7 +52,7 @@
             <label class="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
                 <input type="checkbox" name="remember" class="border-slate-300 dark:border-slate-600 text-emerald-600 focus:ring-emerald-500"> Remember me
             </label>
-            <button type="submit" class="w-full h-12 bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold transition">Sign In</button>
+            <button type="submit" class="w-full h-12 rounded-lg bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold transition">Sign In</button>
         </form>
 
         <div class="text-center mt-6"><a href="/" class="text-sm text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200">← Back to site</a></div>

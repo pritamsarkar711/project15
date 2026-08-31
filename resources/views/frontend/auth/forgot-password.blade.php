@@ -3,7 +3,7 @@
 
 @section('content')
 <div class="max-w-[460px] mx-auto px-4 py-12">
-    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm rounded-2xl p-7 sm:p-8">
+    <div class="card-elev p-7 sm:p-8">
         <div class="text-center mb-7">
             <div class="flex justify-center">@include('partials.logo', ['class' => 'h-8', 'textClass' => 'text-[22px]'])</div>
             <h1 class="font-extrabold text-2xl mt-3 text-slate-900 dark:text-white">Reset your password</h1>
@@ -20,9 +20,9 @@
         <form method="POST" action="{{ route('password.email') }}" class="space-y-4">
             @csrf
             <div>
-                <label class="text-sm font-medium text-slate-900 dark:text-slate-200">Email</label>
+                <label class="label">Email</label>
                 <input type="email" name="email" required value="{{ old('email') }}" autocomplete="email" autofocus
-                    class="mt-1 w-full h-11 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:border-[#05B762] focus:ring-4 focus:ring-[#05B762]/15 outline-none text-sm text-slate-900 dark:text-white placeholder:text-slate-400"
+                    class="input !h-11"
                     placeholder="you@example.com">
             </div>
             <button type="submit"
@@ -32,7 +32,7 @@
         </form>
 
         <p class="text-sm text-slate-600 dark:text-slate-400 text-center mt-6">
-            <a href="{{ route('login') }}" class="font-semibold text-[#049A53] dark:text-emerald-300 hover:underline">Back to sign in</a>
+            <a href="{{ route('login') }}" class="font-semibold text-[#047a43] dark:text-emerald-300 hover:underline underline-offset-4">Back to sign in</a>
         </p>
     </div>
 </div>

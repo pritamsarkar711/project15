@@ -10,7 +10,7 @@
 @section('content')
 <div class="grid lg:grid-cols-12 gap-6">
     <div class="lg:col-span-8">
-        <form id="page-form" method="POST" action="{{ route('admin.pages.update', $page) }}" class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-4">
+        <form id="page-form" method="POST" action="{{ route('admin.pages.update', $page) }}" class="panel-card p-6 space-y-4">
             @csrf @method('PUT')
             <div>
                 <label class="text-sm font-semibold">Title *</label>
@@ -34,13 +34,13 @@
                 <textarea id="editor" name="content" rows="12" class="mt-1 w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm min-h-[300px]">{{ old('content', $page->content) }}</textarea>
             </div>
             <div class="flex gap-2">
-                <button type="submit" class="h-11 px-6 bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold transition">Update Page</button>
+                <button type="submit" class="h-11 px-6 rounded-lg bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold transition">Update Page</button>
                 <a href="{{ route('admin.pages.index') }}" class="h-11 px-6 inline-flex items-center font-semibold border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition">Cancel</a>
             </div>
         </form>
     </div>
     <div class="lg:col-span-4">
-        <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-4">
+        <div class="panel-card p-6 space-y-4">
             <h3 class="font-semibold">SEO</h3>
             <div>
                 <label class="text-sm font-medium">Meta Title</label>

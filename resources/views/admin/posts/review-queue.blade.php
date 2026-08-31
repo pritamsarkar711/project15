@@ -3,10 +3,10 @@
 @section('title', 'Review queue')
 
 @section('content')
-<div class="mb-5 flex flex-wrap items-center gap-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-1.5 w-fit">
-    <a href="{{ route('admin.posts.review-queue') }}" class="px-3 py-1.5 text-xs font-semibold {{ $tab === 'pending' ? 'bg-[#0C3B2E] text-white' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800' }}">Pending ({{ $counts['pending'] }})</a>
-    <a href="{{ route('admin.posts.review-queue', ['tab' => 'returned']) }}" class="px-3 py-1.5 text-xs font-semibold {{ $tab === 'returned' ? 'bg-[#0C3B2E] text-white' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800' }}">Returned ({{ $counts['returned'] }})</a>
-    <a href="{{ route('admin.posts.review-queue', ['tab' => 'approved']) }}" class="px-3 py-1.5 text-xs font-semibold {{ $tab === 'approved' ? 'bg-[#0C3B2E] text-white' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800' }}">Approved ({{ $counts['approved'] }})</a>
+<div class="mb-5 flex flex-wrap items-center gap-1 panel-card p-1.5 w-fit">
+    <a href="{{ route('admin.posts.review-queue') }}" class="px-3 py-1.5 text-xs font-semibold {{ $tab === 'pending' ? 'bg-[#16181d] text-white dark:bg-white dark:text-[#101319]' : 'text-slate-600 dark:text-slate-300 hover:bg-[#f1f3f7] dark:hover:bg-[#1c1f26]' }}">Pending ({{ $counts['pending'] }})</a>
+    <a href="{{ route('admin.posts.review-queue', ['tab' => 'returned']) }}" class="px-3 py-1.5 text-xs font-semibold {{ $tab === 'returned' ? 'bg-[#16181d] text-white dark:bg-white dark:text-[#101319]' : 'text-slate-600 dark:text-slate-300 hover:bg-[#f1f3f7] dark:hover:bg-[#1c1f26]' }}">Returned ({{ $counts['returned'] }})</a>
+    <a href="{{ route('admin.posts.review-queue', ['tab' => 'approved']) }}" class="px-3 py-1.5 text-xs font-semibold {{ $tab === 'approved' ? 'bg-[#16181d] text-white dark:bg-white dark:text-[#101319]' : 'text-slate-600 dark:text-slate-300 hover:bg-[#f1f3f7] dark:hover:bg-[#1c1f26]' }}">Approved ({{ $counts['approved'] }})</a>
 </div>
 
 @if($posts->isEmpty())
@@ -42,7 +42,7 @@
                     <div class="flex flex-col gap-2 shrink-0">
                         @if($post->review_status === 'pending_review' || $post->review_status === 'returned')
                             <a href="{{ route('admin.posts.edit', $post) }}" class="px-3 h-9 inline-flex items-center text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800">Open editor</a>
-                            <button type="button" data-open-review="{{ $post->id }}" class="px-3 h-9 inline-flex items-center text-xs font-semibold bg-[#0C3B2E] hover:bg-[#072A20] text-white">Review & approve</button>
+                            <button type="button" data-open-review="{{ $post->id }}" class="px-3 h-9 inline-flex items-center text-xs font-semibold rounded-lg bg-[#0C3B2E] hover:bg-[#072A20] text-white">Review & approve</button>
                             <button type="button" data-open-return="{{ $post->id }}" class="px-3 h-9 inline-flex items-center text-xs font-semibold text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-500/10">Return with note</button>
                         @else
                             <a href="{{ route('blog.show', $post->slug) }}" target="_blank" class="px-3 h-9 inline-flex items-center text-xs font-semibold text-[#0C3B2E] dark:text-emerald-300 hover:underline">View live</a>

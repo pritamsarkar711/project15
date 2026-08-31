@@ -14,7 +14,7 @@
     <div class="grid lg:grid-cols-12 gap-6">
         <div class="lg:col-span-8 space-y-5">
             {{-- Main writing card, mirrors the admin post editor --}}
-            <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+            <div class="panel-card p-6">
                 <label class="text-sm font-semibold text-slate-900 dark:text-white">Title *</label>
                 <input type="text" name="title" required value="{{ old('title', $isEdit ? $post->title : '') }}" maxlength="255"
                     class="mt-1 w-full h-11 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/15 outline-none text-sm text-slate-900 dark:text-white">
@@ -69,7 +69,7 @@
             </div>
 
             {{-- FAQ: required section, always visible --}}
-            <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+            <div class="panel-card p-6">
                 <div class="flex items-center justify-between mb-1">
                     <h3 class="font-semibold text-slate-900 dark:text-white">FAQ *</h3>
                     <span class="text-xs text-slate-500 dark:text-slate-400">At least one question and answer</span>
@@ -96,7 +96,7 @@
 
         <div class="lg:col-span-4 space-y-5">
             {{-- Publish --}}
-            <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+            <div class="panel-card p-6">
                 <h3 class="font-semibold mb-3 text-slate-900 dark:text-white">Publish</h3>
                 @if($isEdit && ($post->review_status === 'pending_review' || $post->review_status === 'approved'))
                     <div class="bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 p-4 text-sm text-slate-600 dark:text-slate-400">
@@ -120,7 +120,7 @@
                         <button type="submit" name="action" value="save_draft" class="w-full h-11 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 font-semibold text-sm transition">
                             Save as draft
                         </button>
-                        <button type="submit" name="action" value="submit" @disabled(! $canSubmit) class="w-full h-11 bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold text-sm transition disabled:opacity-50 disabled:cursor-not-allowed">
+                        <button type="submit" name="action" value="submit" @disabled(! $canSubmit) class="w-full h-11 rounded-lg bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold text-sm transition disabled:opacity-50 disabled:cursor-not-allowed">
                             {{ $isEdit && $post->review_status === 'returned' ? 'Resubmit for review' : 'Submit for review' }}
                         </button>
                     </div>
@@ -131,7 +131,7 @@
             </div>
 
             {{-- Featured image --}}
-            <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+            <div class="panel-card p-6">
                 <h3 class="font-semibold mb-3 text-slate-900 dark:text-white">Featured Image</h3>
                 <img id="featured-preview" src="{{ $isEdit && $post->featured_image ? (str_starts_with($post->featured_image, 'http') ? $post->featured_image : '/storage/'.$post->featured_image) : '#' }}" alt="" class="{{ $isEdit && $post->featured_image ? '' : 'hidden' }} w-full h-40 object-cover mb-3 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" loading="lazy" decoding="async">
                 <label class="block w-full cursor-pointer border border-dashed border-slate-300 dark:border-slate-600 py-4 text-center text-sm text-slate-500 dark:text-slate-400 hover:border-emerald-500 hover:text-emerald-700 dark:hover:text-emerald-300 transition">
@@ -142,7 +142,7 @@
             </div>
 
             {{-- Affiliate toggle --}}
-            <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+            <div class="panel-card p-6">
                 <h3 class="font-semibold mb-3 text-slate-900 dark:text-white">Affiliate Links</h3>
                 <label class="flex items-center justify-between gap-4 cursor-pointer">
                     <span class="text-sm text-slate-700 dark:text-slate-300">This post contains affiliate links</span>
@@ -155,7 +155,7 @@
             </div>
 
             {{-- SEO: required section, always visible --}}
-            <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+            <div class="panel-card p-6">
                 <h3 class="font-semibold mb-3 text-slate-900 dark:text-white">SEO *</h3>
                 <label class="text-sm font-medium text-slate-900 dark:text-white">Meta title</label>
                 <input type="text" name="meta_title" required value="{{ old('meta_title', $isEdit ? $post->meta_title : '') }}" maxlength="255" class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white">

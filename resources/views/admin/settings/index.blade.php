@@ -10,7 +10,7 @@
 <div class="flex items-center gap-1.5 mb-5 flex-wrap">
     @foreach(['general' => 'General', 'appearance' => 'Appearance & Fonts', 'hero' => 'Hero Section', 'ads' => 'Ad Placement', 'email' => 'Email / SMTP', 'integrations' => 'Integrations & SEO'] as $key => $label)
         <a href="{{ route('admin.settings.index', $key !== 'general' ? ['tab'=>$key] : []) }}"
-           class="h-9 px-4 inline-flex items-center text-sm font-medium border transition {{ (request('tab', 'general') === $key) ? 'bg-[#0C3B2E] text-white border-[#0C3B2E]' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800' }}">{{ $label }}</a>
+           class="h-9 px-3.5 inline-flex items-center text-[13px] font-semibold rounded-lg transition {{ (request('tab', 'general') === $key) ? 'bg-[#16181d] text-white dark:bg-white dark:text-[#101319]' : 'bg-white dark:bg-[#14171d] border border-[#e6e8ee] dark:border-[#2c313c] text-slate-600 dark:text-slate-300 hover:bg-[#f7f8fa] dark:hover:bg-[#1c1f26]' }}">{{ $label }}</a>
     @endforeach
 </div>
 
@@ -18,7 +18,7 @@
     <form method="POST" action="{{ route('admin.settings.update') }}" class="space-y-5 w-full">
         @csrf
         <input type="hidden" name="tab" value="integrations">
-        <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-4">
+        <div class="panel-card p-6 space-y-4">
             <h3 class="font-semibold">Analytics & Verification</h3>
             <div class="grid sm:grid-cols-2 gap-4">
                 <div>
@@ -40,26 +40,26 @@
             </div>
         </div>
 
-        <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-4">
+        <div class="panel-card p-6 space-y-4">
             <h3 class="font-semibold">ads.txt</h3>
             <textarea name="ads_txt_content" rows="5" placeholder="google.com, pub-0000000000000000, DIRECT, f08c47fec0942fa0" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-mono placeholder:font-sans">{{ old('ads_txt_content', $settings['ads_txt_content']->value ?? '') }}</textarea>
             <p class="text-xs text-slate-400 dark:text-slate-500">Served live at <a href="{{ url('ads.txt') }}" target="_blank" class="text-emerald-700 dark:text-emerald-300 hover:underline">{{ url('ads.txt') }}</a></p>
         </div>
 
-        <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-4">
+        <div class="panel-card p-6 space-y-4">
             <h3 class="font-semibold">robots.txt</h3>
             <textarea name="robots_txt_content" rows="5" placeholder="User-agent: *
 Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-mono placeholder:font-sans">{{ old('robots_txt_content', $settings['robots_txt_content']->value ?? '') }}</textarea>
             <p class="text-xs text-slate-400 dark:text-slate-500">Optional. Appended to the auto-generated robots.txt. Served at <a href="{{ url('robots.txt') }}" target="_blank" class="text-emerald-700 dark:text-emerald-300 hover:underline">{{ url('robots.txt') }}</a></p>
         </div>
 
-        <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-4">
+        <div class="panel-card p-6 space-y-4">
             <h3 class="font-semibold">llms.txt</h3>
             <textarea name="llms_txt_content" rows="5" placeholder="Extra markdown appended to llms.txt" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">{{ old('llms_txt_content', $settings['llms_txt_content']->value ?? '') }}</textarea>
             <p class="text-xs text-slate-400 dark:text-slate-500">Optional. Appended to the auto-generated llms.txt. Served at <a href="{{ url('llms.txt') }}" target="_blank" class="text-emerald-700 dark:text-emerald-300 hover:underline">{{ url('llms.txt') }}</a></p>
         </div>
 
-        <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-4">
+        <div class="panel-card p-6 space-y-4">
             <div class="flex items-center justify-between">
                 <h3 class="font-semibold">Google Sign In</h3>
                 <label class="inline-flex items-center gap-2 cursor-pointer">
@@ -84,14 +84,14 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
             </div>
         </div>
 
-        <button type="submit" class="h-11 px-6 bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold transition">Save Integrations</button>
+        <button type="submit" class="h-11 px-6 rounded-lg bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold transition">Save Integrations</button>
     </form>
 
 @elseif(request('tab') === 'appearance')
     <form method="POST" action="{{ route('admin.settings.update') }}" class="space-y-5 w-full">
         @csrf
         <input type="hidden" name="tab" value="appearance">
-        <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-4">
+        <div class="panel-card p-6 space-y-4">
             <h3 class="font-semibold">Site Font</h3>
             <div>
                 <label class="text-sm font-medium">Font family</label>
@@ -102,14 +102,14 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
                 </select>
             </div>
         </div>
-        <button type="submit" class="h-11 px-6 bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold transition">Save</button>
+        <button type="submit" class="h-11 px-6 rounded-lg bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold transition">Save</button>
     </form>
 
 @elseif(request('tab') === 'hero')
     <form method="POST" action="{{ route('admin.settings.update') }}" enctype="multipart/form-data" class="space-y-5 w-full">
         @csrf
         <input type="hidden" name="tab" value="hero">
-        <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-4">
+        <div class="panel-card p-6 space-y-4">
             <h3 class="font-semibold">Hero Headline</h3>
             <div class="grid sm:grid-cols-2 gap-4">
                 <div>
@@ -131,7 +131,7 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
             </div>
         </div>
 
-        <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-4">
+        <div class="panel-card p-6 space-y-4">
             <h3 class="font-semibold">Hero Image</h3>
             <div class="grid sm:grid-cols-2 gap-5 items-start">
                 <div>
@@ -166,7 +166,7 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
             </div>
         </div>
 
-        <button type="submit" class="h-11 px-6 bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold transition">Save</button>
+        <button type="submit" class="h-11 px-6 rounded-lg bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold transition">Save</button>
     </form>
 
 @elseif(request('tab') === 'ads')
@@ -175,7 +175,7 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
         <input type="hidden" name="tab" value="ads">
         {{-- Show ads on site: the master switch. Ads stay completely hidden
              (no boxes, no labels, no empty slots) until this is on. --}}
-        <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-4">
+        <div class="panel-card p-6 space-y-4">
             <div class="flex items-center justify-between gap-4 flex-wrap">
                 <div>
                     <h3 class="font-semibold">Show ads on site</h3>
@@ -191,7 +191,7 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
             </div>
         </div>
 
-        <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-4">
+        <div class="panel-card p-6 space-y-4">
             <div>
                 <h3 class="font-semibold">Ad Frequency</h3>
             </div>
@@ -204,7 +204,7 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
             <p class="text-xs text-slate-500 mt-2">Manage ads on the <a href="{{ route('admin.ads.index') }}" class="text-emerald-700 dark:text-emerald-300 hover:underline">Advertisements page</a>.</p>
         </div>
 
-        <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-4">
+        <div class="panel-card p-6 space-y-4">
             <div class="flex items-center justify-between gap-4 flex-wrap">
                 <div>
                     <h3 class="font-semibold">Revenue program</h3>
@@ -219,7 +219,7 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
                 </label>
             </div>
         </div>
-        <button type="submit" class="h-11 px-6 bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold transition">Save Ad Settings</button>
+        <button type="submit" class="h-11 px-6 rounded-lg bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold transition">Save Ad Settings</button>
     </form>
 
 @elseif(request('tab') === 'email')
@@ -240,7 +240,7 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
     <form method="POST" action="{{ route('admin.settings.smtp.update') }}" class="space-y-5 w-full">
         @csrf
 
-        <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-4">
+        <div class="panel-card p-6 space-y-4">
             <h3 class="font-semibold">Mailer</h3>
             <div>
                 <label class="text-sm font-medium">Default mailer</label>
@@ -253,7 +253,7 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
             </div>
         </div>
 
-        <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-4">
+        <div class="panel-card p-6 space-y-4">
             <h3 class="font-semibold">SMTP Server</h3>
             <div class="grid sm:grid-cols-2 gap-4">
                 <div class="sm:col-span-2">
@@ -291,7 +291,7 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
             </p>
         </div>
 
-        <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-4">
+        <div class="panel-card p-6 space-y-4">
             <h3 class="font-semibold">From Address</h3>
             <div class="grid sm:grid-cols-2 gap-4">
                 <div>
@@ -305,7 +305,7 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
             </div>
         </div>
 
-        <button type="submit" class="h-11 px-6 bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold transition">Save SMTP Settings</button>
+        <button type="submit" class="h-11 px-6 rounded-lg bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold transition">Save SMTP Settings</button>
     </form>
 
     {{-- Test email form — separate POST so it doesn't conflict with the save form. --}}
@@ -322,7 +322,7 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
     <form method="POST" action="{{ route('admin.settings.update') }}" enctype="multipart/form-data" class="space-y-5 w-full">
         @csrf
         <input type="hidden" name="tab" value="general">
-        <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-4">
+        <div class="panel-card p-6 space-y-4">
             <h3 class="font-semibold">Site</h3>
             <div class="grid sm:grid-cols-2 gap-4">
                 <div>
@@ -355,7 +355,7 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
             </div>
         </div>
 
-        <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-4">
+        <div class="panel-card p-6 space-y-4">
             <div class="flex items-center justify-between">
                 <h3 class="font-semibold">Social Links</h3>
                 <label class="inline-flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300 cursor-pointer">
@@ -386,7 +386,7 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
 
         {{-- Top Contributors: on/off switch. --}}
         @php $tcOn = old('top_contributors_enabled', $settings['top_contributors_enabled']->value ?? '1') === '1'; @endphp
-        <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-2">
+        <div class="panel-card p-6 space-y-2">
             <div class="flex items-center justify-between gap-4">
                 <h3 class="font-semibold">Top Contributors</h3>
                 <label class="inline-flex items-center gap-2 cursor-pointer shrink-0">
@@ -426,7 +426,7 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
             </div>
         </div>
 
-        <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-4">
+        <div class="panel-card p-6 space-y-4">
             <h3 class="font-semibold">Logo &amp; Favicon</h3>
             <div class="grid sm:grid-cols-3 gap-5">
                 <div>
@@ -474,7 +474,7 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
             </div>
         </div>
 
-        <button type="submit" class="h-11 px-6 bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold transition">Save</button>
+        <button type="submit" class="h-11 px-6 rounded-lg bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold transition">Save</button>
     </form>
 @endif
 

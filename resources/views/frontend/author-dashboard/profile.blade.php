@@ -7,7 +7,7 @@
     @csrf
 
     {{-- Identity --}}
-    <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+    <div class="panel-card p-6">
         <h2 class="font-semibold mb-4 text-slate-900 dark:text-white">Profile</h2>
         <div class="grid lg:grid-cols-2 gap-5">
             <div>
@@ -82,11 +82,11 @@
                 <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Optional. Shown with a flag icon.</p>
             </div>
         </div>
-        <button type="submit" class="mt-5 h-11 px-6 bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold text-sm transition">Save profile</button>
+        <button type="submit" class="mt-5 h-11 px-6 rounded-lg bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold text-sm transition">Save profile</button>
     </div>
 
     {{-- Social links --}}
-    <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+    <div class="panel-card p-6">
         <h2 class="font-semibold mb-4 text-slate-900 dark:text-white">Social links</h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             @php $existingSocials = $user->social_links ?? []; @endphp
@@ -123,7 +123,7 @@
 </script>
 
 {{-- Two factor authentication --}}
-<div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 mt-6">
+<div class="panel-card p-6 mt-6">
     <h3 class="font-semibold mb-3 text-slate-900 dark:text-white">Two Factor Authentication</h3>
 
     @if(session('author_2fa_setup_secret') && session('author_2fa_setup_qr'))
@@ -144,7 +144,7 @@
             <form method="POST" action="{{ route('author.2fa.confirm') }}" class="flex flex-wrap gap-2">
                 @csrf
                 <input type="text" name="two_factor_code" inputmode="numeric" maxlength="6" required placeholder="123456" class="h-11 w-40 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-mono tracking-widest text-center placeholder:tracking-normal placeholder:font-sans">
-                <button type="submit" class="h-11 px-6 bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold text-sm transition">Confirm & Enable</button>
+                <button type="submit" class="h-11 px-6 rounded-lg bg-[#0C3B2E] hover:bg-[#072A20] text-white font-semibold text-sm transition">Confirm & Enable</button>
                 <button type="submit" formaction="{{ route('author.2fa.disable') }}" formnovalidate class="h-11 px-6 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 font-semibold text-sm transition">Cancel setup</button>
             </form>
         </div>
@@ -165,7 +165,7 @@
                 <span class="text-xs text-slate-500 dark:text-slate-400">Extra protection for your account.</span>
             </div>
             <form method="POST" action="{{ route('author.2fa.start') }}">@csrf
-                <button type="submit" class="h-9 px-4 bg-[#0C3B2E] hover:bg-[#072A20] text-white text-sm font-semibold transition">Enable 2FA</button>
+                <button type="submit" class="h-9 px-4 rounded-lg bg-[#0C3B2E] hover:bg-[#072A20] text-white text-sm font-semibold transition">Enable 2FA</button>
             </form>
         </div>
     @endif
