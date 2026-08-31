@@ -38,7 +38,11 @@ class HtmlSanitizer
         'img'  => ['src', 'alt', 'title', 'width', 'height', 'loading', 'decoding'],
         'th'   => ['colspan', 'rowspan', 'style'],
         'td'   => ['colspan', 'rowspan', 'style'],
-        'font' => ['color', 'face', 'size', 'style'],
+        // Site typography is admin-controlled (Settings > site_font_family).
+        // "face" is deliberately NOT allowlisted: <font face> is emitted by
+        // the editor's font picker and by pasted Google Docs content, and a
+        // pinned family makes published posts contradict the site font.
+        'font' => ['color', 'size', 'style'],
         // Inline SVG icon vocabulary. No href/xlink anywhere, so an SVG can
         // never reference an external resource. (libxml lowercases
         // attribute names — the browser's HTML parser re-adjusts
@@ -86,6 +90,27 @@ class HtmlSanitizer
      *  position styling could pin itself over the whole published article
      *  (or the site header) and no legitimate post content needs it. */
     private const BLOCKED_STYLE_PATTERN = '/(expression|behavior|position\s*:\s*(?:fixed|absolute|sticky)|javascript|vbscript|import\s|url\s*\(\s*["\']?\s*data)/i';
+
+    /** Matches one font-family declaration inside a style value, value
+     *  included. Quoted segments are consumed atomically so a semicolon or
+     *  comma inside a quoted family name cannot desynchronise the scan
+     *  (font-family:"Foo; Bar", serif;). Case-insensitive: FONT-FAMILY and
+     *  Font-Family must die too. */
+    private const FONT_FAMILY_STYLE_PATTERN = '/font-family\s*:\s*(?:"[^"]*"|\'[^\']*\'|[^;])*/i';
+
+    /** Remove every font-family declaration from an inline style value while
+     *  keeping all other declarations (colour, line-height, spacing...).
+     *  Runs on save AND render, so legacy rows published before this rule
+     *  are fixed at render time with no migration. */
+    public static function withoutFontFamily(string $style): string
+    {
+        $stripped = (string) preg_replace(self::FONT_FAMILY_STYLE_PATTERN, '', $style);
+        // Collapse what the removal left behind: doubled separators, stray
+        // whitespace around them, and any leading/trailing separators.
+        $stripped = (string) preg_replace('/\s*;\s*(?:;\s*)+/', '; ', $stripped);
+
+        return trim($stripped, " ;\t\r\n");
+    }
 
     public static function clean(string $html): string
     {
@@ -141,8 +166,16 @@ class HtmlSanitizer
                 if (str_starts_with((string) $keep, 'on')) {
                     continue;
                 }
-                if ($keep === 'style' && preg_match(self::BLOCKED_STYLE_PATTERN, $val)) {
-                    continue;
+                if ($keep === 'style') {
+                    if (preg_match(self::BLOCKED_STYLE_PATTERN, $val)) {
+                        continue;
+                    }
+                    // Whole-site font unity: content never carries its own
+                    // font-family past the sanitizer.
+                    $val = self::withoutFontFamily($val);
+                    if (trim($val) === '') {
+                        continue;
+                    }
                 }
                 $node->setAttribute($keep, $val);
             }
