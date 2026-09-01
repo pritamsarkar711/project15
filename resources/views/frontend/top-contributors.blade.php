@@ -1,12 +1,10 @@
 @extends('layouts.app')
+
 @php
-    // NOTE: keep this as a BLOCK-style PHP section (open/close pair), NOT
-    // the inline single-line directive. This file contains a second PHP
-    // block further down; Blade's pre-compiler pairs openers with the first
-    // closer it finds GREEDILY, so the inline single-line form here got
-    // swallowed into one broken raw block -> PHP parse error -> HTTP 500.
-    $metaTitle = 'Top Contributors — The Most Active Writers on Huvanti';
+    $metaTitle = 'Top Contributors: The Most Active Writers on Huvanti';
+    $metaDescription = 'Discover the most active contributing writers and authors on Huvanti, ranked by published articles across multiple topics.';
 @endphp
+
 @section('content')
 <div class="border-b border-[#e6e8ee] dark:border-[#22262e] bg-white dark:bg-[#0f1115]">
     <div class="max-w-[1200px] mx-auto px-4 sm:px-6 page-head !pb-6">
@@ -18,7 +16,7 @@
         <div class="flex items-end justify-between gap-4 flex-wrap">
             <div>
                 <h1>Top Contributors</h1>
-                <p class="lede">The twenty most active authors on Huvanti, ranked by published articles.</p>
+                <p class="lede">The most active contributing authors on Huvanti, ranked by published articles.</p>
             </div>
             <span class="badge badge-slate !text-xs !px-2.5 !py-1">{{ $contributors->count() }} writers</span>
         </div>
@@ -70,11 +68,15 @@
             @endforeach
         </div>
     @else
-        <div class="card-elev empty-state">
-            <span class="icon-tile">
+        <div class="card-elev p-10 text-center">
+            <span class="icon-tile mx-auto mb-3">
                 <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0ZM4 21v-1a7 7 0 0 1 14 0v1"/></svg>
             </span>
-            <p>No contributors yet. Published articles will appear here.</p>
+            <h3 class="text-base font-bold text-slate-900 dark:text-white">Community Contributors</h3>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1 max-w-md mx-auto">Our community is growing. Published contributing authors and writers will appear here ranked by their articles.</p>
+            <div class="mt-4">
+                <a href="{{ route('author.posts.create') }}" class="btn btn-primary">Start Writing</a>
+            </div>
         </div>
     @endif
 </div>

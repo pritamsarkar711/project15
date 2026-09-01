@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
-use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Support\Facades\Schema;
 
@@ -11,13 +10,6 @@ class TopContributorsController extends Controller
 {
     public function index()
     {
-        // Admin feature switch (Settings -> General -> Features). When the
-        // feature is off the page answers 404 - the SEO-correct response, so
-        // search engines remove the URL instead of indexing a stub page.
-        if (Setting::get('top_contributors_enabled', '1') !== '1') {
-            abort(404);
-        }
-
         $contributors = collect();
         try {
             if (Schema::hasTable('users') && Schema::hasTable('posts')) {
@@ -34,6 +26,6 @@ class TopContributorsController extends Controller
             $contributors = collect();
         }
 
-        return view('frontend.top-contributors', compact('contributors'));
+        return response()->view('frontend.top-contributors', compact('contributors'), 200);
     }
 }
