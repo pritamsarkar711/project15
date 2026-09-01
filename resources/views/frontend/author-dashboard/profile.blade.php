@@ -28,7 +28,7 @@
                             class="flex-1 h-11 px-3 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-500 dark:text-slate-400 font-mono">
                         <span class="text-xs text-slate-500">Locked</span>
                     </div>
-                    <p class="text-xs text-slate-500 mt-1">Your author page is at <a href="{{ route('author.profile', $user->username) }}" class="text-[#1F513A] dark:text-[#6FB393] hover:underline" target="_blank">{{ url('/author/'.$user->username) }}</a></p>
+                    <p class="text-xs text-slate-500 mt-1">Your author page is at <a class="break-all" href="{{ route('author.profile', $user->username) }}" class="text-[#1F513A] dark:text-[#6FB393] hover:underline" target="_blank">{{ url('/author/'.$user->username) }}</a></p>
                 @else
                     <input type="text" name="username" required value="{{ old('username') }}" minlength="3" maxlength="30" pattern="[a-zA-Z0-9._\-]+" autocomplete="off"
                         class="w-full h-11 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none text-sm font-mono text-slate-900 dark:text-white"

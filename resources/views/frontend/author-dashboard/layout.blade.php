@@ -80,7 +80,7 @@
                 @if(auth()->user()->author_avatar_path)
                     <img src="{{ '/storage/'.auth()->user()->author_avatar_path }}" class="w-9 h-9 rounded-full object-cover bg-slate-800" alt="" loading="lazy" decoding="async">
                 @else
-                    <div class="w-9 h-9 rounded-full bg-[#2E7856] text-white flex items-center justify-center font-bold text-sm ring-2 ring-[#E9F2EE] dark:ring-[#26314a] ring-offset-0 ring-2 ring-[#E9F2EE] dark:ring-[#26314a] ring-offset-0">{{ strtoupper(substr(auth()->user()->name,0,1)) }}</div>
+                    <div class="w-9 h-9 rounded-full bg-[#2E7856] text-white flex items-center justify-center font-bold text-sm ring-2 ring-[#E9F2EE] dark:ring-[#26314a]">{{ strtoupper(substr(auth()->user()->name,0,1)) }}</div>
                 @endif
                 <div class="flex-1 min-w-0">
                     <div class="flex items-center gap-1.5">
@@ -105,7 +105,7 @@
                 <button id="author-menu-toggle" class="lg:hidden w-9 h-9 bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-200">
                     <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
                 </button>
-                <h1 class="font-bold text-lg leading-none truncate">@yield('title','Dashboard')</h1>
+                <h1 class="font-bold text-lg leading-none truncate min-w-0">@yield('title','Dashboard')</h1>
             </div>
             <div class="flex items-center gap-2 sm:gap-3">
                 @stack('header-actions')

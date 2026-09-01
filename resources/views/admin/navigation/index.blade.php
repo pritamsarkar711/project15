@@ -25,7 +25,7 @@
 <div class="grid lg:grid-cols-2 gap-5">
     @foreach([['header-list','Header Navigation',$header],['mobile-list','Mobile Navigation',$mobile]] as [$listId,$title,$items])
         <div class="panel-card p-5">
-            <h3 class="font-semibold mb-3 flex items-center justify-between">{{ $title }} <span class="text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 px-2 py-1">{{ $items->count() }} items</span></h3>
+            <h3 class="font-semibold mb-3 flex items-center justify-between">{{ $title }} <span class="text-xs break-all font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 px-2 py-1">{{ $items->count() }} items</span></h3>
             <div id="{{ $listId }}" class="space-y-2">
                 @forelse($items as $item)
                     <div class="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700" data-id="{{ $item->id }}">

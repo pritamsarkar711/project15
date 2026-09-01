@@ -128,7 +128,7 @@
                 @if($avatarPath)
                     <img src="{{ '/storage/'.$avatarPath }}" class="w-9 h-9 rounded-full object-cover bg-slate-800" alt="" loading="lazy" decoding="async">
                 @else
-                    <div class="w-9 h-9 rounded-full bg-[#2E7856] text-white flex items-center justify-center font-bold text-sm ring-2 ring-[#E9F2EE] dark:ring-[#26314a] ring-offset-0 ring-2 ring-[#E9F2EE] dark:ring-[#26314a] ring-offset-0">{{ strtoupper(substr(auth()->user()->name,0,1)) }}</div>
+                    <div class="w-9 h-9 rounded-full bg-[#2E7856] text-white flex items-center justify-center font-bold text-sm ring-2 ring-[#E9F2EE] dark:ring-[#26314a]">{{ strtoupper(substr(auth()->user()->name,0,1)) }}</div>
                 @endif
                 <div class="flex-1 min-w-0">
                     <div class="flex items-center gap-1.5">
@@ -152,7 +152,7 @@
                 <button id="admin-menu-toggle" class="lg:hidden w-9 h-9 rounded-lg bg-[#f1f3f7] dark:bg-[#1c1f26] flex items-center justify-center text-slate-700 dark:text-slate-200">
                     <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
                 </button>
-                <h1 class="font-bold text-[17px] leading-none truncate tracking-tight">@yield('title','Dashboard')</h1>
+                <h1 class="font-bold text-[17px] leading-none truncate tracking-tight min-w-0">@yield('title','Dashboard')</h1>
             </div>
             <div class="flex items-center gap-2 sm:gap-2.5">
                 <button onclick="toggleAdminTheme()" id="admin-theme-btn" title="Toggle theme" class="w-9 h-9 rounded-lg border border-[#e6e8ee] dark:border-[#2c313c] bg-white dark:bg-[#14171d] text-slate-600 dark:text-slate-300 hover:bg-[#f7f8fa] dark:hover:bg-[#1c1f26] flex items-center justify-center transition">
@@ -200,7 +200,7 @@
         </main>
 
         <footer class="px-6 py-3.5 text-center text-[11px] font-medium tracking-wide text-slate-400 dark:text-slate-600 bg-white dark:bg-[#14171d] border-t border-[#e6e8ee] dark:border-[#22262e]">
-            Huvanti Admin · v60
+            Huvanti Admin · v61
         </footer>
     </div>
 

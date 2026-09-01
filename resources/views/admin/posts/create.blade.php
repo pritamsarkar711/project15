@@ -51,6 +51,25 @@
                 </div>
                 <button type="button" onclick="addFaq()" class="text-sm font-semibold text-[#1F513A] dark:text-[#6FB393] hover:underline">+ Add FAQ</button>
             </div>
+
+            <div class="panel-card p-6">
+                <h3 class="font-semibold mb-3">SEO</h3>
+                <div class="grid sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-sm font-medium">Meta Title</label>
+                        <input type="text" name="meta_title" value="{{ old('meta_title') }}" class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium">Tags <span class="text-slate-400 font-normal">(comma separated)</span></label>
+                        <input type="text" name="meta_keywords" value="{{ old('meta_keywords') }}" placeholder="ai, technology" class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
+                    </div>
+                </div>
+                <label class="text-sm font-medium mt-4 block">Meta Description</label>
+                <textarea name="meta_description" rows="2" class="mt-1 w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">{{ old('meta_description') }}</textarea>
+            </div>
+
+            {{-- Focus keyword + live SEO score + AI assistant --}}
+            @include('partials.seo-ai-panel', ['post' => null, 'aiEndpoint' => route('author.ai.generate'), 'aiEnabled' => app(\App\Services\Ai\AiAssistantService::class)->enabled()])
         </div>
 
         <div class="lg:col-span-4 space-y-5">
@@ -82,18 +101,6 @@
                 <input type="text" name="featured_image_url" value="{{ old('featured_image_url') }}" placeholder="https://..." class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
             </div>
 
-            <div class="panel-card p-6">
-                <h3 class="font-semibold mb-3">SEO</h3>
-                <label class="text-sm font-medium">Meta Title</label>
-                <input type="text" name="meta_title" value="{{ old('meta_title') }}" class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
-                <label class="text-sm font-medium mt-3 block">Meta Description</label>
-                <textarea name="meta_description" rows="2" class="mt-1 w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">{{ old('meta_description') }}</textarea>
-                <label class="text-sm font-medium mt-3 block">Tags <span class="text-slate-400 font-normal">(comma separated)</span></label>
-                <input type="text" name="meta_keywords" value="{{ old('meta_keywords') }}" placeholder="ai, technology" class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
-            </div>
-
-            {{-- Focus keyword + live SEO score + AI assistant --}}
-            @include('partials.seo-ai-panel', ['post' => null, 'aiEndpoint' => route('author.ai.generate'), 'aiEnabled' => app(\App\Services\Ai\AiAssistantService::class)->enabled()])
         </div>
     </div>
 </form>

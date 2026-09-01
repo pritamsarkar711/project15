@@ -16,7 +16,7 @@
             <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
         </div>
         <h2 class="text-xl font-bold text-[#101319] dark:text-white">“{{ \Illuminate\Support\Str::limit($post->title, 70) }}” is live!</h2>
-        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Your post URL is below — share it on your socials to bring readers in fast.</p>
+        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Copy the URL or share it straight to your socials.</p>
 
         {{-- URL box --}}
         <div class="mt-5 flex items-stretch gap-2 max-w-xl mx-auto">
@@ -36,7 +36,7 @@
         <div class="mt-6 flex justify-center">
             @include('partials.share-buttons', ['shareUrl' => $shareUrl, 'shareTitle' => $post->title])
         </div>
-        <p class="text-xs text-slate-400 dark:text-slate-500 mt-4">Each icon opens that network with your post pre-filled. The copy button copies the link.</p>
+        <p class="text-xs text-slate-400 dark:text-slate-500 mt-4">Icons open each network with your post pre-filled.</p>
     </div>
 
     {{-- Auto-post delivery log (only when automation is configured) --}}
@@ -53,9 +53,9 @@
             </div>
         </div>
         @if(!$autopostEnabled)
-            <p class="text-sm text-slate-500 dark:text-slate-400">Auto-posting is currently <strong>disabled</strong>. Turn it on under <a href="{{ route('admin.social.index') }}" class="text-[#1F513A] dark:text-[#6FB393] hover:underline font-medium">Social Auto-Post</a> to publish new posts to X, Facebook, LinkedIn, Instagram, Telegram & Pinterest automatically — no manual sharing needed.</p>
+            <p class="text-sm text-slate-500 dark:text-slate-400">Auto-posting is <strong>off</strong>. Enable it in <a href="{{ route('admin.social.index') }}" class="text-[#1F513A] dark:text-[#6FB393] hover:underline font-medium">Social Auto-Post</a> to share new posts automatically.</p>
         @elseif($activeNetworks && count($activeNetworks))
-            <p class="text-sm text-slate-500 dark:text-slate-400 mb-3">This post was pushed automatically to: <strong>{{ implode(', ', array_map(fn($n) => \App\Models\SocialPublish::networkLabel($n), $activeNetworks)) }}</strong>. Delivery status per network:</p>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mb-3">Auto-shared to: <strong>{{ implode(', ', array_map(fn($n) => \App\Models\SocialPublish::networkLabel($n), $activeNetworks)) }}</strong></p>
             @php $rows = $post->socialPublishes->whereIn('network', $activeNetworks); @endphp
             @if($rows->isEmpty())
                 <p class="text-sm text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/30 p-3">Delivery in progress — refresh this page in a few seconds.</p>
@@ -82,7 +82,7 @@
                 </ul>
             @endif
         @else
-            <p class="text-sm text-slate-500 dark:text-slate-400">Auto-posting is enabled, but no network is fully configured yet. Add credentials under <a href="{{ route('admin.social.index') }}" class="text-[#1F513A] dark:text-[#6FB393] hover:underline font-medium">Social Auto-Post</a>.</p>
+            <p class="text-sm text-slate-500 dark:text-slate-400">No network is configured yet. Add credentials in <a href="{{ route('admin.social.index') }}" class="text-[#1F513A] dark:text-[#6FB393] hover:underline font-medium">Social Auto-Post</a>.</p>
         @endif
     </div>
 

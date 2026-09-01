@@ -43,7 +43,7 @@
         $seoPath = request()->getPathInfo();
         $seoPage = (int) request()->query('page', 1);
         $seoCanonical = rtrim($seoHost, '/') . $seoPath . ($seoPage > 1 ? '?page=' . $seoPage : '');
-        // Open Graph fallbacks mirror the <title>/<description> chain so
+        // Open Graph fallbacks mirror the title/description chain so
         // every page shares something sensible about itself.
         $seoOgTitle = $seoFinalTitle;
         $seoOgDescription = $seoFinalDescription;

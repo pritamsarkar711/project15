@@ -8,8 +8,8 @@
         <div class="w-14 h-14 rounded-full bg-[#E9F2EE] dark:bg-[#233b30] text-[#1F513A] dark:text-[#6FB393] flex items-center justify-center mx-auto mb-4">
             <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
         </div>
-        <h2 class="text-xl font-bold text-slate-900 dark:text-white">Your post is published! 🎉</h2>
-        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">“{{ \Illuminate\Support\Str::limit($post->title, 70) }}” is live. Grab your post URL below and share it on your social media.</p>
+        <h2 class="text-xl font-bold text-slate-900 dark:text-white">“{{ \Illuminate\Support\Str::limit($post->title, 70) }}” is live!</h2>
+        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Copy your post URL or share it on your social media.</p>
 
         <div class="mt-5 flex items-stretch gap-2 max-w-xl mx-auto">
             <input id="share-url-box" type="text" readonly value="{{ $shareUrl }}" onclick="this.select()"
@@ -27,7 +27,7 @@
         <div class="mt-6 flex justify-center">
             @include('partials.share-buttons', ['shareUrl' => $shareUrl, 'shareTitle' => $post->title])
         </div>
-        <p class="text-xs text-slate-400 dark:text-slate-500 mt-4">One click posts it to your social network with the link pre-filled. Tip: pin it on Pinterest with a nice image for extra traffic.</p>
+        <p class="text-xs text-slate-400 dark:text-slate-500 mt-4">Icons open each network with your post pre-filled.</p>
     </div>
 
     <div class="flex gap-3 justify-center pb-2">

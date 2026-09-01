@@ -41,10 +41,10 @@
                         <div class="flex items-center gap-2 flex-wrap">
                             <input type="checkbox" name="ids[]" value="{{ $c->id }}" form="bulk-delete-form" class="bulk-comment-check w-4 h-4 shrink-0 text-[#27654A] border-slate-300 dark:border-slate-600" aria-label="Select comment">
                             <span class="text-sm font-semibold">{{ $c->name }}</span>
-                            <span class="text-xs text-slate-500 dark:text-slate-400">{{ $c->email }}</span>
+                            <span class="text-xs text-slate-500 dark:text-slate-400 break-all">{{ $c->email }}</span>
                             <span class="badge {{ $c->status=='pending' ? 'badge-amber' : ($c->status=='approved' ? 'badge-green' : 'badge-slate') }}">{{ $c->status }}</span>
                         </div>
-                        <div class="text-sm text-slate-600 dark:text-slate-300 mt-1">{{ $c->content }}</div>
+                        <div class="text-sm text-slate-600 dark:text-slate-300 mt-1 break-words">{{ $c->content }}</div>
                         <div class="text-xs text-slate-400 dark:text-slate-500 mt-1">
                             {{ $c->created_at->diffForHumans() }} · on
                             {{-- Null-safe + status-aware post link: the old link 404'd when
@@ -89,7 +89,7 @@
                                             <span class="text-sm font-semibold">{{ $reply->name }}</span>
                                             <span class="badge {{ $reply->status=='pending' ? 'badge-amber' : ($reply->status=='approved' ? 'badge-green' : 'badge-slate') }}">{{ $reply->status }}</span>
                                         </div>
-                                        <div class="text-sm text-slate-600 dark:text-slate-300 mt-1">{{ $reply->content }}</div>
+                                        <div class="text-sm text-slate-600 dark:text-slate-300 mt-1 break-words">{{ $reply->content }}</div>
                                         <div class="text-xs text-slate-400 dark:text-slate-500 mt-1">{{ $reply->created_at->diffForHumans() }}</div>
                                     </div>
                                     <div class="flex items-center gap-1 shrink-0">
