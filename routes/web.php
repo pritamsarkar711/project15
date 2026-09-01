@@ -125,6 +125,13 @@ Route::prefix('author-dashboard')->name('author.')->middleware('auth')->group(fu
     Route::post('/posts/{id}', [AuthorDashboardController::class, 'postsUpdate'])->name('posts.update');
     Route::post('/posts/{id}/submit', [AuthorDashboardController::class, 'postsSubmit'])->name('posts.submit');
     Route::delete('/posts/{id}', [AuthorDashboardController::class, 'postsDestroy'])->name('posts.destroy');
+    // Post-publish share screen + manual instant-index ping (own posts only).
+    Route::get('/posts/{id}/share', [AuthorDashboardController::class, 'postsShare'])->name('posts.share');
+    Route::post('/posts/{id}/instant-index', [AuthorDashboardController::class, 'postsInstantIndex'])->name('posts.instant-index');
+    // AI writing assistant (server-side proxy — the API key never reaches the
+    // browser). Throttled + daily quota inside the controller.
+    Route::post('/ai/generate', [App\Http\Controllers\Frontend\AiAssistantController::class, 'generate'])
+        ->name('ai.generate')->middleware('throttle:30,1');
     Route::get('/profile', [AuthorDashboardController::class, 'profileEdit'])->name('profile.edit');
     Route::post('/profile', [AuthorDashboardController::class, 'profileUpdate'])->name('profile.update');
     Route::get('/revenue', [AuthorDashboardController::class, 'revenue'])->name('revenue');
@@ -153,6 +160,20 @@ Route::prefix('manage')->name('admin.')->group(function(){
         Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
 
+        // Social Auto-Post — publishing automation (admin only). MUST sit
+        // before the posts resource for route-matching hygiene.
+        Route::get('social-auto-post', [App\Http\Controllers\Admin\SocialController::class, 'index'])->name('social.index');
+        Route::post('social-auto-post', [App\Http\Controllers\Admin\SocialController::class, 'update'])->name('social.update');
+        Route::post('social-auto-post/test', [App\Http\Controllers\Admin\SocialController::class, 'test'])->name('social.test');
+        Route::post('social-auto-post/{publish}/retry', [App\Http\Controllers\Admin\SocialController::class, 'retry'])->name('social.retry');
+        // Manual one-click push of any published post to all configured networks.
+        Route::post('social-auto-post/push/{post}', [App\Http\Controllers\Admin\SocialController::class, 'pushNow'])->name('social.push');
+
+        // AI Assistant settings (admin configures provider + key + models).
+        Route::get('ai-assistant', [App\Http\Controllers\Admin\AiSettingsController::class, 'index'])->name('ai.index');
+        Route::post('ai-assistant', [App\Http\Controllers\Admin\AiSettingsController::class, 'update'])->name('ai.update');
+        Route::post('ai-assistant/test', [App\Http\Controllers\Admin\AiSettingsController::class, 'test'])->name('ai.test');
+
         // Multi-author review queue (pending submissions).
         // ⚠️ MUST be registered BEFORE the posts resource: Route::resource()
         // creates GET posts/{post}, which would otherwise capture
@@ -170,6 +191,12 @@ Route::prefix('manage')->name('admin.')->group(function(){
 
         // Posts (no public "show" page inside the admin panel)
         Route::resource('posts', PostController::class)->except(['show']);
+        // Post-publish share screen (URL + social share icons) + manual
+        // instant-index pings. Registered with the resource group so the
+        // admin middleware covers them.
+        Route::get('posts/{post}/share', [PostController::class, 'share'])->name('posts.share');
+        Route::post('posts/{post}/instant-index', [PostController::class, 'instantIndex'])->name('posts.instant-index');
+        Route::post('posts/bulk-instant-index', [PostController::class, 'bulkInstantIndex'])->name('posts.bulk-instant-index');
         Route::post('posts/{post}/toggle', [PostController::class,'toggleStatus'])->name('posts.toggle');
         Route::post('posts/{post}/restore', [PostController::class,'restore'])->name('posts.restore');
         Route::post('posts/{post}/permanent', [PostController::class,'forceDelete'])->name('posts.destroy.permanent');

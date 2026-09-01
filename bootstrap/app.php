@@ -33,6 +33,10 @@ return \App\Application::configure(basePath: dirname(__DIR__))
         // Site-wide maintenance mode (Admin → Settings → General). Global so
         // even sitemap.xml answers 503 — the correct signal for crawlers.
         $middleware->append(\App\Http\Middleware\EnsureSiteIsLive::class);
+        // Shared hosting has no queue daemon: after any write request that
+        // queued jobs (social auto-post, mail notifications), drain the queue
+        // right after the response is sent.
+        $middleware->append(\App\Http\Middleware\RunQueueAfterResponse::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->report(function (\Throwable $e) {

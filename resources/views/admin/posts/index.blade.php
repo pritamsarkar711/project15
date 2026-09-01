@@ -43,6 +43,15 @@
         <a href="{{ route('admin.posts.create') }}" class="btn btn-primary btn-sm">
             <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14m-7-7h14"/></svg> New Post
         </a>
+        @if(in_array($tab, ['all', 'published']))
+            {{-- One-click IndexNow submission for every visible published post --}}
+            <form method="POST" action="{{ route('admin.posts.bulk-instant-index') }}" onsubmit="return confirm('Ping all published post URLs to IndexNow (Bing, Yandex, Seznam, Naver)?')">@csrf
+                <button type="submit" class="btn btn-outline btn-sm" title="Submit all published post URLs to IndexNow for instant re-indexing">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19.5v-15m0 0-6.75 6.75M12 4.5l6.75 6.75"/></svg>
+                    Index now
+                </button>
+            </form>
+        @endif
     </div>
 </div>
 
@@ -108,6 +117,12 @@
                                 <div class="min-w-0">
                                     <div class="font-semibold text-slate-900 dark:text-white truncate max-w-[260px]">{{ $post->title }}</div>
                                     <div class="text-xs text-slate-400 dark:text-slate-500 truncate max-w-[260px]">{{ $post->slug }} · {{ $post->reading_time }} min</div>
+                                    @if(!is_null($post->seo_score))
+                                        @php
+                                            $seoColor = $post->seo_score >= 70 ? 'bg-green-100 text-green-700 dark:bg-green-500/15 dark:text-green-400' : ($post->seo_score >= 40 ? 'bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-400' : 'bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-400');
+                                        @endphp
+                                        <span class="inline-flex items-center gap-1 mt-1 text-[10px] font-bold px-1.5 py-0.5 rounded {{ $seoColor }}" title="On-page SEO score (RankMath-style)">SEO {{ $post->seo_score }}</span>
+                                    @endif
                                 </div>
                             </div>
                         </td>
@@ -143,6 +158,16 @@
                                         </button>
                                     </form>
                                 @else
+                                    @if($post->status === 'published')
+                                        <a href="{{ route('admin.posts.share', $post) }}" title="Share post" class="w-8 h-8 rounded-lg border border-[#e6e8ee] dark:border-[#2c313c] bg-white dark:bg-[#14171d] text-slate-600 dark:text-slate-300 hover:bg-[#f7f8fa] dark:hover:bg-[#1c1f26] flex items-center justify-center">
+                                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path stroke-linecap="round" stroke-linejoin="round" d="m8.59 13.51 6.83 3.98m-.01-10.98-6.82 3.98"/></svg>
+                                        </a>
+                                        <form method="POST" action="{{ route('admin.posts.instant-index', $post) }}">@csrf
+                                            <button type="submit" title="Instant index (ping Bing/Yandex/Seznam/Naver){{ $post->instant_indexed_at ? ' — last pinged '.$post->instant_indexed_at->format('M d, H:i') : '' }}" class="w-8 h-8 rounded-lg border border-[#e6e8ee] dark:border-[#2c313c] bg-white dark:bg-[#14171d] text-slate-600 dark:text-slate-300 hover:!bg-[#2E7856] hover:!text-white hover:!border-transparent flex items-center justify-center">
+                                                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19.5v-15m0 0-6.75 6.75M12 4.5l6.75 6.75"/></svg>
+                                            </button>
+                                        </form>
+                                    @endif
                                     <a href="{{ route('blog.show', $post->slug) }}" target="_blank" title="View" class="w-8 h-8 rounded-lg border border-[#e6e8ee] dark:border-[#2c313c] bg-white dark:bg-[#14171d] text-slate-600 dark:text-slate-300 hover:bg-[#f7f8fa] dark:hover:bg-[#1c1f26] flex items-center justify-center">
                                         <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7Z"/></svg>
                                     </a>

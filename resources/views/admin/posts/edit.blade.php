@@ -107,6 +107,9 @@
                 <label class="text-sm font-medium mt-3 block">Tags <span class="text-slate-400 font-normal">(comma separated)</span></label>
                 <input type="text" name="meta_keywords" value="{{ old('meta_keywords', $post->meta_keywords) }}" placeholder="budget travel, packing list" class="mt-2 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
             </div>
+
+            {{-- Focus keyword + live SEO score + AI assistant --}}
+            @include('partials.seo-ai-panel', ['post' => $post, 'aiEndpoint' => route('author.ai.generate'), 'aiEnabled' => app(\App\Services\Ai\AiAssistantService::class)->enabled()])
         </div>
     </div>
 </form>
@@ -114,6 +117,8 @@
 @push('scripts')
 {{-- Cache-busted editor tag: ?v=filemtime forces browsers to fetch the fixed editor --}}
 {!! \App\Support\ViteAssets::editorScript() !!}
+{!! \App\Support\ViteAssets::publicScript('js/seo-analyzer.js') !!}
+{!! \App\Support\ViteAssets::publicScript('js/ai-assistant.js') !!}
 <script>
 // Self-made Huvanti rich text editor (single small file, no dependencies).
 huvantiEditorInit('#editor');

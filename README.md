@@ -19,6 +19,11 @@ Production-ready Laravel CMS for Hostinger custom PHP hosting. Converted from SG
 ### Backend / Admin CMS (`/manage` - secured, no frontend link)
 - Dashboard with stats (posts, views, pending comments, unread contacts)
 - Posts CRUD: create/edit/delete/publish/draft, featured, allow comments, featured image upload, reading time auto, CKEditor 5 full rich editor, FAQ management per post (accordion), author management
+- **Social Auto-Post**: publish a post (or approve an author's) and it is automatically shared to X, Facebook Page, LinkedIn, Instagram, Telegram and Pinterest — no manual sharing, saves time on every post. Per-network credentials, test-connection buttons, delivery log with retries (`social:retry-pending` schedule optional)
+- **AI Assistant**: admin plugs in a free NVIDIA NIM key (or any OpenAI-compatible API: Groq, OpenRouter, OpenAI…), authors get one-click SEO meta titles / meta descriptions / focus keywords / excerpts / FAQ suggestions plus a free-form "Ask AI" box inside the editor. Automatic model failover — if one model is busy or retired, the next takes over. API keys are encrypted at rest and never exposed to the browser; per-user daily quota
+- **RankMath-style SEO score**: focus keyword field + live 0–100 on-page score while writing (keyword placement, density, title/meta lengths, word count, subheadings, internal/external links, image alt text), score persisted per post and shown as badges in the posts lists
+- **Instant Indexing**: IndexNow pings on every publish/update/delete plus manual "Index now" buttons (single post or bulk) for admin and authors
+- **Post-publish share screen**: after publishing, the URL appears in a copyable box with social share icons (Facebook, X, LinkedIn, WhatsApp, Telegram, Reddit, Pinterest, Email, copy link) — for admin and authors
 - Pages CRUD (including Editorial Policy editable)
 - Categories with color, drag-reorder
 - Advertisement Management: positions (header, sidebar, inline, between_posts, footer), HTML/JS code, image, active toggle
@@ -26,7 +31,7 @@ Production-ready Laravel CMS for Hostinger custom PHP hosting. Converted from SG
 - Comment Moderation: approve/reject/spam, pending queue
 - Site Settings: name, tagline, meta description/keywords, etc. (reflects instantly on frontend via Settings model + cache)
 - Navigation Management: drag & drop for header/mobile/footer separately (SortableJS)
-- Security: change password, toggle 2FA (demo 123456, ready for `pragmarx/google2fa`), bcrypt, CSRF
+- Security: change password, TOTP 2FA, bcrypt, CSRF
 - Theme switcher: Light / Dark / Night (persists localStorage + backend `users.theme_preference`, works entire admin)
 - Auth: admin role, middleware `admin`, login/logout with remember, session database
 
@@ -89,6 +94,15 @@ Restore them from git history only if ever needed, and delete again afterward.
 - `database/migrations` — all tables, `seeders/DatabaseSeeder.php` — demo data
 - `routes/web.php` — frontend + admin routes
 
+## Security & privacy (public-repo safe)
+
+See **[SECURITY.md](SECURITY.md)**. Short version: no `.env`, no database, no
+credentials and no tokens are (or ever were) committed. Runtime secrets that
+admins enter in the panel (SMTP, social media tokens, AI keys) are stored
+**AES-256-GCM encrypted at rest** and are never rendered back to any browser.
+Verification key files under `public/` (IndexNow, Search Console) are public
+by design — they grant no access.
+
 ## Administrator account
 
 The production administrator email and password were created during the initial
@@ -96,4 +110,4 @@ setup; no production credentials are stored in this README.
 
 ## License
 
-Private — Built for huvanti.com. All calculators from original template removed.
+MIT for the platform code. Built for huvanti.com. All calculators from the original template removed.

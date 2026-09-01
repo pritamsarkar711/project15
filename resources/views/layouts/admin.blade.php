@@ -96,6 +96,14 @@
             </a>
 
             <div class="pt-3 pb-1 px-3 text-[10px] font-bold tracking-[0.18em] text-slate-400 dark:text-slate-500 uppercase">System</div>
+            <a href="{{ route('admin.social.index') }}" class="flex items-center gap-3 px-3 py-2.5 mx-2 rounded-lg transition {{ request()->routeIs('admin.social*') ? 'bg-[#E9F2EE] text-[#1F513A] font-semibold dark:bg-[#233b30] dark:text-[#8CC7AA]' : 'text-slate-600 dark:text-slate-300 hover:bg-[#f2f4f8] dark:hover:bg-[#1c1f26] hover:text-[#101319] dark:hover:text-white' }}">
+                <svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path stroke-linecap="round" stroke-linejoin="round" d="m8.59 13.51 6.83 3.98m-.01-10.98-6.82 3.98"/></svg>
+                Social Auto-Post
+            </a>
+            <a href="{{ route('admin.ai.index') }}" class="flex items-center gap-3 px-3 py-2.5 mx-2 rounded-lg transition {{ request()->routeIs('admin.ai*') ? 'bg-[#E9F2EE] text-[#1F513A] font-semibold dark:bg-[#233b30] dark:text-[#8CC7AA]' : 'text-slate-600 dark:text-slate-300 hover:bg-[#f2f4f8] dark:hover:bg-[#1c1f26] hover:text-[#101319] dark:hover:text-white' }}">
+                <svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z"/></svg>
+                AI Assistant
+            </a>
             <a href="{{ route('admin.navigation.index') }}" class="flex items-center gap-3 px-3 py-2.5 mx-2 rounded-lg transition {{ request()->routeIs('admin.navigation*') ? 'bg-[#E9F2EE] text-[#1F513A] font-semibold dark:bg-[#233b30] dark:text-[#8CC7AA]' : 'text-slate-600 dark:text-slate-300 hover:bg-[#f2f4f8] dark:hover:bg-[#1c1f26] hover:text-[#101319] dark:hover:text-white' }}">
                 <svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
                 Navigation
@@ -192,7 +200,7 @@
         </main>
 
         <footer class="px-6 py-3.5 text-center text-[11px] font-medium tracking-wide text-slate-400 dark:text-slate-600 bg-white dark:bg-[#14171d] border-t border-[#e6e8ee] dark:border-[#22262e]">
-            Huvanti Admin · v54
+            Huvanti Admin · v60
         </footer>
     </div>
 

@@ -60,6 +60,22 @@ class ViteAssets
         return new HtmlString('<script src="'.$src.'"></script>');
     }
 
+    /**
+     * Cache-busted <script> tag for any plain asset under public/js/.
+     * Same reasoning as editorScript(): plain files are served directly by
+     * Apache, so ?v=filemtime forces clients to pick up fresh versions
+     * without touching the Vite build.
+     */
+    public static function publicScript(string $file): HtmlString
+    {
+        $path = public_path($file);
+        $version = is_file($path) ? (string) filemtime($path) : '1';
+
+        $src = htmlspecialchars(asset($file).'?v='.$version, ENT_QUOTES, 'UTF-8');
+
+        return new HtmlString('<script src="'.$src.'" defer></script>');
+    }
+
     private static function fallback(array $entrypoints): string
     {
         $manifest = [];
