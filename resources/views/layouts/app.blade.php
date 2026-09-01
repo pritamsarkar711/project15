@@ -107,6 +107,10 @@
     <link rel="dns-prefetch" href="https://www.googletagmanager.com">
     <link href="{{ \App\Support\SiteFont::googleUrl() }}" rel="stylesheet">
     {!! \App\Support\ViteAssets::tags(['resources/css/app.css', 'resources/js/app.js']) !!}
+    {{-- Root-level font rule: unlayered CSS always beats Tailwind's layered
+         preflight, so the admin-chosen font applies everywhere with no chance
+         of any stylesheet overriding it. --}}
+    <style>html{font-family:{!! \App\Support\SiteFont::cssStack() !!}</style>
 
     {{-- Google Tag Manager (Admin → Settings → Analytics & Verification) --}}
     @if(setting('gtm_container_id'))

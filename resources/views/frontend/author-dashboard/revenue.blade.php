@@ -12,7 +12,6 @@
             </div>
             <div>
                 <h2 class="font-bold text-slate-900 dark:text-white">Revenue program is coming soon</h2>
-                <p class="text-sm text-slate-500 dark:text-slate-400 mt-0.5">Your stats below are already being tracked.</p>
             </div>
         </div>
     </div>

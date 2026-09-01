@@ -14,7 +14,6 @@
         <label class="text-sm font-semibold text-slate-900 dark:text-white">Focus keyword</label>
         <input type="text" name="focus_keyword" value="{{ old('focus_keyword', $seoPost?->focus_keyword ?? '') }}" placeholder="e.g. best budget phones"
                class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white">
-        <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">The main search phrase this post should rank for.</p>
     </div>
 
     {{-- Live SEO score (rendered by public/js/seo-analyzer.js) --}}

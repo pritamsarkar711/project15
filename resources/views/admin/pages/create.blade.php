@@ -50,7 +50,6 @@
                 <label class="text-sm font-medium">Meta Description</label>
                 <textarea name="meta_description" form="page-form" rows="3" class="mt-1 w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">{{ old('meta_description') }}</textarea>
             </div>
-            <p class="text-xs text-slate-400 dark:text-slate-500">Saved with the page on submit.</p>
         </div>
     </div>
 </div>

@@ -58,13 +58,13 @@
             <h3 class="font-semibold">robots.txt</h3>
             <textarea name="robots_txt_content" rows="5" placeholder="User-agent: *
 Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-mono placeholder:font-sans">{{ old('robots_txt_content', $settings['robots_txt_content']->value ?? '') }}</textarea>
-            <p class="text-xs text-slate-400 dark:text-slate-500">Optional. Appended to the auto-generated robots.txt. Served at <a href="{{ url('robots.txt') }}" target="_blank" class="text-[#1F513A] dark:text-[#6FB393] hover:underline">{{ url('robots.txt') }}</a></p>
+            <p class="text-xs text-slate-400 dark:text-slate-500">Served at <a href="{{ url('robots.txt') }}" target="_blank" class="text-[#1F513A] dark:text-[#6FB393] hover:underline">{{ url('robots.txt') }}</a></p>
         </div>
 
         <div class="panel-card p-6 space-y-4">
             <h3 class="font-semibold">llms.txt</h3>
             <textarea name="llms_txt_content" rows="5" placeholder="Extra markdown appended to llms.txt" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">{{ old('llms_txt_content', $settings['llms_txt_content']->value ?? '') }}</textarea>
-            <p class="text-xs text-slate-400 dark:text-slate-500">Optional. Appended to the auto-generated llms.txt. Served at <a href="{{ url('llms.txt') }}" target="_blank" class="text-[#1F513A] dark:text-[#6FB393] hover:underline">{{ url('llms.txt') }}</a></p>
+            <p class="text-xs text-slate-400 dark:text-slate-500">Served at <a href="{{ url('llms.txt') }}" target="_blank" class="text-[#1F513A] dark:text-[#6FB393] hover:underline">{{ url('llms.txt') }}</a></p>
         </div>
 
         <div class="panel-card p-6 space-y-4">
@@ -73,12 +73,14 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
             <p class="text-sm text-slate-600 dark:text-slate-400">
                 @if($indexNowKey)
                     <span class="inline-flex items-center gap-1.5 font-semibold text-[#1F513A] dark:text-[#6FB393]"><svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Active</span>
-                    — publish, update and delete events are pinged to Bing, Yandex, Seznam &amp; Naver automatically. Manual "Index now" buttons are available in the posts lists.
+                    — pings Bing, Yandex, Seznam &amp; Naver on publish.
                 @else
-                    <span class="font-semibold text-amber-600 dark:text-amber-400">Not configured</span> — set <code class="font-mono bg-slate-100 dark:bg-slate-800 px-1">INDEXNOW_KEY</code> in your .env to enable.
+                    <span class="font-semibold text-amber-600 dark:text-amber-400">Not configured</span> — set <code class="font-mono bg-slate-100 dark:bg-slate-800 px-1">INDEXNOW_KEY</code> in your .env.
                 @endif
             </p>
-            <p class="text-xs text-slate-500">Ownership key file: <a href="{{ url($indexNowKey ? $indexNowKey.'.txt' : '') }}" target="_blank" class="font-mono text-[#1F513A] dark:text-[#6FB393] hover:underline break-all">{{ url($indexNowKey ? $indexNowKey.'.txt' : '/{key}.txt') }}</a> · Google does not use IndexNow; it discovers pages via your sitemap.</p>
+            @if($indexNowKey)
+                <p class="text-xs text-slate-500">Key file: <a href="{{ url($indexNowKey.'.txt') }}" target="_blank" class="font-mono text-[#1F513A] dark:text-[#6FB393] hover:underline break-all">{{ url($indexNowKey.'.txt') }}</a></p>
+            @endif
         </div>
 
         <div class="panel-card p-6 space-y-4">
@@ -93,7 +95,7 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
                     <span class="text-sm font-medium {{ ($settings['google_enabled']->value ?? '0') === '1' ? 'text-[#1F513A] dark:text-[#6FB393]' : 'text-slate-500' }}">{{ ($settings['google_enabled']->value ?? '0') === '1' ? 'Enabled' : 'Disabled' }}</span>
                 </label>
             </div>
-            <p class="text-xs text-slate-500 dark:text-slate-400">Sign in with Google. Credentials: <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener" class="text-[#1F513A] dark:text-[#6FB393] hover:underline">Google Cloud Console</a> · Redirect URI: <span class="font-mono bg-slate-100 dark:bg-slate-800 px-1">{{ url('/auth/google/callback') }}</span></p>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Redirect URI: <span class="font-mono bg-slate-100 dark:bg-slate-800 px-1">{{ url('/auth/google/callback') }}</span></p>
             <div class="grid sm:grid-cols-2 gap-4">
                 <div>
                     <label class="text-sm font-medium">Client ID</label>
@@ -408,7 +410,7 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
 
         {{-- Top Contributors: on/off switch. --}}
         @php $tcOn = old('top_contributors_enabled', $settings['top_contributors_enabled']->value ?? '1') === '1'; @endphp
-        <div class="panel-card p-6 space-y-2">
+        <div class="panel-card p-6">
             <div class="flex items-center justify-between gap-4">
                 <h3 class="font-semibold">Top Contributors</h3>
                 <label class="inline-flex items-center gap-2 cursor-pointer shrink-0">
@@ -420,7 +422,6 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
                     <span class="text-sm font-medium {{ $tcOn ? 'text-[#1F513A] dark:text-[#6FB393]' : 'text-slate-500' }}">{{ $tcOn ? 'Enabled' : 'Disabled' }}</span>
                 </label>
             </div>
-            <p class="text-xs text-slate-500 dark:text-slate-400">Shows the Top Contributors page and its header link.</p>
         </div>
 
         {{-- Maintenance mode: on/off switch + optional comeback countdown. --}}
@@ -440,11 +441,9 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
                     <span class="text-sm font-medium {{ $maintenanceOn ? 'text-[#1F513A] dark:text-[#6FB393]' : 'text-slate-500' }}">{{ $maintenanceOn ? 'Enabled' : 'Disabled' }}</span>
                 </label>
             </div>
-            <p class="text-xs text-slate-500 dark:text-slate-400">Visitors see a maintenance page. Admin keeps full access.</p>
             <div>
                 <label class="text-xs font-medium text-slate-600 dark:text-slate-400">Comeback time (optional)</label>
                 <input type="datetime-local" name="maintenance_ends_at" value="{{ old('maintenance_ends_at', $settings['maintenance_ends_at']->value ?? '') }}" class="mt-1 h-9 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm w-full sm:w-64">
-                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1.5">The site reopens automatically when it ends.</p>
             </div>
         </div>
 

@@ -23,12 +23,15 @@ class AiSettingsController extends Controller
 
     public function index()
     {
+        // models() auto-upgrades a saved copy of the legacy default list, so
+        // the textarea always shows the current verified model IDs.
+        $modelsText = implode("\n", $this->ai->models());
         return view('admin.ai.index', [
             'ai'          => $this->ai,
             'enabled'     => Setting::get('ai_assistant_enabled', '0') === '1',
             'allowAuthors'=> Setting::get('ai_allow_authors', '1') === '1',
             'baseUrl'     => $this->ai->baseUrl(),
-            'models'      => (string) Setting::get('ai_models', AiAssistantService::NVIDIA_SUGGESTED_MODELS),
+            'models'      => $modelsText,
             'dailyLimit'  => $this->ai->dailyLimit(),
             'keyHint'     => $this->ai->maskKey(),
             'hasKey'      => $this->ai->hasApiKey(),

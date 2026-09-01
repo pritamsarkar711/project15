@@ -3,6 +3,12 @@
  * editor. Mirrors app/Services/SeoAnalyzer.php (same checks, same weights)
  * so the number the author sees while typing matches the persisted score.
  *
+ * UI model (RankMath-style, compact):
+ *   - Score gauge + verdict on top.
+ *   - Failed checks first as short one-line rows with a tiny fix hint.
+ *   - Passed checks collapsed behind a "+ N passed" toggle so the panel
+ *     stays small while you write.
+ *
  * Usage: give the editor form the data-seo-panel attribute container:
  *   <div id="seo-score-panel"></div>
  * and it auto-wires to fields named title / slug / meta_title /
@@ -26,6 +32,7 @@
         var wordCount = words(text);
         var kw = (input.focusKeyword || '').trim().toLowerCase();
         var checks = [];
+        // Short label + a one-line fix hint (shown only for failed rows).
         var add = function (ok, label, hint, neutral) {
             checks.push({ ok: neutral ? null : !!ok, label: label, hint: ok || neutral ? '' : hint });
         };
@@ -66,22 +73,22 @@
         });
         var firstChunk = text.toLowerCase().substring(0, Math.max(120, text.length * 0.12));
 
-        // ----- checks (same wording as the server for a consistent UX) -----
-        add(kw && titleLower.indexOf(kw) !== -1, 'Focus keyword in post title', 'Add the focus keyword to the post title — it carries the most ranking weight.');
-        add(kw && metaTitleLower.indexOf(kw) !== -1, 'Focus keyword in SEO title', 'Work the focus keyword into the SEO title (ideally near the start).');
-        add(kw && metaDescLower.indexOf(kw) !== -1, 'Focus keyword in meta description', 'Mention the focus keyword in the meta description so search engines bold it.');
-        add(kw && slug.indexOf(kw) !== -1, 'Focus keyword in URL slug', 'Include the focus keyword in the URL slug (e.g. /blog/best-budget-phones).');
-        add(title.length >= 30 && title.length <= 65, 'Post title length is ' + title.length + ' characters (aim 30–65)', 'Post title should be 30–65 characters — long enough to be descriptive, short enough not to be cut off.');
-        add(metaTitle.length >= 30 && metaTitle.length <= 60, 'SEO title length is ' + metaTitle.length + ' characters (aim 30–60)', 'SEO title should be 30–60 characters so it is not truncated on results pages.');
-        add(metaDesc.length >= 120 && metaDesc.length <= 165, 'Meta description length is ' + metaDesc.length + ' characters (aim 120–165)', 'Meta description should be 120–165 characters — Google rewrites shorter/longer ones.');
-        add(kw && firstChunk.indexOf(kw) !== -1, 'Focus keyword in the opening paragraph', 'Use the focus keyword within the first ~10% of the content.');
-        add(kw && density >= 0.5 && density <= 3.0, 'Keyword density is ' + density + '% (aim 0.5–3%)', density > 3.0 ? 'Keyword density is too high — it reads as keyword stuffing. Use the keyword fewer times or write more.' : 'Use the focus keyword a few more times naturally (0.5–3% of all words).');
-        add(kw && headings.some(function (h) { return h.indexOf(kw) !== -1; }), 'Focus keyword in at least one subheading (H2/H3)', 'Add the focus keyword to one subheading (H2/H3) to strengthen topical relevance.');
-        add(wordCount >= 600, 'Content length is ' + wordCount + ' words (aim 600+)', 'Deepen the article — posts under 600 words rarely rank. Target 600–1500 words.');
-        add(headings.length >= 2, headings.length + ' subheadings found (aim 2+)', 'Break the article up with at least two H2/H3 subheadings.');
-        add(external >= 1, external + ' external link(s) found', 'Add at least one outbound link to an authoritative source — it builds trust.');
-        add(internal >= 1, internal + ' internal link(s) found', 'Link to at least one other page on your site to spread ranking power.');
-        add(imgs.length > 0 && imgNoAlt === 0, imgs.length === 0 ? 'No images in content' : (imgNoAlt === 0 ? 'All ' + imgs.length + ' image(s) have alt text' : imgNoAlt + ' of ' + imgs.length + ' image(s) missing alt text'), 'Add descriptive alt text to every image (and consider adding an image or two).');
+        // ----- checks (short labels; same scoring as the server) -----
+        add(kw && titleLower.indexOf(kw) !== -1, 'Keyword in title', 'Add the keyword to the post title.');
+        add(kw && metaTitleLower.indexOf(kw) !== -1, 'Keyword in SEO title', 'Work the keyword into the SEO title.');
+        add(kw && metaDescLower.indexOf(kw) !== -1, 'Keyword in meta description', 'Mention the keyword in the meta description.');
+        add(kw && slug.indexOf(kw) !== -1, 'Keyword in URL slug', 'Include the keyword in the slug.');
+        add(title.length >= 30 && title.length <= 65, 'Title length 30–65', 'Title is ' + title.length + ' characters — aim 30–65.');
+        add(metaTitle.length >= 30 && metaTitle.length <= 60, 'SEO title length 30–60', 'SEO title is ' + metaTitle.length + ' characters — aim 30–60.');
+        add(metaDesc.length >= 120 && metaDesc.length <= 165, 'Meta description 120–165', 'Meta description is ' + metaDesc.length + ' characters — aim 120–165.');
+        add(kw && firstChunk.indexOf(kw) !== -1, 'Keyword in opening paragraph', 'Use the keyword early in the content.');
+        add(kw && density >= 0.5 && density <= 3.0, 'Keyword density 0.5–3%', density > 3.0 ? 'Density ' + density + '% is too high — ease off.' : 'Density ' + density + '% — use the keyword a few more times.');
+        add(kw && headings.some(function (h) { return h.indexOf(kw) !== -1; }), 'Keyword in a subheading', 'Add the keyword to one H2/H3.');
+        add(wordCount >= 600, '600+ words', 'Content is ' + wordCount + ' words — aim 600+.');
+        add(headings.length >= 2, '2+ subheadings', headings.length + ' subheading(s) — add more H2/H3.');
+        add(external >= 1, 'External link', 'Add one outbound link to a trusted source.');
+        add(internal >= 1, 'Internal link', 'Link to another page on your site.');
+        add(imgs.length > 0 && imgNoAlt === 0, 'Image alt text', imgs.length === 0 ? 'Add an image with descriptive alt text.' : 'Add alt text to ' + imgNoAlt + ' image(s).');
 
         // ----- score -----
         var scored = checks.filter(function (c) { return c.ok !== null; });
@@ -103,40 +110,84 @@
         return score >= 70 ? 'Good' : score >= 40 ? 'Okay' : 'Needs work';
     }
 
+    var passedExpanded = false;
+
     function render(el, result) {
         var color = scoreColor(result.score);
         var circumference = 2 * Math.PI * 26;
         var offset = circumference * (1 - result.score / 100);
-        // Markup uses theme-aware Tailwind classes already on the page, so the
-        // panel follows the site's light/dark design system automatically.
+        var failed = [], passed = [], neutral = 0;
+        result.checks.forEach(function (c) {
+            if (c.ok === null) { neutral++; return; }
+            if (c.ok === true) { passed.push(c); } else { failed.push(c); }
+        });
+
         var html = '' +
             '<div class="seo-card rounded-[10px] border border-[#e6e8ee] dark:border-[#262a33] bg-white dark:bg-[#101319] p-4 text-[13px] leading-relaxed">' +
+            // Header: gauge + verdict + counters
             '<div class="flex items-center gap-4">' +
             '<div class="relative w-16 h-16 shrink-0">' +
-            '<svg width="64" height="64" viewBox="0 0 64 64" class="block" style="transform:rotate(-90deg);">' +
+            '<svg width="64" height="64" viewBox="0 0 64 64" class="block" style="transform:rotate(-90deg);" aria-hidden="true">' +
             '<circle cx="32" cy="32" r="26" fill="none" stroke="#e6e8ee" class="seo-ring-track" stroke-width="7"/>' +
             '<circle cx="32" cy="32" r="26" fill="none" stroke="' + color + '" stroke-width="7" stroke-linecap="round" stroke-dasharray="' + circumference.toFixed(1) + '" stroke-dashoffset="' + offset.toFixed(1) + '"/>' +
             '</svg>' +
             '<div class="absolute inset-0 flex items-center justify-center font-extrabold text-[17px]" style="color:' + color + ';">' + result.score + '</div>' +
             '</div>' +
-            '<div class="min-w-0">' +
-            '<div class="font-bold" style="color:' + color + ';">SEO Score: ' + scoreLabel(result.score) + '</div>' +
-            '<div class="text-slate-500 dark:text-slate-400 text-xs mt-0.5">' + (result.hasKeyword ? 'Focus keyword set · ' : 'Add a focus keyword to unlock full scoring · ') + result.words + ' words' + '</div>' +
+            '<div class="min-w-0 flex-1">' +
+            '<div class="font-bold text-[15px]" style="color:' + color + ';">' + scoreLabel(result.score) + '</div>' +
+            '<div class="text-slate-500 dark:text-slate-400 text-xs mt-0.5">' + result.words + ' words' +
+            (result.hasKeyword ? '' : ' · add a focus keyword to unlock full scoring') + '</div>' +
+            '<div class="flex gap-3 mt-1.5 text-[11px] font-semibold">' +
+            '<span class="text-green-600 dark:text-green-400">' + passed.length + ' passed</span>' +
+            '<span class="text-red-500">' + failed.length + ' to fix</span>' +
             '</div>' +
             '</div>' +
-            '<ul class="mt-3 pt-3 border-t border-[#eef0f4] dark:border-[#22262e] m-0 p-0 list-none grid gap-1.5">';
-        result.checks.forEach(function (c) {
-            var passed = c.ok === true;
-            var mark = c.ok === null ? '–' : (passed ? '✓' : '✕');
-            var dotCls = c.ok === null ? 'bg-slate-300 dark:bg-slate-600' : (passed ? 'bg-green-600' : 'bg-red-500');
-            html += '<li class="flex gap-2 items-start">' +
-                '<span class="shrink-0 w-4 h-4 rounded-full text-white text-[10px] font-bold inline-flex items-center justify-center mt-0.5 ' + dotCls + '">' + mark + '</span>' +
-                '<span class="text-slate-600 dark:text-slate-300">' + escapeHtml(c.label) +
-                (c.hint ? '<span class="block text-slate-400 dark:text-slate-500 text-[11.5px]">' + escapeHtml(c.hint) + '</span>' : '') +
-                '</span></li>';
-        });
-        html += '</ul></div>';
+            '</div>';
+
+        // Failed checks first — short rows, one-line hints.
+        if (failed.length) {
+            html += '<ul class="mt-3 pt-3 border-t border-[#eef0f4] dark:border-[#22262e] m-0 p-0 list-none grid gap-1.5">';
+            failed.forEach(function (c) {
+                html += row(c, false);
+            });
+            html += '</ul>';
+        }
+
+        // Passed checks collapsed behind a compact toggle.
+        if (passed.length) {
+            html += '<div class="mt-2">' +
+                '<button type="button" data-seo-toggle class="text-[11px] font-semibold text-slate-400 hover:text-[#1F513A] dark:hover:text-[#6FB393] transition">' +
+                (passedExpanded ? 'Hide passed' : '+ ' + passed.length + ' passed') +
+                '</button>' +
+                (passedExpanded ? '<ul class="mt-1.5 m-0 p-0 list-none grid gap-1.5">' + passed.map(function (c) { return row(c, true); }).join('') + '</ul>' : '') +
+                '</div>';
+        }
+
+        html += '</div>';
         el.innerHTML = html;
+
+        var toggle = el.querySelector('[data-seo-toggle]');
+        if (toggle) {
+            toggle.addEventListener('click', function () {
+                passedExpanded = !passedExpanded;
+                render(el, result);
+                // Keep the toggle visible after re-render.
+                var t2 = el.querySelector('[data-seo-toggle]');
+                if (t2) t2.scrollIntoView({ block: 'nearest' });
+            });
+        }
+    }
+
+    function row(c, isPassed) {
+        var mark = isPassed ? '✓' : '✕';
+        var dotCls = isPassed
+            ? 'bg-green-600'
+            : 'bg-red-500';
+        return '<li class="flex gap-2 items-start">' +
+            '<span class="shrink-0 w-4 h-4 rounded-full text-white text-[10px] font-bold inline-flex items-center justify-center mt-0.5 ' + dotCls + '">' + mark + '</span>' +
+            '<span class="' + (isPassed ? 'text-slate-400 dark:text-slate-500' : 'text-slate-600 dark:text-slate-300') + '">' + escapeHtml(c.label) +
+            (c.hint ? '<span class="block text-slate-400 dark:text-slate-500 text-[11.5px]">' + escapeHtml(c.hint) + '</span>' : '') +
+            '</span></li>';
     }
 
     function escapeHtml(s) {

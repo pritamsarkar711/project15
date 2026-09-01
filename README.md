@@ -1,18 +1,41 @@
 <div align="center">
 
-# Huvanti — Laravel Blog CMS
+# Huvanti — Open-Source Laravel Blog CMS
 
-**A production-ready, multi-niche blogging platform built with Laravel 13, Tailwind CSS 4 and a complete admin + author panel.**
+**A production-ready, multi-niche blogging platform built with Laravel, Tailwind CSS 4 and a complete admin + author panel — with built-in SEO scoring, instant search indexing and automatic social media publishing.**
 
-Explore Ideas. Inspire Life. · Live at [huvanti.com](https://huvanti.com)
+[![Live Site](https://img.shields.io/badge/website-huvanti.com-2E7856?logo=googlechrome&logoColor=white)](https://huvanti.com)
+[![License: MIT](https://img.shields.io/badge/license-MIT-2E7856)](LICENSE)
+![Laravel](https://img.shields.io/badge/Laravel-13-FF2D20?logo=laravel&logoColor=white)
+![PHP](https://img.shields.io/badge/PHP-8.3%2B-777BB4?logo=php&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)
 
-![License](https://img.shields.io/badge/license-MIT-2E7856) ![Laravel](https://img.shields.io/badge/Laravel-13-FF2D20?logo=laravel&logoColor=white) ![PHP](https://img.shields.io/badge/PHP-8.3%2B-777BB4?logo=php&logoColor=white) ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white) ![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)
+**[huvanti.com](https://huvanti.com) · [Explore Ideas. Inspire Life.](https://huvanti.com)**
 
 </div>
 
 ---
 
-Huvanti is a self-hosted publishing platform: a fast multi-author blog front-end, a full admin CMS, an author dashboard with review workflow, and a built-in SEO toolkit — **live SEO scoring, instant search-engine indexing and automatic social media publishing** — everything a modern blog needs in one Laravel app.
+Huvanti is a free, self-hosted publishing platform: a fast multi-author blog front-end, a full admin CMS, an author dashboard with a review workflow, and a built-in SEO toolkit — **live SEO scoring, instant search-engine indexing and automatic social media publishing** — everything a modern blog needs in one Laravel app.
+
+| ![Huvanti homepage](docs/img/screenshot-home.png) |
+|:---:|
+| *The [Huvanti blog](https://huvanti.com) front page — Tailwind CSS 4, light/dark mode* |
+
+## Highlights
+
+- **Write & publish fast** — custom dependency-free rich-text editor with autosave, FAQ builder, scheduling, featured-image auto-optimisation
+- **Rank higher** — live RankMath-style SEO score (0–100) in the editor, focus-keyword analysis, IndexNow instant indexing, sitemap, schema, canonical URLs
+- **Grow on autopilot** — publish once and Huvanti shares the post to X, Facebook, LinkedIn, Instagram, Telegram and Pinterest automatically
+- **AI-assisted writing** — bring your own key (NVIDIA NIM free tier, Groq, OpenRouter, OpenAI); one-click titles, descriptions, keywords, excerpts and FAQs with automatic model failover
+- **Two panels, one design system** — a full admin CMS and a clean author dashboard with draft → review → publish workflow
+
+## Screenshots
+
+| Article page | Admin CMS |
+|:---:|:---:|
+| ![Huvanti article page](docs/img/screenshot-article.png) | ![Huvanti admin panel](docs/img/screenshot-admin.png) |
 
 ## Features
 
@@ -82,6 +105,10 @@ See **[SECURITY.md](SECURITY.md)**. Short version:
 - Runtime secrets (SMTP, social tokens, AI keys) are **AES-256-GCM encrypted at rest** and masked in the UI
 - Verification files under `public/` (IndexNow, Search Console) are public by design and grant no access
 
+## Who uses Huvanti?
+
+[Huvanti](https://huvanti.com) — an independent digital publication covering technology, wellness, finance, travel, lifestyle and education — runs on this platform in production every day. Every article on [huvanti.com](https://huvanti.com) is written, reviewed, scored for SEO, indexed and social-shared through this codebase.
+
 ## Structure
 
 ```
@@ -97,6 +124,12 @@ public/js/              seo-analyzer.js · ai-assistant.js · huvanti-editor.js
 routes/web.php          All routes (frontend + panels)
 ```
 
+## Contributing
+
+Bug reports and pull requests are welcome. For major changes, open an issue first to discuss what you would like to change.
+
 ## License
 
-Released under the [MIT License](LICENSE). Built and maintained for [huvanti.com](https://huvanti.com).
+Released under the [MIT License](LICENSE).
+
+Built and maintained for [Huvanti](https://huvanti.com) — **[huvanti.com](https://huvanti.com)** · Explore Ideas. Inspire Life.

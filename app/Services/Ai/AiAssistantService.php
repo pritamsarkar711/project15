@@ -39,11 +39,21 @@ class AiAssistantService
     public const BASE_URL_DEFAULT = 'https://integrate.api.nvidia.com/v1';
 
     /**
-     * Suggested NVIDIA NIM models, verified live against integrate.api.nvidia.com
-     * (probed 2026-09). Admins can edit the list freely; Browse more at
-     * build.nvidia.com/models or GET /v1/models with your key.
+     * Default NVIDIA NIM models, verified live against integrate.api.nvidia.com
+     * GET /v1/models (probed 2026-09). Admins can edit the list freely; browse
+     * more at build.nvidia.com/models.
      */
     public const NVIDIA_SUGGESTED_MODELS =
+        "nvidia/nemotron-3.5-lightning-30b-a3b\n".
+        "poolside/laguna-xs-2.1\n".
+        "openai/gpt-oss-120b\n".
+        "moonshotai/kimi-k2.6\n".
+        "deepseek-ai/deepseek-v4-flash-0731\n".
+        "google/gemma-4-31b-it\n".
+        "minimaxai/minimax-m3";
+
+    /** Previous default list — kept only to auto-upgrade stale saved values. */
+    public const LEGACY_SUGGESTED_MODELS =
         "openai/gpt-oss-120b\n".
         "moonshotai/kimi-k2.6\n".
         "deepseek-ai/deepseek-v4-flash-0731\n".
@@ -79,6 +89,13 @@ class AiAssistantService
     public function models(): array
     {
         $raw = (string) Setting::get('ai_models', self::NVIDIA_SUGGESTED_MODELS);
+        // Auto-upgrade a saved copy of the previous default list so model IDs
+        // that no longer exist don't linger forever.
+        if (trim($raw) === trim(self::LEGACY_SUGGESTED_MODELS)) {
+            $raw = self::NVIDIA_SUGGESTED_MODELS;
+            Setting::set('ai_models', $raw, 'text', 'ai');
+            Setting::flushAllCache();
+        }
         $list = array_values(array_filter(array_map(
             fn ($m) => trim($m),
             preg_split('/[\n,;]+/', $raw) ?: []
@@ -86,7 +103,7 @@ class AiAssistantService
         if ($list) return $list;
         // Fallback: first line of the suggested list.
         $first = trim(strtok(self::NVIDIA_SUGGESTED_MODELS, "\n"));
-        return [$first !== '' ? $first : 'openai/gpt-oss-120b'];
+        return [$first !== '' ? $first : 'nvidia/nemotron-3.5-lightning-30b-a3b'];
     }
 
     public function dailyLimit(): int

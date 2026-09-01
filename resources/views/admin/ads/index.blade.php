@@ -53,7 +53,7 @@
             </form>
         </div>
     @empty
-        <p class="col-span-full text-center text-sm text-slate-500 dark:text-slate-400 py-10">No ads yet. Create your first one above.</p>
+        <p class="col-span-full text-center text-sm text-slate-500 dark:text-slate-400 py-10">No ads yet.</p>
     @endforelse
 </div>
 @endsection

@@ -8,6 +8,10 @@
     <meta name="robots" content="noindex, nofollow">
     <link href="{{ \App\Support\SiteFont::googleUrl() }}" rel="stylesheet">
     {!! \App\Support\ViteAssets::tags(['resources/css/app.css', 'resources/js/app.js']) !!}
+    {{-- Root-level font rule: unlayered CSS always beats Tailwind's layered
+         preflight, so the admin-chosen font applies everywhere with no chance
+         of any stylesheet overriding it. --}}
+    <style>html{font-family:{!! \App\Support\SiteFont::cssStack() !!}</style>
     <script>
         (function(){
             var t = localStorage.getItem('huvanti-admin-theme') || 'light';
@@ -176,7 +180,7 @@
             </div>
         </header>
 
-        <main class="flex-1 p-4 sm:p-6 lg:p-7 w-full max-w-[1440px] mx-auto">
+        <main class="flex-1 p-4 sm:p-6 lg:p-7 w-full">
             {{-- Breadcrumbs slot (pages can push `admin-breadcrumbs` with a list) --}}
             @yield('admin-breadcrumbs')
             @if(session('success'))
@@ -200,7 +204,7 @@
         </main>
 
         <footer class="px-6 py-3.5 text-center text-[11px] font-medium tracking-wide text-slate-400 dark:text-slate-600 bg-white dark:bg-[#14171d] border-t border-[#e6e8ee] dark:border-[#22262e]">
-            Huvanti Admin · v61
+            © {{ date('Y') }} {{ setting('site_name', 'Huvanti') }}
         </footer>
     </div>
 
