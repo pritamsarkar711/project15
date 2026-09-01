@@ -183,6 +183,25 @@
             if(window.scrollY > 100){ scrollBtn.classList.remove('hidden'); scrollBtn.classList.add('flex'); }
             else { scrollBtn.classList.add('hidden'); scrollBtn.classList.remove('flex'); }
         });
+        // Fade-in safety sweep: images restored from cache may have finished
+        // loading before their inline onload ran — reveal them immediately.
+        // A 3s timeout also reveals still-pending images: a pending <img>
+        // paints nothing, so the card's tinted placeholder shows through
+        // (and a late error still hides the img via onerror).
+        (function(){
+            function reveal(){
+                document.querySelectorAll('img.img-fade').forEach(function(img){
+                    if(img.complete && img.naturalWidth > 0){ img.classList.add('img-loaded'); }
+                });
+            }
+            reveal();
+            window.addEventListener('pageshow', reveal);
+            setTimeout(function(){
+                document.querySelectorAll('img.img-fade:not(.img-loaded)').forEach(function(img){
+                    img.classList.add('img-loaded');
+                });
+            }, 3000);
+        })();
         // Smooth anchors
         document.addEventListener('DOMContentLoaded', ()=>{
             document.querySelectorAll('a[href^="#"]').forEach(a=>{

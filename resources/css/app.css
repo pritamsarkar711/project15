@@ -34,12 +34,54 @@
 html { color-scheme: light; }
 html.dark { color-scheme: dark; }
 
-/* Smooth theme transition (colors only, no transform lag) */
+/* Smooth theme transition (colors only, no transform lag). The standard
+   material curve (cubic-bezier .4,0,.2,1) feels calmer than linear ease —
+   every hover/fade on the site rides on it. */
 body, header, footer, section, article, aside, nav, div, a, button, input, select, textarea {
     transition-property: background-color, border-color, color, fill, stroke;
     transition-duration: 0.18s;
-    transition-timing-function: ease;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+/* Craft layer: balanced headings (no orphan words on multi-line titles),
+   pretty paragraph ragging in articles, glide-to-anchor for TOC links. */
+h1, h2, h3, h4 { text-wrap: balance; }
+@media (prefers-reduced-motion: no-preference) {
+    html { scroll-behavior: smooth; }
+}
+
+/* Images fade in softly instead of popping — cards look finished even on
+   slow connections (the wrapper's tinted background shows through first). */
+img.img-fade { opacity: 0; transition: opacity .45s cubic-bezier(0.4, 0, 0.2, 1); }
+img.img-fade.img-loaded { opacity: 1; }
+@media (prefers-reduced-motion: reduce) {
+    img.img-fade { transition: none; opacity: 1; }
+}
+
+/* Hero band depth: two barely-there radial washes give the deep-green hero
+   a sense of light without changing the flat design language. */
+.hero-band::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+        radial-gradient(640px 340px at 76% 12%, rgba(255, 255, 255, 0.05), transparent 62%),
+        radial-gradient(560px 320px at 6% 96%, rgba(111, 179, 147, 0.08), transparent 60%);
+}
+
+/* Article reading progress (thin green line pinned above the header) */
+#read-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 2.5px;
+    width: 0;
+    background: #2E7856;
+    z-index: 60;
+    pointer-events: none;
+}
+.dark #read-progress { background: #6FB393; }
 
 /* Custom scrollbar — slim, quiet, rounded thumbs */
 ::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -105,7 +147,7 @@ textarea:focus-visible, summary:focus-visible, [tabindex]:focus-visible,
     height: 2.375rem;
     cursor: pointer;
     white-space: nowrap;
-    transition: background-color .15s ease, border-color .15s ease, color .15s ease, transform .1s ease, box-shadow .15s ease;
+    transition: background-color .16s cubic-bezier(0.4, 0, 0.2, 1), border-color .16s cubic-bezier(0.4, 0, 0.2, 1), color .16s cubic-bezier(0.4, 0, 0.2, 1), transform .1s cubic-bezier(0.4, 0, 0.2, 1), box-shadow .16s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .btn:active { transform: translateY(1px); }
 .btn-primary { background: #2E7856; color: #fff; }
@@ -190,7 +232,7 @@ textarea:focus-visible, summary:focus-visible, [tabindex]:focus-visible,
     border-radius: var(--radius-xl);
 }
 .card-elev { box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04); }
-.card-hover { transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease; }
+.card-hover { transition: border-color .2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow .2s cubic-bezier(0.4, 0, 0.2, 1), transform .2s cubic-bezier(0.4, 0, 0.2, 1); }
 .card-hover:hover {
     border-color: #c9cfda;
     box-shadow: 0 10px 28px -14px rgba(16, 24, 40, 0.18);
@@ -462,7 +504,7 @@ select.input { appearance: none; background-image: url("data:image/svg+xml;chars
 .prose h2 { font-size: 1.55rem; font-weight: 700; margin: 1.9rem 0 1rem; color: #101319; line-height: 1.3; letter-spacing: -0.02em; }
 .prose h3 { font-size: 1.28rem; font-weight: 700; margin: 1.5rem 0 0.75rem; color: #16181d; letter-spacing: -0.01em; }
 .prose h4 { font-size: 1.1rem; font-weight: 600; margin: 1.1rem 0 0.5rem; color: #1e293b; }
-.prose p { margin-bottom: 1.1rem; line-height: 1.78; color: #3f4654; font-size: 1.0125rem; }
+.prose p { margin-bottom: 1.1rem; line-height: 1.78; color: #3f4654; font-size: 1.0125rem; text-wrap: pretty; }
 .prose ul, .prose ol { margin: 1.1rem 0; padding-left: 1.5rem; }
 .prose ul { list-style: disc; }
 .prose ol { list-style: decimal; }

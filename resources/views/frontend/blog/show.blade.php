@@ -93,6 +93,8 @@
 <link rel="preload" as="image" href="{{ $ogImage }}" fetchpriority="high">
 @endpush
 <div class="max-w-[1200px] mx-auto px-4 sm:px-6 py-6">
+    {{-- Reading progress: thin green line that fills as the reader scrolls --}}
+    <div id="read-progress" aria-hidden="true"></div>
     <nav class="text-[13px] text-slate-400 dark:text-slate-500 flex items-center gap-1.5 flex-wrap mb-5" aria-label="Breadcrumb">
         <a href="/" class="hover:text-[#2E7856] dark:hover:text-[#6FB393] transition">Home</a>
         <svg class="w-3.5 h-3.5 text-slate-300 dark:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 6 6 6-6 6"/></svg>
@@ -115,7 +117,7 @@
                 @if($post->excerpt)<p class="text-[16px] leading-relaxed text-slate-500 dark:text-slate-400 mt-3.5 max-w-[640px]">{{ $post->excerpt }}</p>@endif
                 <div class="flex flex-wrap items-center gap-x-4 gap-y-2.5 mt-5 pb-5 border-b border-[#e6e8ee] dark:border-[#22262e]">
                     <span class="flex items-center gap-2.5 min-w-0">
-                        <img src="{{ $authorAvatar }}" alt="{{ $authorName }}" class="w-9 h-9 rounded-full object-cover border border-[#e6e8ee] dark:border-[#2c313c]" loading="lazy" decoding="async">
+                        <img src="{{ $authorAvatar }}" alt="{{ $authorName }}" class="w-9 h-9 rounded-full object-cover border border-[#e6e8ee] dark:border-[#2c313c]" loading="lazy" decoding="async" onerror="this.style.display='none'">
                         <span class="flex items-center gap-1.5 flex-wrap text-sm">
                             @if($authorProfileUrl)
                                 <a href="{{ $authorProfileUrl }}" class="font-semibold text-slate-900 dark:text-white hover:text-[#2E7856] dark:hover:text-[#6FB393] transition">{{ $authorName }}</a>
@@ -129,15 +131,15 @@
                         </span>
                     </span>
                     <span class="hidden sm:block w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-600"></span>
-                    <span class="inline-flex items-center gap-1.5 text-[13px] text-slate-500 dark:text-slate-400"><svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 2v4"/><path stroke-linecap="round" stroke-linejoin="round" d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18"/></svg> {{ $post->published_at?->format('M d, Y') }}</span>
+                    <span class="inline-flex items-center gap-1.5 text-[13px] text-slate-500 dark:text-slate-400"><svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 2v4"/><path stroke-linecap="round" stroke-linejoin="round" d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18"/></svg> <span class="tabular-nums">{{ $post->published_at?->format('M d, Y') }}</span></span>
                     <span class="inline-flex items-center gap-1.5 text-[13px] text-slate-500 dark:text-slate-400"><svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2"/></svg> {{ $post->reading_time }} min read</span>
-                    <span class="inline-flex items-center gap-1.5 text-[13px] text-slate-500 dark:text-slate-400"><svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg> {{ number_format($post->views) }} views</span>
+                    <span class="inline-flex items-center gap-1.5 text-[13px] text-slate-500 dark:text-slate-400"><svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg> <span class="tabular-nums">{{ number_format($post->views) }} views</span></span>
                 </div>
             </header>
 
             <article class="min-w-0">
                 <div class="relative overflow-hidden rounded-2xl border border-[#e6e8ee] dark:border-[#262a33] bg-[#f1f3f7] dark:bg-[#1c1f26]">
-                    <img src="{{ $featuredImageUrl }}" alt="{{ $featuredImageAlt }}" class="w-full max-h-[460px] object-cover" decoding="async" fetchpriority="high" onerror="this.onerror=null;this.style.display='none'">
+                    <img src="{{ $featuredImageUrl }}" alt="{{ $featuredImageAlt }}" class="img-fade w-full max-h-[460px] object-cover" decoding="async" fetchpriority="high" onload="this.classList.add('img-loaded')" onerror="this.onerror=null;this.style.display='none'">
                 </div>
 
                 {{-- Share: quiet square buttons, brand color on hover --}}
@@ -286,7 +288,7 @@
                 </h3>
                 <div class="flex gap-4">
                     @if($authorProfileUrl)<a href="{{ $authorProfileUrl }}" class="shrink-0 group" aria-label="View author profile">@endif
-                        <img src="{{ $authorAvatar }}" alt="{{ $authorName }}" class="w-14 h-14 rounded-full object-cover border-2 border-[#E3F0E9] dark:border-[#383838] shadow-sm {{ $authorProfileUrl ? 'rounded-full group-hover:ring-2 group-hover:ring-[#2E7856] dark:group-hover:ring-[#57A37E] transition' : '' }}" loading="lazy" decoding="async">
+                        <img src="{{ $authorAvatar }}" alt="{{ $authorName }}" class="w-14 h-14 rounded-full object-cover border-2 border-[#E3F0E9] dark:border-[#383838] shadow-sm {{ $authorProfileUrl ? 'rounded-full group-hover:ring-2 group-hover:ring-[#2E7856] dark:group-hover:ring-[#57A37E] transition' : '' }}" loading="lazy" decoding="async" onerror="this.style.display='none'">
                     @if($authorProfileUrl)</a>@endif
                     <div class="flex-1 min-w-0">
                         <div class="flex items-center gap-1.5 flex-wrap">
@@ -409,7 +411,7 @@
                     <div class="p-4 space-y-3.5">
                         @foreach($related as $r)
                             <a href="{{ route('blog.show',$r->slug) }}" class="flex gap-3 group">
-                                <img src="{{ storage_image_url($r->featured_image) ?: 'https://picsum.photos/seed/'.$r->slug.'/200/200' }}" class="w-14 h-14 object-cover shrink-0 rounded-lg border border-[#eef0f4] dark:border-[#2c313c]" alt="{{ image_alt_text($r->featured_image, $r->title) }}" loading="lazy" decoding="async">
+                                <img src="{{ storage_image_url($r->featured_image) ?: 'https://picsum.photos/seed/'.$r->slug.'/200/200' }}" class="img-fade w-14 h-14 object-cover shrink-0 rounded-lg border border-[#eef0f4] dark:border-[#2c313c]" alt="{{ image_alt_text($r->featured_image, $r->title) }}" loading="lazy" decoding="async" onload="this.classList.add('img-loaded')" onerror="this.onerror=null;this.style.display='none'">
                                 <div class="min-w-0"><h4 class="text-sm font-semibold text-slate-900 dark:text-white group-hover:text-[#2E7856] dark:group-hover:text-[#6FB393] transition-colors line-clamp-2 leading-snug">{{ $r->title }}</h4><span class="text-xs text-slate-400 dark:text-slate-500">{{ $r->reading_time }} min read</span></div>
                             </a>
                         @endforeach
@@ -592,12 +594,31 @@ function cancelReply(){
         }
         const prevBg = btn.style.background;
         btn.setAttribute('title', ok ? 'Copied!' : 'Press Ctrl+C');
-        btn.style.background = ok ? '#16a34a' : '';
+        btn.style.background = ok ? '#2E7856' : '';
         setTimeout(()=>{
             btn.setAttribute('title', originalTitle);
             btn.style.background = '';
         }, 1600);
     });
+})();
+
+// Reading progress: thin line above the header fills with scroll depth.
+// rAF-throttled so it never janks the scroll thread; no-op if bar missing.
+(function(){
+    var bar = document.getElementById('read-progress');
+    if(!bar) return;
+    var ticking = false;
+    function update(){
+        var doc = document.documentElement;
+        var max = doc.scrollHeight - window.innerHeight;
+        var pct = max > 0 ? Math.min(100, Math.max(0, (window.scrollY / max) * 100)) : 0;
+        bar.style.width = pct + '%';
+        ticking = false;
+    }
+    window.addEventListener('scroll', function(){
+        if(!ticking){ ticking = true; window.requestAnimationFrame(update); }
+    }, { passive: true });
+    update();
 })();
 </script>
 @endpush

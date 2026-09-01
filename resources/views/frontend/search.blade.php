@@ -29,14 +29,14 @@
         @forelse($posts as $p)
             <article class="group card-elev card-hover overflow-hidden flex flex-col">
                 <a href="{{ route('blog.show',$p->slug) }}" class="relative h-[170px] overflow-hidden block bg-[#f1f3f7] dark:bg-[#1c1f26]">
-                    <img src="{{ storage_image_url($p->featured_image) ?: 'https://picsum.photos/seed/'.$p->slug.'/600/400' }}" alt="{{ image_alt_text($p->featured_image, $p->title) }}" class="w-full h-full object-cover group-hover:scale-[1.03] transition duration-300" loading="lazy" decoding="async" onerror="this.onerror=null;this.removeAttribute('src');this.style.display='none'">
+                    <img src="{{ storage_image_url($p->featured_image) ?: 'https://picsum.photos/seed/'.$p->slug.'/600/400' }}" alt="{{ image_alt_text($p->featured_image, $p->title) }}" class="img-fade w-full h-full object-cover group-hover:scale-[1.03] transition duration-300" loading="lazy" decoding="async" onload="this.classList.add('img-loaded')" onerror="this.onerror=null;this.removeAttribute('src');this.style.display='none'">
                     <span class="absolute top-3 left-3 chip chip-white shadow-sm">{{ $p->category->name ?? 'General' }}</span>
                 </a>
                 <div class="p-5 flex flex-col flex-1">
                     <a href="{{ route('blog.show',$p->slug) }}" class="text-[16px] font-bold text-slate-900 dark:text-white leading-snug tracking-[-0.01em] line-clamp-2 group-hover:text-[#2E7856] dark:group-hover:text-[#6FB393] transition-colors">{{ $p->title }}</a>
                     <p class="text-[13.5px] text-slate-500 dark:text-slate-400 mt-2 leading-relaxed line-clamp-2">{{ $p->excerpt }}</p>
                     <div class="flex items-center gap-2 mt-auto pt-4 text-xs text-slate-400 dark:text-slate-500">
-                        <span>{{ $p->published_at?->format('M d, Y') }}</span>
+                        <span class="tabular-nums">{{ $p->published_at?->format('M d, Y') }}</span>
                         <span class="w-1 h-1 bg-slate-300 dark:bg-slate-600 rounded-full"></span>
                         <span>{{ $p->reading_time }} min read</span>
                     </div>

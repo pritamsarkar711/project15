@@ -23,7 +23,7 @@
                     ? asset('storage/'.$author->author_avatar_path)
                     : 'https://ui-avatars.com/api/?name='.urlencode($author->name).'&size=200&background=173A2A&color=fff&font-size=0.45&bold=true';
             @endphp
-            <img src="{{ $avatarUrl }}" alt="{{ $author->name }}" class="w-28 h-28 rounded-full object-cover border-4 border-[#E3F0E9] dark:border-[#383838] shadow-sm shrink-0" loading="lazy" decoding="async">
+            <img src="{{ $avatarUrl }}" alt="{{ $author->name }}" class="w-28 h-28 rounded-full object-cover border-4 border-[#E3F0E9] dark:border-[#383838] shadow-sm shrink-0" loading="lazy" decoding="async" onerror="this.style.display='none'">
 
             <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-2 flex-wrap">
@@ -122,7 +122,7 @@
             @foreach($posts as $post)
             <article class="group card-elev card-hover overflow-hidden flex flex-col">
                 <a href="{{ route('blog.show', $post->slug) }}" class="relative h-[180px] overflow-hidden block bg-[#f1f3f7] dark:bg-[#1c1f26]">
-                    <img src="{{ storage_image_url($post->featured_image) ?: 'https://picsum.photos/seed/'.$post->slug.'/600/400' }}" alt="{{ image_alt_text($post->featured_image, $post->title) }}" class="w-full h-full object-cover group-hover:scale-[1.03] transition duration-300" loading="lazy" decoding="async" onerror="this.onerror=null;this.removeAttribute('src');this.style.display='none'">
+                    <img src="{{ storage_image_url($post->featured_image) ?: 'https://picsum.photos/seed/'.$post->slug.'/600/400' }}" alt="{{ image_alt_text($post->featured_image, $post->title) }}" class="img-fade w-full h-full object-cover group-hover:scale-[1.03] transition duration-300" loading="lazy" decoding="async" onload="this.classList.add('img-loaded')" onerror="this.onerror=null;this.removeAttribute('src');this.style.display='none'">
                     <span class="absolute top-3 left-3 chip chip-white shadow-sm">{{ $post->category->name ?? 'General' }}</span>
                 </a>
                 <div class="p-5 flex flex-col flex-1">
