@@ -1,0 +1,61 @@
+{
+  "_fonts-BOfaKUPS.css": {
+    "file": "assets/fonts-BOfaKUPS.css",
+    "src": "_fonts-BOfaKUPS.css"
+  },
+  "_work-sans-400-normal-DE1_0GuN.woff": {
+    "file": "assets/work-sans-400-normal-DE1_0GuN.woff",
+    "src": "_work-sans-400-normal-DE1_0GuN.woff"
+  },
+  "_work-sans-400-normal-jUejSri3.woff2": {
+    "file": "assets/work-sans-400-normal-jUejSri3.woff2",
+    "src": "_work-sans-400-normal-jUejSri3.woff2"
+  },
+  "_work-sans-500-normal-BKGnScDy.woff2": {
+    "file": "assets/work-sans-500-normal-BKGnScDy.woff2",
+    "src": "_work-sans-500-normal-BKGnScDy.woff2"
+  },
+  "_work-sans-500-normal-BmdXWF6_.woff": {
+    "file": "assets/work-sans-500-normal-BmdXWF6_.woff",
+    "src": "_work-sans-500-normal-BmdXWF6_.woff"
+  },
+  "_work-sans-600-normal-Cg-NlmS7.woff": {
+    "file": "assets/work-sans-600-normal-Cg-NlmS7.woff",
+    "src": "_work-sans-600-normal-Cg-NlmS7.woff"
+  },
+  "_work-sans-600-normal-DB-2V89X.woff2": {
+    "file": "assets/work-sans-600-normal-DB-2V89X.woff2",
+    "src": "_work-sans-600-normal-DB-2V89X.woff2"
+  },
+  "_work-sans-700-normal-CEeo_t6l.woff2": {
+    "file": "assets/work-sans-700-normal-CEeo_t6l.woff2",
+    "src": "_work-sans-700-normal-CEeo_t6l.woff2"
+  },
+  "_work-sans-700-normal-mDs79oer.woff": {
+    "file": "assets/work-sans-700-normal-mDs79oer.woff",
+    "src": "_work-sans-700-normal-mDs79oer.woff"
+  },
+  "_work-sans-800-normal-C89f8isX.woff": {
+    "file": "assets/work-sans-800-normal-C89f8isX.woff",
+    "src": "_work-sans-800-normal-C89f8isX.woff"
+  },
+  "_work-sans-800-normal-CHo7j6hf.woff2": {
+    "file": "assets/work-sans-800-normal-CHo7j6hf.woff2",
+    "src": "_work-sans-800-normal-CHo7j6hf.woff2"
+  },
+  "resources/css/app.css": {
+    "file": "assets/app-9eb1cdd6.css",
+    "name": "app",
+    "names": [
+      "app.css"
+    ],
+    "src": "resources/css/app.css",
+    "isEntry": true
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-BvRk9kiK.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true
+  }
+}
