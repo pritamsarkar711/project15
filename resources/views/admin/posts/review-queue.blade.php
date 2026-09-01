@@ -74,6 +74,20 @@
                             <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Excerpt</label>
                             <textarea name="excerpt" rows="2" class="w-full p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none text-sm text-slate-900 dark:text-white">{{ $post->excerpt }}</textarea>
                         </div>
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Meta title</label>
+                                <input type="text" name="meta_title" value="{{ $post->meta_title }}" class="w-full h-10 px-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none text-sm text-slate-900 dark:text-white">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Focus keyword <span class="text-slate-400">(SEO)</span></label>
+                                <input type="text" name="focus_keyword" value="{{ $post->focus_keyword }}" placeholder="e.g. best budget phones" class="w-full h-10 px-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none text-sm text-slate-900 dark:text-white">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Meta description</label>
+                            <textarea name="meta_description" rows="2" class="w-full p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none text-sm text-slate-900 dark:text-white">{{ $post->meta_description }}</textarea>
+                        </div>
                         <div>
                             <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Content (edit before publishing)</label>
                             <textarea name="content" rows="14" class="w-full p-2 font-mono text-[12px] leading-relaxed bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none text-slate-900 dark:text-white">{{ $post->content }}</textarea>

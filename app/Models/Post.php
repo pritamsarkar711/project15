@@ -15,7 +15,7 @@ class Post extends Model
         'author_name','author_bio','author_avatar','reading_time','status','published_at','scheduled_at',
         'meta_title','meta_description','meta_keywords','views','is_featured','allow_comments',
         'review_status','submitted_at','reviewed_at','reviewer_id','reviewer_note','is_affiliate',
-        'autosaved_at'
+        'autosaved_at','focus_keyword','seo_score','instant_indexed_at'
     ];
 
     protected $casts = [
@@ -28,7 +28,35 @@ class Post extends Model
         'is_featured' => 'boolean',
         'allow_comments' => 'boolean',
         'is_affiliate' => 'boolean',
+        'instant_indexed_at' => 'datetime',
     ];
+
+    /**
+     * Absolute public URL of this post (used by share screens, the social
+     * auto-poster and IndexNow). Falls back to the configured host when the
+     * request context is missing (queue worker / console).
+     */
+    public function publicUrl(): string
+    {
+        $base = rtrim((string) config('services.indexnow.host'), '/');
+        try {
+            if (app()->bound('request')) {
+                $host = request()->getSchemeAndHttpHost();
+                if ($host && !str_starts_with($host, 'http://localhost')) {
+                    $base = rtrim($host, '/');
+                }
+            }
+        } catch (\Throwable $e) {
+            // console / worker — keep the configured host
+        }
+        return $base.'/blog/'.$this->slug;
+    }
+
+    /** All social auto-post attempts for this post, one row per network. */
+    public function socialPublishes()
+    {
+        return $this->hasMany(SocialPublish::class);
+    }
 
     public function category()
     {
@@ -168,6 +196,9 @@ class Post extends Model
             $service = app(\App\Services\IndexNowService::class);
             if ($post->status === 'published' && !self::isFutureScheduled($post)) {
                 $service->submitQuietly([$service->postUrl($post->slug)]);
+                if (!$post->wasRecentlyCreated || $post->status === 'published') {
+                    try { $post->forceFill(['instant_indexed_at' => now()])->saveQuietly(); } catch (\Throwable $e) {}
+                }
             } elseif ($post->wasChanged('status') || $post->wasChanged('slug')) {
                 // Unpublished or slug changed: ask engines to refetch the
                 // old URL — they will see the new location or a 404 and
@@ -185,6 +216,27 @@ class Post extends Model
             }
             $service = app(\App\Services\IndexNowService::class);
             $service->submitQuietly([$service->postUrl($post->slug)]);
+        });
+
+        // Social auto-post: when a post becomes live (published AND visible),
+        // hand it to the queued publisher. The job itself checks the master
+        // switch + per-network credentials, so a disabled setup costs nothing.
+        // Runs once per post — guarded by the social_publishes table.
+        static::saved(function ($post) {
+            if (app()->runningInConsole() && !app()->runningUnitTests()) {
+                return;
+            }
+            $justPublished = $post->status === 'published'
+                && !self::isFutureScheduled($post)
+                && ($post->wasRecentlyCreated || $post->wasChanged('status') || $post->wasChanged('review_status'));
+            if (!$justPublished) {
+                return;
+            }
+            try {
+                \App\Jobs\PublishPostToSocial::dispatch($post->id)->afterResponse();
+            } catch (\Throwable $e) {
+                report($e);
+            }
         });
     }
 

@@ -162,6 +162,9 @@
                 <label class="text-sm font-medium mt-3 block text-slate-900 dark:text-white">Meta description</label>
                 <textarea name="meta_description" required rows="3" maxlength="500" class="mt-1 w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white">{{ old('meta_description', $isEdit ? $post->meta_description : '') }}</textarea>
             </div>
+
+            {{-- Focus keyword + live SEO score + AI assistant (same suite as the admin editor) --}}
+            @include('partials.seo-ai-panel', ['post' => $isEdit ? $post : null, 'aiEndpoint' => route('author.ai.generate'), 'aiEnabled' => app(\App\Services\Ai\AiAssistantService::class)->enabled()])
         </div>
     </div>
 </form>
@@ -171,6 +174,8 @@
      The tag is cache-busted (?v=filemtime) so editor fixes actually reach
      browsers that cached the previous version. --}}
 {!! \App\Support\ViteAssets::editorScript() !!}
+{!! \App\Support\ViteAssets::publicScript('js/seo-analyzer.js') !!}
+{!! \App\Support\ViteAssets::publicScript('js/ai-assistant.js') !!}
 <script>
 // Huvanti rich text editor for the author post form.
 (function(){

@@ -139,6 +139,7 @@ class AuthorDashboardController extends Controller
                 'meta_title'       => ['nullable', 'string', 'max:255'],
                 'meta_description' => ['nullable', 'string', 'max:500'],
                 'meta_keywords'    => ['nullable', 'string', 'max:255'],
+                'focus_keyword'    => ['nullable', 'string', 'max:120'],
                 'is_affiliate'     => ['nullable', 'boolean'],
                 'faqs'             => ['nullable', 'array'],
                 'faqs.*.question'  => ['nullable', 'string', 'max:500'],
@@ -202,6 +203,9 @@ class AuthorDashboardController extends Controller
             if (array_key_exists('meta_keywords', $data)) {
                 $post->meta_keywords = $data['meta_keywords'] !== null ? mb_substr((string) $data['meta_keywords'], 0, 255) : null;
             }
+            if (array_key_exists('focus_keyword', $data)) {
+                $post->focus_keyword = $data['focus_keyword'] !== null ? mb_substr(trim((string) $data['focus_keyword']), 0, 120) ?: null : null;
+            }
             if (array_key_exists('is_affiliate', $data)) {
                 $post->is_affiliate = $request->boolean('is_affiliate');
             }
@@ -260,6 +264,7 @@ class AuthorDashboardController extends Controller
             'meta_title'      => ['required', 'string', 'max:255'],
             'meta_description'=> ['required', 'string', 'max:500'],
             'meta_keywords'   => ['nullable', 'string', 'max:255'],
+            'focus_keyword'   => ['nullable', 'string', 'max:120'],
             'faqs'            => ['required', 'array', 'min:1'],
             'faqs.*.question' => ['nullable', 'string', 'max:500'],
             'faqs.*.answer'   => ['nullable', 'string', 'max:2000'],
@@ -312,6 +317,11 @@ class AuthorDashboardController extends Controller
         $post->meta_title = $data['meta_title'] ?? null;
         $post->meta_description = $data['meta_description'] ?? null;
         $post->meta_keywords = $data['meta_keywords'] ?? null;
+        $post->focus_keyword = isset($data['focus_keyword']) ? mb_substr(trim((string) $data['focus_keyword']), 0, 120) ?: null : null;
+        $post->seo_score = app(\App\Services\SeoAnalyzer::class)->analyze(
+            $post->title, $post->meta_title, $post->meta_description,
+            $post->focus_keyword, $post->slug, $post->content
+        )['score'];
         $post->is_affiliate = $request->boolean('is_affiliate');
         $post->status = 'draft';
         $post->review_status = $data['action'] === 'submit' ? 'pending_review' : 'draft';
@@ -402,6 +412,7 @@ class AuthorDashboardController extends Controller
             'meta_title'      => ['required', 'string', 'max:255'],
             'meta_description'=> ['required', 'string', 'max:500'],
             'meta_keywords'   => ['nullable', 'string', 'max:255'],
+            'focus_keyword'   => ['nullable', 'string', 'max:120'],
             'faqs'            => ['required', 'array', 'min:1'],
             'faqs.*.question' => ['nullable', 'string', 'max:500'],
             'faqs.*.answer'   => ['nullable', 'string', 'max:2000'],
@@ -462,6 +473,11 @@ class AuthorDashboardController extends Controller
         $post->meta_title = $data['meta_title'] ?? null;
         $post->meta_description = $data['meta_description'] ?? null;
         $post->meta_keywords = $data['meta_keywords'] ?? null;
+        $post->focus_keyword = isset($data['focus_keyword']) ? mb_substr(trim((string) $data['focus_keyword']), 0, 120) ?: null : null;
+        $post->seo_score = app(\App\Services\SeoAnalyzer::class)->analyze(
+            $post->title, $post->meta_title, $post->meta_description,
+            $post->focus_keyword, $post->slug, $post->content
+        )['score'];
         $post->is_affiliate = $request->boolean('is_affiliate');
         $post->reading_time = max(1, ceil($wordCount / 200));
 
@@ -679,6 +695,48 @@ class AuthorDashboardController extends Controller
     public function rules()
     {
         return view('frontend.author-dashboard.rules');
+    }
+
+    // -----------------------------------------------------------------
+    // Post-publish share screen + manual instant index (own posts only)
+    // -----------------------------------------------------------------
+
+    /**
+     * After a post goes live the author gets a share screen: the public URL
+     * in a copyable box plus social share icons. Works for approved posts
+     * (the only state where a public URL exists).
+     */
+    public function postsShare($id)
+    {
+        $post = $this->loadOwnPost($id);
+
+        if ($post->review_status !== 'approved') {
+            return redirect()->route('author.posts.index')
+                ->with('error', 'This post is not published yet — share it once it is live.');
+        }
+
+        return view('frontend.author-dashboard.posts-share', [
+            'post'     => $post,
+            'shareUrl' => $post->publicUrl(),
+        ]);
+    }
+
+    /** Authors can ping IndexNow for their own live posts (best-effort). */
+    public function postsInstantIndex($id)
+    {
+        $post = $this->loadOwnPost($id);
+
+        if ($post->review_status !== 'approved') {
+            return back()->with('error', 'Only published posts can be submitted to search engines.');
+        }
+
+        $service = app(\App\Services\IndexNowService::class);
+        $ok = $service->submit([$service->postUrl($post->slug)]);
+        if ($ok) {
+            try { $post->forceFill(['instant_indexed_at' => now()])->saveQuietly(); } catch (\Throwable $e) {}
+            return back()->with('success', 'Ping sent to search engines for "'.$post->title.'".');
+        }
+        return back()->with('error', 'IndexNow ping failed — try again in a moment.');
     }
 
     public function start2FA(Request $request)

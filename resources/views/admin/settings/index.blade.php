@@ -20,6 +20,10 @@
         <input type="hidden" name="tab" value="integrations">
         <div class="panel-card p-6 space-y-4">
             <h3 class="font-semibold">Analytics & Verification</h3>
+            {{-- All five verification fields live in ONE grid. The previous
+                 markup closed the card early and left a stray </div>, which
+                 pushed every later card outside the page container and made
+                 the whole Integrations tab overlap/overflow. --}}
             <div class="grid sm:grid-cols-2 gap-4">
                 <div>
                     <label class="text-sm font-medium">GA Measurement ID</label>
@@ -33,15 +37,14 @@
                     <label class="text-sm font-medium">Search Console Token</label>
                     <input type="text" name="search_console_token" value="{{ old('search_console_token', $settings['search_console_token']->value ?? '') }}" placeholder="google-site-verification value" class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-mono placeholder:font-sans">
                 </div>
-            </div>
-            <div>
+                <div>
                     <label class="text-sm font-medium">Bing Webmaster Verification Token (msvalidate.01)</label>
                     <input type="text" name="bing_verification_token" value="{{ old('bing_verification_token', $settings['bing_verification_token']->value ?? '') }}" placeholder="msvalidate.01 value" class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-mono placeholder:font-sans">
                 </div>
-            </div>
-            <div class="mt-3">
-                <label class="text-sm font-medium">Ahrefs Verification Token</label>
-                <input type="text" name="ahrefs_verification_token" value="{{ old('ahrefs_verification_token', $settings['ahrefs_verification_token']->value ?? '') }}" placeholder="ahrefs-site-verification value" class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-mono placeholder:font-sans">
+                <div>
+                    <label class="text-sm font-medium">Ahrefs Verification Token</label>
+                    <input type="text" name="ahrefs_verification_token" value="{{ old('ahrefs_verification_token', $settings['ahrefs_verification_token']->value ?? '') }}" placeholder="ahrefs-site-verification value" class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-mono placeholder:font-sans">
+                </div>
             </div>
         </div>
 
@@ -62,6 +65,20 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
             <h3 class="font-semibold">llms.txt</h3>
             <textarea name="llms_txt_content" rows="5" placeholder="Extra markdown appended to llms.txt" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">{{ old('llms_txt_content', $settings['llms_txt_content']->value ?? '') }}</textarea>
             <p class="text-xs text-slate-400 dark:text-slate-500">Optional. Appended to the auto-generated llms.txt. Served at <a href="{{ url('llms.txt') }}" target="_blank" class="text-[#1F513A] dark:text-[#6FB393] hover:underline">{{ url('llms.txt') }}</a></p>
+        </div>
+
+        <div class="panel-card p-6 space-y-4">
+            <h3 class="font-semibold">Instant Indexing (IndexNow)</h3>
+            @php $indexNowKey = config('services.indexnow.key'); @endphp
+            <p class="text-sm text-slate-600 dark:text-slate-400">
+                @if($indexNowKey)
+                    <span class="inline-flex items-center gap-1.5 font-semibold text-[#1F513A] dark:text-[#6FB393]"><svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Active</span>
+                    — every publish/update/delete is pinged to Bing, Yandex, Seznam & Naver automatically within seconds. You can also trigger a manual ping per post from the Posts list ("Index now") and authors can do the same from their dashboard.
+                @else
+                    <span class="font-semibold text-amber-600 dark:text-amber-400">Not configured</span> — set <code class="font-mono bg-slate-100 dark:bg-slate-800 px-1">INDEXNOW_KEY</code> in your .env to enable automatic pinging.
+                @endif
+            </p>
+            <p class="text-xs text-slate-500 dark:text-slate-500">Ownership key file: <a href="{{ url($indexNowKey ? $indexNowKey.'.txt' : '') }}" target="_blank" class="font-mono text-[#1F513A] dark:text-[#6FB393] hover:underline">{{ url($indexNowKey ? $indexNowKey.'.txt' : '/{key}.txt') }}</a> · Note: Google does not participate in IndexNow; Google discovers pages via your sitemap (auto-pinged on publish).</p>
         </div>
 
         <div class="panel-card p-6 space-y-4">

@@ -179,6 +179,8 @@ class PostController extends Controller
             'scheduled_at' => 'nullable|date',
             'meta_title' => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:500',
+            'meta_keywords' => 'nullable|string|max:255',
+            'focus_keyword' => 'nullable|string|max:120',
             'faqs.*.question' => 'nullable|string|max:500',
             'faqs.*.answer' => 'nullable|string|max:2000',
         ];
@@ -236,6 +238,12 @@ class PostController extends Controller
         $data['meta_title'] = isset($data['meta_title']) ? mb_substr((string) $data['meta_title'], 0, 255) : null;
         $data['meta_description'] = isset($data['meta_description']) ? mb_substr((string) $data['meta_description'], 0, 500) : null;
         $data['meta_keywords'] = isset($data['meta_keywords']) ? mb_substr((string) $data['meta_keywords'], 0, 255) : null;
+        // RankMath-style focus keyword + persisted SEO score (list badges).
+        $data['focus_keyword'] = isset($data['focus_keyword']) ? mb_substr(trim((string) $data['focus_keyword']), 0, 120) ?: null : null;
+        $data['seo_score'] = app(\App\Services\SeoAnalyzer::class)->analyze(
+            $data['title'] ?? null, $data['meta_title'] ?? null, $data['meta_description'] ?? null,
+            $data['focus_keyword'] ?? null, $data['slug'] ?? null, $data['content'] ?? null
+        )['score'];
 
         if ($existing) {
             // Resuming an auto-saved draft: keep its author, overwrite the rest.
@@ -247,6 +255,12 @@ class PostController extends Controller
             $post = Post::create($data);
         }
         $this->syncFaqs($request, $post);
+
+        // Published now? Send the admin straight to the share screen with
+        // the post URL + social share icons (and auto-post delivery status).
+        if ($post->status === 'published') {
+            return redirect()->route('admin.posts.share', $post)->with('success', 'Post published! Share it with the world:');
+        }
 
         return redirect()->route('admin.posts.index')->with('success', 'Post created successfully');
     }
@@ -327,11 +341,20 @@ class PostController extends Controller
         $data['meta_title'] = isset($data['meta_title']) ? mb_substr((string) $data['meta_title'], 0, 255) : null;
         $data['meta_description'] = isset($data['meta_description']) ? mb_substr((string) $data['meta_description'], 0, 500) : null;
         $data['meta_keywords'] = isset($data['meta_keywords']) ? mb_substr((string) $data['meta_keywords'], 0, 255) : null;
+        $data['focus_keyword'] = isset($data['focus_keyword']) ? mb_substr(trim((string) $data['focus_keyword']), 0, 120) ?: null : null;
+        $data['seo_score'] = app(\App\Services\SeoAnalyzer::class)->analyze(
+            $data['title'] ?? null, $data['meta_title'] ?? null, $data['meta_description'] ?? null,
+            $data['focus_keyword'] ?? null, $data['slug'] ?? null, $data['content'] ?? null
+        )['score'];
 
         // Manual update clears the autosave-only marker.
         $data['autosaved_at'] = null;
         $post->update($data);
         $this->syncFaqs($request, $post);
+
+        if (($data['status'] ?? null) === 'published') {
+            return redirect()->route('admin.posts.share', $post)->with('success', 'Post published! Share it with the world:');
+        }
 
         return redirect()->route('admin.posts.index')->with('success', 'Post updated');
     }
@@ -548,6 +571,7 @@ class PostController extends Controller
             'allow_comments'  => ['nullable', 'boolean'],
             'meta_title'      => ['nullable', 'string', 'max:255'],
             'meta_description'=> ['nullable', 'string', 'max:500'],
+            'focus_keyword'   => ['nullable', 'string', 'max:120'],
             'reviewer_note'   => ['nullable', 'string', 'max:500'],
             'faqs'            => ['nullable', 'array'],
             'faqs.*.question' => ['nullable', 'string', 'max:500'],
@@ -570,6 +594,11 @@ class PostController extends Controller
         $post->reviewer_id    = auth()->id();
         $post->status         = 'published';
         $post->published_at   = $post->published_at ?: now();
+        $post->focus_keyword  = $request->filled('focus_keyword') ? mb_substr(trim((string) $request->focus_keyword), 0, 120) : $post->focus_keyword;
+        $post->seo_score      = app(\App\Services\SeoAnalyzer::class)->analyze(
+            $post->title, $post->meta_title, $post->meta_description,
+            $post->focus_keyword, $post->slug, $post->content
+        )['score'];
 
         $post->save();
         $this->syncFaqs($request, $post);
@@ -582,8 +611,9 @@ class PostController extends Controller
             }
         }
 
-        return redirect()->route('admin.posts.review-queue')
-            ->with('success', 'Post approved and published.');
+        // Straight to the share screen: URL + share icons + auto-post status.
+        return redirect()->route('admin.posts.share', $post)
+            ->with('success', 'Post approved and published. Share it:');
     }
 
     /**
@@ -614,5 +644,72 @@ class PostController extends Controller
 
         return redirect()->route('admin.posts.review-queue')
             ->with('success', 'Post returned to the author with your note.');
+    }
+
+    // ---------------------------------------------------------------------
+    // Instant index + post-publish share screen
+    // ---------------------------------------------------------------------
+
+    /**
+     * Manual instant-index ping (Posts list button). IndexNow auto-pings on
+     * every save already; this lets the admin force a refetch (e.g. after a
+     * big edit, a 404 fix or for posts published before IndexNow existed).
+     */
+    public function instantIndex(Post $post)
+    {
+        $service = app(\App\Services\IndexNowService::class);
+        $ok = $service->submit([$service->postUrl($post->slug)]);
+
+        if ($ok) {
+            try { $post->forceFill(['instant_indexed_at' => now()])->saveQuietly(); } catch (\Throwable $e) {}
+            return back()->with('success', 'Ping sent to Bing, Yandex, Seznam & Naver for "'.$post->title.'".');
+        }
+        return back()->with('error', 'IndexNow ping failed — check connectivity and try again.');
+    }
+
+    /** Bulk instant index: every currently-visible published post. */
+    public function bulkInstantIndex()
+    {
+        $service = app(\App\Services\IndexNowService::class);
+        $posts = Post::where('status', 'published')
+            ->where(fn ($q) => $q->whereNull('scheduled_at')->orWhere('scheduled_at', '<=', now()))
+            ->get();
+
+        if ($posts->isEmpty()) {
+            return back()->with('error', 'No published posts to index.');
+        }
+        // IndexNow accepts up to 10,000 URLs per call — one call does it.
+        $ok = $service->submit($posts->map(fn ($p) => $service->postUrl($p->slug))->all());
+        if ($ok) {
+            $stamps = [];
+            foreach ($posts as $p) $stamps[] = ['id' => $p->id, 'instant_indexed_at' => now()];
+            try {
+                foreach ($stamps as $s) {
+                    Post::where('id', $s['id'])->forceFill(['instant_indexed_at' => $s['instant_indexed_at']])->saveQuietly();
+                }
+            } catch (\Throwable $e) {}
+            return back()->with('success', 'Submitted '.$posts->count().' post URLs to IndexNow.');
+        }
+        return back()->with('error', 'IndexNow bulk submission failed — try again shortly.');
+    }
+
+    /**
+     * Post-publish share screen: the post URL in a big copyable box plus
+     * social share icons (and the social auto-post delivery log when the
+     * automation ran for this post).
+     */
+    public function share(Post $post)
+    {
+        $post->load(['socialPublishes' => fn ($q) => $q->latest('updated_at')]);
+        $service = app(\App\Services\Social\SocialAutoPostService::class);
+        $autopostEnabled = $service->enabled();
+        $activeNetworks = $service->activeNetworks();
+
+        return view('admin.posts.share', [
+            'post'            => $post,
+            'shareUrl'        => $post->publicUrl(),
+            'autopostEnabled' => $autopostEnabled,
+            'activeNetworks'  => $activeNetworks,
+        ]);
     }
 }

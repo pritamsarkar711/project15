@@ -40,6 +40,20 @@ $reviewBadge = match($post->review_status) {
         @elseif($post->review_status === 'pending_review')
             <span class="text-xs text-slate-500 px-3">Awaiting review</span>
         @elseif($post->review_status === 'approved')
+            @php
+                $seoColor2 = ($post->seo_score ?? 0) >= 70 ? 'bg-green-100 text-green-700 dark:bg-green-500/15 dark:text-green-400' : (($post->seo_score ?? 0) >= 40 ? 'bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-400' : 'bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-400');
+            @endphp
+            @if(!is_null($post->seo_score))<span class="inline-flex items-center text-[10px] font-bold px-1.5 py-0.5 rounded {{ $seoColor2 }}" title="On-page SEO score">SEO {{ $post->seo_score }}</span>@endif
+            <a href="{{ route('author.posts.share', $post->id) }}" class="px-3 h-9 inline-flex items-center text-xs font-semibold text-[#173A2A] dark:text-[#6FB393] hover:underline gap-1">
+                <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path stroke-linecap="round" stroke-linejoin="round" d="m8.59 13.51 6.83 3.98m-.01-10.98-6.82 3.98"/></svg>
+                Share
+            </a>
+            <form method="POST" action="{{ route('author.posts.instant-index', $post->id) }}">@csrf
+                <button type="submit" title="Ping search engines (IndexNow){{ $post->instant_indexed_at ? ' — last pinged '.$post->instant_indexed_at->format('M d, H:i') : '' }}" class="px-3 h-9 inline-flex items-center text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 gap-1">
+                    <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19.5v-15m0 0-6.75 6.75M12 4.5l6.75 6.75"/></svg>
+                    Index now
+                </button>
+            </form>
             <a href="{{ route('blog.show', $post->slug) }}" target="_blank" class="px-3 h-9 inline-flex items-center text-xs font-semibold text-[#173A2A] dark:text-[#6FB393] hover:underline">View live</a>
         @endif
     </div>
