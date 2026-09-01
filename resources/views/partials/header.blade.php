@@ -76,8 +76,8 @@
                         </a>
                     @endif
                 @else
-                    <a href="{{ route('login') }}" class="hidden sm:inline-flex items-center h-9 px-3.5 text-sm font-medium rounded-lg text-slate-600 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#1c1f26] transition">Sign in</a>
-                    <a href="{{ route('register') }}" class="hidden sm:inline-flex items-center h-8 px-4 text-[13px] font-semibold rounded-lg bg-[#16181d] hover:bg-[#2E7856] dark:bg-white dark:hover:bg-[#2E7856] dark:hover:text-white text-white dark:text-[#101319] transition">Sign up</a>
+                    <a href="{{ route('login') }}" rel="nofollow" class="hidden sm:inline-flex items-center h-9 px-3.5 text-sm font-medium rounded-lg text-slate-600 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#1c1f26] transition">Sign in</a>
+                    <a href="{{ route('register') }}" rel="nofollow" class="hidden sm:inline-flex items-center h-8 px-4 text-[13px] font-semibold rounded-lg bg-[#16181d] hover:bg-[#2E7856] dark:bg-white dark:hover:bg-[#2E7856] dark:hover:text-white text-white dark:text-[#101319] transition">Sign up</a>
                 @endif
             </div>
         </div>
@@ -159,11 +159,11 @@
                 </a>
                 <form id="logout-form" method="POST" action="{{ route('logout') }}" class="hidden">@csrf</form>
             @else
-                <a href="{{ route('login') }}" class="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-50 dark:hover:bg-[#2a2a2a] rounded-lg text-slate-700 dark:text-slate-300 font-medium">
+                <a href="{{ route('login') }}" rel="nofollow" class="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-50 dark:hover:bg-[#2a2a2a] rounded-lg text-slate-700 dark:text-slate-300 font-medium">
                     <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12H3m0 0l4 4m-4-4l4-4"/><path stroke-linecap="round" stroke-linejoin="round" d="M21 4v16a2 2 0 01-2 2H9"/></svg>
                     Sign in
                 </a>
-                <a href="{{ route('register') }}" class="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-800 rounded-lg text-white font-semibold bg-slate-900">
+                <a href="{{ route('register') }}" rel="nofollow" class="flex items-center gap-3 px-3 py-2.5 hover:bg-slate-800 rounded-lg text-white font-semibold bg-slate-900">
                     <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2M9 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
                     Create account
                 </a>

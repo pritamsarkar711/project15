@@ -35,6 +35,11 @@
                 </div>
             </div>
             <div>
+                    <label class="text-sm font-medium">Bing Webmaster Verification Token (msvalidate.01)</label>
+                    <input type="text" name="bing_verification_token" value="{{ old('bing_verification_token', $settings['bing_verification_token']->value ?? '') }}" placeholder="msvalidate.01 value" class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-mono placeholder:font-sans">
+                </div>
+            </div>
+            <div class="mt-3">
                 <label class="text-sm font-medium">Ahrefs Verification Token</label>
                 <input type="text" name="ahrefs_verification_token" value="{{ old('ahrefs_verification_token', $settings['ahrefs_verification_token']->value ?? '') }}" placeholder="ahrefs-site-verification value" class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-mono placeholder:font-sans">
             </div>
