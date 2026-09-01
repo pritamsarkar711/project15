@@ -82,6 +82,7 @@ class SettingController extends Controller
             'ga_measurement_id' => 'nullable|string|max:32',
             'gtm_container_id' => 'nullable|string|max:32',
             'search_console_token' => 'nullable|string|max:255',
+            'bing_verification_token' => 'nullable|string|max:255',
             'ahrefs_verification_token' => 'nullable|string|max:255',
             'ads_txt_content' => 'nullable|string|max:20000',
             'robots_txt_content' => 'nullable|string|max:20000',
@@ -112,7 +113,7 @@ class SettingController extends Controller
             // because unchecked checkboxes don't submit a value.
             'social_x', 'social_facebook', 'social_pinterest',
             'social_linkedin', 'social_whatsapp', 'social_youtube', 'social_instagram',
-            'ga_measurement_id', 'gtm_container_id', 'search_console_token', 'ahrefs_verification_token',
+            'ga_measurement_id', 'gtm_container_id', 'search_console_token', 'bing_verification_token', 'ahrefs_verification_token',
             'ads_txt_content', 'robots_txt_content', 'llms_txt_content',
             'google_client_id', 'google_client_secret',
         ];

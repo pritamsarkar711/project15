@@ -55,53 +55,53 @@ class SeoController extends Controller
     /** GET /robots.txt — content managed in admin Settings > Integrations. */
     public function robots()
     {
-        // The generated policy is ALWAYS the base: explicit Allow blocks for
-        // Google and the major AI crawlers (removes any doubt for auditors —
-        // Ahrefs "robots.txt blocks crawl" — and for AI answer engines
-        // deciding whether the site is open) plus the default Disallow rules
-        // for private areas and the sitemap directive.
-        $aiBots = [
-            'GPTBot', 'OAI-SearchBot', 'ChatGPT-User', 'ClaudeBot',
-            'anthropic-ai', 'PerplexityBot', 'Google-Extended', 'CCBot',
-            'Applebot-Extended', 'Amazonbot', 'Meta-ExternalAgent', 'Bytespider',
+        // Explicit Allow blocks for Bingbot, Googlebot, and major AI crawlers
+        $allowedBots = [
+            'Bingbot',
+            'msnbot',
+            'BingPreview',
+            'Googlebot',
+            'Googlebot-Image',
+            'Googlebot-News',
+            'GPTBot',
+            'OAI-SearchBot',
+            'ChatGPT-User',
+            'ClaudeBot',
+            'anthropic-ai',
+            'PerplexityBot',
+            'Google-Extended',
+            'CCBot',
+            'Applebot-Extended',
+            'Amazonbot',
+            'Meta-ExternalAgent',
+            'Bytespider',
         ];
-        $content = "User-agent: Googlebot\nAllow: /\n\n";
-        foreach ($aiBots as $bot) {
-            $content .= "User-agent: {$bot}\nAllow: /\n\n";
-        }
-        $content .= "User-agent: *\n"
-            ."Disallow: /manage\n"
-            ."Disallow: /author-dashboard\n"
-            ."Disallow: /search\n"
-            ."Disallow: /login\n"
-            ."Disallow: /register\n"
-            ."Disallow: /forgot-password\n"
-            ."Disallow: /reset-password\n\n"
-            ."Sitemap: ".$this->absoluteBase()."/sitemap.xml";
 
-        // Admin "extra rules" are APPENDED to the generated policy — they can
-        // never REMOVE the Googlebot/AI-crawler Allow blocks or the Sitemap
-        // directive. Historical accident this guards against: a copy of the
-        // OLD default robots.txt (without the Allow blocks) was once saved
-        // into this setting, and because a stored value used to fully shadow
-        // the generator, the stale content kept being served forever — the
-        // exact "robots.txt blocks crawl" regression Ahrefs reported.
+        $blocks = [];
+        foreach ($allowedBots as $bot) {
+            $blocks[] = "User-agent: {$bot}\nAllow: /";
+        }
+
+        $defaultBlock = "User-agent: *\n"
+            . "Disallow: /manage\n"
+            . "Disallow: /author-dashboard\n"
+            . "Disallow: /search\n"
+            . "Disallow: /login\n"
+            . "Disallow: /register\n"
+            . "Disallow: /forgot-password\n"
+            . "Disallow: /reset-password";
+
+        $sitemapLine = "Sitemap: " . $this->absoluteBase() . "/sitemap.xml";
+
+        $content = implode("\n\n", $blocks) . "\n\n" . $defaultBlock . "\n\n" . $sitemapLine;
+
         $custom = trim((string) setting('robots_txt_content', ''));
         $custom = str_replace("\r\n", "\n", $custom);
-        $legacyDefault = "User-agent: *\n"
-            ."Disallow: /manage\n"
-            ."Disallow: /author-dashboard\n"
-            ."Disallow: /search\n"
-            ."Disallow: /login\n"
-            ."Disallow: /register\n"
-            ."Disallow: /forgot-password\n"
-            ."Disallow: /reset-password\n\n"
-            ."Sitemap: ".$this->absoluteBase()."/sitemap.xml";
-        if ($custom !== '' && rtrim($custom) !== rtrim($legacyDefault)) {
-            $content .= "\n\n# Custom rules\n".$custom;
+        if ($custom !== '' && !str_contains($custom, 'User-agent: *')) {
+            $content .= "\n\n# Custom rules\n" . $custom;
         }
 
-        return $this->text($content, 'text/plain');
+        return $this->text($content . "\n", 'text/plain');
     }
 
     /** GET /ads.txt — raw ads.txt content (AdSense authorized sellers). */

@@ -26,7 +26,7 @@
     @endphp
     <title>{{ $seoFinalTitle }}</title>
     <meta name="description" content="{{ $seoFinalDescription }}">
-    @if(isset($robots) && $robots)<meta name="robots" content="{{ $robots }}">@endif
+    <meta name="robots" content="{{ $robots ?? 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1' }}">
     @php
         // Canonical + og:url: build an ABSOLUTE url from the request's own
         // scheme/host (config('app.url') may still be a localhost default on
@@ -79,8 +79,9 @@
     {{-- Google Discover / image search: explicitly allow large thumbnails.
          Only emitted when the page doesn't define its own robots directive,
          so the two meta tags can never contradict each other. --}}
-    @if(!isset($robots))<meta name="robots" content="max-image-preview:large, max-snippet:-1, max-video-preview:-1">@endif
+    
     @if(setting('search_console_token'))<meta name="google-site-verification" content="{{ setting('search_console_token') }}">@endif
+    @if(setting('bing_verification_token'))<meta name="msvalidate.01" content="{{ setting('bing_verification_token') }}">@endif
     @if(setting('ahrefs_verification_token'))<meta name="ahrefs-site-verification" content="{{ setting('ahrefs_verification_token') }}">@endif
     @php
         // Derive favicon MIME from extension (don't hardcode image/png since

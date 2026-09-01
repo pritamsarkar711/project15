@@ -91,7 +91,9 @@
                     <a href="{{ route('about') }}" class="text-slate-500 dark:text-slate-400 hover:text-[#2E7856] dark:hover:text-[#6FB393] transition">About</a>
                     <a href="{{ route('contact') }}" class="text-slate-500 dark:text-slate-400 hover:text-[#2E7856] dark:hover:text-[#6FB393] transition">Contact</a>
                     <a href="/blog" class="text-slate-500 dark:text-slate-400 hover:text-[#2E7856] dark:hover:text-[#6FB393] transition">Blog</a>
+                    @if(setting('top_contributors_enabled', '1') === '1')
                     <a href="/top-contributors" class="text-slate-500 dark:text-slate-400 hover:text-[#2E7856] dark:hover:text-[#6FB393] transition">Top Contributors</a>
+                    @endif
                     <a href="/sitemap.xml" class="text-slate-500 dark:text-slate-400 hover:text-[#2E7856] dark:hover:text-[#6FB393] transition">Sitemap</a>
                 </div>
             </div>
