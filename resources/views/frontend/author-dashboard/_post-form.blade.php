@@ -31,7 +31,7 @@
                             placeholder="auto-generated-from-title"
                             class="flex-1 h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none text-sm font-mono text-slate-900 dark:text-white">
                     </div>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Leave empty to auto-generate from the title.</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Auto-generated if empty.</p>
                 </div>
 
                 <div class="grid sm:grid-cols-2 gap-4 mt-4">

@@ -8,6 +8,10 @@
     <meta name="robots" content="noindex, nofollow">
     <link href="{{ \App\Support\SiteFont::googleUrl() }}" rel="stylesheet">
     {!! \App\Support\ViteAssets::tags(['resources/css/app.css', 'resources/js/app.js']) !!}
+    {{-- Root-level font rule: unlayered CSS always beats Tailwind's layered
+         preflight, so the admin-chosen font applies everywhere with no chance
+         of any stylesheet overriding it. --}}
+    <style>html{font-family:{!! \App\Support\SiteFont::cssStack() !!}</style>
     <script>
         (function(){
             var t = localStorage.getItem('huvanti-admin-theme') || 'light';

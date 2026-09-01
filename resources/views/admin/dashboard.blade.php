@@ -24,7 +24,7 @@
             </span>
         </div>
         <div class="stat-value">{{ number_format($stats['views']) }}</div>
-        <div class="mt-2 text-xs text-slate-500 dark:text-slate-400">All-time article views</div>
+        <div class="mt-2 text-xs text-slate-500 dark:text-slate-400">All-time</div>
     </div>
     <div class="stat-card">
         <div class="flex items-center justify-between">

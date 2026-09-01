@@ -16,7 +16,6 @@
             <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
         </div>
         <h2 class="text-xl font-bold text-[#101319] dark:text-white">“{{ \Illuminate\Support\Str::limit($post->title, 70) }}” is live!</h2>
-        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Copy the URL or share it straight to your socials.</p>
 
         {{-- URL box --}}
         <div class="mt-5 flex items-stretch gap-2 max-w-xl mx-auto">
@@ -36,7 +35,6 @@
         <div class="mt-6 flex justify-center">
             @include('partials.share-buttons', ['shareUrl' => $shareUrl, 'shareTitle' => $post->title])
         </div>
-        <p class="text-xs text-slate-400 dark:text-slate-500 mt-4">Icons open each network with your post pre-filled.</p>
     </div>
 
     {{-- Auto-post delivery log (only when automation is configured) --}}
@@ -66,7 +64,7 @@
                             <span class="font-medium text-slate-700 dark:text-slate-200">{{ \App\Models\SocialPublish::networkLabel($row->network) }}</span>
                             <span class="flex items-center gap-2 min-w-0">
                                 @if($row->status === 'success')
-                                    <span class="inline-flex items-center gap-1 text-[#1F513A] dark:text-[#6FB393] font-semibold text-xs"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>Published</span>
+                                    <span class="inline-flex items-center gap-1 text-[#1F513A] dark:text-[#6FB393] font-semibold text-xs"><svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>Published</span>
                                     @if($row->external_url)<a href="{{ $row->external_url }}" target="_blank" rel="noopener" class="text-xs text-[#1F513A] dark:text-[#6FB393] hover:underline">view</a>@endif
                                 @elseif($row->status === 'failed')
                                     <span class="text-red-600 dark:text-red-400 font-semibold text-xs" title="{{ $row->error }}">Failed — {{ \Illuminate\Support\Str::limit($row->error, 80) }}</span>

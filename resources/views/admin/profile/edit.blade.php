@@ -40,7 +40,6 @@
                     <p class="text-xs text-slate-400 mt-1">Locked. Profile at <code>/{{ $user->username }}</code></p>
                 @else
                     <input type="text" name="username" value="{{ old('username') }}" pattern="[a-z0-9._-]+" placeholder="pritam.sarkar" class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
-                    <p class="text-xs text-slate-400 mt-1">URL: /your-username. Cannot be changed.</p>
                 @endif
             </div>
         </div>
@@ -60,7 +59,6 @@
         </div>
         <div class="border-t border-slate-200 dark:border-slate-700 pt-4">
             <p class="text-sm font-medium mb-1">Social links</p>
-            <p class="text-xs text-slate-400 mb-3">Shown in the About-the-author card on your posts.</p>
             <div class="grid sm:grid-cols-2 gap-3">
                 @php
                     $rawLinks = $user->social_links;

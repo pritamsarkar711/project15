@@ -9,23 +9,14 @@
 @endsection
 
 @section('content')
-<div class="max-w-4xl space-y-5">
-
-    <div class="panel-card p-6">
-        <h3 class="font-semibold text-[#101319] dark:text-white">AI Assistant</h3>
-        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1.5">One-click SEO titles, descriptions, keywords, excerpts and FAQs inside the post editor. Works with any OpenAI-compatible API — keys stay encrypted on the server and models fail over automatically.</p>
-        <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">Free key: <a href="https://build.nvidia.com" target="_blank" rel="noopener" class="font-semibold text-[#1F513A] dark:text-[#6FB393] hover:underline">build.nvidia.com</a></p>
-    </div>
+<div class="space-y-5">
 
     <form method="POST" action="{{ route('admin.ai.update') }}" class="space-y-5">
         @csrf
 
         <div class="panel-card p-6 space-y-4">
-            <div class="flex items-start justify-between gap-4 flex-wrap">
-                <div>
-                    <h3 class="font-semibold text-[#101319] dark:text-white">Assistant</h3>
-                    <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Master switch for the whole AI feature.</p>
-                </div>
+            <div class="flex items-center justify-between gap-4 flex-wrap">
+                <h3 class="font-semibold text-[#101319] dark:text-white">Assistant</h3>
                 <label class="inline-flex items-center gap-2 cursor-pointer shrink-0">
                     <span class="relative inline-flex shrink-0">
                         <input type="checkbox" name="ai_assistant_enabled" value="1" {{ old('ai_assistant_enabled', $enabled ? '1' : '0') === '1' ? 'checked' : '' }} class="peer sr-only">
@@ -37,39 +28,41 @@
             </div>
             <label class="inline-flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300 cursor-pointer">
                 <input type="checkbox" name="ai_allow_authors" value="1" {{ old('ai_allow_authors', $allowAuthors ? '1' : '0') === '1' ? 'checked' : '' }} class="text-[#27654A]">
-                Allow authors (not just admins) to use the assistant
+                Allow authors
             </label>
         </div>
 
         <div class="panel-card p-6 space-y-4">
-            <h3 class="font-semibold text-[#101319] dark:text-white">Provider & API Key</h3>
-            <div>
-                <label class="text-sm font-medium">API base URL</label>
-                <input type="text" name="ai_api_base_url" value="{{ old('ai_api_base_url', $baseUrl) }}" placeholder="https://integrate.api.nvidia.com/v1" class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-mono">
-                <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">NVIDIA NIM: <code class="font-mono">https://integrate.api.nvidia.com/v1</code> · Groq: <code class="font-mono">https://api.groq.com/openai/v1</code> · OpenRouter: <code class="font-mono">https://openrouter.ai/api/v1</code> · OpenAI: <code class="font-mono">https://api.openai.com/v1</code></p>
+            <h3 class="font-semibold text-[#101319] dark:text-white">API Key</h3>
+            <div class="grid sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="text-sm font-medium">API base URL</label>
+                    <input type="text" name="ai_api_base_url" value="{{ old('ai_api_base_url', $baseUrl) }}" placeholder="https://integrate.api.nvidia.com/v1" class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-mono">
+                </div>
+                <div>
+                    <label class="text-sm font-medium">Daily limit per user (0 = blocked)</label>
+                    <input type="number" name="ai_daily_limit" min="0" max="1000" value="{{ old('ai_daily_limit', $dailyLimit) }}" class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
+                </div>
             </div>
             <div>
                 <label class="text-sm font-medium">API key</label>
                 <div class="mt-1 flex items-center gap-2">
-                    <input type="password" name="ai_api_key" placeholder="{{ $keyHint ?: 'nvapi-… (paste your key)' }}" autocomplete="new-password" class="flex-1 h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-mono">
+                    <input type="password" name="ai_api_key" placeholder="{{ $keyHint ?: 'nvapi-…' }}" autocomplete="new-password" class="flex-1 h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-mono">
                     @if($hasKey)
                         <label class="inline-flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 shrink-0">
                             <input type="checkbox" name="remove_ai_api_key" value="1" class="text-[#27654A]"> Remove
                         </label>
                     @endif
                 </div>
-                <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">{{ $hasKey ? 'Key saved (encrypted). Leave blank to keep it.' : 'No key saved yet.' }}</p>
-            </div>
-            <div>
-                <label class="text-sm font-medium">Daily limit per user</label>
-                <input type="number" name="ai_daily_limit" min="0" max="1000" value="{{ old('ai_daily_limit', $dailyLimit) }}" class="mt-1 w-40 h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
-                <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">Generations per user per day. 0 = blocked.</p>
+                @if(!$hasKey)
+                    <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">Free key: <a href="https://build.nvidia.com" target="_blank" rel="noopener" class="text-[#1F513A] dark:text-[#6FB393] hover:underline">build.nvidia.com</a></p>
+                @endif
             </div>
         </div>
 
         <div class="panel-card p-6 space-y-3">
             <h3 class="font-semibold text-[#101319] dark:text-white">Models (priority order)</h3>
-            <p class="text-xs text-slate-500 dark:text-slate-400">One per line — on failure the next model takes over. Browse IDs at <a href="https://build.nvidia.com/models" target="_blank" rel="noopener" class="text-[#1F513A] dark:text-[#6FB393] hover:underline">build.nvidia.com/models</a>.</p>
+            <p class="text-xs text-slate-500 dark:text-slate-400">One per line — first available model wins.</p>
             <textarea name="ai_models" rows="7" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-mono">{{ old('ai_models', $models) }}</textarea>
         </div>
 
@@ -79,10 +72,7 @@
     {{-- Model test bench --}}
     <div class="panel-card p-6">
         <div class="flex items-center justify-between gap-3 flex-wrap">
-            <div>
-                <h3 class="font-semibold text-[#101319] dark:text-white">Model Health Check</h3>
-                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Saves settings, then pings each model.</p>
-            </div>
+            <h3 class="font-semibold text-[#101319] dark:text-white">Model Health Check</h3>
             <button type="button" id="ai-test-btn" class="h-10 px-5 rounded-lg border border-[#2E7856]/50 text-[#2E7856] dark:text-[#6FB393] font-semibold text-sm hover:bg-[#2E7856]/5 transition">Test all models</button>
         </div>
         <div id="ai-test-results" class="mt-4 hidden space-y-2"></div>

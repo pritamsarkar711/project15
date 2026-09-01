@@ -79,7 +79,6 @@
                         @endforeach
                     </select>
                 </div>
-                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Optional. Shown with a flag icon.</p>
             </div>
         </div>
         <button type="submit" class="mt-5 h-11 px-6 rounded-lg bg-[#2E7856] hover:bg-[#27654A] text-white font-semibold text-sm transition">Save profile</button>
@@ -98,7 +97,6 @@
                 </div>
             @endforeach
         </div>
-        <p class="text-xs text-slate-500 dark:text-slate-400 mt-3">Leave blank to hide an icon.</p>
     </div>
 </form>
 
@@ -162,7 +160,6 @@
         <div class="p-4 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex flex-wrap items-center justify-between gap-3">
             <div>
                 <span class="text-sm font-semibold text-slate-600 dark:text-slate-300 block">Disabled</span>
-                <span class="text-xs text-slate-500 dark:text-slate-400">Extra protection for your account.</span>
             </div>
             <form method="POST" action="{{ route('author.2fa.start') }}">@csrf
                 <button type="submit" class="h-9 px-4 rounded-lg bg-[#2E7856] hover:bg-[#27654A] text-white text-sm font-semibold transition">Enable 2FA</button>
