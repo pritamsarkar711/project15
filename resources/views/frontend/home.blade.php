@@ -30,7 +30,7 @@
     $heroImgSetting = setting('hero_person_image');
     $heroImgUrl = $heroImgSetting ? asset('storage/'.$heroImgSetting) : asset('images/hero-person-harry.png');
 @endphp
-<section class="relative overflow-hidden bg-[#173A2A] dark:bg-[#0F261C] text-white">
+<section class="hero-band relative overflow-hidden bg-[#173A2A] dark:bg-[#0F261C] text-white">
     <div class="max-w-[1200px] mx-auto px-4 sm:px-6 relative">
         <div class="grid lg:grid-cols-2 gap-0 lg:gap-8 items-end">
             <!-- Left: hero image — hidden on mobile, grounded on desktop -->
@@ -136,12 +136,12 @@
         <div class="grid lg:grid-cols-12 gap-4 mt-7 mb-4">
             @php $big = $featuredPosts->first(); @endphp
             <a href="{{ route('blog.show',$big->slug) }}" class="lg:col-span-7 group relative overflow-hidden bg-[#173A2A] min-h-[360px] flex flex-col justify-end p-7 rounded-2xl">
-                <img src="{{ storage_image_url($big->featured_image) ?: 'https://picsum.photos/seed/'.$big->slug.'/900/600' }}" alt="{{ image_alt_text($big->featured_image, $big->title) }}" class="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:opacity-60 group-hover:scale-[1.02] transition duration-300" loading="lazy" decoding="async">
+                <img src="{{ storage_image_url($big->featured_image) ?: 'https://picsum.photos/seed/'.$big->slug.'/900/600' }}" alt="{{ image_alt_text($big->featured_image, $big->title) }}" class="img-fade absolute inset-0 w-full h-full object-cover opacity-70 group-hover:opacity-60 group-hover:scale-[1.02] transition duration-300" loading="lazy" decoding="async" onload="this.classList.add('img-loaded')" onerror="this.onerror=null;this.style.display='none'">
                 <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
                 <div class="relative">
                     <div class="flex items-center gap-2 mb-3 flex-wrap">
                         <span class="badge badge-ink">{{ $big->category->name ?? 'Featured' }}</span>
-                        <span class="text-xs text-white/85">{{ $big->published_at?->format('M d, Y') }} <span class="w-1 h-1 bg-white/50 inline-block mx-1 align-middle rounded-full"></span> {{ $big->reading_time }} min read</span>
+                        <span class="text-xs text-white/85"><span class="tabular-nums">{{ $big->published_at?->format('M d, Y') }}</span> <span class="w-1 h-1 bg-white/50 inline-block mx-1 align-middle rounded-full"></span> <span class="tabular-nums">{{ $big->reading_time }} min read</span></span>
                     </div>
                     <h3 class="text-[23px] font-bold leading-snug text-white tracking-[-0.015em]">{{ $big->title }}</h3>
                     <p class="text-sm text-white/75 mt-2.5 line-clamp-2 max-w-[540px]">{{ $big->excerpt }}</p>
@@ -154,11 +154,11 @@
                 </div>
                 @foreach($featuredPosts->skip(1)->take(2) as $fp)
                     <a href="{{ route('blog.show',$fp->slug) }}" class="group flex gap-4 items-center p-4 hover:bg-[#f8f9fb] dark:hover:bg-[#1c1f26] transition">
-                        <img src="{{ storage_image_url($fp->featured_image) ?: 'https://picsum.photos/seed/'.$fp->slug.'/400/300' }}" class="w-[96px] h-[80px] object-cover shrink-0 rounded-lg border border-[#eef0f4] dark:border-[#2c313c]" alt="{{ image_alt_text($fp->featured_image, $fp->title) }}" loading="lazy" decoding="async">
+                        <img src="{{ storage_image_url($fp->featured_image) ?: 'https://picsum.photos/seed/'.$fp->slug.'/400/300' }}" class="img-fade w-[96px] h-[80px] object-cover shrink-0 rounded-lg border border-[#eef0f4] dark:border-[#2c313c]" alt="{{ image_alt_text($fp->featured_image, $fp->title) }}" loading="lazy" decoding="async" onload="this.classList.add('img-loaded')" onerror="this.onerror=null;this.style.display='none'">
                         <span class="flex flex-col min-w-0">
                             <span class="text-[11px] font-bold text-[#2E7856] dark:text-[#6FB393] uppercase tracking-[0.06em]">{{ $fp->category->name ?? 'Story' }}</span>
                             <span class="text-[14.5px] font-semibold text-slate-900 dark:text-white leading-snug mt-1 line-clamp-2 group-hover:text-[#2E7856] dark:group-hover:text-[#6FB393] transition-colors">{{ $fp->title }}</span>
-                            <span class="text-xs text-slate-400 dark:text-slate-500 mt-auto pt-2">{{ $fp->published_at?->format('M d') }} <span class="w-1 h-1 bg-slate-300 dark:bg-slate-600 inline-block mx-1 align-middle rounded-full"></span> {{ $fp->reading_time }} min read</span>
+                            <span class="text-xs text-slate-400 dark:text-slate-500 mt-auto pt-2"><span class="tabular-nums">{{ $fp->published_at?->format('M d') }}</span> <span class="w-1 h-1 bg-slate-300 dark:bg-slate-600 inline-block mx-1 align-middle rounded-full"></span> <span class="tabular-nums">{{ $fp->reading_time }} min read</span></span>
                         </span>
                     </a>
                 @endforeach
@@ -173,7 +173,7 @@
         @foreach($latestPosts as $lp)
             <article class="group card-elev card-hover overflow-hidden flex flex-col">
                 <a href="{{ route('blog.show',$lp->slug) }}" class="relative h-[185px] overflow-hidden block">
-                    <img src="{{ storage_image_url($lp->featured_image) ?: 'https://picsum.photos/seed/'.$lp->slug.'/600/400' }}" alt="{{ image_alt_text($lp->featured_image, $lp->title) }}" class="w-full h-full object-cover group-hover:scale-[1.03] transition duration-300" loading="lazy" decoding="async">
+                    <img src="{{ storage_image_url($lp->featured_image) ?: 'https://picsum.photos/seed/'.$lp->slug.'/600/400' }}" alt="{{ image_alt_text($lp->featured_image, $lp->title) }}" class="img-fade w-full h-full object-cover group-hover:scale-[1.03] transition duration-300" loading="lazy" decoding="async" onload="this.classList.add('img-loaded')" onerror="this.onerror=null;this.style.display='none'">
                     @if($lp->is_featured)<span class="absolute top-3 right-3 badge" style="background:#F5C445;color:#16181d;">Popular</span>@endif
                 </a>
                 <div class="p-5 flex flex-col flex-1">
@@ -184,7 +184,7 @@
                     <p class="text-[13.5px] text-slate-500 dark:text-slate-400 mt-2.5 leading-relaxed line-clamp-2">{{ $lp->excerpt }}</p>
                     <div class="mt-auto pt-4 flex items-center gap-2 text-xs text-slate-400 dark:text-slate-500">
                         <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2"/></svg>
-                        <span>{{ $lp->published_at?->format('M d, Y') }}</span>
+                        <span class="tabular-nums">{{ $lp->published_at?->format('M d, Y') }}</span>
                         <span class="w-1 h-1 bg-slate-300 dark:bg-slate-600 rounded-full"></span>
                         <span>{{ $lp->reading_time }} min read</span>
                         <svg class="w-4 h-4 ml-auto text-slate-300 dark:text-slate-600 group-hover:text-[#2E7856] group-hover:translate-x-0.5 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-6-6 6 6-6 6"/></svg>

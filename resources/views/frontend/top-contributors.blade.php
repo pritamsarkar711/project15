@@ -36,7 +36,7 @@
                 <article class="card-elev card-hover p-5 flex items-start gap-4">
                     <div class="relative shrink-0">
                         @if($avatar)
-                            <img src="{{ $avatar }}" alt="{{ $author->name }}" class="w-14 h-14 rounded-full object-cover border border-[#e6e8ee] dark:border-[#2c313c]" loading="lazy" decoding="async">
+                            <img src="{{ $avatar }}" alt="{{ $author->name }}" class="w-14 h-14 rounded-full object-cover border border-[#e6e8ee] dark:border-[#2c313c]" loading="lazy" decoding="async" onerror="this.style.display='none'">
                         @else
                             <div class="avatar w-14 h-14 !bg-[#173A2A] dark:!bg-[#E9F2EE] text-white dark:text-[#173A2A] font-extrabold text-lg">{{ strtoupper(substr($author->name, 0, 1)) }}</div>
                         @endif
