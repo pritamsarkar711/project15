@@ -253,6 +253,11 @@ textarea:focus-visible, summary:focus-visible, [tabindex]:focus-visible,
     border: 1px solid #e6e8ee;
     border-radius: var(--radius-xl);
 }
+
+/* ---------- Live SEO score panel (rendered by public/js/seo-analyzer.js) ---------- */
+.seo-ring-track { stroke: #e6e8ee; }
+.dark .seo-ring-track { stroke: #262a33; }
+
 .dark .panel-card { background: #16181d; border-color: #262a33; }
 
 /* ---------- Right-rail widget ---------- */

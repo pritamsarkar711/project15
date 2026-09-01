@@ -107,27 +107,32 @@
         var color = scoreColor(result.score);
         var circumference = 2 * Math.PI * 26;
         var offset = circumference * (1 - result.score / 100);
+        // Markup uses theme-aware Tailwind classes already on the page, so the
+        // panel follows the site's light/dark design system automatically.
         var html = '' +
-            '<div class="seo-card" style="border:1px solid #e6e8ee;border-radius:12px;background:#fff;padding:18px;font-size:13px;line-height:1.5;">' +
-            '<div style="display:flex;align-items:center;gap:14px;">' +
-            '<svg width="64" height="64" viewBox="0 0 64 64" style="flex:none;transform:rotate(-90deg);">' +
-            '<circle cx="32" cy="32" r="26" fill="none" stroke="#e6e8ee" stroke-width="7"/>' +
+            '<div class="seo-card rounded-[10px] border border-[#e6e8ee] dark:border-[#262a33] bg-white dark:bg-[#101319] p-4 text-[13px] leading-relaxed">' +
+            '<div class="flex items-center gap-4">' +
+            '<div class="relative w-16 h-16 shrink-0">' +
+            '<svg width="64" height="64" viewBox="0 0 64 64" class="block" style="transform:rotate(-90deg);">' +
+            '<circle cx="32" cy="32" r="26" fill="none" stroke="#e6e8ee" class="seo-ring-track" stroke-width="7"/>' +
             '<circle cx="32" cy="32" r="26" fill="none" stroke="' + color + '" stroke-width="7" stroke-linecap="round" stroke-dasharray="' + circumference.toFixed(1) + '" stroke-dashoffset="' + offset.toFixed(1) + '"/>' +
             '</svg>' +
-            '<div style="position:absolute;margin-left:-56px;margin-top:-2px;width:56px;text-align:center;font-weight:800;font-size:18px;color:' + color + ';">' + result.score + '</div>' +
-            '<div style="min-width:0;">' +
-            '<div style="font-weight:700;color:' + color + ';">SEO Score: ' + scoreLabel(result.score) + '</div>' +
-            '<div style="color:#64748b;font-size:12px;margin-top:2px;">' + (result.hasKeyword ? 'Target keyword set · ' : 'Set a focus keyword to unlock full scoring · ') + result.words + ' words' + '</div>' +
+            '<div class="absolute inset-0 flex items-center justify-center font-extrabold text-[17px]" style="color:' + color + ';">' + result.score + '</div>' +
+            '</div>' +
+            '<div class="min-w-0">' +
+            '<div class="font-bold" style="color:' + color + ';">SEO Score: ' + scoreLabel(result.score) + '</div>' +
+            '<div class="text-slate-500 dark:text-slate-400 text-xs mt-0.5">' + (result.hasKeyword ? 'Focus keyword set · ' : 'Add a focus keyword to unlock full scoring · ') + result.words + ' words' + '</div>' +
             '</div>' +
             '</div>' +
-            '<ul style="margin:12px 0 0;padding:0;list-style:none;display:grid;gap:6px;">';
+            '<ul class="mt-3 pt-3 border-t border-[#eef0f4] dark:border-[#22262e] m-0 p-0 list-none grid gap-1.5">';
         result.checks.forEach(function (c) {
-            var dot = c.ok === null ? '#94a3b8' : (c.ok ? '#16a34a' : '#dc2626');
-            var mark = c.ok === null ? '•' : (c.ok ? '✓' : '✕');
-            html += '<li style="display:flex;gap:8px;align-items:flex-start;">' +
-                '<span style="flex:none;width:16px;height:16px;border-radius:50%;background:' + dot + ';color:#fff;font-size:10px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;margin-top:2px;">' + mark + '</span>' +
-                '<span style="color:' + (c.ok === false ? '#334155' : '#475569') + ';">' + escapeHtml(c.label) +
-                (c.hint ? '<span style="display:block;color:#94a3b8;font-size:11.5px;">' + escapeHtml(c.hint) + '</span>' : '') +
+            var passed = c.ok === true;
+            var mark = c.ok === null ? '–' : (passed ? '✓' : '✕');
+            var dotCls = c.ok === null ? 'bg-slate-300 dark:bg-slate-600' : (passed ? 'bg-green-600' : 'bg-red-500');
+            html += '<li class="flex gap-2 items-start">' +
+                '<span class="shrink-0 w-4 h-4 rounded-full text-white text-[10px] font-bold inline-flex items-center justify-center mt-0.5 ' + dotCls + '">' + mark + '</span>' +
+                '<span class="text-slate-600 dark:text-slate-300">' + escapeHtml(c.label) +
+                (c.hint ? '<span class="block text-slate-400 dark:text-slate-500 text-[11.5px]">' + escapeHtml(c.hint) + '</span>' : '') +
                 '</span></li>';
         });
         html += '</ul></div>';

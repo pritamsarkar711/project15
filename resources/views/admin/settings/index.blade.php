@@ -73,12 +73,12 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
             <p class="text-sm text-slate-600 dark:text-slate-400">
                 @if($indexNowKey)
                     <span class="inline-flex items-center gap-1.5 font-semibold text-[#1F513A] dark:text-[#6FB393]"><svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Active</span>
-                    — every publish/update/delete is pinged to Bing, Yandex, Seznam & Naver automatically within seconds. You can also trigger a manual ping per post from the Posts list ("Index now") and authors can do the same from their dashboard.
+                    — publish, update and delete events are pinged to Bing, Yandex, Seznam &amp; Naver automatically. Manual "Index now" buttons are available in the posts lists.
                 @else
-                    <span class="font-semibold text-amber-600 dark:text-amber-400">Not configured</span> — set <code class="font-mono bg-slate-100 dark:bg-slate-800 px-1">INDEXNOW_KEY</code> in your .env to enable automatic pinging.
+                    <span class="font-semibold text-amber-600 dark:text-amber-400">Not configured</span> — set <code class="font-mono bg-slate-100 dark:bg-slate-800 px-1">INDEXNOW_KEY</code> in your .env to enable.
                 @endif
             </p>
-            <p class="text-xs text-slate-500 dark:text-slate-500">Ownership key file: <a href="{{ url($indexNowKey ? $indexNowKey.'.txt' : '') }}" target="_blank" class="font-mono text-[#1F513A] dark:text-[#6FB393] hover:underline">{{ url($indexNowKey ? $indexNowKey.'.txt' : '/{key}.txt') }}</a> · Note: Google does not participate in IndexNow; Google discovers pages via your sitemap (auto-pinged on publish).</p>
+            <p class="text-xs text-slate-500">Ownership key file: <a href="{{ url($indexNowKey ? $indexNowKey.'.txt' : '') }}" target="_blank" class="font-mono text-[#1F513A] dark:text-[#6FB393] hover:underline break-all">{{ url($indexNowKey ? $indexNowKey.'.txt' : '/{key}.txt') }}</a> · Google does not use IndexNow; it discovers pages via your sitemap.</p>
         </div>
 
         <div class="panel-card p-6 space-y-4">
@@ -93,7 +93,7 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
                     <span class="text-sm font-medium {{ ($settings['google_enabled']->value ?? '0') === '1' ? 'text-[#1F513A] dark:text-[#6FB393]' : 'text-slate-500' }}">{{ ($settings['google_enabled']->value ?? '0') === '1' ? 'Enabled' : 'Disabled' }}</span>
                 </label>
             </div>
-            <p class="text-xs text-slate-500 dark:text-slate-400">Sign-in with Google. Create credentials at <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener" class="text-[#1F513A] dark:text-[#6FB393] hover:underline">Google Cloud Console</a>. Redirect URI: <span class="font-mono bg-slate-100 dark:bg-slate-800 px-1">{{ url('/auth/google/callback') }}</span></p>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Sign in with Google. Credentials: <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener" class="text-[#1F513A] dark:text-[#6FB393] hover:underline">Google Cloud Console</a> · Redirect URI: <span class="font-mono bg-slate-100 dark:bg-slate-800 px-1">{{ url('/auth/google/callback') }}</span></p>
             <div class="grid sm:grid-cols-2 gap-4">
                 <div>
                     <label class="text-sm font-medium">Client ID</label>

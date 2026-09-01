@@ -7,7 +7,7 @@
         <div class="flex items-start justify-between gap-4">
             <div>
                 <div class="text-lg font-bold text-slate-900 dark:text-white">{{ $feedback->user->name ?? 'Unknown' }}</div>
-                <div class="text-sm text-slate-500 dark:text-slate-400">{{ $feedback->user->email ?? '' }} · {{ $feedback->created_at->format('M d, Y H:i') }}</div>
+                <div class="text-sm text-slate-500 dark:text-slate-400"><span class="break-all">{{ $feedback->user->email ?? '' }}</span> · {{ $feedback->created_at->format('M d, Y H:i') }}</div>
             </div>
             <form method="POST" action="{{ route('admin.feedback.destroy', $feedback) }}" onsubmit="return confirm('Remove this feedback?')">
                 @csrf @method('DELETE')

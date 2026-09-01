@@ -12,15 +12,9 @@
 <div class="max-w-4xl space-y-5">
 
     <div class="panel-card p-6">
-        <h3 class="font-semibold text-[#101319] dark:text-white">How the AI Assistant works</h3>
-        <p class="text-sm text-slate-500 dark:text-slate-400 mt-2">
-            Authors get a writing helper inside the post editor: one-click SEO meta titles, meta descriptions, focus keywords, excerpts, FAQs and a free-form "Ask AI" box. You connect the brain here — any OpenAI-compatible API works.
-        </p>
-        <ul class="mt-3 text-sm text-slate-600 dark:text-slate-300 list-disc pl-5 space-y-1">
-            <li><strong>Default provider: NVIDIA NIM</strong> — grab a FREE API key at <a href="https://build.nvidia.com" target="_blank" rel="noopener" class="text-[#1F513A] dark:text-[#6FB393] hover:underline">build.nvidia.com</a> (sign in → pick any model → "Get API Key"). Includes the popular Llama / Mistral / Gemma / Qwen models.</li>
-            <li><strong>Auto model switching:</strong> list several models below — if one is busy or rate-limited, the assistant automatically falls through to the next working model. Nothing for you to maintain.</li>
-            <li><strong>Secure by design:</strong> the key is stored <strong>encrypted</strong> on the server and is never exposed to authors' browsers. All AI calls go through your server with per-user daily limits.</li>
-        </ul>
+        <h3 class="font-semibold text-[#101319] dark:text-white">AI Assistant</h3>
+        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1.5">One-click SEO titles, descriptions, keywords, excerpts and FAQs inside the post editor. Works with any OpenAI-compatible API — keys stay encrypted on the server and models fail over automatically.</p>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">Free key: <a href="https://build.nvidia.com" target="_blank" rel="noopener" class="font-semibold text-[#1F513A] dark:text-[#6FB393] hover:underline">build.nvidia.com</a></p>
     </div>
 
     <form method="POST" action="{{ route('admin.ai.update') }}" class="space-y-5">
@@ -64,20 +58,19 @@
                         </label>
                     @endif
                 </div>
-                <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">{{ $hasKey ? 'A key is saved (encrypted). Leave blank to keep it.' : 'No key saved yet.' }} Free NVIDIA key: build.nvidia.com → any model page → "Get API Key".</p>
+                <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">{{ $hasKey ? 'Key saved (encrypted). Leave blank to keep it.' : 'No key saved yet.' }}</p>
             </div>
             <div>
                 <label class="text-sm font-medium">Daily limit per user</label>
                 <input type="number" name="ai_daily_limit" min="0" max="1000" value="{{ old('ai_daily_limit', $dailyLimit) }}" class="mt-1 w-40 h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
-                <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">Generations a user can run per day (protects your API quota). 0 = block everyone.</p>
+                <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">Generations per user per day. 0 = blocked.</p>
             </div>
         </div>
 
         <div class="panel-card p-6 space-y-3">
-            <h3 class="font-semibold text-[#101319] dark:text-white">Models (priority order — auto failover)</h3>
-            <p class="text-xs text-slate-500 dark:text-slate-400">One model per line. The assistant tries the first, then falls through on failure/timeout/rate-limit. Popular NVIDIA NIM models are pre-filled.</p>
+            <h3 class="font-semibold text-[#101319] dark:text-white">Models (priority order)</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400">One per line — on failure the next model takes over. Browse IDs at <a href="https://build.nvidia.com/models" target="_blank" rel="noopener" class="text-[#1F513A] dark:text-[#6FB393] hover:underline">build.nvidia.com/models</a>.</p>
             <textarea name="ai_models" rows="7" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-mono">{{ old('ai_models', $models) }}</textarea>
-            <p class="text-xs text-slate-500 dark:text-slate-500">Browse all available models at <a href="https://build.nvidia.com/models" target="_blank" rel="noopener" class="text-[#1F513A] dark:text-[#6FB393] hover:underline">build.nvidia.com/models</a> — copy each model's ID (e.g. <code class="font-mono">meta/llama-3.3-70b-instruct</code>).</p>
         </div>
 
         <button type="submit" class="h-11 px-6 rounded-lg bg-[#2E7856] hover:bg-[#27654A] text-white font-semibold transition">Save AI Settings</button>
@@ -88,7 +81,7 @@
         <div class="flex items-center justify-between gap-3 flex-wrap">
             <div>
                 <h3 class="font-semibold text-[#101319] dark:text-white">Model Health Check</h3>
-                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Saves your settings first — then pings each model and reports which ones work right now.</p>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Saves settings, then pings each model.</p>
             </div>
             <button type="button" id="ai-test-btn" class="h-10 px-5 rounded-lg border border-[#2E7856]/50 text-[#2E7856] dark:text-[#6FB393] font-semibold text-sm hover:bg-[#2E7856]/5 transition">Test all models</button>
         </div>

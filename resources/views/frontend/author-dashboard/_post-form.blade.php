@@ -92,6 +92,18 @@
                 </div>
                 <button type="button" onclick="addFaq()" class="mt-3 text-sm font-semibold text-[#1F513A] dark:text-[#6FB393] hover:underline">Add another FAQ</button>
             </div>
+
+            {{-- SEO: required section, sits directly below the FAQ --}}
+            <div class="panel-card p-6">
+                <h3 class="font-semibold mb-3 text-slate-900 dark:text-white">SEO *</h3>
+                <label class="text-sm font-medium text-slate-900 dark:text-white">Meta title</label>
+                <input type="text" name="meta_title" required value="{{ old('meta_title', $isEdit ? $post->meta_title : '') }}" maxlength="255" class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white">
+                <label class="text-sm font-medium mt-4 block text-slate-900 dark:text-white">Meta description</label>
+                <textarea name="meta_description" required rows="3" maxlength="500" class="mt-1 w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white">{{ old('meta_description', $isEdit ? $post->meta_description : '') }}</textarea>
+            </div>
+
+            {{-- Focus keyword + live SEO score + AI assistant (same suite as the admin editor) --}}
+            @include('partials.seo-ai-panel', ['post' => $isEdit ? $post : null, 'aiEndpoint' => route('author.ai.generate'), 'aiEnabled' => app(\App\Services\Ai\AiAssistantService::class)->enabled()])
         </div>
 
         <div class="lg:col-span-4 space-y-5">
@@ -154,17 +166,6 @@
                 </label>
             </div>
 
-            {{-- SEO: required section, always visible --}}
-            <div class="panel-card p-6">
-                <h3 class="font-semibold mb-3 text-slate-900 dark:text-white">SEO *</h3>
-                <label class="text-sm font-medium text-slate-900 dark:text-white">Meta title</label>
-                <input type="text" name="meta_title" required value="{{ old('meta_title', $isEdit ? $post->meta_title : '') }}" maxlength="255" class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white">
-                <label class="text-sm font-medium mt-3 block text-slate-900 dark:text-white">Meta description</label>
-                <textarea name="meta_description" required rows="3" maxlength="500" class="mt-1 w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white">{{ old('meta_description', $isEdit ? $post->meta_description : '') }}</textarea>
-            </div>
-
-            {{-- Focus keyword + live SEO score + AI assistant (same suite as the admin editor) --}}
-            @include('partials.seo-ai-panel', ['post' => $isEdit ? $post : null, 'aiEndpoint' => route('author.ai.generate'), 'aiEnabled' => app(\App\Services\Ai\AiAssistantService::class)->enabled()])
         </div>
     </div>
 </form>

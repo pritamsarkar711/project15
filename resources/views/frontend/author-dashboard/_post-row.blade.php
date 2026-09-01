@@ -28,7 +28,7 @@ $reviewBadge = match($post->review_status) {
             </div>
         @endif
     </div>
-    <div class="flex items-center gap-1">
+    <div class="flex flex-wrap items-center gap-1 shrink-0">
         @if($post->review_status === 'draft' || $post->review_status === 'returned')
             <a href="{{ route('author.posts.edit', $post->id) }}" class="px-3 h-9 inline-flex items-center text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800">Edit</a>
             <form method="POST" action="{{ route('author.posts.submit', $post->id) }}">@csrf

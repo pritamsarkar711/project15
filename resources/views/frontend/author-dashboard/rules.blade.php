@@ -11,7 +11,7 @@
             </div>
             <div>
                 <h2 class="text-xl font-bold text-slate-900 dark:text-white">Posting Rules</h2>
-                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">Every post is reviewed by an admin before it goes live. Follow these rules to be published quickly. Posts that break them are returned with a note or removed.</p>
+                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">Every post is reviewed before it goes live. Breaking a rule gets it returned with a note, or removed.</p>
             </div>
         </div>
     </div>
@@ -24,7 +24,7 @@
                 </span>
                 <h3 class="font-semibold text-slate-900 dark:text-white">Write for real readers</h3>
             </div>
-            <p class="text-sm text-slate-600 dark:text-slate-400 mt-3 leading-relaxed">Use your own words and experience. The final post must sound like a person wrote it. Generic filler and repetitive phrasing will be returned for a rewrite.</p>
+            <p class="text-sm text-slate-600 dark:text-slate-400 mt-3 leading-relaxed">Write in your own words — generic filler is returned for a rewrite.</p>
         </div>
 
         <div class="panel-card p-5">
@@ -104,7 +104,7 @@
                 </span>
                 <h3 class="font-semibold text-slate-900 dark:text-white">How review works</h3>
             </div>
-            <p class="text-sm text-slate-600 dark:text-slate-400 mt-3 leading-relaxed">Submitted posts queue for admin review. An admin may approve, edit or return a post with a note. Address the note and resubmit. Published posts are then locked for further edits.</p>
+            <p class="text-sm text-slate-600 dark:text-slate-400 mt-3 leading-relaxed">Admins approve, edit or return posts with a note. Fix the note and resubmit. Published posts are locked.</p>
         </div>
     </div>
 
@@ -125,7 +125,7 @@
 
     <div class="border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 p-5 mt-4 text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
         <span class="font-semibold text-slate-900 dark:text-white">About your account</span>
-        You can delete it at any time from your <a href="{{ route('author.profile.edit') }}" class="text-[#1F513A] dark:text-[#6FB393] hover:underline font-semibold">Profile</a> page. Drafts and returned posts are removed with it, while published posts stay online under a former author name.
+        Delete it anytime from your <a href="{{ route('author.profile.edit') }}" class="text-[#1F513A] dark:text-[#6FB393] hover:underline font-semibold">Profile</a>. Drafts go with it; published posts stay online.
     </div>
 
     <div class="mt-6 flex flex-wrap items-center gap-3">

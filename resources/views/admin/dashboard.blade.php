@@ -85,7 +85,7 @@
             <div class="divide-y divide-slate-100 dark:divide-slate-800">
                 @forelse($recentComments as $c)
                     <div class="py-3">
-                        <div class="flex items-center gap-2 text-sm">
+                        <div class="flex flex-wrap items-center gap-2 text-sm">
                             @if($c->parent_id)
                                 <svg class="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m15 10 5 5-5 5"/><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v7a4 4 0 0 0 4 4h12"/></svg>
                             @endif
@@ -102,8 +102,8 @@
         </div>
     </div>
 
-    <div>
-        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-[0_1px_4px_rgba(15,23,42,0.05)]">
+    <div class="space-y-5">
+        <div class="panel-card p-5">
             <h3 class="font-semibold text-slate-900 dark:text-white">Quick Actions</h3>
             <div class="mt-4 grid grid-cols-2 gap-2.5">
                 <a href="{{ route('admin.posts.create') }}" class="group flex flex-col items-start gap-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/40 p-3.5 hover:border-[#2E7856]/50 hover:bg-white dark:hover:bg-slate-800 transition">
@@ -129,6 +129,24 @@
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
                     </span>
                     <span class="text-sm font-semibold text-slate-700 dark:text-slate-200 group-hover:text-[#27654A] dark:group-hover:text-[#6FB393] transition">Profile</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="panel-card p-5">
+            <h3 class="font-semibold text-slate-900 dark:text-white">Automation</h3>
+            <div class="mt-3 space-y-1.5 text-sm">
+                <a href="{{ route('admin.social.index') }}" class="flex items-center gap-2.5 px-2 py-2 -mx-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-[#f2f4f8] dark:hover:bg-[#1c1f26] hover:text-[#101319] dark:hover:text-white transition">
+                    <svg class="w-4 h-4 shrink-0 text-[#2E7856] dark:text-[#6FB393]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path stroke-linecap="round" stroke-linejoin="round" d="m8.59 13.51 6.83 3.98m-.01-10.98-6.82 3.98"/></svg>
+                    Social Auto-Post
+                </a>
+                <a href="{{ route('admin.ai.index') }}" class="flex items-center gap-2.5 px-2 py-2 -mx-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-[#f2f4f8] dark:hover:bg-[#1c1f26] hover:text-[#101319] dark:hover:text-white transition">
+                    <svg class="w-4 h-4 shrink-0 text-[#2E7856] dark:text-[#6FB393]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z"/></svg>
+                    AI Assistant
+                </a>
+                <a href="{{ route('admin.settings.index', ['tab' => 'integrations']) }}" class="flex items-center gap-2.5 px-2 py-2 -mx-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-[#f2f4f8] dark:hover:bg-[#1c1f26] hover:text-[#101319] dark:hover:text-white transition">
+                    <svg class="w-4 h-4 shrink-0 text-[#2E7856] dark:text-[#6FB393]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19.5v-15m0 0-6.75 6.75M12 4.5l6.75 6.75"/></svg>
+                    Instant Indexing
                 </a>
             </div>
         </div>
