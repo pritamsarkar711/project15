@@ -1,6 +1,0 @@
-{
-  "name": "Huvanti",
-  "description": "An independent digital publication covering technology, wellness, finance, travel, lifestyle, and education.",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}

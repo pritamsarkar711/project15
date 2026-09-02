@@ -3,7 +3,7 @@
 
 set -Eeuo pipefail
 
-readonly DEPLOYMENT="2026-08-24-hostinger-launch-v3"
+readonly DEPLOYMENT="v69-2026-09-03-revert-arena-pr69-repo-cleanup"
 echo "=== Huvanti ${DEPLOYMENT} post-deploy ==="
 
 php -v

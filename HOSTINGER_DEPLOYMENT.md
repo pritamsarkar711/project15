@@ -1,14 +1,18 @@
 # Huvanti — Hostinger deployment and recovery
 
-Huvanti is packaged for Hostinger shared hosting without running Composer or npm
-on the server. The repository intentionally includes `vendor/` and
-`public/build/` and intentionally does **not** include `composer.json` or
-`composer.lock` at the repository root.
+Huvanti is packaged for Hostinger shared hosting without requiring Composer or
+npm on the server. The repository intentionally includes `vendor/` and
+`public/build/`. The root `composer.json` and `composer.lock` are also tracked
+on purpose: Hostinger's Git auto-deploy detects them and runs `composer install`
+with the correct dependency list, which keeps the generated autoloader valid.
+The committed `vendor/` tree stays in place as a fallback for checkouts where
+Composer is unavailable or fails, and `bootstrap/autoload_backup/` provides a
+pristine set of generated loader files for self-repair.
 
 Current deployment marker:
 
 ```text
-2026-08-27-fix-footer-500-v45
+v69-2026-09-03-revert-arena-pr69-repo-cleanup
 ```
 
 ## "I pushed to GitHub but my site didn't change" — read this first
@@ -62,12 +66,12 @@ Press `Ctrl + Shift + R` (Windows) or `Cmd + Shift + R` (Mac). Browsers cache
 CSS/JS/images aggressively; a normal refresh can keep showing the old design
 even when the server is already updated.
 
-### deploy.php was returning 404 (fixed)
+### deploy.php history note
 
-The root .htaccess only exempted install.php and doctor.php from the rewrite
-into public/. Opening /deploy.php therefore 404'd and none of its steps (cache
-clear, migrations, storage symlink) could ever run. deploy.php is now exempted
-as well, so the URL works. As an extra safety net, the admin dashboard now
+During one incident, deploy.php 404'd because the root .htaccess only exempted
+install.php and doctor.php from the rewrite into public/. deploy.php, the web
+installer and doctor.php have since been removed from the repository for
+security. Deployment is automatic on `git push`, and the admin dashboard now
 applies pending database migrations automatically the first time it loads
 after a deploy.
 
@@ -150,11 +154,13 @@ The expected layout is:
 ```text
 public_html/
 ├── .htaccess
-├── install.php
-├── doctor.php
 ├── app/
 ├── bootstrap/
+├── composer.json
+├── composer.lock
 ├── public/
+├── resources/
+├── routes/
 ├── storage/
 └── vendor/
 ```
@@ -162,18 +168,15 @@ public_html/
 There must not be an extra `project15-main/` directory between `public_html/`
 and these files.
 
-### 4. Remove stale root manifests
+### 4. Verify the root manifests are the real ones
 
-After deploy, use File Manager to verify both of these are absent:
-
-```text
-public_html/composer.json
-public_html/composer.lock
-```
-
-The full manifests belong only under `.composer-backup/`. This check is
-especially important after a ZIP upload that was extracted over old files,
-because an overlay may leave the obsolete root `composer.json` behind.
+The root `composer.json` and `composer.lock` are tracked and required. Open
+`public_html/composer.json` in File Manager and confirm it lists the real
+dependencies (`laravel/framework` under `require`). A file that has only
+`autoload` sections and no `require` block is the obsolete dependency-less
+deployment stub from the original scaffold; if you ever see it, restore the
+manifest from current `main`. This check matters most after a ZIP upload that
+was extracted over old files, because an overlay can leave stale files behind.
 
 If the Git deployment cannot be trusted, use a clean directory deployment:
 
@@ -181,7 +184,7 @@ If the Git deployment cannot be trusted, use a clean directory deployment:
 2. Remove the old application files (or deploy into a clean `public_html`).
 3. Extract a ZIP of current `main` directly into `public_html/`.
 4. Restore `.env` and `storage/app/public/`.
-5. Confirm root `composer.json` is absent.
+5. Confirm `composer.json` lists the real dependencies.
 
 Do not merely overwrite the old tree without deleting stale files.
 
@@ -196,13 +199,13 @@ https://huvanti.com/deployment.json
 Expected JSON includes:
 
 ```json
-"deployment": "2026-08-24-hostinger-launch-v2"
+"deployment": "v69-2026-09-03-revert-arena-pr69-repo-cleanup"
 ```
 
 Responses also include this header:
 
 ```text
-X-Huvanti-Deploy: 2026-08-24-hostinger-launch-v2
+X-Huvanti-Deploy: v69-2026-09-03-revert-arena-pr69-repo-cleanup
 ```
 
 A command-line check is:
@@ -215,7 +218,7 @@ curl -fsSI https://huvanti.com/ | grep -i x-huvanti-deploy
 Do not continue if the marker is missing. That means the domain is still
 serving another document root or revision.
 
-### 6. Configure Hostinger and run the installer
+### 6. Configure Hostinger and finish setup
 
 In hPanel set:
 
@@ -225,51 +228,46 @@ In hPanel set:
 - permissions: `storage/` and `bootstrap/cache/` writable by PHP (normally 755;
   use 775 only if Hostinger's PHP user/group requires it)
 
-Create a MySQL database and user with all privileges, then visit:
-
-```text
-https://huvanti.com/install.php
-```
-
-The corrected installer:
-
-- identifies itself with the deployment marker;
-- checks both Composer runtime maps;
-- restores damaged maps before displaying the requirements form;
-- validates a CSRF token before accepting credentials;
-- writes `.env`, runs migrations and seeds in-process (no shell/`proc_open`);
-- creates the admin user and installation lock;
-- attempts to delete itself on success.
+Create a MySQL database and user with all privileges. The web installer was
+removed from the repository for security, so configure the database in
+`public_html/.env` directly (copy the shape from `.env.example`, never commit
+that file) and let the admin dashboard apply pending migrations automatically
+the first time it loads after a deploy.
 
 If the database contains tables from a partial installation, either use the
 same database and allow pending migrations to complete, or create a clean
 empty database. Do not drop production data unless it has been backed up and a
 clean reinstall is intentional.
 
-### 7. Post-install cleanup
+### 7. Post-deploy verification
 
-- Delete `install.php` if self-deletion was denied by filesystem permissions.
-- Delete `doctor.php` and `.doctor-key`.
-- Confirm `storage/app/installed.lock` exists.
 - Visit `/`, `/manage`, and `/up`.
 - Confirm uploaded images load through `public/storage`.
+- Confirm `https://huvanti.com/deployment.json` reports the current marker.
+- If a temporary recovery file such as `doctor.php` or `.doctor-key` was
+  uploaded during an outage, delete it now.
 
 ## Why the repository is packaged this way
 
-Hostinger's automated Composer step is not safe for this vendored shared-hosting
-artifact. The repository therefore uses all of the following together:
+Hostinger's automated Composer step once stripped the framework mappings from
+an obsolete checkout, so the repository is protected in depth. It uses all of
+the following together:
 
-- tracked `vendor/` with the complete Laravel dependency tree;
+- tracked root `composer.json` and `composer.lock` with the real dependency
+  list, so any Composer run on the host produces a valid autoloader;
+- tracked `vendor/` with the complete Laravel dependency tree as a fallback;
 - tracked `public/build/` with compiled frontend assets;
-- no root `composer.json` or `composer.lock`;
-- full development manifests under `.composer-backup/`;
-- `App\Application::getNamespace()` override so Laravel does not need a root
-  Composer manifest at runtime;
+- mirrored manifests under `.composer-backup/`;
+- `App\Application::getNamespace()` override so Laravel boots even on a
+  checkout whose manifest is missing or damaged;
 - pristine generated loader files in `bootstrap/autoload_backup/`;
-- pre-bootstrap checks and automatic map restoration in `public/index.php` and
-  `install.php`;
-- an authenticated one-file `doctor.php` containing an embedded fallback;
+- pre-bootstrap checks and automatic map restoration in `public/index.php`;
 - a public deployment marker to detect stale revisions/document roots.
+
+The old web installer (`install.php`), the deploy hook (`deploy.php`) and the
+recovery page (`doctor.php`) were removed from the repository for security.
+They can be restored temporarily from git history during an outage and must
+be deleted again afterwards.
 
 These pieces are not interchangeable. In particular, committing `vendor/` does
 not help if Hostinger subsequently runs Composer and rewrites its generated
@@ -278,8 +276,9 @@ maps.
 ## Document root and rewrite behavior
 
 For this installation workflow, keep the domain pointed at `public_html`. The
-root `.htaccess` forwards every normal request into `public/` while allowing
-only `install.php` and temporary `doctor.php` at project root.
+root `.htaccess` forwards every normal request into `public/`. The removed
+`install.php` and `doctor.php` would be exempted from the rewrite only while
+they are temporarily restored during an outage.
 
 The corrected rules:
 
@@ -290,32 +289,32 @@ The corrected rules:
 - emit the deployment marker header.
 
 After installation, a custom document root of `public_html/public` is also a
-valid hardened layout, but root `install.php` and `doctor.php` are then not
-reachable. Do not switch layouts during recovery.
+valid hardened layout, but a temporarily restored root recovery file would
+then not be reachable. Do not switch layouts during recovery.
 
 ## Updating dependencies locally
 
-Use PHP 8.3+ and Composer on a development machine:
+Use PHP 8.3+ and Composer on a development machine. The manifests are tracked
+at the repository root, so edit or update them in place:
 
 ```bash
-cp .composer-backup/composer.json composer.json
-cp .composer-backup/composer.lock composer.lock
-composer install --no-dev --optimize-autoloader
-cp composer.json .composer-backup/composer.json
-cp composer.lock .composer-backup/composer.lock
-rm composer.json composer.lock
+composer update
 ```
 
-Refresh the backup files as documented in
-`bootstrap/autoload_backup/README.md`, then regenerate the doctor's embedded
-bundle:
+Then keep everything in sync and commit it together:
+
+1. Copy the updated `composer.json` and `composer.lock` into
+   `.composer-backup/` so the mirror stays identical.
+2. Refresh the pristine loader copies as documented in
+   `bootstrap/autoload_backup/README.md`.
+3. Regenerate the doctor's embedded bundle if a doctor.php will ever be
+   uploaded during an outage:
 
 ```bash
 python3 tools/build-doctor-bundle.py
 ```
 
-Commit the updated `vendor/`, manifests, backup and `doctor.php` together. Never
-commit the restored manifests at repository root.
+4. Commit the updated `vendor/`, manifests and backups together.
 
 ## Troubleshooting matrix
 
@@ -324,7 +323,7 @@ commit the restored manifests at repository root.
 | Installer says PHP 8.1+ and fails at line 210 | Obsolete installer is still served | Correct branch/document root; verify `deployment.json` |
 | `Illuminate\Foundation\Application not found` | Composer maps lost `Illuminate\\`, or framework files are absent | Upload doctor and restore maps; if framework entry file is missing, clean-deploy `vendor/` |
 | `deployment.json` missing/500 | Wrong or stale deployment | Stop; correct Hostinger Git settings/document root |
-| Repaired site breaks after every deploy | Root Composer manifest or deploy Composer command still exists | Remove both and redeploy current `main` |
+| Repaired site breaks after every deploy | Obsolete dependency-less manifest stub or a deploy Composer command still in place | Restore the real tracked `composer.json`, remove the command, redeploy current `main` |
 | Too many internal redirects / immediate Apache 500 | Old recursive root rewrite rules | Deploy corrected `.htaccess` |
 | Requirements show PHP below 8.3 | Unsupported runtime | Select PHP 8.3+ in hPanel |
 | Storage/cache not writable | PHP cannot write runtime files | Correct ownership/permissions in File Manager |
