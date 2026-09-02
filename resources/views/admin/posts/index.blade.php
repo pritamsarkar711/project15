@@ -60,10 +60,10 @@
 
 <div id="posts-bulk-bar" class="mb-3 flex flex-wrap items-center gap-2 bg-[#f8f9fb] dark:bg-[#14171d] border border-[#e6e8ee] dark:border-[#262a33] px-3 py-2">
     <svg class="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m9 11 3 3L22 4"/><path stroke-linecap="round" stroke-linejoin="round" d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-    <span class="text-sm text-slate-600 dark:text-slate-300"><strong id="bulk-count" class="text-[#173A2A] dark:text-[#57A37E]">0</strong> selected</span>
+    <span class="text-sm text-slate-600 dark:text-slate-300"><strong id="bulk-count" class="text-[var(--brand-deep)] dark:text-[var(--brand-mid)]">0</strong> selected</span>
     @if($tab === 'trash')
         <button type="submit" name="bulk_action" value="restore" form="posts-bulk-form" id="bulk-restore-btn" disabled
-                class="h-8 px-3 text-xs font-semibold inline-flex items-center gap-1.5 rounded-lg text-[#1F513A] dark:text-[#6FB393] border border-[#C7E0D4] dark:border-[#2E7856]/30 bg-[#F0F7F3] dark:bg-[#2E7856]/10 hover:bg-[#E3F0E9] dark:hover:bg-[#2E7856]/20 transition disabled:opacity-40 disabled:cursor-not-allowed">
+                class="h-8 px-3 text-xs font-semibold inline-flex items-center gap-1.5 rounded-lg text-[var(--brand-ink)] dark:text-[var(--brand-light)] border border-[var(--brand-tint-2)] dark:border-[var(--brand)]/30 bg-[var(--brand-tint-3)] dark:bg-[var(--brand)]/10 hover:bg-[var(--brand-tint)] dark:hover:bg-[var(--brand)]/20 transition disabled:opacity-40 disabled:cursor-not-allowed">
             <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path stroke-linecap="round" stroke-linejoin="round" d="M3 3v5h5"/></svg>
             Restore selected
         </button>
@@ -89,7 +89,7 @@
             <thead>
                 <tr>
                     <th class="w-10 !px-4">
-                        <input type="checkbox" id="select-all-posts" class="w-4 h-4 shrink-0 text-[#27654A] border-slate-300 dark:border-slate-600" aria-label="Select all posts on this page">
+                        <input type="checkbox" id="select-all-posts" class="w-4 h-4 shrink-0 text-[var(--brand-strong)] border-slate-300 dark:border-slate-600" aria-label="Select all posts on this page">
                     </th>
                     <th>Post</th>
                     <th>Category</th>
@@ -103,14 +103,14 @@
                 @forelse($posts as $post)
                     <tr>
                         <td class="!px-4">
-                            <input type="checkbox" name="ids[]" value="{{ $post->id }}" form="posts-bulk-form" class="bulk-post-check w-4 h-4 shrink-0 text-[#27654A] border-slate-300 dark:border-slate-600" aria-label="Select post: {{ $post->title }}">
+                            <input type="checkbox" name="ids[]" value="{{ $post->id }}" form="posts-bulk-form" class="bulk-post-check w-4 h-4 shrink-0 text-[var(--brand-strong)] border-slate-300 dark:border-slate-600" aria-label="Select post: {{ $post->title }}">
                         </td>
                         <td>
                             <div class="flex items-center gap-3">
                                 @if($post->featured_image)
                                     <img src="{{ str_starts_with($post->featured_image,'http') ? $post->featured_image : '/storage/'.$post->featured_image }}" class="w-10 h-10 object-cover rounded-lg border border-[#eef0f4] dark:border-[#2c313c] bg-[#f1f3f7] dark:bg-[#1c1f26]" alt="" loading="lazy" decoding="async" onerror="this.onerror=null;this.style.visibility='hidden'">
                                 @else
-                                    <div class="w-10 h-10 rounded-lg bg-[#E9F2EE] dark:bg-[#2E7856]/10 text-[#2E7856] dark:text-[#6FB393] flex items-center justify-center">
+                                    <div class="w-10 h-10 rounded-lg bg-[var(--brand-tint)] dark:bg-[var(--brand)]/10 text-[var(--brand)] dark:text-[var(--brand-light)] flex items-center justify-center">
                                         <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2Z"/></svg>
                                     </div>
                                 @endif
@@ -163,7 +163,7 @@
                                             <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path stroke-linecap="round" stroke-linejoin="round" d="m8.59 13.51 6.83 3.98m-.01-10.98-6.82 3.98"/></svg>
                                         </a>
                                         <form method="POST" action="{{ route('admin.posts.instant-index', $post) }}">@csrf
-                                            <button type="submit" title="Instant index (ping Bing/Yandex/Seznam/Naver){{ $post->instant_indexed_at ? ' — last pinged '.$post->instant_indexed_at->format('M d, H:i') : '' }}" class="w-8 h-8 rounded-lg border border-[#e6e8ee] dark:border-[#2c313c] bg-white dark:bg-[#14171d] text-slate-600 dark:text-slate-300 hover:!bg-[#2E7856] hover:!text-white hover:!border-transparent flex items-center justify-center">
+                                            <button type="submit" title="Instant index (ping Bing/Yandex/Seznam/Naver){{ $post->instant_indexed_at ? ' — last pinged '.$post->instant_indexed_at->format('M d, H:i') : '' }}" class="w-8 h-8 rounded-lg border border-[#e6e8ee] dark:border-[#2c313c] bg-white dark:bg-[#14171d] text-slate-600 dark:text-slate-300 hover:!bg-[var(--brand)] hover:!text-white hover:!border-transparent flex items-center justify-center">
                                                 <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19.5v-15m0 0-6.75 6.75M12 4.5l6.75 6.75"/></svg>
                                             </button>
                                         </form>
@@ -171,7 +171,7 @@
                                     <a href="{{ route('blog.show', $post->slug) }}" target="_blank" title="View" class="w-8 h-8 rounded-lg border border-[#e6e8ee] dark:border-[#2c313c] bg-white dark:bg-[#14171d] text-slate-600 dark:text-slate-300 hover:bg-[#f7f8fa] dark:hover:bg-[#1c1f26] flex items-center justify-center">
                                         <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7Z"/></svg>
                                     </a>
-                                    <a href="{{ route('admin.posts.edit', $post) }}" title="Edit" class="w-8 h-8 rounded-lg bg-[#2E7856] hover:bg-[#27654A] text-white flex items-center justify-center">
+                                    <a href="{{ route('admin.posts.edit', $post) }}" title="Edit" class="w-8 h-8 rounded-lg bg-[var(--brand)] hover:bg-[var(--brand-strong)] text-white flex items-center justify-center">
                                         <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m18 5 2.47 2.47a1 1 0 0 1 0 1.41L18 11.34 12.66 6l2.42-2.42a1 1 0 0 1 1.41 0ZM11.95 6.7 4.7 13.96a1 1 0 0 0-.29.7V18a1 1 0 0 0 1 1h3.32a1 1 0 0 0 .7-.29l7.26-7.25Z"/></svg>
                                     </a>
                                     <form method="POST" action="{{ route('admin.posts.toggle', $post) }}">@csrf

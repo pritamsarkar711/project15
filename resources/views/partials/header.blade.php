@@ -35,7 +35,7 @@
                                 </a>
                             @endforeach
                         </div>
-                        <a href="/blog" class="flex items-center justify-center gap-1 text-xs font-semibold text-[#27654A] dark:text-[#6FB393] hover:text-[#1F513A] py-2.5 mt-1 border-t border-slate-100 dark:border-[#2f2f2f]">View all posts
+                        <a href="/blog" class="flex items-center justify-center gap-1 text-xs font-semibold text-[var(--brand-strong)] dark:text-[var(--brand-light)] hover:text-[var(--brand-ink)] py-2.5 mt-1 border-t border-slate-100 dark:border-[#2f2f2f]">View all posts
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-6-6 6 6-6 6"/></svg>
                         </a>
                     </div>
@@ -55,11 +55,10 @@
                 <button onclick="openSearch()" class="md:hidden w-9 h-9 flex items-center justify-center text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#1c1f26] rounded-lg transition" aria-label="Search">
                     <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-4.35-4.35"/><circle cx="11" cy="11" r="7"/></svg>
                 </button>
-                <button type="button" onclick="toggleTheme(event)" aria-label="Switch between light and dark mode" title="Toggle theme"
-                    class="relative w-[52px] h-7 rounded-full bg-[#E9F2EE] dark:bg-[#182029] border border-[#e6e8ee] dark:border-[#2c313c] flex items-center px-1 transition-colors">
-                    <span class="relative z-10 w-5 h-5 rounded-full bg-white dark:bg-[#2E7856] shadow flex items-center justify-center transition-transform duration-300 dark:translate-x-6">
-                        <svg class="w-3 h-3 text-amber-500 block dark:hidden shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
-                        <svg class="w-3 h-3 text-white hidden dark:block shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+                <button type="button" onclick="toggleTheme(event)" aria-label="Switch between light and dark mode" title="Toggle theme" class="theme-toggle">
+                    <span class="theme-toggle-knob">
+                        <svg class="theme-toggle-sun shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M4.2 4.2l1.8 1.8M18 18l1.8 1.8M2 12h2.5M19.5 12H22M4.2 19.8 6 18M18 6l1.8-1.8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" fill="none"/></svg>
+                        <svg class="theme-toggle-moon shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
                     </span>
                 </button>
                 @if(auth()->check())
@@ -70,17 +69,17 @@
                                 Switch to Admin
                             </button>
                         </form>
-                        <a href="{{ route('author.dashboard') }}" class="hidden sm:inline-flex items-center h-9 px-4 text-xs font-semibold rounded-lg bg-[#2E7856] hover:bg-[#27654A] text-white transition">
+                        <a href="{{ route('author.dashboard') }}" class="hidden sm:inline-flex items-center h-9 px-4 text-xs font-semibold rounded-lg bg-[var(--brand)] hover:bg-[var(--brand-strong)] text-white transition">
                             Dashboard
                         </a>
                     @else
-                        <a href="{{ auth()->user()->role === 'admin' ? route('admin.dashboard') : route('author.dashboard') }}" class="hidden sm:inline-flex items-center h-9 px-4 text-xs font-semibold rounded-lg bg-[#2E7856] hover:bg-[#27654A] text-white transition">
+                        <a href="{{ auth()->user()->role === 'admin' ? route('admin.dashboard') : route('author.dashboard') }}" class="hidden sm:inline-flex items-center h-9 px-4 text-xs font-semibold rounded-lg bg-[var(--brand)] hover:bg-[var(--brand-strong)] text-white transition">
                             {{ auth()->user()->role === 'admin' ? 'Admin' : 'Dashboard' }}
                         </a>
                     @endif
                 @else
                     <a href="{{ route('login') }}" rel="nofollow" class="hidden sm:inline-flex items-center h-9 px-3.5 text-sm font-medium rounded-lg text-slate-600 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#1c1f26] transition">Sign in</a>
-                    <a href="{{ route('register') }}" rel="nofollow" class="hidden sm:inline-flex items-center h-8 px-4 text-[13px] font-semibold rounded-lg bg-[#16181d] hover:bg-[#2E7856] dark:bg-white dark:hover:bg-[#2E7856] dark:hover:text-white text-white dark:text-[#101319] transition">Sign up</a>
+                    <a href="{{ route('register') }}" rel="nofollow" class="hidden sm:inline-flex items-center h-8 px-4 text-[13px] font-semibold rounded-lg bg-[#16181d] hover:bg-[var(--brand)] dark:bg-white dark:hover:bg-[var(--brand)] dark:hover:text-white text-white dark:text-[#101319] transition">Sign up</a>
                 @endif
             </div>
         </div>
@@ -111,7 +110,7 @@
                 <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-4.35-4.35"/><circle cx="11" cy="11" r="7"/></svg> Search
             </button>
             <div>
-                <div class="px-3 py-2 text-xs font-bold tracking-widest text-[#173A2A] dark:text-[#6FB393] uppercase">Categories</div>
+                <div class="px-3 py-2 text-xs font-bold tracking-widest text-[var(--brand-deep)] dark:text-[var(--brand-light)] uppercase">Categories</div>
                 <div class="space-y-1">
                     @foreach($categories as $cat)
                         <a href="{{ route('category.show',$cat->slug) }}" class="flex items-center gap-3 px-3 py-2 hover:bg-slate-50 dark:hover:bg-[#2a2a2a] rounded-lg text-slate-700 dark:text-slate-300">
@@ -146,12 +145,12 @@
                             Switch to Admin
                         </button>
                     </form>
-                    <a href="{{ route('author.dashboard') }}" class="flex items-center gap-3 px-3 py-2.5 hover:bg-[#27654A] rounded-lg text-white font-semibold bg-[#2E7856]">
+                    <a href="{{ route('author.dashboard') }}" class="flex items-center gap-3 px-3 py-2.5 hover:bg-[var(--brand-strong)] rounded-lg text-white font-semibold bg-[var(--brand)]">
                         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7h18M3 12h18M3 17h18"/></svg>
                         My Dashboard
                     </a>
                 @else
-                    <a href="{{ auth()->user()->role === 'admin' ? route('admin.dashboard') : route('author.dashboard') }}" class="flex items-center gap-3 px-3 py-2.5 hover:bg-[#27654A] rounded-lg text-white font-semibold bg-[#2E7856]">
+                    <a href="{{ auth()->user()->role === 'admin' ? route('admin.dashboard') : route('author.dashboard') }}" class="flex items-center gap-3 px-3 py-2.5 hover:bg-[var(--brand-strong)] rounded-lg text-white font-semibold bg-[var(--brand)]">
                         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7h18M3 12h18M3 17h18"/></svg>
                         {{ auth()->user()->role === 'admin' ? 'Admin Panel' : 'My Dashboard' }}
                     </a>

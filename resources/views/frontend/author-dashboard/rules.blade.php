@@ -118,18 +118,18 @@
         <ul class="mt-4 space-y-2.5 text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
             <li class="flex gap-2.5"><span class="w-5 h-5 bg-amber-50 dark:bg-amber-400/10 text-amber-600 dark:text-amber-300 flex items-center justify-center shrink-0 mt-0.5 rounded-md"><svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg></span>Never link to adult, gambling, betting, drugs, hacking, piracy or any unsafe destination.</li>
             <li class="flex gap-2.5"><span class="w-5 h-5 bg-amber-50 dark:bg-amber-400/10 text-amber-600 dark:text-amber-300 flex items-center justify-center shrink-0 mt-0.5 rounded-md"><svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg></span>Never link to unfamiliar, low quality or questionable sites for the sake of a commission.</li>
-            <li class="flex gap-2.5"><span class="w-5 h-5 bg-[#F0F7F3] dark:bg-[#2E7856]/10 text-[#27654A] flex items-center justify-center shrink-0 mt-0.5 rounded-md"><svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg></span>Affiliate links are welcome only from reputable sources that readers already trust, such as major retailers and well known brands.</li>
+            <li class="flex gap-2.5"><span class="w-5 h-5 bg-[var(--brand-tint-3)] dark:bg-[var(--brand)]/10 text-[var(--brand-strong)] flex items-center justify-center shrink-0 mt-0.5 rounded-md"><svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg></span>Affiliate links are welcome only from reputable sources that readers already trust, such as major retailers and well known brands.</li>
         </ul>
         <p class="text-sm font-semibold text-amber-800 dark:text-amber-300 mt-4">A post that breaks the link policy is rejected and the account may be removed.</p>
     </div>
 
     <div class="border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 p-5 mt-4 text-sm text-slate-600 dark:text-slate-400 leading-relaxed rounded-xl">
         <span class="block font-semibold text-slate-900 dark:text-white mb-1">About your account</span>
-        Delete it anytime from your <a href="{{ route('author.profile.edit') }}" class="text-[#1F513A] dark:text-[#6FB393] hover:underline font-semibold">Profile</a>. Drafts go with it; published posts stay online.
+        Delete it anytime from your <a href="{{ route('author.profile.edit') }}" class="text-[var(--brand-ink)] dark:text-[var(--brand-light)] hover:underline font-semibold">Profile</a>. Drafts go with it; published posts stay online.
     </div>
 
     <div class="mt-6 flex flex-wrap items-center gap-3">
-        <a href="{{ route('author.posts.create') }}" class="inline-flex items-center gap-2 h-11 px-6 rounded-lg bg-[#2E7856] hover:bg-[#27654A] text-white font-semibold text-sm transition">
+        <a href="{{ route('author.posts.create') }}" class="inline-flex items-center gap-2 h-11 px-6 rounded-lg bg-[var(--brand)] hover:bg-[var(--brand-strong)] text-white font-semibold text-sm transition">
             <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Z"/></svg>
             Start writing
         </a>

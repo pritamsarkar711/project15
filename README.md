@@ -25,11 +25,12 @@ Huvanti is a free, self-hosted publishing platform: a fast multi-author blog fro
 
 ## Highlights
 
+- **Four site themes, one click**: the admin picks Emerald (default), Material, Ocean or Sunset in Settings → Appearance and the entire product recolors: public site, admin panel and author panel, light and dark mode
 - **Write & publish fast**: custom dependency-free rich-text editor with autosave, FAQ builder, scheduling, featured-image auto-optimisation
 - **Rank higher**: live RankMath-style SEO score (0-100) in the editor, focus-keyword analysis, IndexNow instant indexing, sitemap, schema, canonical URLs
 - **Grow on autopilot**: publish once and Huvanti shares the post to X, Facebook, LinkedIn, Instagram, Telegram and Pinterest automatically
 - **AI-assisted writing**: bring your own key (NVIDIA NIM free tier, Groq, OpenRouter, OpenAI); one-click titles, descriptions, keywords, excerpts and FAQs with automatic model failover
-- **Two panels, one design system**: a full admin CMS and a clean author dashboard with draft → review → publish workflow
+- **Two panels, one design system**: a full admin CMS and a clean author dashboard with draft → review → publish workflow, both with a high contrast dark sidebar
 
 ## Screenshots
 
@@ -64,7 +65,10 @@ Huvanti is a free, self-hosted publishing platform: a fast multi-author blog fro
 
 ### CMS & Site Management
 - Dashboard stats, posts CRUD with bulk actions + trash, categories (drag & drop), pages, navigation manager, comment moderation, contact inbox, feedback, ads manager
-- Site settings: fonts, hero section, colors, dark mode (light/dark toggle across site + panels)
+- **Site themes**: Emerald (default), Material (indigo), Ocean (cyan) and Sunset (amber); switching the theme in the admin panel recolors every page of the site, both panels and both color modes, from one palette source (`resources/css/app.css`)
+- Light/dark mode with a sliding day/night switch and a circular reveal transition; the admin and author sidebars stay high contrast dark in both modes
+- Card elevation with soft drop shadows across panels, widgets and stat cards
+- Site settings: fonts, hero section, per-author dashboard font, dark mode
 - Security: bcrypt, TOTP 2FA, CSRF protection, encrypted secrets, session hardening
 
 ## Tech Stack

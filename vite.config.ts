@@ -41,7 +41,9 @@ export default defineConfig(() => {
           build: {
             outDir: 'public/build',
             emptyOutDir: true,
-            manifest: true,
+            // Laravel's ViteAssets helper reads public/build/manifest.json,
+            // so write the manifest there instead of the .vite/ default.
+            manifest: 'manifest.json',
             assetsDir: 'assets',
             rollupOptions: {
               input: [

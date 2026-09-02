@@ -20,14 +20,14 @@
                 <label class="inline-flex items-center gap-2 cursor-pointer shrink-0">
                     <span class="relative inline-flex shrink-0">
                         <input type="checkbox" name="ai_assistant_enabled" value="1" {{ old('ai_assistant_enabled', $enabled ? '1' : '0') === '1' ? 'checked' : '' }} class="peer sr-only">
-                        <span class="block w-11 h-6 rounded-full bg-slate-200 dark:bg-slate-700 peer-checked:bg-[#2E7856] transition-colors"></span>
+                        <span class="block w-11 h-6 rounded-full bg-slate-200 dark:bg-slate-700 peer-checked:bg-[var(--brand)] transition-colors"></span>
                         <span class="pointer-events-none absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform peer-checked:translate-x-5"></span>
                     </span>
-                    <span class="text-sm font-semibold {{ $enabled ? 'text-[#1F513A] dark:text-[#6FB393]' : 'text-slate-500' }}">{{ $enabled ? 'Enabled' : 'Disabled' }}</span>
+                    <span class="text-sm font-semibold {{ $enabled ? 'text-[var(--brand-ink)] dark:text-[var(--brand-light)]' : 'text-slate-500' }}">{{ $enabled ? 'Enabled' : 'Disabled' }}</span>
                 </label>
             </div>
             <label class="inline-flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300 cursor-pointer">
-                <input type="checkbox" name="ai_allow_authors" value="1" {{ old('ai_allow_authors', $allowAuthors ? '1' : '0') === '1' ? 'checked' : '' }} class="text-[#27654A]">
+                <input type="checkbox" name="ai_allow_authors" value="1" {{ old('ai_allow_authors', $allowAuthors ? '1' : '0') === '1' ? 'checked' : '' }} class="text-[var(--brand-strong)]">
                 Allow authors
             </label>
         </div>
@@ -50,12 +50,12 @@
                     <input type="password" name="ai_api_key" placeholder="{{ $keyHint ?: 'nvapi-…' }}" autocomplete="new-password" class="flex-1 h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-mono">
                     @if($hasKey)
                         <label class="inline-flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 shrink-0">
-                            <input type="checkbox" name="remove_ai_api_key" value="1" class="text-[#27654A]"> Remove
+                            <input type="checkbox" name="remove_ai_api_key" value="1" class="text-[var(--brand-strong)]"> Remove
                         </label>
                     @endif
                 </div>
                 @if(!$hasKey)
-                    <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">Free key: <a href="https://build.nvidia.com" target="_blank" rel="noopener" class="text-[#1F513A] dark:text-[#6FB393] hover:underline">build.nvidia.com</a></p>
+                    <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">Free key: <a href="https://build.nvidia.com" target="_blank" rel="noopener" class="text-[var(--brand-ink)] dark:text-[var(--brand-light)] hover:underline">build.nvidia.com</a></p>
                 @endif
             </div>
         </div>
@@ -66,14 +66,14 @@
             <textarea name="ai_models" rows="7" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-mono">{{ old('ai_models', $models) }}</textarea>
         </div>
 
-        <button type="submit" class="h-11 px-6 rounded-lg bg-[#2E7856] hover:bg-[#27654A] text-white font-semibold transition">Save AI Settings</button>
+        <button type="submit" class="h-11 px-6 rounded-lg bg-[var(--brand)] hover:bg-[var(--brand-strong)] text-white font-semibold transition">Save AI Settings</button>
     </form>
 
     {{-- Model test bench --}}
     <div class="panel-card p-6">
         <div class="flex items-center justify-between gap-3 flex-wrap">
             <h3 class="font-semibold text-[#101319] dark:text-white">Model Health Check</h3>
-            <button type="button" id="ai-test-btn" class="h-10 px-5 rounded-lg border border-[#2E7856]/50 text-[#2E7856] dark:text-[#6FB393] font-semibold text-sm hover:bg-[#2E7856]/5 transition">Test all models</button>
+            <button type="button" id="ai-test-btn" class="h-10 px-5 rounded-lg border border-[var(--brand)]/50 text-[var(--brand)] dark:text-[var(--brand-light)] font-semibold text-sm hover:bg-[var(--brand)]/5 transition">Test all models</button>
         </div>
         <div id="ai-test-results" class="mt-4 hidden space-y-2"></div>
     </div>

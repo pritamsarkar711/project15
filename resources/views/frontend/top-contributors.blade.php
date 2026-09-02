@@ -9,7 +9,7 @@
 <div class="border-b border-[#e6e8ee] dark:border-[#22262e] bg-white dark:bg-[#0f1115]">
     <div class="max-w-[1200px] mx-auto px-4 sm:px-6 page-head !pb-6">
         <nav class="flex items-center gap-1.5 text-[13px] text-slate-400 dark:text-slate-500 mb-2.5" aria-label="Breadcrumb">
-            <a href="/" class="hover:text-[#2E7856] dark:hover:text-[#6FB393] transition">Home</a>
+            <a href="/" class="hover:text-[var(--brand)] dark:hover:text-[var(--brand-light)] transition">Home</a>
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 6 6 6-6 6"/></svg>
             <span class="text-slate-700 dark:text-slate-300 font-medium">Top Contributors</span>
         </nav>
@@ -36,10 +36,10 @@
                         @if($avatar)
                             <img src="{{ $avatar }}" alt="{{ $author->name }}" class="w-14 h-14 rounded-full object-cover border border-[#e6e8ee] dark:border-[#2c313c]" loading="lazy" decoding="async" onerror="this.style.display='none'">
                         @else
-                            <div class="avatar w-14 h-14 !bg-[#173A2A] dark:!bg-[#E9F2EE] text-white dark:text-[#173A2A] font-extrabold text-lg">{{ strtoupper(substr($author->name, 0, 1)) }}</div>
+                            <div class="avatar w-14 h-14 !bg-[var(--brand-deep)] dark:!bg-[var(--brand-tint)] text-white dark:text-[var(--brand-deep)] font-extrabold text-lg">{{ strtoupper(substr($author->name, 0, 1)) }}</div>
                         @endif
                         @if($i < 3)
-                            <span class="absolute -top-2 -left-2 w-6 h-6 rounded-full bg-[#2E7856] text-white text-[11px] font-extrabold flex items-center justify-center ring-2 ring-white dark:ring-[#16181d]">{{ $i + 1 }}</span>
+                            <span class="absolute -top-2 -left-2 w-6 h-6 rounded-full bg-[var(--brand)] text-white text-[11px] font-extrabold flex items-center justify-center ring-2 ring-white dark:ring-[#16181d]">{{ $i + 1 }}</span>
                         @else
                             <span class="absolute -top-2 -left-2 w-6 h-6 rounded-full bg-[#16181d] dark:bg-[#e6e8ee] dark:text-[#101319] text-white text-[11px] font-extrabold flex items-center justify-center ring-2 ring-white dark:ring-[#16181d]">{{ $i + 1 }}</span>
                         @endif
@@ -47,7 +47,7 @@
                     <div class="flex-1 min-w-0">
                         <div class="flex items-center gap-1.5 flex-wrap">
                             @if($profileUrl)
-                                <a href="{{ $profileUrl }}" class="font-bold text-[15px] text-slate-900 dark:text-white hover:text-[#2E7856] dark:hover:text-[#6FB393] transition-colors truncate">{{ $author->name }}</a>
+                                <a href="{{ $profileUrl }}" class="font-bold text-[15px] text-slate-900 dark:text-white hover:text-[var(--brand)] dark:hover:text-[var(--brand-light)] transition-colors truncate">{{ $author->name }}</a>
                             @else
                                 <span class="font-bold text-[15px] text-slate-900 dark:text-white truncate">{{ $author->name }}</span>
                             @endif
@@ -59,7 +59,7 @@
                         @endif
                         <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">{{ number_format($author->posts_count) }} published {{ Str::plural('article', $author->posts_count) }}</p>
                         @if($profileUrl)
-                            <a href="{{ $profileUrl }}" class="inline-flex items-center gap-1 mt-2 text-xs font-semibold text-[#2E7856] dark:text-[#6FB393] hover:underline underline-offset-4">View profile
+                            <a href="{{ $profileUrl }}" class="inline-flex items-center gap-1 mt-2 text-xs font-semibold text-[var(--brand)] dark:text-[var(--brand-light)] hover:underline underline-offset-4">View profile
                                 <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12l-7.5 7.5M21 12H3"/></svg>
                             </a>
                         @endif

@@ -11,17 +11,17 @@
        SiteFont::cssStack()) cascades to all Tailwind utilities. Hardcoding
        a family here would override the dynamic font setting. */
     --font-sans: inherit;
-    /* ONE brand green: #2E7856 and its own tints/shades only.
+    /* ONE brand palette, driven by the site theme variables below.
        Deep band = the dark shade (hero, CTA, sidebar logo tiles); soft = the
        light tint (icon tiles, chips, badges); bright = dark-mode accents. */
-    --color-primary: #173A2A;
-    --color-primary-dark: #0F2A1E;
-    --color-primary-light: #6FB393;
-    --color-huvanti: #173A2A;
-    --color-huvanti-light: #6FB393;
-    --color-action: #2E7856;
-    --color-action-dark: #27654A;
-    --color-action-soft: #E9F2EE;
+    --color-primary: var(--brand-deep);
+    --color-primary-dark: var(--brand-deeper);
+    --color-primary-light: var(--brand-light);
+    --color-huvanti: var(--brand-deep);
+    --color-huvanti-light: var(--brand-light);
+    --color-action: var(--brand);
+    --color-action-dark: var(--brand-strong);
+    --color-action-soft: var(--brand-tint);
     /* Unified radius scale — reduced again per feedback: controls 6-8px,
        cards 10px, wide bands 12px. Only avatars/dots stay fully round. */
     --radius-sm: 6px;
@@ -33,6 +33,115 @@
 
 html { color-scheme: light; }
 html.dark { color-scheme: dark; }
+
+/* ============================================================
+   SITE THEME VARIABLES
+   The whole product (public site, admin panel, author panel)
+   is painted from these custom properties. The default palette
+   below is the original Emerald brand. The admin picks another
+   site theme in Settings → Appearance, which sets
+   data-site-theme on <html> and every variable is swapped:
+   one attribute recolors the entire site in both light and
+   dark mode. Blade templates reference them as
+   bg-[var(--brand)] style utilities, so there is exactly one
+   source of truth per color.
+   ============================================================ */
+:root {
+    /* Default theme: Emerald (the original brand palette) */
+    --brand: #2E7856;            /* main action: buttons, links, active states */
+    --brand-strong: #27654A;     /* action hover */
+    --brand-lift: #35865F;       /* action hover on dark surfaces */
+    --brand-ink: #1F513A;        /* darkest readable brand text */
+    --brand-deep: #173A2A;       /* deep bands: hero, CTA, tiles */
+    --brand-deeper: #0F2A1E;     /* deepest shade */
+    --brand-light: #6FB393;      /* light accent: dark mode accents, tinted text */
+    --brand-light-2: #8CC7AA;    /* brand text on dark surfaces */
+    --brand-tint: #E9F2EE;       /* soft brand background */
+    --brand-tint-2: #C7E0D4;     /* brand border tint */
+    --brand-tint-3: #F0F7F3;     /* faintest brand wash (banners) */
+    --brand-tint-dark: #233b30;  /* soft brand background on dark mode */
+    --brand-tint-dark-2: #12211b;/* deep brand panel on dark mode */
+    --brand-mid: #57A37E;        /* mid accent (dark mode hovers, FAB) */
+    /* Panel sidebar: high contrast, always dark, tinted per theme */
+    --sb-bg: #0C1A13;
+    --sb-border: #1D332A;
+    --sb-hover: #152C21;
+    --sb-active: #1F4030;
+    --sb-text: #A8C3B6;
+    --sb-muted: #61816F;
+}
+
+/* Material: Material Design inspired indigo. */
+html[data-site-theme="material"] {
+    --brand: #4F46E5;
+    --brand-strong: #4338CA;
+    --brand-lift: #6366F1;
+    --brand-ink: #3730A3;
+    --brand-deep: #1E1B4B;
+    --brand-deeper: #16143B;
+    --brand-light: #A5B4FC;
+    --brand-light-2: #C7D2FE;
+    --brand-tint: #EEF2FF;
+    --brand-tint-2: #C7D2FE;
+    --brand-tint-3: #F4F6FF;
+    --brand-tint-dark: #26264E;
+    --brand-tint-dark-2: #171744;
+    --brand-mid: #818CF8;
+    --sb-bg: #10102E;
+    --sb-border: #23234F;
+    --sb-hover: #1B1B44;
+    --sb-active: #2A2A6E;
+    --sb-text: #A9AEDB;
+    --sb-muted: #62668F;
+}
+
+/* Ocean: deep cyan, calm and cool. */
+html[data-site-theme="ocean"] {
+    --brand: #0E7490;
+    --brand-strong: #155E75;
+    --brand-lift: #0891B2;
+    --brand-ink: #155E75;
+    --brand-deep: #164E63;
+    --brand-deeper: #0C3B4C;
+    --brand-light: #67E8F9;
+    --brand-light-2: #A5F3FC;
+    --brand-tint: #ECFEFF;
+    --brand-tint-2: #CFFAFE;
+    --brand-tint-3: #F2FBFD;
+    --brand-tint-dark: #134653;
+    --brand-tint-dark-2: #0B2F3A;
+    --brand-mid: #22D3EE;
+    --sb-bg: #0A1C24;
+    --sb-border: #1B3742;
+    --sb-hover: #11303B;
+    --sb-active: #164A5C;
+    --sb-text: #A2C4CE;
+    --sb-muted: #5D7F8B;
+}
+
+/* Sunset: warm amber and ember tones. */
+html[data-site-theme="sunset"] {
+    --brand: #C2410C;
+    --brand-strong: #9A3412;
+    --brand-lift: #EA580C;
+    --brand-ink: #7C2D12;
+    --brand-deep: #431407;
+    --brand-deeper: #331007;
+    --brand-light: #FDBA74;
+    --brand-light-2: #FED7AA;
+    --brand-tint: #FFF7ED;
+    --brand-tint-2: #FED7AA;
+    --brand-tint-3: #FFF9F4;
+    --brand-tint-dark: #46281A;
+    --brand-tint-dark-2: #2E1A10;
+    --brand-mid: #FB923C;
+    --sb-bg: #1E120B;
+    --sb-border: #38241A;
+    --sb-hover: #2A1A11;
+    --sb-active: #46281A;
+    --sb-text: #C4AB9C;
+    --sb-muted: #7E6455;
+}
 
 /* Theme switch: a small sliding day/night rocker. The knob carries the icon
    (sun in light, moon in dark) and slides across on its own via the .dark
@@ -82,7 +191,7 @@ img.img-fade.img-loaded { opacity: 1; }
     pointer-events: none;
     background:
         radial-gradient(640px 340px at 76% 12%, rgba(255, 255, 255, 0.05), transparent 62%),
-        radial-gradient(560px 320px at 6% 96%, rgba(111, 179, 147, 0.08), transparent 60%);
+        radial-gradient(560px 320px at 6% 96%, color-mix(in srgb, var(--brand-light) 8%, transparent), transparent 60%);
 }
 
 /* Article reading progress (thin green line pinned above the header) */
@@ -92,11 +201,11 @@ img.img-fade.img-loaded { opacity: 1; }
     left: 0;
     height: 2.5px;
     width: 0;
-    background: #2E7856;
+    background: var(--brand);
     z-index: 60;
     pointer-events: none;
 }
-.dark #read-progress { background: #6FB393; }
+.dark #read-progress { background: var(--brand-light); }
 
 /* Custom scrollbar — slim, quiet, rounded thumbs */
 ::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -118,7 +227,7 @@ textarea:focus-visible, summary:focus-visible, [tabindex]:focus-visible,
     box-shadow: none;
 }
 
-::selection { background: rgba(46, 120, 86, 0.16); }
+::selection { background: color-mix(in srgb, var(--brand) 16%, transparent); }
 
 /* Panel inputs are white on light canvas (peermeld-style). These rules live
    OUTSIDE any cascade layer on purpose: utilities like bg-slate-50 sit in
@@ -165,9 +274,9 @@ textarea:focus-visible, summary:focus-visible, [tabindex]:focus-visible,
     transition: background-color .16s cubic-bezier(0.4, 0, 0.2, 1), border-color .16s cubic-bezier(0.4, 0, 0.2, 1), color .16s cubic-bezier(0.4, 0, 0.2, 1), transform .1s cubic-bezier(0.4, 0, 0.2, 1), box-shadow .16s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .btn:active { transform: translateY(1px); }
-.btn-primary { background: #2E7856; color: #fff; }
-.btn-primary:hover { background: #27654A; }
-.btn-primary:active { background: #1F513A; }
+.btn-primary { background: var(--brand); color: #fff; }
+.btn-primary:hover { background: var(--brand-strong); }
+.btn-primary:active { background: var(--brand-ink); }
 .btn-dark { background: #16181d; color: #fff; }
 .btn-dark:hover { background: #2a2e37; }
 .btn-outline { background: #fff; color: #3f4654; border: 1px solid #dfe3ea; }
@@ -178,8 +287,8 @@ textarea:focus-visible, summary:focus-visible, [tabindex]:focus-visible,
 .btn-danger:hover { background: #fef2f2; border-color: #fca5a5; }
 .btn-sm { height: 2.125rem; padding: 0 0.75rem; font-size: 0.8125rem; }
 .btn-lg { height: 2.75rem; padding: 0 1.375rem; font-size: 0.9375rem; }
-.dark .btn-primary { background: #2E7856; color: #fff; }
-.dark .btn-primary:hover { background: #35865F; }
+.dark .btn-primary { background: var(--brand); color: #fff; }
+.dark .btn-primary:hover { background: var(--brand-lift); }
 .dark .btn-dark { background: #e6e8ee; color: #101319; }
 .dark .btn-dark:hover { background: #fff; }
 .dark .btn-outline { background: transparent; color: #c3c9d4; border-color: #2c313c; }
@@ -205,6 +314,72 @@ textarea:focus-visible, summary:focus-visible, [tabindex]:focus-visible,
 .dark .btn-icon { color: #9aa3b2; }
 .dark .btn-icon:hover { background: rgba(148, 163, 184, 0.1); color: #e6e8ee; }
 .btn-icon-sm { width: 2rem; height: 2rem; }
+
+/* ---------- Theme switch ---------- */
+/* One shared day/night rocker for the site header and both panels.
+   Sized up from the old 52px pill so the icon is readable at a glance:
+   a 24px knob carries a 14px filled sun (light) or moon (dark), the knob
+   itself switches to the brand green in dark mode for extra contrast,
+   and the whole track keeps a visible border in both modes. */
+.theme-toggle {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    width: 58px;
+    height: 30px;
+    padding: 2px;
+    border-radius: 999px;
+    background: var(--brand-tint);
+    border: 1px solid var(--brand-tint-2);
+    cursor: pointer;
+    transition: background-color .25s cubic-bezier(0.4, 0, 0.2, 1), border-color .25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.theme-toggle-knob {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 999px;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(16, 24, 40, 0.28), 0 1px 2px rgba(16, 24, 40, 0.18);
+    transition: transform .3s cubic-bezier(0.4, 0, 0.2, 1), background-color .25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.theme-toggle-sun { width: 14px; height: 14px; color: #F59E0B; }
+.theme-toggle-moon { width: 14px; height: 14px; color: #fff; display: none; }
+.dark .theme-toggle { background: var(--brand-deep); border-color: rgba(255, 255, 255, 0.16); }
+.dark .theme-toggle-knob { background: var(--brand); transform: translateX(28px); }
+.dark .theme-toggle-sun { display: none; }
+.dark .theme-toggle-moon { display: block; }
+
+/* ---------- Panel sidebar: high contrast, always dark ---------- */
+/* The admin and author sidebars stay deep dark in BOTH light and dark site
+   modes (matches the reference admin CMS shot): content flips around it, the
+   navigation rail itself never goes light. Colors come from --sb-* variables
+   so every site theme tints its own sidebar. */
+.panel-sidebar {
+    background: var(--sb-bg);
+    border-right: 1px solid var(--sb-border);
+    color: var(--sb-text);
+}
+.sb-tile { background: #fff; color: var(--sb-bg); }
+.sb-label { color: var(--sb-muted); }
+.sb-link { color: var(--sb-text); }
+.sb-link:hover { background: var(--sb-hover); color: #fff; }
+.sb-link.is-active { background: var(--sb-active); color: #fff; font-weight: 600; }
+.sb-link.is-active svg, .sb-link:hover svg { opacity: 1; }
+.sb-name { color: #fff; }
+.sb-view { color: var(--sb-muted); }
+.sb-view:hover { color: #fff; }
+.sb-logout { color: var(--sb-muted); }
+.sb-logout:hover { background: var(--sb-hover); color: #fff; }
+.panel-sidebar::-webkit-scrollbar { width: 5px; }
+.panel-sidebar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.18); border-radius: 999px; }
+.panel-sidebar::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.32); }
+.panel-sidebar::-webkit-scrollbar-track { background: transparent; }
 
 /* ---------- Keyboard hint chips ---------- */
 .kbd {
@@ -232,51 +407,113 @@ textarea:focus-visible, summary:focus-visible, [tabindex]:focus-visible,
     justify-content: center;
     border-radius: var(--radius-lg);
     background: var(--color-action-soft);
-    color: #2E7856;
+    color: var(--brand);
     flex-shrink: 0;
 }
-.dark .icon-tile { background: rgba(46, 120, 86, 0.18); color: #6FB393; }
+.dark .icon-tile { background: color-mix(in srgb, var(--brand) 18%, transparent); color: var(--brand-light); }
 .icon-tile-muted { background: #eef0f4; color: #5b6472; }
 .dark .icon-tile-muted { background: rgba(148, 163, 184, 0.1); color: #aab3c2; }
 
-/* ---------- Cards: hairline, flat at rest, quiet depth on hover ---------- */
+/* ---------- Cards: hairline, soft resting elevation, quiet depth on hover ---------- */
 .card-elev,
 .card {
     background: #fff;
     border: 1px solid #e6e8ee;
     border-radius: var(--radius-xl);
 }
-.card-elev { box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04); }
+.card-elev { box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05), 0 4px 14px -6px rgba(16, 24, 40, 0.07); }
 .card-hover { transition: border-color .2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow .2s cubic-bezier(0.4, 0, 0.2, 1), transform .2s cubic-bezier(0.4, 0, 0.2, 1); }
 .card-hover:hover {
     border-color: #c9cfda;
-    box-shadow: 0 10px 28px -14px rgba(16, 24, 40, 0.18);
+    box-shadow: 0 2px 4px rgba(16, 24, 40, 0.05), 0 14px 32px -14px rgba(16, 24, 40, 0.2);
     transform: translateY(-2px);
 }
 .dark .card-elev, .dark .card {
     background: #16181d;
     border-color: #262a33;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.45), 0 8px 22px -12px rgba(0, 0, 0, 0.55);
 }
 .dark .card-hover:hover {
     border-color: #3a4150;
-    box-shadow: 0 12px 30px -14px rgba(0, 0, 0, 0.65);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4), 0 16px 34px -14px rgba(0, 0, 0, 0.7);
 }
-/* Flat hairline section card used by panels + widgets */
+/* Flat hairline section card used by panels + widgets. Carries a gentle
+   drop shadow so grouped boxes read as elevated cards, not flat outlines. */
 .panel-card {
     background: #fff;
     border: 1px solid #e6e8ee;
     border-radius: var(--radius-xl);
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05), 0 3px 10px -4px rgba(16, 24, 40, 0.06);
 }
 
 /* ---------- Live SEO score panel (rendered by public/js/seo-analyzer.js) ---------- */
 .seo-ring-track { stroke: #e6e8ee; }
 .dark .seo-ring-track { stroke: #262a33; }
+/* Panel shell: sits inside the SEO card, gets its own soft surface */
+.seo-panel {
+    border: 1px solid #e6e8ee;
+    border-radius: var(--radius-xl);
+    background: #fafbfc;
+    padding: 1rem;
+    font-size: 13px;
+    line-height: 1.55;
+}
+.dark .seo-panel { border-color: #262a33; background: #13161c; }
+/* Check rows */
+.seo-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.625rem;
+    padding: 0.375rem 0.5rem;
+    border-radius: var(--radius-md);
+}
+.seo-row-fix { background: rgba(245, 158, 11, 0.07); }
+.dark .seo-row-fix { background: rgba(245, 158, 11, 0.08); }
+/* Status icon tiles */
+.seo-ic {
+    flex-shrink: 0;
+    width: 19px;
+    height: 19px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1px;
+}
+.seo-ic-pass { background: var(--brand-tint); color: var(--brand); }
+.dark .seo-ic-pass { background: color-mix(in srgb, var(--brand) 22%, transparent); color: var(--brand-light-2); }
+.seo-ic-fix { background: #FEF3C7; color: #B45309; }
+.dark .seo-ic-fix { background: rgba(245, 158, 11, 0.16); color: #FBBF24; }
+.seo-ic-na { background: #eef0f4; color: #94a0b0; }
+.dark .seo-ic-na { background: rgba(148, 163, 184, 0.12); color: #8b94a3; }
+/* Row text */
+.seo-row-done { color: #8590a0; }
+.dark .seo-row-done { color: #8b94a3; }
+.seo-row-todo { color: #2b3240; font-weight: 550; }
+.dark .seo-row-todo { color: #e6e8ee; }
+.seo-hint { display: block; font-size: 11.5px; color: #8590a0; margin-top: 1px; font-weight: 400; }
+.dark .seo-hint { color: #77808f; }
+/* Pass / fix counters */
+.seo-count {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    height: 24px;
+    padding: 0 0.5rem;
+    border-radius: var(--radius-sm);
+    font-size: 11px;
+    font-weight: 650;
+}
+.seo-count-pass { background: var(--brand-tint); color: var(--brand-ink); }
+.dark .seo-count-pass { background: color-mix(in srgb, var(--brand) 18%, transparent); color: var(--brand-light-2); }
+.seo-count-fix { background: #FEF3C7; color: #92600a; }
+.dark .seo-count-fix { background: rgba(245, 158, 11, 0.12); color: #FBBF24; }
+.seo-dot { width: 6px; height: 6px; border-radius: 999px; }
 
-.dark .panel-card { background: #16181d; border-color: #262a33; }
+.dark .panel-card { background: #16181d; border-color: #262a33; box-shadow: 0 1px 2px rgba(0,0,0,0.45), 0 6px 18px -10px rgba(0,0,0,0.55); }
 
 /* ---------- Right-rail widget ---------- */
-.widget { background: #fff; border: 1px solid #e6e8ee; border-radius: var(--radius-xl); }
+.widget { background: #fff; border: 1px solid #e6e8ee; border-radius: var(--radius-xl); box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05), 0 3px 10px -4px rgba(16, 24, 40, 0.06); }
 .widget-head {
     display: flex;
     align-items: center;
@@ -288,7 +525,7 @@ textarea:focus-visible, summary:focus-visible, [tabindex]:focus-visible,
     color: #16181d;
     letter-spacing: -0.01em;
 }
-.dark .widget { background: #16181d; border-color: #262a33; }
+.dark .widget { background: #16181d; border-color: #262a33; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.45), 0 6px 18px -10px rgba(0, 0, 0, 0.55); }
 .dark .widget-head { border-color: #22262e; color: #e6e8ee; }
 
 /* ---------- Segmented control (Latest / Newest / tabs) ---------- */
@@ -343,10 +580,13 @@ textarea:focus-visible, summary:focus-visible, [tabindex]:focus-visible,
 .input:focus { border-color: #dfe3ea; outline: none; box-shadow: none; }
 textarea.input { height: auto; min-height: 7rem; padding: 0.625rem 0.875rem; line-height: 1.6; }
 select.input { appearance: none; background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7482' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.75rem center; padding-right: 2.25rem; }
-.dark .input { background: #101319; border-color: #2c313c; color: #e6e8ee; }
+.dark .input { background-color: #101319; border-color: #2c313c; color: #e6e8ee; }
 .dark .input::placeholder { color: #6b7482; }
 .dark .input:focus { border-color: #2c313c; }
-.dark select.input { background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238b94a3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); }
+/* Longhand background-color above (never the shorthand): the shorthand resets
+   background-repeat to repeat, which tiled the select chevron across the whole
+   control in dark mode. no-repeat + position are restated here as a guard. */
+.dark select.input { background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238b94a3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.75rem center; }
 
 /* Form label + hint */
 .label { display: block; font-size: 0.8125rem; font-weight: 600; color: #3f4654; margin-bottom: 0.375rem; }
@@ -367,13 +607,13 @@ select.input { appearance: none; background-image: url("data:image/svg+xml;chars
     line-height: 1.4;
     white-space: nowrap;
 }
-.badge-green { background: #E9F2EE; color: #1F513A; }
+.badge-green { background: var(--brand-tint); color: var(--brand-ink); }
 .badge-amber { background: #FEF3C7; color: #92600a; }
 .badge-red { background: #FEE2E2; color: #b91c1c; }
 .badge-blue { background: #DBEAFE; color: #1d4ed8; }
 .badge-slate { background: #eef0f4; color: #5b6472; }
 .badge-ink { background: #16181d; color: #fff; }
-.dark .badge-green { background: rgba(46, 120, 86, 0.22); color: #8CC7AA; }
+.dark .badge-green { background: color-mix(in srgb, var(--brand) 22%, transparent); color: var(--brand-light-2); }
 .dark .badge-amber { background: rgba(245, 158, 11, 0.14); color: #fbbf24; }
 .dark .badge-red { background: rgba(239, 68, 68, 0.14); color: #f87171; }
 .dark .badge-blue { background: rgba(59, 130, 246, 0.14); color: #93c5fd; }
@@ -387,15 +627,15 @@ select.input { appearance: none; background-image: url("data:image/svg+xml;chars
     gap: 0.3125rem;
     padding: 0.25rem 0.625rem;
     border-radius: var(--radius-sm);
-    background: #E9F2EE;
-    color: #1F513A;
+    background: var(--brand-tint);
+    color: var(--brand-ink);
     font-size: 0.6875rem;
     font-weight: 700;
     letter-spacing: 0.02em;
 }
-.dark .chip { background: rgba(46, 120, 86, 0.22); color: #8CC7AA; }
-.chip-white { background: #fff; color: #1F513A; border: 1px solid #e6e8ee; }
-.dark .chip-white { background: rgba(22, 24, 29, 0.92); color: #8CC7AA; border-color: #2c313c; }
+.dark .chip { background: color-mix(in srgb, var(--brand) 22%, transparent); color: var(--brand-light-2); }
+.chip-white { background: #fff; color: var(--brand-ink); border: 1px solid #e6e8ee; }
+.dark .chip-white { background: rgba(22, 24, 29, 0.92); color: var(--brand-light-2); border-color: #2c313c; }
 
 /* ---------- Page head (title + lede block on list pages) ---------- */
 .page-head { padding: 2rem 0 1.5rem; }
@@ -416,11 +656,12 @@ select.input { appearance: none; background-image: url("data:image/svg+xml;chars
     border: 1px solid #e6e8ee;
     border-radius: var(--radius-xl);
     padding: 1.125rem 1.25rem;
-    transition: border-color .16s ease, box-shadow .16s ease;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05), 0 3px 10px -4px rgba(16, 24, 40, 0.06);
+    transition: border-color .16s ease, box-shadow .16s ease, transform .16s ease;
 }
-.stat-card:hover { border-color: #c9cfda; box-shadow: 0 6px 20px -12px rgba(16, 24, 40, 0.16); }
-.dark .stat-card { background: #16181d; border-color: #262a33; }
-.dark .stat-card:hover { border-color: #3a4150; box-shadow: none; }
+.stat-card:hover { border-color: #c9cfda; box-shadow: 0 2px 4px rgba(16, 24, 40, 0.05), 0 12px 26px -12px rgba(16, 24, 40, 0.18); transform: translateY(-1px); }
+.dark .stat-card { background: #16181d; border-color: #262a33; box-shadow: 0 1px 2px rgba(0,0,0,0.45), 0 6px 18px -10px rgba(0,0,0,0.55); }
+.dark .stat-card:hover { border-color: #3a4150; box-shadow: 0 2px 4px rgba(0,0,0,0.4), 0 12px 26px -12px rgba(0,0,0,0.7); }
 .stat-label {
     font-size: 0.6875rem;
     font-weight: 700;
@@ -504,7 +745,7 @@ select.input { appearance: none; background-image: url("data:image/svg+xml;chars
     width: 3px;
     height: 0.95em;
     margin-left: 4px;
-    background: #6FB393;
+    background: var(--brand-light);
     border-radius: 2px;
     vertical-align: -0.12em;
     animation: caret-blink 0.85s step-end infinite;
@@ -529,13 +770,13 @@ select.input { appearance: none; background-image: url("data:image/svg+xml;chars
 .prose ul { list-style: disc; }
 .prose ol { list-style: decimal; }
 .prose li { margin-bottom: 0.5rem; color: #3f4654; line-height: 1.7; }
-.prose a { color: #2E7856; text-decoration: underline; text-underline-offset: 4px; text-decoration-color: rgba(46, 120, 86, 0.35); }
-.prose a:hover { text-decoration-color: #2E7856; }
+.prose a { color: var(--brand); text-decoration: underline; text-underline-offset: 4px; text-decoration-color: color-mix(in srgb, var(--brand) 35%, transparent); }
+.prose a:hover { text-decoration-color: var(--brand); }
 .prose strong { color: #101319; font-weight: 650; }
-.prose blockquote { border-left: 3px solid #2E7856; padding: 0.875rem 1.25rem; margin: 1.6rem 0; font-style: italic; background: #f8f9fb; border-radius: 0 var(--radius-lg) var(--radius-lg) 0; color: #3f4654; }
+.prose blockquote { border-left: 3px solid var(--brand); padding: 0.875rem 1.25rem; margin: 1.6rem 0; font-style: italic; background: #f8f9fb; border-radius: 0 var(--radius-lg) var(--radius-lg) 0; color: #3f4654; }
 .prose img { border-radius: var(--radius-xl); border: 1px solid #e6e8ee; margin: 1.6rem 0; max-width: 100%; height: auto; }
 .prose svg.huv-inline-icon { display: inline-block; width: 1.15em; height: 1.15em; vertical-align: -0.2em; }
-.prose code { background: #eef0f4; color: #1F513A; padding: 0.15rem 0.4rem; border-radius: 6px; font-size: 0.875em; }
+.prose code { background: #eef0f4; color: var(--brand-ink); padding: 0.15rem 0.4rem; border-radius: 6px; font-size: 0.875em; }
 .prose pre { background: #101319; color: #dde3ec; padding: 1.1rem 1.25rem; border-radius: var(--radius-xl); overflow-x: auto; margin: 1.6rem 0; border: 1px solid #262a33; }
 .prose pre code { background: transparent; color: inherit; padding: 0; }
 .prose table { width: 100%; border-collapse: collapse; margin: 1.6rem 0; font-size: 0.925rem; }
@@ -579,10 +820,10 @@ select.input { appearance: none; background-image: url("data:image/svg+xml;chars
 .dark .prose h4 { color: #e6e8ee; }
 .dark .prose p { color: #b9c1cd; }
 .dark .prose li { color: #b9c1cd; }
-.dark .prose a { color: #8CC7AA; }
+.dark .prose a { color: var(--brand-light-2); }
 .dark .prose strong { color: #f2f4f8; }
-.dark .prose blockquote { background: rgba(148, 163, 184, 0.06); border-left-color: #6FB393; color: #c3c9d4; }
-.dark .prose code { background: rgba(148, 163, 184, 0.12); color: #8CC7AA; }
+.dark .prose blockquote { background: rgba(148, 163, 184, 0.06); border-left-color: var(--brand-light); color: #c3c9d4; }
+.dark .prose code { background: rgba(148, 163, 184, 0.12); color: var(--brand-light-2); }
 .dark .prose th, .dark .prose td { border-color: #262a33; }
 .dark .prose th { background: rgba(148, 163, 184, 0.05); color: #f2f4f8; }
 .dark .prose hr { border-color: #262a33; }
@@ -655,9 +896,9 @@ body.theme-loading { visibility: hidden; }
 
 /* Native checkbox / radio accent matches the action green */
 .panel-ui input[type="checkbox"],
-.panel-ui input[type="radio"] { accent-color: #2E7856; }
+.panel-ui input[type="radio"] { accent-color: var(--brand); }
 .dark .panel-ui input[type="checkbox"],
-.dark .panel-ui input[type="radio"] { accent-color: #6FB393; }
+.dark .panel-ui input[type="radio"] { accent-color: var(--brand-light); }
 
 .panel-ui button:disabled {
     opacity: 0.5;
@@ -666,7 +907,7 @@ body.theme-loading { visibility: hidden; }
     box-shadow: none !important;
 }
 .panel-ui main a { text-underline-offset: 3px; }
-.panel-ui ::selection { background: rgba(46, 120, 86, 0.18); }
+.panel-ui ::selection { background: color-mix(in srgb, var(--brand) 18%, transparent); }
 
 :where(.panel-ui) thead th { border-bottom: 1px solid rgba(100, 116, 139, 0.25); }
 

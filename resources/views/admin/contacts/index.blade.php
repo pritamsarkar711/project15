@@ -31,9 +31,9 @@
             </thead>
             <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
                 @forelse($messages as $m)
-                    <tr class="{{ !$m->is_read ? 'bg-[#F0F7F3]/50 dark:bg-[#2E7856]/5' : '' }}">
+                    <tr class="{{ !$m->is_read ? 'bg-[var(--brand-tint-3)]/50 dark:bg-[var(--brand)]/5' : '' }}">
                         <td class="px-4 py-3">
-                            <div class="font-semibold">{{ $m->name }} @unless($m->is_read)<span class="w-2 h-2 bg-[#2E7856] inline-block ml-1 align-middle"></span>@endunless</div>
+                            <div class="font-semibold">{{ $m->name }} @unless($m->is_read)<span class="w-2 h-2 bg-[var(--brand)] inline-block ml-1 align-middle"></span>@endunless</div>
                             <div class="text-xs text-slate-500 dark:text-slate-400">{{ $m->email }}</div>
                         </td>
                         <td class="px-4 py-3"><span class="text-xs bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-2 py-1">{{ $m->reason }}</span></td>
@@ -41,7 +41,7 @@
                         <td class="px-4 py-3 text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap">{{ $m->created_at->format('M d, Y') }}</td>
                         <td class="px-4 py-3">
                             <div class="flex justify-end gap-1">
-                                <a href="{{ route('admin.contacts.show', $m) }}" title="View" class="w-8 h-8 rounded-lg bg-[#2E7856] hover:bg-[#27654A] text-white flex items-center justify-center">
+                                <a href="{{ route('admin.contacts.show', $m) }}" title="View" class="w-8 h-8 rounded-lg bg-[var(--brand)] hover:bg-[var(--brand-strong)] text-white flex items-center justify-center">
                                     <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7Z"/></svg>
                                 </a>
                                 <form method="POST" action="{{ route('admin.contacts.read', $m) }}">@csrf
@@ -49,7 +49,7 @@
                                         @if($m->is_read)
                                             <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path stroke-linecap="round" stroke-linejoin="round" d="M3 3v5h5"/></svg>
                                         @else
-                                            <svg class="w-4 h-4 text-[#27654A] dark:text-[#6FB393] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path stroke-linecap="round" stroke-linejoin="round" d="m9 11 3 3L22 4"/></svg>
+                                            <svg class="w-4 h-4 text-[var(--brand-strong)] dark:text-[var(--brand-light)] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path stroke-linecap="round" stroke-linejoin="round" d="m9 11 3 3L22 4"/></svg>
                                         @endif
                                     </button>
                                 </form>

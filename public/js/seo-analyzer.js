@@ -5,13 +5,13 @@
  *
  * UI model (RankMath-style):
  *   - Score gauge + verdict + pass/fix counters on top.
- *   - Three tab chips — Basic SEO / Content / Media & links — like RankMath's
+ *   - Segmented tabs — Basic SEO / Content / Media & links — like RankMath's
  *     check groups. Failed rows read first, passed rows stay dimmed below.
  *   - Short labels, one-line hints with live values only where they help.
  *
- * Design rules: brand palette only. Green = passed, amber = attention,
- * slate = neutral. No red anywhere, so the panel stays calm and matches
- * the rest of the author panel.
+ * Design rules: brand palette only, driven by the site theme variables
+ * (var(--brand) and friends) so the panel recolors with the admin-chosen
+ * theme. Green = passed, amber = attention, slate = neutral. No red anywhere.
  *
  * Usage: give the editor form the data-seo-panel attribute container:
  *   <div id="seo-score-panel"></div>
@@ -21,8 +21,8 @@
 (function () {
     'use strict';
 
-    var BRAND_GREEN = '#2E7856';
-    var BRAND_AMBER = '#B45309';
+    var BRAND = 'var(--brand)';
+    var AMBER = '#B45309';
 
     var ICON_CHECK = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" style="display:block"><path d="m5 12.5 4.5 4.5L19 7"/></svg>';
     var ICON_CROSS = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" style="display:block"><path d="M6 6l12 12M18 6L6 18"/></svg>';
@@ -121,7 +121,7 @@
     }
 
     function scoreColor(score) {
-        return score >= 70 ? BRAND_GREEN : BRAND_AMBER;
+        return score >= 70 ? BRAND : AMBER;
     }
 
     function scoreLabel(score) {
@@ -147,22 +147,22 @@
     function row(c) {
         var icon, iconCls, textCls;
         if (c.ok === true) {
-            icon = ICON_CHECK; iconCls = 'bg-[#E9F2EE] text-[#2E7856] dark:bg-[#2E7856]/20 dark:text-[#8CC7AA]'; textCls = 'text-slate-400 dark:text-slate-500';
+            icon = ICON_CHECK; iconCls = 'seo-ic seo-ic-pass'; textCls = 'seo-row-done';
         } else if (c.ok === false) {
-            icon = ICON_CROSS; iconCls = 'bg-amber-100 text-amber-700 dark:bg-amber-400/15 dark:text-amber-300'; textCls = 'text-slate-800 dark:text-slate-100 font-medium';
+            icon = ICON_CROSS; iconCls = 'seo-ic seo-ic-fix'; textCls = 'seo-row-todo';
         } else {
-            icon = ICON_DASH; iconCls = 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500'; textCls = 'text-slate-400 dark:text-slate-500';
+            icon = ICON_DASH; iconCls = 'seo-ic seo-ic-na'; textCls = 'seo-row-done';
         }
-        return '<li class="flex items-start gap-3 px-3 py-2 rounded-lg' + (c.ok === false ? ' bg-amber-50/80 dark:bg-amber-400/[0.05]' : '') + '">' +
-            '<span class="shrink-0 w-[19px] h-[19px] rounded-md inline-flex items-center justify-center mt-px ' + iconCls + '">' + icon + '</span>' +
+        return '<li class="seo-row' + (c.ok === false ? ' seo-row-fix' : '') + '">' +
+            '<span class="' + iconCls + '">' + icon + '</span>' +
             '<span class="min-w-0 ' + textCls + '">' + escapeHtml(c.label) +
-            (c.hint ? '<span class="block text-[11.5px] text-slate-500 dark:text-slate-400 mt-0.5">' + escapeHtml(c.hint) + '</span>' : '') +
+            (c.hint ? '<span class="seo-hint">' + escapeHtml(c.hint) + '</span>' : '') +
             '</span></li>';
     }
 
     function render(el, result) {
         var color = scoreColor(result.score);
-        var circumference = 2 * Math.PI * 26;
+        var circumference = 2 * Math.PI * 27;
         var offset = circumference * (1 - result.score / 100);
         var failed = 0, passed = 0;
         result.checks.forEach(function (c) {
@@ -180,45 +180,40 @@
         }
 
         var html = '' +
-            '<div class="rounded-xl border border-[#e6e8ee] dark:border-[#262a33] bg-white dark:bg-[#101319] p-4 sm:p-5 text-[13px] leading-relaxed">' +
+            '<div class="seo-panel">' +
             // Header: gauge + verdict + counters
             '<div class="flex items-center gap-4">' +
-            '<div class="relative w-[72px] h-[72px] shrink-0">' +
-            '<svg width="72" height="72" viewBox="0 0 64 64" class="block" style="transform:rotate(-90deg);" aria-hidden="true">' +
-            '<circle cx="32" cy="32" r="26" fill="none" stroke="#e6e8ee" class="seo-ring-track" stroke-width="6"/>' +
-            '<circle cx="32" cy="32" r="26" fill="none" stroke="' + color + '" stroke-width="6" stroke-linecap="round" stroke-dasharray="' + circumference.toFixed(1) + '" stroke-dashoffset="' + offset.toFixed(1) + '"/>' +
+            '<div class="relative w-[76px] h-[76px] shrink-0">' +
+            '<svg width="76" height="76" viewBox="0 0 64 64" class="block" style="transform:rotate(-90deg);" aria-hidden="true">' +
+            '<circle cx="32" cy="32" r="27" fill="none" stroke="#e6e8ee" class="seo-ring-track" stroke-width="6"/>' +
+            '<circle cx="32" cy="32" r="27" fill="none" style="stroke:' + color + '" stroke-width="6" stroke-linecap="round" stroke-dasharray="' + circumference.toFixed(1) + '" stroke-dashoffset="' + offset.toFixed(1) + '"/>' +
             '</svg>' +
             '<div class="absolute inset-0 flex flex-col items-center justify-center">' +
-            '<span class="font-extrabold text-[19px] leading-none" style="color:' + color + ';">' + result.score + '</span>' +
-            '<span class="text-[9px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mt-0.5">score</span>' +
+            '<span class="font-extrabold text-[21px] leading-none tracking-tight" style="color:' + color + ';">' + result.score + '</span>' +
+            '<span class="text-[8.5px] font-bold uppercase tracking-[0.14em] text-slate-400 dark:text-slate-500 mt-1">score</span>' +
             '</div>' +
             '</div>' +
             '<div class="min-w-0 flex-1">' +
-            '<span class="inline-flex items-center gap-1.5 px-2.5 h-6 rounded-full text-[11px] font-bold" style="color:' + color + '; background:' + color + '1A;">' +
-            '<span class="w-1.5 h-1.5 rounded-full" style="background:' + color + ';"></span>' + scoreLabel(result.score) + '</span>' +
-            '<div class="text-slate-500 dark:text-slate-400 text-xs mt-1.5">' + result.words + ' words' +
-            (result.hasKeyword ? '' : ' · add a focus keyword to unlock full scoring') + '</div>' +
-            '<div class="flex gap-2 mt-2">' +
-            '<span class="inline-flex items-center gap-1.5 h-6 px-2 rounded-md bg-[#E9F2EE] dark:bg-[#2E7856]/15 text-[11px] font-semibold text-[#1F513A] dark:text-[#8CC7AA]"><span class="w-1.5 h-1.5 rounded-full bg-[#2E7856]"></span>' + passed + ' passed</span>' +
-            '<span class="inline-flex items-center gap-1.5 h-6 px-2 rounded-md bg-amber-50 dark:bg-amber-400/10 text-[11px] font-semibold text-amber-700 dark:text-amber-300"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>' + failed + ' to fix</span>' +
+            '<div class="font-bold text-[15px] text-slate-900 dark:text-white leading-tight tracking-[-0.01em]">' + scoreLabel(result.score) + '</div>' +
+            '<div class="text-slate-500 dark:text-slate-400 text-xs mt-1">' + result.words + ' words' +
+            (result.hasKeyword ? '' : ' &middot; add a focus keyword to unlock full scoring') + '</div>' +
+            '<div class="flex flex-wrap gap-1.5 mt-2.5">' +
+            '<span class="seo-count seo-count-pass"><span class="seo-dot" style="background:var(--brand);"></span>' + passed + ' passed</span>' +
+            '<span class="seo-count seo-count-fix"><span class="seo-dot" style="background:#F59E0B;"></span>' + failed + ' to fix</span>' +
             '</div>' +
             '</div>' +
             '</div>';
 
-        // RankMath-style group tabs with pass counts
-        html += '<div class="mt-4 pt-3 border-t border-[#eef0f4] dark:border-[#22262e] flex flex-wrap gap-1.5" role="tablist">';
+        // Segmented group tabs with pass counts (same control as the site tabs)
+        html += '<div class="mt-4 pt-3 border-t border-[#eef0f4] dark:border-[#22262e]"><div class="seg !p-0.5 w-full" role="tablist">';
             GROUPS.forEach(function (g) {
                 var st = groupStats(result.checks, g.id);
                 var isActive = g.id === activeGroup;
-                html += '<button type="button" role="tab" data-seo-group="' + g.id + '" class="inline-flex items-center gap-1.5 px-2.5 h-7 rounded-full text-[11px] font-semibold border transition ' +
-                    (isActive
-                        ? 'bg-[#173A2A] border-[#173A2A] text-white dark:bg-[#2E7856] dark:border-[#2E7856]'
-                        : 'border-[#e6e8ee] dark:border-[#262a33] text-slate-500 dark:text-slate-400 hover:border-[#2E7856] hover:text-[#1F513A] dark:hover:text-[#6FB393]') +
-                    '">' + escapeHtml(g.label) +
-                    '<span class="text-[10px] font-bold ' + (isActive ? 'text-white/70' : 'text-slate-400') + '">' + st.pass + '/' + (st.total - st.neutral) + '</span>' +
+                html += '<button type="button" role="tab" data-seo-group="' + g.id + '" class="seg-item !flex-1 !justify-center !text-[11px] !gap-1 ' + (isActive ? 'is-active' : '') + '">' + escapeHtml(g.label) +
+                    '<span class="' + (isActive ? 'opacity-70' : 'opacity-60') + ' font-bold">' + st.pass + '/' + (st.total - st.neutral) + '</span>' +
                     '</button>';
             });
-            html += '</div>';
+            html += '</div></div>';
 
             // Rows for the active group — failed first, then passed, then neutral.
             var rows = [];
@@ -228,7 +223,7 @@
                 .forEach(function (c) { rows.push(row(c)); });
             result.checks.filter(function (c) { return c.group === activeGroup && c.ok === null; })
                 .forEach(function (c) { rows.push(row(c)); });
-            html += '<ul class="mt-2.5 m-0 p-0 list-none grid gap-1">' + rows.join('') + '</ul>';
+            html += '<ul class="mt-2.5 m-0 p-0 list-none grid gap-0.5">' + rows.join('') + '</ul>';
 
         html += '</div>';
         el.innerHTML = html;

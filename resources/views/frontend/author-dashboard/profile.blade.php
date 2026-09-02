@@ -28,7 +28,7 @@
                             class="flex-1 h-11 px-3 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-500 dark:text-slate-400 font-mono">
                         <span class="text-xs text-slate-500">Locked</span>
                     </div>
-                    <p class="text-xs text-slate-500 mt-1">Your author page is at <a class="break-all" href="{{ route('author.profile', $user->username) }}" class="text-[#1F513A] dark:text-[#6FB393] hover:underline" target="_blank">{{ url('/author/'.$user->username) }}</a></p>
+                    <p class="text-xs text-slate-500 mt-1">Your author page is at <a class="break-all" href="{{ route('author.profile', $user->username) }}" class="text-[var(--brand-ink)] dark:text-[var(--brand-light)] hover:underline" target="_blank">{{ url('/author/'.$user->username) }}</a></p>
                 @else
                     <input type="text" name="username" required value="{{ old('username') }}" minlength="3" maxlength="30" pattern="[a-zA-Z0-9._\-]+" autocomplete="off"
                         class="w-full h-11 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none text-sm font-mono text-slate-900 dark:text-white"
@@ -43,7 +43,7 @@
                     @if($user->author_avatar_path)
                         <img src="{{ '/storage/'.$user->author_avatar_path }}" class="w-14 h-14 rounded-full object-cover border border-slate-200 dark:border-slate-700" alt="" loading="lazy">
                     @endif
-                    <label class="flex-1 cursor-pointer border border-dashed border-slate-300 dark:border-slate-600 py-3 text-center text-sm text-slate-500 dark:text-slate-400 hover:border-[#2E7856] hover:text-[#1F513A] dark:hover:text-[#6FB393] transition">
+                    <label class="flex-1 cursor-pointer border border-dashed border-slate-300 dark:border-slate-600 py-3 text-center text-sm text-slate-500 dark:text-slate-400 hover:border-[var(--brand)] hover:text-[var(--brand-ink)] dark:hover:text-[var(--brand-light)] transition">
                         Upload photo
                         <input type="file" name="avatar" accept="image/*" class="hidden">
                     </label>
@@ -108,7 +108,7 @@
                 </select>
             </div>
         </div>
-        <button type="submit" class="mt-5 h-11 px-6 rounded-lg bg-[#2E7856] hover:bg-[#27654A] text-white font-semibold text-sm transition">Save profile</button>
+        <button type="submit" class="mt-5 h-11 px-6 rounded-lg bg-[var(--brand)] hover:bg-[var(--brand-strong)] text-white font-semibold text-sm transition">Save profile</button>
     </div>
 
     {{-- Social links --}}
@@ -169,13 +169,13 @@
             <form method="POST" action="{{ route('author.2fa.confirm') }}" class="flex flex-wrap gap-2">
                 @csrf
                 <input type="text" name="two_factor_code" inputmode="numeric" maxlength="6" required placeholder="123456" class="h-11 w-40 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-mono tracking-widest text-center placeholder:tracking-normal placeholder:font-sans">
-                <button type="submit" class="h-11 px-6 rounded-lg bg-[#2E7856] hover:bg-[#27654A] text-white font-semibold text-sm transition">Confirm & Enable</button>
+                <button type="submit" class="h-11 px-6 rounded-lg bg-[var(--brand)] hover:bg-[var(--brand-strong)] text-white font-semibold text-sm transition">Confirm & Enable</button>
                 <button type="submit" formaction="{{ route('author.2fa.disable') }}" formnovalidate class="h-11 px-6 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 font-semibold text-sm transition">Cancel setup</button>
             </form>
         </div>
     @elseif($user->google2fa_secret)
-        <div class="p-4 bg-[#F0F7F3] dark:bg-[#2E7856]/10 border border-[#C7E0D4] dark:border-[#2E7856]/30 flex flex-wrap items-center justify-between gap-3">
-            <div class="flex items-center gap-2 text-sm font-semibold text-[#173A2A] dark:text-[#6FB393]">
+        <div class="p-4 bg-[var(--brand-tint-3)] dark:bg-[var(--brand)]/10 border border-[var(--brand-tint-2)] dark:border-[var(--brand)]/30 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-2 text-sm font-semibold text-[var(--brand-deep)] dark:text-[var(--brand-light)]">
                 <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path stroke-linecap="round" stroke-linejoin="round" d="m9 11 3 3L22 4"/></svg>
                 Enabled. A 6 digit code is required at login.
             </div>
@@ -189,7 +189,7 @@
                 <span class="text-sm font-semibold text-slate-600 dark:text-slate-300 block">Disabled</span>
             </div>
             <form method="POST" action="{{ route('author.2fa.start') }}">@csrf
-                <button type="submit" class="h-9 px-4 rounded-lg bg-[#2E7856] hover:bg-[#27654A] text-white text-sm font-semibold transition">Enable 2FA</button>
+                <button type="submit" class="h-9 px-4 rounded-lg bg-[var(--brand)] hover:bg-[var(--brand-strong)] text-white text-sm font-semibold transition">Enable 2FA</button>
             </form>
         </div>
     @endif

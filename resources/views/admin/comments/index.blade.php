@@ -23,7 +23,7 @@
           onsubmit="return confirm('Delete all selected comments (their replies are removed too)?')">
         @csrf
         <label class="inline-flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-300 cursor-pointer mr-2">
-            <input type="checkbox" id="select-all-comments" class="w-4 h-4 text-[#27654A] border-slate-300 dark:border-slate-600">
+            <input type="checkbox" id="select-all-comments" class="w-4 h-4 text-[var(--brand-strong)] border-slate-300 dark:border-slate-600">
             Select all
         </label>
         <button type="submit" id="bulk-delete-btn" disabled class="h-9 px-4 text-sm font-semibold text-red-600 dark:text-red-400 border border-red-200 dark:border-red-500/30 bg-red-50 dark:bg-red-500/10 hover:bg-red-100 dark:hover:bg-red-500/20 transition disabled:opacity-40 disabled:cursor-not-allowed">
@@ -39,7 +39,7 @@
                 <div class="flex flex-wrap items-start justify-between gap-3">
                     <div class="min-w-0 flex-1">
                         <div class="flex items-center gap-2 flex-wrap">
-                            <input type="checkbox" name="ids[]" value="{{ $c->id }}" form="bulk-delete-form" class="bulk-comment-check w-4 h-4 shrink-0 text-[#27654A] border-slate-300 dark:border-slate-600" aria-label="Select comment">
+                            <input type="checkbox" name="ids[]" value="{{ $c->id }}" form="bulk-delete-form" class="bulk-comment-check w-4 h-4 shrink-0 text-[var(--brand-strong)] border-slate-300 dark:border-slate-600" aria-label="Select comment">
                             <span class="text-sm font-semibold">{{ $c->name }}</span>
                             <span class="text-xs text-slate-500 dark:text-slate-400 break-all">{{ $c->email }}</span>
                             <span class="badge {{ $c->status=='pending' ? 'badge-amber' : ($c->status=='approved' ? 'badge-green' : 'badge-slate') }}">{{ $c->status }}</span>
@@ -51,7 +51,7 @@
                                  the post was a draft or deleted. --}}
                             @if($c->post)
                                 @if($c->post->status === 'published' && !$c->post->trashed())
-                                    <a href="{{ route('blog.show', $c->post->slug) }}" target="_blank" class="text-[#1F513A] dark:text-[#6FB393] hover:underline">{{ Str::limit($c->post->title, 50) }}</a>
+                                    <a href="{{ route('blog.show', $c->post->slug) }}" target="_blank" class="text-[var(--brand-ink)] dark:text-[var(--brand-light)] hover:underline">{{ Str::limit($c->post->title, 50) }}</a>
                                 @else
                                     <span class="font-medium">{{ Str::limit($c->post->title, 50) }}</span>
                                     <span class="text-[10px] font-bold uppercase px-1.5 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400" title="The post is not publicly visible">{{ $c->post->trashed() ? 'deleted' : $c->post->status }}</span>

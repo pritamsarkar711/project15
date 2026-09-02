@@ -16,7 +16,7 @@
     </div>
 
     @if(session('success'))
-        <div class="mt-5 bg-[#F0F7F3] dark:bg-[#57A37E]/10 border border-[#C7E0D4] dark:border-[#2E7856]/20 text-[#173A2A] dark:text-[#6FB393] px-4 py-3 text-sm">{{ session('success') }}</div>
+        <div class="mt-5 bg-[var(--brand-tint-3)] dark:bg-[var(--brand-mid)]/10 border border-[var(--brand-tint-2)] dark:border-[var(--brand)]/20 text-[var(--brand-deep)] dark:text-[var(--brand-light)] px-4 py-3 text-sm">{{ session('success') }}</div>
     @endif
 
     <form method="POST" action="{{ route('author.feedback.store') }}" class="mt-5 panel-card p-6 space-y-6">
@@ -25,8 +25,8 @@
             <label class="block text-sm font-semibold text-slate-900 dark:text-white mb-2">How would you rate your overall experience?</label>
             <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
                 @foreach(['Poor','Fair','Good','Very good','Excellent'] as $opt)
-                    <label class="flex items-center gap-2 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3 py-2.5 cursor-pointer hover:border-[#173A2A] dark:hover:border-[#2E7856] has-[input:checked]:border-[#173A2A] has-[input:checked]:bg-[#F0F7F3] dark:has-[input:checked]:bg-[#57A37E]/10 transition">
-                        <input type="radio" name="overall_experience" value="{{ $opt }}" required class="text-[#173A2A]">
+                    <label class="flex items-center gap-2 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3 py-2.5 cursor-pointer hover:border-[var(--brand-deep)] dark:hover:border-[var(--brand)] has-[input:checked]:border-[var(--brand-deep)] has-[input:checked]:bg-[var(--brand-tint-3)] dark:has-[input:checked]:bg-[var(--brand-mid)]/10 transition">
+                        <input type="radio" name="overall_experience" value="{{ $opt }}" required class="text-[var(--brand-deep)]">
                         <span class="text-sm text-slate-700 dark:text-slate-300">{{ $opt }}</span>
                     </label>
                 @endforeach
@@ -83,7 +83,7 @@
             <textarea name="additional_comment" rows="2" maxlength="2000" placeholder="Add anything else you want us to know" class="w-full p-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white outline-none">{{ old('additional_comment') }}</textarea>
         </div>
 
-        <button type="submit" class="w-full sm:w-auto h-11 px-8 rounded-lg bg-[#2E7856] hover:bg-[#27654A] text-white font-semibold text-sm inline-flex items-center justify-center gap-2 transition shadow-sm">
+        <button type="submit" class="w-full sm:w-auto h-11 px-8 rounded-lg bg-[var(--brand)] hover:bg-[var(--brand-strong)] text-white font-semibold text-sm inline-flex items-center justify-center gap-2 transition shadow-sm">
             <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M6 12h6"/></svg>
             Send feedback
         </button>
