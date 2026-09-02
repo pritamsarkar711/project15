@@ -39,6 +39,12 @@
         </FilesMatch>
     </IfModule>
 
+    # Compression — smaller HTML/CSS/JS/SVG responses mean a faster first
+    # paint on every page, with no design or behaviour change.
+    <IfModule mod_deflate.c>
+        AddOutputFilterByType DEFLATE text/html text/plain text/css text/javascript application/javascript application/x-javascript application/json application/xml image/svg+xml
+    </IfModule>
+
     # Block dotfiles (.env, .git, etc.)
     RewriteRule (^\.|/\.) - [F]
 

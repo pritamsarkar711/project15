@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\URL;
 
 use App\Models\Category;
 
-#[Fillable(['name', 'email', 'password', 'role', 'bio', 'avatar', 'google_id', 'two_factor_enabled', 'two_factor_secret', 'theme_preference', 'google2fa_secret', 'author_avatar_path', 'username', 'role_title', 'niche', 'portfolio_url', 'social_links', 'is_verified', 'country'])]
+#[Fillable(['name', 'email', 'password', 'role', 'bio', 'avatar', 'google_id', 'two_factor_enabled', 'two_factor_secret', 'theme_preference', 'google2fa_secret', 'author_avatar_path', 'username', 'role_title', 'niche', 'panel_font', 'portfolio_url', 'social_links', 'is_verified', 'country'])]
 #[Hidden(['password', 'remember_token', 'two_factor_secret', 'google2fa_secret'])]
 class User extends Authenticatable
 {
@@ -229,6 +229,21 @@ class User extends Authenticatable
         } catch (\Throwable $e) {
             return null;
         }
+    }
+
+    /**
+     * The author's personal dashboard font (key into FontFamilies), or null
+     * when unset or the key is no longer valid. Applies to THIS author's
+     * dashboard only, never to the public site or other authors.
+     */
+    public function panelFontKey(): ?string
+    {
+        if (! $this->panel_font) {
+            return null;
+        }
+        return array_key_exists($this->panel_font, \App\Support\FontFamilies::all())
+            ? $this->panel_font
+            : null;
     }
 
     /**

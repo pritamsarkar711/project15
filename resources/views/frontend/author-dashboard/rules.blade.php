@@ -11,7 +11,7 @@
             </div>
             <div>
                 <h2 class="text-xl font-bold text-slate-900 dark:text-white">Posting Rules</h2>
-                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">Every post is reviewed before it goes live. Breaking a rule gets it returned with a note, or removed.</p>
+                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">Every post goes through admin review before it is published. When a rule is broken, the post is returned with a note explaining what to fix, or it is removed.</p>
             </div>
         </div>
     </div>
@@ -20,11 +20,11 @@
         <div class="panel-card p-5">
             <div class="flex items-center gap-3">
                 <span class="icon-tile w-9 h-9 shrink-0">
-                    <svg class="w-5 h-5 shrink-0" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M11.097 1.515a.75.75 0 011.06 0l4.5 4.5a.75.75 0 010 1.06l-6.22 6.22a2.25 2.25 0 01-1.06.606l-3.725.996a.75.75 0 01-.928-.928l.996-3.725a2.25 2.25 0 01.606-1.06l6.22-6.22a.75.75 0 010-1.06l-4.5-4.5a.75.75 0 010-1.06z" clip-rule="evenodd"/></svg>
+                    <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487 18.549 2.8a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"/></svg>
                 </span>
                 <h3 class="font-semibold text-slate-900 dark:text-white">Write for real readers</h3>
             </div>
-            <p class="text-sm text-slate-600 dark:text-slate-400 mt-3 leading-relaxed">Write in your own words — generic filler is returned for a rewrite.</p>
+            <p class="text-sm text-slate-600 dark:text-slate-400 mt-3 leading-relaxed">Write in your own words, from your own knowledge and experience. Generic filler, thin rewrites of other articles and obviously machine generated text are returned for a rewrite.</p>
         </div>
 
         <div class="panel-card p-5">
@@ -34,7 +34,7 @@
                 </span>
                 <h3 class="font-semibold text-slate-900 dark:text-white">Keep it focused</h3>
             </div>
-            <p class="text-sm text-slate-600 dark:text-slate-400 mt-3 leading-relaxed">Make one clear point and support it. A concise post with real value outperforms a long one padded with repeated ideas.</p>
+            <p class="text-sm text-slate-600 dark:text-slate-400 mt-3 leading-relaxed">Make one clear point and support it well. A concise post with real value is easier to read and easier to trust than a long post padded with repeated ideas.</p>
         </div>
 
         <div class="panel-card p-5">
@@ -44,7 +44,7 @@
                 </span>
                 <h3 class="font-semibold text-slate-900 dark:text-white">Be useful</h3>
             </div>
-            <p class="text-sm text-slate-600 dark:text-slate-400 mt-3 leading-relaxed">Answer a question the reader actually has. Share concrete steps, picks or examples rather than vague overviews.</p>
+            <p class="text-sm text-slate-600 dark:text-slate-400 mt-3 leading-relaxed">Answer a question the reader actually has. Concrete steps, honest recommendations, real examples and numbers help far more than vague overviews.</p>
         </div>
 
         <div class="panel-card p-5">
@@ -54,7 +54,7 @@
                 </span>
                 <h3 class="font-semibold text-slate-900 dark:text-white">Support what you say</h3>
             </div>
-            <p class="text-sm text-slate-600 dark:text-slate-400 mt-3 leading-relaxed">Cite sources where relevant and write from genuine knowledge. Do not present uncertain claims as fact.</p>
+            <p class="text-sm text-slate-600 dark:text-slate-400 mt-3 leading-relaxed">Write from genuine knowledge and link a source where it helps the reader verify the point. If you are not certain about something, say so instead of presenting it as fact.</p>
         </div>
 
         <div class="panel-card p-5">
@@ -64,17 +64,17 @@
                 </span>
                 <h3 class="font-semibold text-slate-900 dark:text-white">Publish original work</h3>
             </div>
-            <p class="text-sm text-slate-600 dark:text-slate-400 mt-3 leading-relaxed">All content must be yours. Copied text, repackaged press releases or keyword filled writing leads to permanent removal.</p>
+            <p class="text-sm text-slate-600 dark:text-slate-400 mt-3 leading-relaxed">Everything you submit must be your own writing. Copied text, repackaged press releases and keyword stuffed articles are removed, and repeated cases end the account.</p>
         </div>
 
         <div class="panel-card p-5">
             <div class="flex items-center gap-3">
                 <span class="icon-tile w-9 h-9 shrink-0">
-                    <svg class="w-5 h-5 shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M7.5 6v.75H5.513c-.96 0-1.764.724-1.865 1.679l-1.32 12.38A1.5 1.5 0 003.81 22.5h16.38A1.5 1.5 0 001.49 20.809l-1.32-12.38c-.101-.955-.905-1.679-1.865-1.679H16.5v-.75A2.25 2.25 0 0014.25 3.75h-4.5A2.25 2.25 0 007.5 6z"/><path fill-rule="evenodd" d="M9 9.75A1.5 1.5 0 0110.5 8.25h3A1.5 1.5 0 0115 9.75v.75H9v-.75zm1.5 3a.75.75 0 01.75-.75h3a.75.75 0 010 1.5h-3a.75.75 0 01-.75-.75zm0 3a.75.75 0 01.75-.75h3a.75.75 0 010 1.5h-3a.75.75 0 01-.75-.75z" clip-rule="evenodd"/></svg>
+                    <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z"/></svg>
                 </span>
                 <h3 class="font-semibold text-slate-900 dark:text-white">Complete the extras</h3>
             </div>
-            <p class="text-sm text-slate-600 dark:text-slate-400 mt-3 leading-relaxed">Add at least one FAQ and fill in the meta title and description. This helps readers and search engines understand your topic.</p>
+            <p class="text-sm text-slate-600 dark:text-slate-400 mt-3 leading-relaxed">Add at least one FAQ and fill in the meta title and description before you submit. These fields help readers and search engines understand exactly what your post covers.</p>
         </div>
 
         <div class="panel-card p-5">
@@ -84,7 +84,7 @@
                 </span>
                 <h3 class="font-semibold text-slate-900 dark:text-white">Affiliate links</h3>
             </div>
-            <p class="text-sm text-slate-600 dark:text-slate-400 mt-3 leading-relaxed">When a post includes affiliate links, turn on the affiliate toggle before submitting. The required disclosure is then added for you.</p>
+            <p class="text-sm text-slate-600 dark:text-slate-400 mt-3 leading-relaxed">When a post includes affiliate links, turn on the affiliate toggle before you submit. The required disclosure is added for you, which keeps the post compliant and trustworthy.</p>
         </div>
 
         <div class="panel-card p-5">
@@ -94,7 +94,7 @@
                 </span>
                 <h3 class="font-semibold text-slate-900 dark:text-white">Submission pace</h3>
             </div>
-            <p class="text-sm text-slate-600 dark:text-slate-400 mt-3 leading-relaxed">You can submit one post for review every 24 hours. Drafts are unlimited. Use the time to refine your next draft.</p>
+            <p class="text-sm text-slate-600 dark:text-slate-400 mt-3 leading-relaxed">You can submit one post for review every 24 hours. Drafts are unlimited, so use the waiting time to improve your next one.</p>
         </div>
 
         <div class="panel-card p-5">
@@ -104,27 +104,27 @@
                 </span>
                 <h3 class="font-semibold text-slate-900 dark:text-white">How review works</h3>
             </div>
-            <p class="text-sm text-slate-600 dark:text-slate-400 mt-3 leading-relaxed">Admins approve, edit or return posts with a note. Fix the note and resubmit. Published posts are locked.</p>
+            <p class="text-sm text-slate-600 dark:text-slate-400 mt-3 leading-relaxed">Admins approve, edit or return a post with a note. Fix what the note asks for and submit it again. Published posts are locked and can only be changed by an admin.</p>
         </div>
     </div>
 
-    <div class="border border-red-200 dark:border-red-500/30 bg-white dark:bg-slate-900 p-5 mt-4">
+    <div class="border border-amber-200 dark:border-amber-500/30 bg-white dark:bg-slate-900 p-5 mt-4 rounded-xl">
         <div class="flex items-center gap-3">
-            <span class="w-9 h-9 bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-300 flex items-center justify-center shrink-0">
-                <svg class="w-5 h-5 shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 14h-2v-2h2v2zm0-4h-2V7h2v5z"/></svg>
+            <span class="w-9 h-9 bg-amber-50 dark:bg-amber-400/10 text-amber-600 dark:text-amber-300 flex items-center justify-center shrink-0 rounded-lg">
+                <svg class="w-5 h-5 shrink-0" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003ZM12 8.25a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75Zm0 8.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clip-rule="evenodd"/></svg>
             </span>
             <h3 class="font-semibold text-slate-900 dark:text-white">External link policy</h3>
         </div>
         <ul class="mt-4 space-y-2.5 text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-            <li class="flex gap-2.5"><span class="w-5 h-5 bg-red-50 dark:bg-red-500/10 text-red-500 flex items-center justify-center shrink-0 mt-0.5"><svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg></span>Never link to adult, gambling, betting, drugs, hacking, piracy or any unsafe destination.</li>
-            <li class="flex gap-2.5"><span class="w-5 h-5 bg-red-50 dark:bg-red-500/10 text-red-500 flex items-center justify-center shrink-0 mt-0.5"><svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg></span>Never link to unfamiliar, low quality or questionable sites for the sake of a commission.</li>
-            <li class="flex gap-2.5"><span class="w-5 h-5 bg-[#F0F7F3] dark:bg-[#2E7856]/10 text-[#27654A] flex items-center justify-center shrink-0 mt-0.5"><svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg></span>Affiliate links are welcome only from reputable sources that readers already trust, such as major retailers and well known brands.</li>
+            <li class="flex gap-2.5"><span class="w-5 h-5 bg-amber-50 dark:bg-amber-400/10 text-amber-600 dark:text-amber-300 flex items-center justify-center shrink-0 mt-0.5 rounded-md"><svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg></span>Never link to adult, gambling, betting, drugs, hacking, piracy or any unsafe destination.</li>
+            <li class="flex gap-2.5"><span class="w-5 h-5 bg-amber-50 dark:bg-amber-400/10 text-amber-600 dark:text-amber-300 flex items-center justify-center shrink-0 mt-0.5 rounded-md"><svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg></span>Never link to unfamiliar, low quality or questionable sites for the sake of a commission.</li>
+            <li class="flex gap-2.5"><span class="w-5 h-5 bg-[#F0F7F3] dark:bg-[#2E7856]/10 text-[#27654A] flex items-center justify-center shrink-0 mt-0.5 rounded-md"><svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg></span>Affiliate links are welcome only from reputable sources that readers already trust, such as major retailers and well known brands.</li>
         </ul>
-        <p class="text-sm font-semibold text-red-600 dark:text-red-400 mt-4">A post that breaks the link policy is rejected and the account may be removed.</p>
+        <p class="text-sm font-semibold text-amber-800 dark:text-amber-300 mt-4">A post that breaks the link policy is rejected and the account may be removed.</p>
     </div>
 
-    <div class="border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 p-5 mt-4 text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-        <span class="font-semibold text-slate-900 dark:text-white">About your account</span>
+    <div class="border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 p-5 mt-4 text-sm text-slate-600 dark:text-slate-400 leading-relaxed rounded-xl">
+        <span class="block font-semibold text-slate-900 dark:text-white mb-1">About your account</span>
         Delete it anytime from your <a href="{{ route('author.profile.edit') }}" class="text-[#1F513A] dark:text-[#6FB393] hover:underline font-semibold">Profile</a>. Drafts go with it; published posts stay online.
     </div>
 

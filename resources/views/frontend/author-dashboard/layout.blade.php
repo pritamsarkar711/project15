@@ -6,12 +6,25 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title','Dashboard') - Author</title>
     <meta name="robots" content="noindex, nofollow">
-    <link href="{{ \App\Support\SiteFont::googleUrl() }}" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    {{-- Fonts: the site wide font, plus the author's personal choice when set.
+         A personal panel_font applies to THIS author's dashboard only, never
+         to the public site or other authors. --}}
+    @php
+        $panelFontKey = auth()->check() ? auth()->user()->panelFontKey() : null;
+        $panelFontStack = $panelFontKey
+            ? \App\Support\FontFamilies::cssStack($panelFontKey)
+            : \App\Support\SiteFont::cssStack();
+    @endphp
+    @if($panelFontKey)
+        <link href="{{ \App\Support\FontFamilies::googleUrl($panelFontKey) }}" rel="stylesheet">
+    @endif
     {!! \App\Support\ViteAssets::tags(['resources/css/app.css', 'resources/js/app.js']) !!}
     {{-- Root-level font rule: unlayered CSS always beats Tailwind's layered
-         preflight, so the admin-chosen font applies everywhere with no chance
+         preflight, so the chosen font applies everywhere with no chance
          of any stylesheet overriding it. --}}
-    <style>html{font-family:{!! \App\Support\SiteFont::cssStack() !!}</style>
+    <style>html{font-family:{!! $panelFontStack !!}</style>
     <script>
         (function(){
             var t = localStorage.getItem('huvanti-admin-theme') || 'light';
@@ -25,7 +38,7 @@
          decode correctly, matching the admin + frontend layouts. --}}
     @stack('head')
 </head>
-<body class="panel-ui min-h-screen bg-[#f6f7fa] text-slate-900 dark:bg-[#0d0f13] dark:text-slate-100 flex overflow-x-hidden" style="font-family:{{ \App\Support\SiteFont::cssStack() }}">
+<body class="panel-ui min-h-screen bg-[#f6f7fa] text-slate-900 dark:bg-[#0d0f13] dark:text-slate-100 flex overflow-x-hidden" style="font-family:{{ $panelFontStack }}">
     {{-- Sidebar: identical structure and styling to the admin panel --}}
     <aside id="author-sidebar" class="fixed inset-y-0 left-0 w-[250px] bg-white dark:bg-[#14171d] text-slate-600 dark:text-slate-300 flex flex-col z-40 transform lg:translate-x-0 -translate-x-full transition-transform duration-300 overflow-y-auto no-scrollbar border-r border-[#e6e8ee] dark:border-[#22262e]">
         <div class="h-[64px] flex items-center gap-3 px-5 border-b border-[#eef0f4] dark:border-[#22262e] shrink-0">
@@ -120,9 +133,12 @@
                         </button>
                     </form>
                 @endif
-                <button onclick="toggleAuthorTheme()" id="author-theme-btn" title="Toggle theme" class="w-9 h-9 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center justify-center">
-                    <svg class="w-[18px] h-[18px] hidden dark:block shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
-                    <svg class="w-[18px] h-[18px] block dark:hidden shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+                <button type="button" onclick="toggleAuthorTheme(event)" id="author-theme-btn" aria-label="Switch between light and dark mode" title="Toggle theme"
+                    class="relative w-[52px] h-7 rounded-full bg-[#E9F2EE] dark:bg-[#182029] border border-[#e6e8ee] dark:border-[#2c313c] flex items-center px-1 transition-colors">
+                    <span class="relative z-10 w-5 h-5 rounded-full bg-white dark:bg-[#2E7856] shadow flex items-center justify-center transition-transform duration-300 dark:translate-x-6">
+                        <svg class="w-3 h-3 text-amber-500 block dark:hidden shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+                        <svg class="w-3 h-3 text-white hidden dark:block shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+                    </span>
                 </button>
                 <a href="{{ url('/') }}" class="inline-flex items-center justify-center gap-2 h-9 px-3 sm:px-4 text-sm font-semibold text-white bg-[#2E7856] hover:bg-[#27654A] rounded-lg transition" aria-label="View site" title="View site">
                     <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 3h6m0 0v6m0-6L10 14M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
@@ -165,12 +181,30 @@
     <div id="author-backdrop" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-30 hidden lg:hidden"></div>
 
     <script>
-        function toggleAuthorTheme(){
+        // Theme: sliding rocker switch + a circular reveal of the new theme
+        // (View Transitions API, where supported — instant switch otherwise).
+        function huvantiThemeReveal(apply, e){
+            var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (!document.startViewTransition || reduced) { apply(); return; }
+            var x = (e && e.clientX) || (window.innerWidth - 60);
+            var y = (e && e.clientY) || 40;
+            var radius = Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y));
+            var vt = document.startViewTransition(apply);
+            vt.ready.then(function(){
+                document.documentElement.animate(
+                    { clipPath: ['circle(0px at ' + x + 'px ' + y + 'px)', 'circle(' + radius + 'px at ' + x + 'px ' + y + 'px)'] },
+                    { duration: 480, easing: 'cubic-bezier(0.4, 0, 0.2, 1)', pseudoElement: '::view-transition-new(root)' }
+                );
+            }).catch(function(){});
+        }
+        function toggleAuthorTheme(e){
             const html = document.documentElement;
             const dark = !html.classList.contains('dark');
-            html.classList.toggle('dark', dark);
-            html.setAttribute('data-theme', dark ? 'dark' : 'light');
-            localStorage.setItem('huvanti-admin-theme', dark ? 'dark' : 'light');
+            huvantiThemeReveal(function(){
+                html.classList.toggle('dark', dark);
+                html.setAttribute('data-theme', dark ? 'dark' : 'light');
+                localStorage.setItem('huvanti-admin-theme', dark ? 'dark' : 'light');
+            }, e);
         }
         const sidebar = document.getElementById('author-sidebar');
         const backdrop = document.getElementById('author-backdrop');
