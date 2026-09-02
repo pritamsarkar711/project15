@@ -177,17 +177,35 @@
 
     @stack('scripts')
     <script>
-        // Theme toggle
-        function toggleTheme(){
-            const isDark = document.documentElement.classList.toggle('dark');
-            localStorage.setItem('huvanti-theme', isDark ? 'dark' : 'light');
+        // Theme: sliding rocker switch + a circular reveal of the new theme
+        // (View Transitions API, where supported — instant switch otherwise).
+        function huvantiThemeReveal(apply, e){
+            var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (!document.startViewTransition || reduced) { apply(); return; }
+            var x = (e && e.clientX) || (window.innerWidth - 60);
+            var y = (e && e.clientY) || 40;
+            var radius = Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y));
+            var vt = document.startViewTransition(apply);
+            vt.ready.then(function(){
+                document.documentElement.animate(
+                    { clipPath: ['circle(0px at ' + x + 'px ' + y + 'px)', 'circle(' + radius + 'px at ' + x + 'px ' + y + 'px)'] },
+                    { duration: 480, easing: 'cubic-bezier(0.4, 0, 0.2, 1)', pseudoElement: '::view-transition-new(root)' }
+                );
+            }).catch(function(){});
+        }
+        function toggleTheme(e){
+            const apply = function(){
+                const isDark = document.documentElement.classList.toggle('dark');
+                localStorage.setItem('huvanti-theme', isDark ? 'dark' : 'light');
+            };
+            huvantiThemeReveal(apply, e);
         }
         // Scroll top visibility (threshold 100px, repo pattern)
         const scrollBtn = document.getElementById('scroll-top');
         window.addEventListener('scroll', ()=>{
             if(window.scrollY > 100){ scrollBtn.classList.remove('hidden'); scrollBtn.classList.add('flex'); }
             else { scrollBtn.classList.add('hidden'); scrollBtn.classList.remove('flex'); }
-        });
+        }, { passive: true });
         // Fade-in safety sweep: images restored from cache may have finished
         // loading before their inline onload ran — reveal them immediately.
         // A 3s timeout also reveals still-pending images: a pending <img>

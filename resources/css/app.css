@@ -34,6 +34,21 @@
 html { color-scheme: light; }
 html.dark { color-scheme: dark; }
 
+/* Theme switch: a small sliding day/night rocker. The knob carries the icon
+   (sun in light, moon in dark) and slides across on its own via the .dark
+   ancestor selector, so no per-theme JS class juggling is needed. */
+::view-transition-old(root), ::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
+}
+html.dark ::view-transition-old(root), html.dark ::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
+}
+
+/* Faster, calmer input taps on touch devices: no grey flash, no click delay. */
+button, a, input, select, textarea, label { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+
 /* Smooth theme transition (colors only, no transform lag). The standard
    material curve (cubic-bezier .4,0,.2,1) feels calmer than linear ease —
    every hover/fade on the site rides on it. */

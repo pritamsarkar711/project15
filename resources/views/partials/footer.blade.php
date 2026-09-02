@@ -117,8 +117,8 @@
         <div class="border-t border-[#e6e8ee] dark:border-[#22262e] mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
             <p class="text-[13px] text-slate-500 dark:text-slate-400">{!! $copyright !!}</p>
             <p class="text-[13px] text-slate-400 dark:text-slate-500 flex items-center gap-1.5">
-                Build By
-                <a href="https://hirepritam.vercel.app/" target="_blank" rel="noopener" class="inline-flex items-center gap-1 font-semibold text-slate-600 dark:text-slate-300 hover:text-[#2E7856] dark:hover:text-[#8CC7AA] transition">Joe
+                Build by
+                <a href="https://github.com/pritamsarkar711/" target="_blank" rel="noopener" class="inline-flex items-center gap-1 font-semibold text-slate-600 dark:text-slate-300 hover:text-[#2E7856] dark:hover:text-[#8CC7AA] transition">Pritam
                     <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M7 17 17 7m0 0H8m9 0v9"/></svg>
                 </a>
             </p>

@@ -46,7 +46,11 @@ class AdvertisementController extends Controller
     {
         $request->validate($this->rules());
         $data = $request->only(['title', 'position', 'code', 'link']);
-        $data['is_active'] = $request->boolean('is_active');
+        // Active/Pause is owned by the card's toggle switch. Only overwrite it
+        // when the state was actually submitted with the form.
+        if ($request->has('is_active')) {
+            $data['is_active'] = $request->boolean('is_active');
+        }
         $advertisement->update($data);
         return back()->with('success', 'Ad updated');
     }

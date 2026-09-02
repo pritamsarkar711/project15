@@ -9,6 +9,11 @@
 <input type="hidden" data-seo-ai-root data-ai-endpoint="{{ $aiEndpoint }}" data-ai-enabled="{{ $aiOn ? '1' : '0' }}">
 
 <div class="panel-card p-6 space-y-4" data-seo-suite>
+    {{-- Card header: keeps the suite consistent with every other panel card --}}
+    <div class="flex items-center gap-2">
+        <svg class="w-4 h-4 text-[#2E7856] dark:text-[#6FB393] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-4.35-4.35"/><circle cx="11" cy="11" r="7"/></svg>
+        <h3 class="font-semibold text-slate-900 dark:text-white">SEO</h3>
+    </div>
     {{-- Focus keyword --}}
     <div>
         <label class="text-sm font-semibold text-slate-900 dark:text-white">Focus keyword</label>

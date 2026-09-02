@@ -92,6 +92,21 @@
                     </select>
                 </div>
             </div>
+            {{-- Dashboard font: the author's personal font for their own panel.
+                 Site default = follow the site wide font chosen by the admin. --}}
+            <div>
+                <label for="panel-font-select" class="block text-sm font-semibold text-slate-900 dark:text-white mb-1.5 inline-flex items-center gap-1.5 cursor-help" title="Applies to your author dashboard only.">
+                    Dashboard font
+                    <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 16v-4"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 8h.01"/></svg>
+                </label>
+                <select id="panel-font-select" name="panel_font"
+                    class="w-full h-11 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none text-sm text-slate-900 dark:text-white">
+                    <option value="">Site default</option>
+                    @foreach(($fonts ?? []) as $fontKey => $font)
+                        <option value="{{ $fontKey }}" @selected(old('panel_font', $user->panel_font) === $fontKey)>{{ $font['label'] }}</option>
+                    @endforeach
+                </select>
+            </div>
         </div>
         <button type="submit" class="mt-5 h-11 px-6 rounded-lg bg-[#2E7856] hover:bg-[#27654A] text-white font-semibold text-sm transition">Save profile</button>
     </div>

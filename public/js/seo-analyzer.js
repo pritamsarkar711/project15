@@ -9,6 +9,10 @@
  *     check groups. Failed rows read first, passed rows stay dimmed below.
  *   - Short labels, one-line hints with live values only where they help.
  *
+ * Design rules: brand palette only. Green = passed, amber = attention,
+ * slate = neutral. No red anywhere, so the panel stays calm and matches
+ * the rest of the author panel.
+ *
  * Usage: give the editor form the data-seo-panel attribute container:
  *   <div id="seo-score-panel"></div>
  * and it auto-wires to fields named title / slug / meta_title /
@@ -17,9 +21,12 @@
 (function () {
     'use strict';
 
-    var ICON_CHECK = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="display:block"><path d="m5 12.5 4.5 4.5L19 7"/></svg>';
-    var ICON_CROSS = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="display:block"><path d="M6 6l12 12M18 6L6 18"/></svg>';
-    var ICON_DASH = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" style="display:block"><path d="M6 12h12"/></svg>';
+    var BRAND_GREEN = '#2E7856';
+    var BRAND_AMBER = '#B45309';
+
+    var ICON_CHECK = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" style="display:block"><path d="m5 12.5 4.5 4.5L19 7"/></svg>';
+    var ICON_CROSS = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" style="display:block"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+    var ICON_DASH = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" style="display:block"><path d="M6 12h12"/></svg>';
 
     var GROUPS = [
         { id: 'basic',   label: 'Basic SEO' },
@@ -89,14 +96,14 @@
         add('basic', kw && metaTitleLower.indexOf(kw) !== -1, 'Keyword in SEO title', 'Work the keyword into the SEO title.');
         add('basic', kw && metaDescLower.indexOf(kw) !== -1, 'Keyword in meta description', 'Mention the keyword in the meta description.');
         add('basic', kw && slug.indexOf(kw) !== -1, 'Keyword in URL slug', 'Include the keyword in the slug.');
-        add('basic', title.length >= 30 && title.length <= 65, 'Title length 30–65', 'Title is ' + title.length + ' characters — aim 30–65.');
-        add('basic', metaTitle.length >= 30 && metaTitle.length <= 60, 'SEO title length 30–60', 'SEO title is ' + metaTitle.length + ' characters — aim 30–60.');
-        add('basic', metaDesc.length >= 120 && metaDesc.length <= 165, 'Meta description 120–165', 'Meta description is ' + metaDesc.length + ' characters — aim 120–165.');
+        add('basic', title.length >= 30 && title.length <= 65, 'Title length 30-65', 'Title is ' + title.length + ' characters. Aim for 30 to 65.');
+        add('basic', metaTitle.length >= 30 && metaTitle.length <= 60, 'SEO title length 30-60', 'SEO title is ' + metaTitle.length + ' characters. Aim for 30 to 60.');
+        add('basic', metaDesc.length >= 120 && metaDesc.length <= 165, 'Meta description 120-165', 'Meta description is ' + metaDesc.length + ' characters. Aim for 120 to 165.');
         add('content', kw && firstChunk.indexOf(kw) !== -1, 'Keyword in opening paragraph', 'Use the keyword early in the content.');
-        add('content', kw && density >= 0.5 && density <= 3.0, 'Keyword density 0.5–3%', density > 3.0 ? 'Density ' + density + '% is too high — ease off.' : 'Density ' + density + '% — use the keyword a few more times.');
-        add('content', kw && headings.some(function (h) { return h.indexOf(kw) !== -1; }), 'Keyword in a subheading', 'Add the keyword to one H2/H3.');
-        add('content', wordCount >= 600, '600+ words', 'Content is ' + wordCount + ' words — aim 600+.');
-        add('content', headings.length >= 2, '2+ subheadings', headings.length + ' subheading(s) — add more H2/H3.');
+        add('content', kw && density >= 0.5 && density <= 3.0, 'Keyword density 0.5-3%', density > 3.0 ? 'Density is ' + density + '%, which is high. Ease off a little.' : 'Density is ' + density + '%. Use the keyword a few more times.');
+        add('content', kw && headings.some(function (h) { return h.indexOf(kw) !== -1; }), 'Keyword in a subheading', 'Add the keyword to one H2 or H3.');
+        add('content', wordCount >= 600, '600+ words', 'Content is ' + wordCount + ' words. Aim for 600 or more.');
+        add('content', headings.length >= 2, '2+ subheadings', headings.length + ' subheading(s) so far. Add more H2 or H3 headings.');
         add('media', external >= 1, 'External link', 'Add one outbound link to a trusted source.');
         add('media', internal >= 1, 'Internal link', 'Link to another page on your site.');
         add('media', imgs.length > 0 && imgNoAlt === 0, 'Image alt text', imgs.length === 0 ? 'Add an image with descriptive alt text.' : 'Add alt text to ' + imgNoAlt + ' image(s).');
@@ -114,7 +121,7 @@
     }
 
     function scoreColor(score) {
-        return score >= 70 ? '#16a34a' : score >= 40 ? '#d97706' : '#dc2626';
+        return score >= 70 ? BRAND_GREEN : BRAND_AMBER;
     }
 
     function scoreLabel(score) {
@@ -134,22 +141,22 @@
             if (c.ok === null) { neutral++; return; }
             c.ok ? pass++ : fail++;
         });
-        return { pass: pass, fail: fail, neutral: neutral };
+        return { pass: pass, fail: fail, neutral: neutral, total: pass + fail + neutral };
     }
 
     function row(c) {
         var icon, iconCls, textCls;
         if (c.ok === true) {
-            icon = ICON_CHECK; iconCls = 'bg-green-600 text-white'; textCls = 'text-slate-400 dark:text-slate-500';
+            icon = ICON_CHECK; iconCls = 'bg-[#E9F2EE] text-[#2E7856] dark:bg-[#2E7856]/20 dark:text-[#8CC7AA]'; textCls = 'text-slate-400 dark:text-slate-500';
         } else if (c.ok === false) {
-            icon = ICON_CROSS; iconCls = 'bg-red-500 text-white'; textCls = 'text-slate-700 dark:text-slate-200 font-medium';
+            icon = ICON_CROSS; iconCls = 'bg-amber-100 text-amber-700 dark:bg-amber-400/15 dark:text-amber-300'; textCls = 'text-slate-800 dark:text-slate-100 font-medium';
         } else {
-            icon = ICON_DASH; iconCls = 'bg-slate-200 dark:bg-slate-700 text-slate-400 dark:text-slate-500'; textCls = 'text-slate-400 dark:text-slate-500';
+            icon = ICON_DASH; iconCls = 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500'; textCls = 'text-slate-400 dark:text-slate-500';
         }
-        return '<li class="flex items-start gap-2.5 px-2.5 py-1.5 rounded-lg' + (c.ok === false ? ' bg-red-50/70 dark:bg-red-500/[0.07]' : '') + '">' +
-            '<span class="shrink-0 w-[18px] h-[18px] rounded-full inline-flex items-center justify-center mt-px ' + iconCls + '">' + icon + '</span>' +
+        return '<li class="flex items-start gap-3 px-3 py-2 rounded-lg' + (c.ok === false ? ' bg-amber-50/80 dark:bg-amber-400/[0.05]' : '') + '">' +
+            '<span class="shrink-0 w-[19px] h-[19px] rounded-md inline-flex items-center justify-center mt-px ' + iconCls + '">' + icon + '</span>' +
             '<span class="min-w-0 ' + textCls + '">' + escapeHtml(c.label) +
-            (c.hint ? '<span class="block text-[11.5px] text-slate-400 dark:text-slate-500">' + escapeHtml(c.hint) + '</span>' : '') +
+            (c.hint ? '<span class="block text-[11.5px] text-slate-500 dark:text-slate-400 mt-0.5">' + escapeHtml(c.hint) + '</span>' : '') +
             '</span></li>';
     }
 
@@ -173,29 +180,33 @@
         }
 
         var html = '' +
-            '<div class="seo-card rounded-[10px] border border-[#e6e8ee] dark:border-[#262a33] bg-white dark:bg-[#101319] p-4 text-[13px] leading-relaxed">' +
+            '<div class="rounded-xl border border-[#e6e8ee] dark:border-[#262a33] bg-white dark:bg-[#101319] p-4 sm:p-5 text-[13px] leading-relaxed">' +
             // Header: gauge + verdict + counters
             '<div class="flex items-center gap-4">' +
-            '<div class="relative w-16 h-16 shrink-0">' +
-            '<svg width="64" height="64" viewBox="0 0 64 64" class="block" style="transform:rotate(-90deg);" aria-hidden="true">' +
-            '<circle cx="32" cy="32" r="26" fill="none" stroke="#e6e8ee" class="seo-ring-track" stroke-width="7"/>' +
-            '<circle cx="32" cy="32" r="26" fill="none" stroke="' + color + '" stroke-width="7" stroke-linecap="round" stroke-dasharray="' + circumference.toFixed(1) + '" stroke-dashoffset="' + offset.toFixed(1) + '"/>' +
+            '<div class="relative w-[72px] h-[72px] shrink-0">' +
+            '<svg width="72" height="72" viewBox="0 0 64 64" class="block" style="transform:rotate(-90deg);" aria-hidden="true">' +
+            '<circle cx="32" cy="32" r="26" fill="none" stroke="#e6e8ee" class="seo-ring-track" stroke-width="6"/>' +
+            '<circle cx="32" cy="32" r="26" fill="none" stroke="' + color + '" stroke-width="6" stroke-linecap="round" stroke-dasharray="' + circumference.toFixed(1) + '" stroke-dashoffset="' + offset.toFixed(1) + '"/>' +
             '</svg>' +
-            '<div class="absolute inset-0 flex items-center justify-center font-extrabold text-[17px]" style="color:' + color + ';">' + result.score + '</div>' +
+            '<div class="absolute inset-0 flex flex-col items-center justify-center">' +
+            '<span class="font-extrabold text-[19px] leading-none" style="color:' + color + ';">' + result.score + '</span>' +
+            '<span class="text-[9px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mt-0.5">score</span>' +
+            '</div>' +
             '</div>' +
             '<div class="min-w-0 flex-1">' +
-            '<div class="font-bold text-[15px]" style="color:' + color + ';">' + scoreLabel(result.score) + '</div>' +
-            '<div class="text-slate-500 dark:text-slate-400 text-xs mt-0.5">' + result.words + ' words' +
+            '<span class="inline-flex items-center gap-1.5 px-2.5 h-6 rounded-full text-[11px] font-bold" style="color:' + color + '; background:' + color + '1A;">' +
+            '<span class="w-1.5 h-1.5 rounded-full" style="background:' + color + ';"></span>' + scoreLabel(result.score) + '</span>' +
+            '<div class="text-slate-500 dark:text-slate-400 text-xs mt-1.5">' + result.words + ' words' +
             (result.hasKeyword ? '' : ' · add a focus keyword to unlock full scoring') + '</div>' +
-            '<div class="flex gap-3 mt-1.5 text-[11px] font-semibold">' +
-            '<span class="inline-flex items-center gap-1 text-green-600 dark:text-green-400"><span class="w-1.5 h-1.5 rounded-full bg-green-600 dark:bg-green-400"></span>' + passed + ' passed</span>' +
-            '<span class="inline-flex items-center gap-1 text-red-500"><span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>' + failed + ' to fix</span>' +
+            '<div class="flex gap-2 mt-2">' +
+            '<span class="inline-flex items-center gap-1.5 h-6 px-2 rounded-md bg-[#E9F2EE] dark:bg-[#2E7856]/15 text-[11px] font-semibold text-[#1F513A] dark:text-[#8CC7AA]"><span class="w-1.5 h-1.5 rounded-full bg-[#2E7856]"></span>' + passed + ' passed</span>' +
+            '<span class="inline-flex items-center gap-1.5 h-6 px-2 rounded-md bg-amber-50 dark:bg-amber-400/10 text-[11px] font-semibold text-amber-700 dark:text-amber-300"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>' + failed + ' to fix</span>' +
             '</div>' +
             '</div>' +
             '</div>';
 
-        // RankMath-style group tabs
-        html += '<div class="mt-3 pt-3 border-t border-[#eef0f4] dark:border-[#22262e] flex flex-wrap gap-1.5" role="tablist">';
+        // RankMath-style group tabs with pass counts
+        html += '<div class="mt-4 pt-3 border-t border-[#eef0f4] dark:border-[#22262e] flex flex-wrap gap-1.5" role="tablist">';
             GROUPS.forEach(function (g) {
                 var st = groupStats(result.checks, g.id);
                 var isActive = g.id === activeGroup;
@@ -204,7 +215,7 @@
                         ? 'bg-[#173A2A] border-[#173A2A] text-white dark:bg-[#2E7856] dark:border-[#2E7856]'
                         : 'border-[#e6e8ee] dark:border-[#262a33] text-slate-500 dark:text-slate-400 hover:border-[#2E7856] hover:text-[#1F513A] dark:hover:text-[#6FB393]') +
                     '">' + escapeHtml(g.label) +
-                    (st.fail > 0 ? '<span class="w-4 h-4 rounded-full bg-red-500 text-white text-[9px] font-bold inline-flex items-center justify-center">' + st.fail + '</span>' : '') +
+                    '<span class="text-[10px] font-bold ' + (isActive ? 'text-white/70' : 'text-slate-400') + '">' + st.pass + '/' + (st.total - st.neutral) + '</span>' +
                     '</button>';
             });
             html += '</div>';
@@ -217,7 +228,7 @@
                 .forEach(function (c) { rows.push(row(c)); });
             result.checks.filter(function (c) { return c.group === activeGroup && c.ok === null; })
                 .forEach(function (c) { rows.push(row(c)); });
-            html += '<ul class="mt-2 m-0 p-0 list-none grid gap-0.5">' + rows.join('') + '</ul>';
+            html += '<ul class="mt-2.5 m-0 p-0 list-none grid gap-1">' + rows.join('') + '</ul>';
 
         html += '</div>';
         el.innerHTML = html;

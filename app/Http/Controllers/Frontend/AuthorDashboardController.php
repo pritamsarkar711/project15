@@ -589,7 +589,9 @@ class AuthorDashboardController extends Controller
             ->orderBy('sort_order')
             ->orderBy('name')
             ->get(['name', 'slug']);
-        return view('frontend.author-dashboard.profile', compact('user', 'categories'));
+        // Font choices for the author's OWN dashboard.
+        $fonts = \App\Support\FontFamilies::all();
+        return view('frontend.author-dashboard.profile', compact('user', 'categories', 'fonts'));
     }
 
     public function profileUpdate(Request $request)
@@ -611,6 +613,8 @@ class AuthorDashboardController extends Controller
             'country'          => ['nullable', 'string', 'size:2'],
             // Primary niche: optional category slug from the dropdown.
             'niche'            => ['nullable', 'string', 'max:100'],
+            // Personal dashboard font: optional key from the FontFamilies list.
+            'panel_font'       => ['nullable', 'string', 'max:50'],
         ];
 
         // Username is one-time-lockable — only allow setting it if it's
@@ -640,6 +644,12 @@ class AuthorDashboardController extends Controller
             return back()->withErrors(['niche' => 'Please pick a niche from the list.'])->withInput();
         }
 
+        // Same guard for the font: only keys that still exist in the list.
+        if (isset($data['panel_font']) && $data['panel_font'] !== ''
+            && !array_key_exists($data['panel_font'], \App\Support\FontFamilies::all())) {
+            return back()->withErrors(['panel_font' => 'Please pick a font from the list.'])->withInput();
+        }
+
         $user->name = $data['name'];
         $user->bio = $data['bio'] ?? null;
         $user->role_title = $data['role_title'] ?? null;
@@ -649,6 +659,7 @@ class AuthorDashboardController extends Controller
         // silently keeping the old value.
         $user->country = strtoupper(trim((string) ($data['country'] ?? ''))) ?: null;
         $user->niche = isset($data['niche']) && $data['niche'] !== '' ? $data['niche'] : null;
+        $user->panel_font = isset($data['panel_font']) && $data['panel_font'] !== '' ? $data['panel_font'] : null;
 
         if (empty($user->username) && isset($data['username'])) {
             // Lowercase the username for case-insensitive uniqueness on lookup
