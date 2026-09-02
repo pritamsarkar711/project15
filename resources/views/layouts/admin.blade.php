@@ -101,6 +101,12 @@
                 @if($feedbackCount)<span class="ml-auto text-[11px] font-bold bg-sky-400 text-slate-900 px-2 py-0.5 rounded-full">{{ $feedbackCount }}</span>@endif
             </a>
 
+            <div class="pt-3 pb-1 px-3 text-[10px] font-bold tracking-[0.18em] sb-label uppercase">People</div>
+            <a href="{{ route('admin.users.index') }}" class="sb-link flex items-center gap-3 px-3 py-2.5 mx-2 rounded-lg transition {{ request()->routeIs('admin.users*') ? 'is-active' : '' }}">
+                <svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M8 2v4M16 2v4M3 9h18"/><circle cx="9.5" cy="13.5" r="1.75"/><path stroke-linecap="round" stroke-linejoin="round" d="M6.5 17.5a3.2 3.2 0 0 1 6 0M15 12.5h3.5M15 16h2.5"/></svg>
+                Users
+            </a>
+
             <div class="pt-3 pb-1 px-3 text-[10px] font-bold tracking-[0.18em] sb-label uppercase">System</div>
             <a href="{{ route('admin.social.index') }}" class="sb-link flex items-center gap-3 px-3 py-2.5 mx-2 rounded-lg transition {{ request()->routeIs('admin.social*') ? 'is-active' : '' }}">
                 <svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path stroke-linecap="round" stroke-linejoin="round" d="m8.59 13.51 6.83 3.98m-.01-10.98-6.82 3.98"/></svg>

@@ -248,6 +248,18 @@ Route::prefix('manage')->name('admin.')->group(function(){
         Route::get('profile', [ProfileController::class,'edit'])->name('profile.edit');
         Route::post('profile', [ProfileController::class,'update'])->name('profile.update');
 
+        // User management: list, roles, suspension, verification, reset links,
+        // post reassignment, deletion. users/bulk sits before {user} routes so
+        // "bulk" is never captured as an id.
+        Route::get('users', [\App\Http\Controllers\Admin\UserController::class, 'index'])->name('users.index');
+        Route::post('users/bulk', [\App\Http\Controllers\Admin\UserController::class, 'bulk'])->name('users.bulk');
+        Route::patch('users/{user}/role', [\App\Http\Controllers\Admin\UserController::class, 'updateRole'])->name('users.role');
+        Route::post('users/{user}/status', [\App\Http\Controllers\Admin\UserController::class, 'toggleStatus'])->name('users.status');
+        Route::post('users/{user}/verify', [\App\Http\Controllers\Admin\UserController::class, 'toggleVerify'])->name('users.verify');
+        Route::post('users/{user}/send-reset', [\App\Http\Controllers\Admin\UserController::class, 'sendResetLink'])->name('users.reset');
+        Route::post('users/{user}/reassign', [\App\Http\Controllers\Admin\UserController::class, 'reassignPosts'])->name('users.reassign');
+        Route::delete('users/{user}', [\App\Http\Controllers\Admin\UserController::class, 'destroy'])->name('users.destroy');
+
         Route::get('feedback', [App\Http\Controllers\Admin\FeedbackController::class, 'index'])->name('feedback.index');
         Route::get('feedback/{feedback}', [App\Http\Controllers\Admin\FeedbackController::class, 'show'])->name('feedback.show');
         Route::delete('feedback/{feedback}', [App\Http\Controllers\Admin\FeedbackController::class, 'destroy'])->name('feedback.destroy');

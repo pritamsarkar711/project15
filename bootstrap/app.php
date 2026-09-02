@@ -37,6 +37,10 @@ return \App\Application::configure(basePath: dirname(__DIR__))
         // queued jobs (social auto-post, mail notifications), drain the queue
         // right after the response is sent.
         $middleware->append(\App\Http\Middleware\RunQueueAfterResponse::class);
+        // Admin > Users > Suspend: a suspended account is signed out on its
+        // next request, even mid-session. Runs inside the web group, after
+        // the session starts, so the current user is already resolvable.
+        $middleware->web(append: [\App\Http\Middleware\BlockSuspendedUsers::class]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->report(function (\Throwable $e) {

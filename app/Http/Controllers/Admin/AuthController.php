@@ -37,6 +37,11 @@ class AuthController extends Controller
             return back()->withErrors(['email' => 'Invalid credentials.'])->onlyInput('email');
         }
 
+        // A suspended admin account cannot sign in (Admin > Users > Suspend).
+        if (($user->status ?? 'active') === 'suspended') {
+            return back()->withErrors(['email' => 'This account has been suspended. Contact the site owner if you think this is a mistake.'])->onlyInput('email');
+        }
+
         // Real TOTP two-factor check
         if ($user->google2fa_secret) {
             if (!$request->filled('two_factor_code')) {
@@ -47,6 +52,9 @@ class AuthController extends Controller
                     ->with('show_2fa', true)->withInput($request->only('email'));
             }
         }
+
+        // Remember the most recent sign-in for the admin users list.
+        $user->forceFill(['last_login_at' => now()])->saveQuietly();
 
         Auth::login($user, $request->boolean('remember'));
         $request->session()->regenerate();

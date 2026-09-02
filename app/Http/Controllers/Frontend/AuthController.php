@@ -97,6 +97,14 @@ class AuthController extends Controller
             ])->onlyInput('email');
         }
 
+        // Suspended accounts are rejected before anything else. The admin
+        // suspends users from Admin > Users; the message never reveals why.
+        if (($user->status ?? 'active') === 'suspended') {
+            return back()->withErrors([
+                'email' => 'This account has been suspended. Contact the site owner if you think this is a mistake.',
+            ])->onlyInput('email');
+        }
+
         // Two-factor challenge for users who enabled it in their dashboard.
         if ($user->google2fa_secret) {
             if (!$request->filled('two_factor_code')) {
@@ -107,6 +115,9 @@ class AuthController extends Controller
                     ->with('show_2fa', true)->withInput($request->only('email'));
             }
         }
+
+        // Remember the most recent sign-in for the admin users list.
+        $user->forceFill(['last_login_at' => now()])->saveQuietly();
 
         Auth::login($user, $request->boolean('remember'));
         $request->session()->regenerate();
@@ -301,6 +312,12 @@ class AuthController extends Controller
                     ]);
                 }
             }
+            if (($user->status ?? 'active') === 'suspended') {
+                return redirect()->route('login')->withErrors(['email' => 'This account has been suspended. Contact the site owner if you think this is a mistake.']);
+            }
+
+            $user->forceFill(['last_login_at' => now()])->saveQuietly();
+
             Auth::login($user, true);
             $request->session()->regenerate();
             return $this->redirectAfterAuth()->with('success', 'Signed in with Google.');
