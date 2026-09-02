@@ -930,3 +930,143 @@ body.theme-loading { visibility: hidden; }
 .panel-ui ::-webkit-scrollbar-track { background: transparent; }
 
 }
+
+/* ============================================================
+   SITE TEMPLATES
+   The site theme recolors the product; the site template changes
+   its design language: corner geometry, elevation, typography and
+   surface treatment. html[data-site-template] drives it, every
+   layout prints the admin's choice, and "classic" (no overrides)
+   is the original design. Any template pairs with any color
+   theme, in light and dark mode. These rules sit after the
+   @layer components block on purpose: unlayered rules win the
+   cascade, so a template always reshapes the base components.
+   ============================================================ */
+
+/* ---------- Material: soft shapes, pill actions, layered depth ---------- */
+html[data-site-template="material"] {
+    --radius-sm: 10px;
+    --radius-md: 14px;
+    --radius-lg: 18px;
+    --radius-xl: 22px;
+    --radius-2xl: 26px;
+}
+
+/* Every action reads as a pill, the Material signature. Icon buttons
+   become circles, the day/night rocker is a stadium already, chips and
+   badges are round already, so nothing changes shape twice. */
+html[data-site-template="material"] button,
+html[data-site-template="material"] .btn,
+html[data-site-template="material"] input[type="submit"],
+html[data-site-template="material"] a[class*="bg-[var(--brand)]"],
+html[data-site-template="material"] a[class*="bg-[var(--brand-deep)]"],
+html[data-site-template="material"] a[class*="bg-[var(--brand-lift)]"] {
+    border-radius: 999px;
+}
+
+/* Depth comes from two soft layers at rest and a wider lift on hover,
+   tuned per surface so light and dark cards both read as elevated. */
+html[data-site-template="material"] .card-elev,
+html[data-site-template="material"] .card {
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.06), 0 6px 16px -6px rgba(16, 24, 40, 0.10);
+}
+html[data-site-template="material"] .card-hover:hover {
+    box-shadow: 0 2px 4px rgba(16, 24, 40, 0.06), 0 14px 30px -10px rgba(16, 24, 40, 0.18);
+}
+html[data-site-template="material"] .panel-card,
+html[data-site-template="material"] .widget,
+html[data-site-template="material"] .stat-card {
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05), 0 8px 20px -8px rgba(16, 24, 40, 0.12);
+}
+html[data-site-template="material"] .stat-card:hover {
+    box-shadow: 0 2px 4px rgba(16, 24, 40, 0.06), 0 14px 30px -10px rgba(16, 24, 40, 0.18);
+}
+html[data-site-template="material"].dark .card-elev,
+html[data-site-template="material"].dark .card,
+html[data-site-template="material"].dark .panel-card,
+html[data-site-template="material"].dark .widget,
+html[data-site-template="material"].dark .stat-card {
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 10px 24px -10px rgba(0, 0, 0, 0.6);
+}
+html[data-site-template="material"].dark .card-hover:hover,
+html[data-site-template="material"].dark .stat-card:hover {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.45), 0 16px 32px -10px rgba(0, 0, 0, 0.7);
+}
+
+/* Focus reads as a calm tonal outline instead of a bare border swap. */
+html[data-site-template="material"] .input:focus,
+html[data-site-template="material"] .panel-ui input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]):not([type="color"]):not(.huv-rte-src):focus,
+html[data-site-template="material"] .panel-ui select:focus,
+html[data-site-template="material"] .panel-ui textarea:not(.huv-rte-src):focus {
+    border-color: color-mix(in srgb, var(--brand) 45%, #dfe3ea);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 18%, transparent);
+}
+html[data-site-template="material"].dark .input:focus,
+html[data-site-template="material"].dark .panel-ui select:focus,
+html[data-site-template="material"].dark .panel-ui textarea:not(.huv-rte-src):focus {
+    border-color: color-mix(in srgb, var(--brand-light) 45%, #2c313c);
+}
+
+/* Headings tighten a touch, the Google sans feel. */
+html[data-site-template="material"] h1,
+html[data-site-template="material"] h2,
+html[data-site-template="material"] h3,
+html[data-site-template="material"] h4 {
+    letter-spacing: -0.015em;
+}
+
+/* ---------- Editorial: serif display, crisp edges, hairline structure ---------- */
+html[data-site-template="editorial"] {
+    --radius-sm: 2px;
+    --radius-md: 3px;
+    --radius-lg: 3px;
+    --radius-xl: 4px;
+    --radius-2xl: 5px;
+}
+
+/* The signature serif voice for display type. Body text keeps the site
+   font chosen in Settings, so the pairing stays deliberate. */
+html[data-site-template="editorial"] h1,
+html[data-site-template="editorial"] h2,
+html[data-site-template="editorial"] h3,
+html[data-site-template="editorial"] h4 {
+    font-family: Georgia, 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', 'Times New Roman', serif;
+    letter-spacing: 0;
+    font-weight: 700;
+}
+
+/* Structure comes from hairlines, not cast shadows. Hover quiets down
+   to a firmer border so cards answer the pointer without lifting. */
+html[data-site-template="editorial"] .card-elev,
+html[data-site-template="editorial"] .card,
+html[data-site-template="editorial"] .panel-card,
+html[data-site-template="editorial"] .widget,
+html[data-site-template="editorial"] .stat-card,
+html[data-site-template="editorial"] .btn,
+html[data-site-template="editorial"] .seo-panel {
+    box-shadow: none;
+}
+html[data-site-template="editorial"] .card-hover:hover,
+html[data-site-template="editorial"] .stat-card:hover {
+    box-shadow: none;
+    transform: none;
+    border-color: #b3bac7;
+}
+html[data-site-template="editorial"].dark .card-hover:hover,
+html[data-site-template="editorial"].dark .stat-card:hover {
+    border-color: #4a5261;
+}
+
+/* Labels read as small caps section markers. */
+html[data-site-template="editorial"] .label {
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 11px;
+}
+
+/* Bare links inside article bodies take the underlined convention. */
+html[data-site-template="editorial"] article a:not([class]) {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+}

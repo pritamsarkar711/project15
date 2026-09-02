@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth" data-site-theme="{{ \App\Support\SiteThemes::validOrDefault(setting('site_theme')) }}">
+<html lang="en" class="scroll-smooth" data-site-theme="{{ \App\Support\SiteThemes::validOrDefault(setting('site_theme')) }}" data-site-template="{{ \App\Support\SiteTemplates::validOrDefault(setting('site_template')) }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">

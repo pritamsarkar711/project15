@@ -26,6 +26,7 @@ Huvanti is a free, self-hosted publishing platform: a fast multi-author blog fro
 ## Highlights
 
 - **Four site themes, one click**: the admin picks Emerald (default), Material, Ocean or Sunset in Settings → Appearance and the entire product recolors: public site, admin panel and author panel, light and dark mode
+- **Three site templates**: Classic (the original design), Material (soft shapes, pill actions, layered depth) and Editorial (serif headlines, crisp edges, hairline rules); the template reshapes the whole product while the theme recolors it, so any template pairs with any palette
 - **Write & publish fast**: custom dependency-free rich-text editor with autosave, FAQ builder, scheduling, featured-image auto-optimisation
 - **Rank higher**: live RankMath-style SEO score (0-100) in the editor, focus-keyword analysis, IndexNow instant indexing, sitemap, schema, canonical URLs
 - **Grow on autopilot**: publish once and Huvanti shares the post to X, Facebook, LinkedIn, Instagram, Telegram and Pinterest automatically
@@ -66,6 +67,7 @@ Huvanti is a free, self-hosted publishing platform: a fast multi-author blog fro
 ### CMS & Site Management
 - Dashboard stats, posts CRUD with bulk actions + trash, categories (drag & drop), pages, navigation manager, comment moderation, contact inbox, feedback, ads manager
 - **Site themes**: Emerald (default), Material (indigo), Ocean (cyan) and Sunset (amber); switching the theme in the admin panel recolors every page of the site, both panels and both color modes, from one palette source (`resources/css/app.css`)
+- **Site templates**: Classic (default), Material and Editorial; switching the template in the admin panel reshapes corners, elevation, buttons and display typography across every page, both panels and both color modes (`app/Support/SiteTemplates.php` + the SITE TEMPLATES block in `resources/css/app.css`)
 - Light/dark mode with a sliding day/night switch and a circular reveal transition; the admin and author sidebars stay high contrast dark in both modes
 - Card elevation with soft drop shadows across panels, widgets and stat cards
 - Site settings: fonts, hero section, per-author dashboard font, dark mode

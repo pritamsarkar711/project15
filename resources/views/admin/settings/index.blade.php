@@ -116,8 +116,49 @@ Disallow: /manage" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border 
         @csrf
         <input type="hidden" name="tab" value="appearance">
         <div class="panel-card p-6 space-y-4">
+            <h3 class="font-semibold">Site Template</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                @php $currentTemplate = \App\Support\SiteTemplates::validOrDefault(old('site_template', $settings['site_template']->value ?? 'classic')); @endphp
+                @foreach(\App\Support\SiteTemplates::all() as $key => $template)
+                    <label class="relative flex cursor-pointer">
+                        <input type="radio" name="site_template" value="{{ $key }}" class="peer sr-only" @checked($currentTemplate === $key)>
+                        <span class="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/40 p-4 transition peer-checked:border-[var(--brand)] peer-checked:ring-2 peer-checked:ring-[var(--brand)]/25 hover:border-slate-300 dark:hover:border-slate-600">
+                            @if($key === 'classic')
+                                <span class="block p-3" style="border-radius:10px; border:1px solid #e6e8ee; background:#fff; box-shadow:0 1px 2px rgba(16,24,40,.05), 0 4px 14px -6px rgba(16,24,40,.07);">
+                                    <span class="block text-[18px] leading-none font-bold" style="color:#16181d;">Aa</span>
+                                    <span class="block mt-2 h-1.5 w-full" style="border-radius:4px; background:#e2e6ee;"></span>
+                                    <span class="block mt-1 h-1.5 w-3/4" style="border-radius:4px; background:#e2e6ee;"></span>
+                                    <span class="inline-block mt-2.5 h-5 w-14" style="border-radius:8px; background:var(--brand);"></span>
+                                </span>
+                            @elseif($key === 'material')
+                                <span class="block p-3" style="border-radius:18px; border:1px solid #e6e8ee; background:#fff; box-shadow:0 1px 2px rgba(16,24,40,.06), 0 8px 20px -8px rgba(16,24,40,.14);">
+                                    <span class="block text-[18px] leading-none font-bold" style="color:#16181d;">Aa</span>
+                                    <span class="block mt-2 h-1.5 w-full" style="border-radius:999px; background:#e2e6ee;"></span>
+                                    <span class="block mt-1 h-1.5 w-3/4" style="border-radius:999px; background:#e2e6ee;"></span>
+                                    <span class="inline-block mt-2.5 h-5 w-14" style="border-radius:999px; background:var(--brand); box-shadow:0 1px 2px rgba(16,24,40,.10), 0 3px 8px -2px rgba(16,24,40,.14);"></span>
+                                </span>
+                            @else
+                                <span class="block p-3" style="border-radius:2px; border:1px solid #d6dae2; background:#fff;">
+                                    <span class="block text-[18px] leading-none" style="color:#16181d; font-family:Georgia, 'Times New Roman', serif; font-weight:700;">Aa</span>
+                                    <span class="block mt-2 h-1.5 w-full" style="border-radius:1px; background:#e2e6ee;"></span>
+                                    <span class="block mt-1 h-1.5 w-3/4" style="border-radius:1px; background:#e2e6ee;"></span>
+                                    <span class="inline-block mt-2.5 h-5 w-14" style="border-radius:3px; background:var(--brand);"></span>
+                                </span>
+                            @endif
+                            <span class="flex items-center gap-2 mt-3">
+                                <span class="font-semibold text-sm text-slate-900 dark:text-white">{{ $template['label'] }}</span>
+                                @if($currentTemplate === $key)
+                                    <span class="ml-auto text-[10px] font-bold uppercase tracking-wider text-[var(--brand-ink)] dark:text-[var(--brand-light-2)] bg-[var(--brand-tint)] dark:bg-[var(--brand-tint-dark)] px-1.5 py-0.5 rounded">Active</span>
+                                @endif
+                            </span>
+                            <span class="block text-xs text-slate-500 dark:text-slate-400 mt-1">{{ $template['hint'] }}</span>
+                        </span>
+                    </label>
+                @endforeach
+            </div>
+        </div>
+        <div class="panel-card p-6 space-y-4">
             <h3 class="font-semibold">Site Theme</h3>
-            <p class="text-sm text-slate-500 dark:text-slate-400 -mt-2">One choice recolors the whole site: public pages, the admin panel and the author panel, in light and dark mode.</p>
             <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
                 @php $currentTheme = \App\Support\SiteThemes::validOrDefault(old('site_theme', $settings['site_theme']->value ?? 'default')); @endphp
                 @foreach(\App\Support\SiteThemes::all() as $key => $theme)

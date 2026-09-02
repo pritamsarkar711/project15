@@ -57,6 +57,8 @@ class SettingController extends Controller
             'site_font_family' => 'nullable|string|in:'.implode(',', array_keys(FontFamilies::all())),
             // Site theme (whole product recolors from this one attribute)
             'site_theme' => 'nullable|string|in:'.implode(',', \App\Support\SiteThemes::keys()),
+            // Site template (whole product reshapes: corners, elevation, typography)
+            'site_template' => 'nullable|string|in:'.implode(',', \App\Support\SiteTemplates::keys()),
             // Hero
             'hero_phrase_1' => 'nullable|string|max:80',
             'hero_phrase_2' => 'nullable|string|max:80',
@@ -110,6 +112,7 @@ class SettingController extends Controller
             'footer_copyright',
             'site_font_family',
             'site_theme',
+            'site_template',
             'hero_phrase_1', 'hero_phrase_2', 'hero_subtitle', 'hero_search_placeholder',
             'ad_paragraph_frequency',
             // Footer social media. social_enabled is special-cased below
