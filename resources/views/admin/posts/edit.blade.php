@@ -47,22 +47,39 @@
             </div>
 
             <div class="panel-card p-6">
-                <h3 class="font-semibold mb-3">FAQ</h3>
-                <div id="faqs">
+                <h3 class="font-semibold mb-4">FAQ</h3>
+                <div id="faqs" class="space-y-3">
                     @forelse(old('faqs', $post->faqs->map(fn($f)=>['question'=>$f->question,'answer'=>$f->answer])->toArray()) as $idx => $faq)
-                        <div class="faq-item grid grid-cols-1 gap-3 p-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 mb-3">
-                            <input type="text" name="faqs[{{ $idx }}][question]" value="{{ $faq['question'] ?? '' }}" placeholder="Question" class="h-10 px-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-sm">
-                            <textarea name="faqs[{{ $idx }}][answer]" placeholder="Answer" rows="2" class="px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-sm">{{ $faq['answer'] ?? '' }}</textarea>
-                            <button type="button" onclick="this.parentElement.remove()" class="text-xs text-red-600 dark:text-red-400 justify-self-start">Remove</button>
+                        <div class="faq-item rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/50 p-4">
+                            <div class="flex items-center justify-between gap-3">
+                                <span class="faq-num inline-flex items-center gap-2 text-xs font-bold text-[#1F513A] dark:text-[#6FB393]">
+                                    <span class="w-5 h-5 rounded-md bg-[#E9F2EE] dark:bg-[#233b30] flex items-center justify-center">{{ $idx + 1 }}</span>
+                                    Question
+                                </span>
+                                <button type="button" onclick="removeFaq(this)" title="Remove" aria-label="Remove question" class="w-7 h-7 rounded-md text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 flex items-center justify-center transition shrink-0">
+                                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/></svg>
+                                </button>
+                            </div>
+                            <input type="text" name="faqs[{{ $idx }}][question]" value="{{ $faq['question'] ?? '' }}" placeholder="Write the question readers ask" class="mt-3 h-10 px-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm">
+                            <textarea name="faqs[{{ $idx }}][answer]" placeholder="And the answer, in your own words" rows="2" class="mt-2 px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm">{{ $faq['answer'] ?? '' }}</textarea>
                         </div>
                     @empty
-                        <div class="faq-item grid grid-cols-1 gap-3 p-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 mb-3">
-                            <input type="text" name="faqs[0][question]" placeholder="Question" class="h-10 px-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-sm">
-                            <textarea name="faqs[0][answer]" placeholder="Answer" rows="2" class="px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-sm"></textarea>
+                        <div class="faq-item rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/50 p-4">
+                            <div class="flex items-center justify-between gap-3">
+                                <span class="faq-num inline-flex items-center gap-2 text-xs font-bold text-[#1F513A] dark:text-[#6FB393]">
+                                    <span class="w-5 h-5 rounded-md bg-[#E9F2EE] dark:bg-[#233b30] flex items-center justify-center">1</span>
+                                    Question
+                                </span>
+                            </div>
+                            <input type="text" name="faqs[0][question]" placeholder="Write the question readers ask" class="mt-3 h-10 px-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm">
+                            <textarea name="faqs[0][answer]" placeholder="And the answer, in your own words" rows="2" class="mt-2 px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm"></textarea>
                         </div>
                     @endforelse
                 </div>
-                <button type="button" onclick="addFaq()" class="text-sm font-semibold text-[#1F513A] dark:text-[#6FB393] hover:underline">+ Add FAQ</button>
+                <button type="button" onclick="addFaq()" class="mt-3 w-full h-10 rounded-lg border border-dashed border-slate-300 dark:border-slate-600 text-sm font-semibold text-slate-500 dark:text-slate-400 hover:border-[#2E7856] hover:text-[#1F513A] dark:hover:text-[#6FB393] inline-flex items-center justify-center gap-1.5 transition">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                    Add question
+                </button>
             </div>
 
             <div class="panel-card p-6">
@@ -135,14 +152,29 @@ huvantiEditorInit('#editor');
 @include('admin.posts._autosave')
 <script>
     let faqIdx = {{ count(old('faqs', $post->faqs)) + 1 }};
+    const FAQ_TRASH = '<svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/></svg>';
     function addFaq(){
         const c = document.getElementById('faqs');
         const d = document.createElement('div');
-        d.className='faq-item grid grid-cols-1 gap-3 p-3 bg-slate-50 dark:bg-slate-800/60 rounded-lg border border-slate-200 dark:border-slate-700 mb-3';
-        d.innerHTML=`<input type="text" name="faqs[${faqIdx}][question]" placeholder="Question" class="h-10 px-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-sm"><textarea name="faqs[${faqIdx}][answer]" placeholder="Answer" rows="2" class="px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-sm"></textarea><button type="button" onclick="this.parentElement.remove()" class="text-xs text-red-600 dark:text-red-400 justify-self-start">Remove</button>`;
+        d.className='faq-item rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/50 p-4';
+        d.innerHTML=`<div class="flex items-center justify-between gap-3"><span class="faq-num inline-flex items-center gap-2 text-xs font-bold text-[#1F513A] dark:text-[#6FB393]"><span class="w-5 h-5 rounded-md bg-[#E9F2EE] dark:bg-[#233b30] flex items-center justify-center"></span>Question</span><button type="button" title="Remove" aria-label="Remove question" class="w-7 h-7 rounded-md text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 flex items-center justify-center transition shrink-0">${FAQ_TRASH}</button></div><input type="text" name="faqs[${faqIdx}][question]" placeholder="Write the question readers ask" class="mt-3 h-10 px-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm"><textarea name="faqs[${faqIdx}][answer]" placeholder="And the answer, in your own words" rows="2" class="mt-2 px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm"></textarea>`;
+        d.querySelector('button').onclick = function(){ removeFaq(this); };
         c.appendChild(d);
         faqIdx++;
+        renumberFaqs();
     }
+    function removeFaq(btn){
+        btn.closest('.faq-item').remove();
+        renumberFaqs();
+    }
+    // Keep the question badges numbered in DOM order.
+    function renumberFaqs(){
+        document.querySelectorAll('#faqs .faq-item').forEach(function(item, i){
+            var badge = item.querySelector('.faq-num span');
+            if (badge) badge.textContent = i + 1;
+        });
+    }
+    document.addEventListener('DOMContentLoaded', renumberFaqs);
     function previewFeatured(input){
         const img = document.getElementById('featured-preview');
         if(!input.files || !input.files[0]) return;

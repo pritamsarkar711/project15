@@ -32,10 +32,7 @@
             <div class="w-9 h-9 bg-[#173A2A] rounded-lg flex items-center justify-center text-white" aria-hidden="true">
                 <svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Z"/><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 19.5-3-3"/></svg>
             </div>
-            <div>
-                <div class="font-extrabold text-[#101319] dark:text-white leading-none tracking-tight">Author</div>
-                <div class="text-[10px] font-semibold tracking-[0.2em] text-slate-400 dark:text-slate-500 mt-1">{{ auth()->user()->name ?? 'Panel' }}</div>
-            </div>
+            <span class="font-extrabold text-[#101319] dark:text-white leading-none tracking-tight">Author</span>
         </div>
 
         <nav class="flex-1 p-3 space-y-1 text-sm font-medium">
