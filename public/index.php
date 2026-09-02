@@ -28,7 +28,7 @@ define('LARAVEL_START', microtime(true));
 // ---------------------------------------------------------------------------
 
 // Bump this string when you want to force a cache clear on every server.
-define('HUVANTI_DEPLOY_VERSION', 'v57-2026-09-01-bing-robots-indexnow-policy');
+define('HUVANTI_DEPLOY_VERSION', 'v69-2026-09-03-revert-arena-pr69-repo-cleanup');
 
 // Determine if the application is in maintenance mode...
 if (file_exists($maintenance = __DIR__.'/../storage/framework/maintenance.php')) {

@@ -11,18 +11,18 @@ use Illuminate\Foundation\Application as BaseApplication;
  * implementation reads composer.json from the project root at runtime and
  * throws "Unable to detect application namespace." when the file is missing.
  *
- * On Hostinger shared hosting we deliberately ship WITHOUT a root
- * composer.json: the host's Git auto-deploy detects that file and runs
- * `composer install`, which regenerated the committed vendor/ autoloader
- * from whatever composer.json said — and once produced dependency-less maps
- * that killed every request with a blank HTTP 500. No composer.json at the
- * root means the auto-deploy never invokes Composer and the committed
- * vendor/ stays exactly as it is in git.
+ * A root composer.json and composer.lock ARE tracked today so Hostinger's
+ * Git auto-deploy runs Composer with the correct dependency list (see the
+ * .gitignore note). This override remains as belt and braces: on a damaged
+ * checkout where the manifest was deleted, clobbered or replaced by the old
+ * dependency-less deployment stub, the app still boots and the recovery
+ * flows documented in HOSTINGER_DEPLOYMENT.md can repair vendor/ instead of
+ * dying with a blank HTTP 500.
  *
  * Returning the namespace directly keeps all callers (Blade component class
  * guessing, console command discovery, model factories, artisan generators)
- * working without the file. If the PSR-4 mapping in
- * .composer-backup/composer.json ever changes, update this constant too.
+ * working without the file. If the PSR-4 mapping in composer.json ever
+ * changes, keep .composer-backup/composer.json in sync with it.
  */
 class Application extends BaseApplication
 {
