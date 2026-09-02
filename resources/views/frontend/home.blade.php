@@ -30,7 +30,7 @@
     $heroImgSetting = setting('hero_person_image');
     $heroImgUrl = $heroImgSetting ? asset('storage/'.$heroImgSetting) : asset('images/hero-person-harry.png');
 @endphp
-<section class="hero-band relative overflow-hidden bg-[#173A2A] dark:bg-[#0F261C] text-white">
+<section class="hero-band relative overflow-hidden bg-[var(--brand-deep)] dark:bg-[#0F261C] text-white">
     <div class="max-w-[1200px] mx-auto px-4 sm:px-6 relative">
         <div class="grid lg:grid-cols-2 gap-0 lg:gap-8 items-end">
             <!-- Left: hero image — hidden on mobile, grounded on desktop -->
@@ -45,7 +45,7 @@
 
             <!-- Right: text -->
             <div class="order-2 lg:pl-6 py-12 sm:py-14 lg:py-16 min-w-0">
-                <span class="inline-flex items-center gap-2 text-[11px] font-semibold tracking-wide uppercase bg-white/10 border border-white/15 text-[#E3F0E9] px-3 py-1.5 mb-4 rounded-full">
+                <span class="inline-flex items-center gap-2 text-[11px] font-semibold tracking-wide uppercase bg-white/10 border border-white/15 text-[var(--brand-tint)] px-3 py-1.5 mb-4 rounded-full">
                     <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/></svg>
                     Fresh reads every week
                 </span>
@@ -56,7 +56,7 @@
                 <form action="{{ route('search') }}" method="GET" class="mt-6 w-full max-w-[520px] min-w-0" autocomplete="off">
                     <div class="flex items-center w-full min-w-0 bg-white rounded-xl p-1.5 pl-4 shadow-[0_10px_30px_rgba(0,0,0,0.25)] overflow-hidden">
                         <input type="text" name="q" value="{{ request('q') }}" placeholder="{{ $heroSearchPlaceholder }}" autocomplete="off" autocorrect="off" spellcheck="false" class="flex-1 min-w-0 h-10 bg-transparent text-slate-900 border-0 outline-none text-[15px] placeholder:text-slate-400" aria-label="Search articles">
-                        <button type="submit" class="h-10 px-6 sm:px-7 shrink-0 rounded-lg bg-[#2E7856] hover:bg-[#27654A] text-white text-sm font-semibold transition">Search</button>
+                        <button type="submit" class="h-10 px-6 sm:px-7 shrink-0 rounded-lg bg-[var(--brand)] hover:bg-[var(--brand-strong)] text-white text-sm font-semibold transition">Search</button>
                     </div>
                 </form>
             </div>
@@ -95,7 +95,7 @@
                 <p class="text-sm text-slate-500 dark:text-slate-400 mt-0.5">Topics curated by our editors.</p>
             </div>
         </div>
-        <a href="/blog" class="hidden sm:inline-flex items-center gap-1.5 text-sm font-semibold text-[#2E7856] hover:text-[#27654A] transition">All posts
+        <a href="/blog" class="hidden sm:inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--brand)] hover:text-[var(--brand-strong)] transition">All posts
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-6-6 6 6-6 6"/></svg>
         </a>
     </div>
@@ -109,7 +109,7 @@
                 <span class="flex-1 min-w-0">
                     <span class="flex items-center justify-between gap-2">
                         <span class="text-[15px] font-semibold text-slate-900 dark:text-white truncate">{{ $cat->name }}</span>
-                        <svg class="w-4 h-4 text-slate-300 dark:text-slate-600 group-hover:text-[#2E7856] group-hover:translate-x-0.5 transition shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-6-6 6 6-6 6"/></svg>
+                        <svg class="w-4 h-4 text-slate-300 dark:text-slate-600 group-hover:text-[var(--brand)] group-hover:translate-x-0.5 transition shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-6-6 6 6-6 6"/></svg>
                     </span>
                     <span class="block mt-1 text-[13px] text-slate-500 dark:text-slate-400 leading-relaxed line-clamp-2">{{ $cat->description }}</span>
                 </span>
@@ -135,7 +135,7 @@
     @if($featuredPosts->count() > 0)
         <div class="grid lg:grid-cols-12 gap-4 mt-7 mb-4">
             @php $big = $featuredPosts->first(); @endphp
-            <a href="{{ route('blog.show',$big->slug) }}" class="lg:col-span-7 group relative overflow-hidden bg-[#173A2A] min-h-[360px] flex flex-col justify-end p-7 rounded-2xl">
+            <a href="{{ route('blog.show',$big->slug) }}" class="lg:col-span-7 group relative overflow-hidden bg-[var(--brand-deep)] min-h-[360px] flex flex-col justify-end p-7 rounded-2xl">
                 <img src="{{ storage_image_url($big->featured_image) ?: 'https://picsum.photos/seed/'.$big->slug.'/900/600' }}" alt="{{ image_alt_text($big->featured_image, $big->title) }}" class="img-fade absolute inset-0 w-full h-full object-cover opacity-70 group-hover:opacity-60 group-hover:scale-[1.02] transition duration-300" loading="lazy" decoding="async" onload="this.classList.add('img-loaded')" onerror="this.onerror=null;this.style.display='none'">
                 <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
                 <div class="relative">
@@ -149,20 +149,20 @@
             </a>
             <div class="lg:col-span-5 card divide-y divide-[#eef0f4] dark:divide-[#22262e] overflow-hidden">
                 <div class="px-5 py-3.5 border-b border-[#eef0f4] dark:border-[#22262e] flex items-center gap-2">
-                    <span class="w-1.5 h-1.5 rounded-full bg-[#2E7856]"></span>
+                    <span class="w-1.5 h-1.5 rounded-full bg-[var(--brand)]"></span>
                     <span class="text-[13px] font-bold text-slate-900 dark:text-white tracking-tight">Editor's picks</span>
                 </div>
                 @foreach($featuredPosts->skip(1)->take(2) as $fp)
                     <a href="{{ route('blog.show',$fp->slug) }}" class="group flex gap-4 items-center p-4 hover:bg-[#f8f9fb] dark:hover:bg-[#1c1f26] transition">
                         <img src="{{ storage_image_url($fp->featured_image) ?: 'https://picsum.photos/seed/'.$fp->slug.'/400/300' }}" class="img-fade w-[96px] h-[80px] object-cover shrink-0 rounded-lg border border-[#eef0f4] dark:border-[#2c313c]" alt="{{ image_alt_text($fp->featured_image, $fp->title) }}" loading="lazy" decoding="async" onload="this.classList.add('img-loaded')" onerror="this.onerror=null;this.style.display='none'">
                         <span class="flex flex-col min-w-0">
-                            <span class="text-[11px] font-bold text-[#2E7856] dark:text-[#6FB393] uppercase tracking-[0.06em]">{{ $fp->category->name ?? 'Story' }}</span>
-                            <span class="text-[14.5px] font-semibold text-slate-900 dark:text-white leading-snug mt-1 line-clamp-2 group-hover:text-[#2E7856] dark:group-hover:text-[#6FB393] transition-colors">{{ $fp->title }}</span>
+                            <span class="text-[11px] font-bold text-[var(--brand)] dark:text-[var(--brand-light)] uppercase tracking-[0.06em]">{{ $fp->category->name ?? 'Story' }}</span>
+                            <span class="text-[14.5px] font-semibold text-slate-900 dark:text-white leading-snug mt-1 line-clamp-2 group-hover:text-[var(--brand)] dark:group-hover:text-[var(--brand-light)] transition-colors">{{ $fp->title }}</span>
                             <span class="text-xs text-slate-400 dark:text-slate-500 mt-auto pt-2"><span class="tabular-nums">{{ $fp->published_at?->format('M d') }}</span> <span class="w-1 h-1 bg-slate-300 dark:bg-slate-600 inline-block mx-1 align-middle rounded-full"></span> <span class="tabular-nums">{{ $fp->reading_time }} min read</span></span>
                         </span>
                     </a>
                 @endforeach
-                <a href="/blog" class="flex items-center justify-center gap-1.5 text-[13px] font-semibold text-[#2E7856] dark:text-[#6FB393] py-3 hover:bg-[#f8f9fb] dark:hover:bg-[#1c1f26] transition border-t border-[#eef0f4] dark:border-[#22262e]">View all posts
+                <a href="/blog" class="flex items-center justify-center gap-1.5 text-[13px] font-semibold text-[var(--brand)] dark:text-[var(--brand-light)] py-3 hover:bg-[#f8f9fb] dark:hover:bg-[#1c1f26] transition border-t border-[#eef0f4] dark:border-[#22262e]">View all posts
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-6-6 6 6-6 6"/></svg>
                 </a>
             </div>
@@ -180,14 +180,14 @@
                     <div class="flex items-center gap-2">
                         <span class="chip">{{ $lp->category->name ?? 'General' }}</span>
                     </div>
-                    <a href="{{ route('blog.show',$lp->slug) }}" class="mt-2.5 text-[16.5px] font-bold text-slate-900 dark:text-white leading-snug tracking-[-0.01em] line-clamp-2 group-hover:text-[#2E7856] dark:group-hover:text-[#6FB393] transition-colors">{{ $lp->title }}</a>
+                    <a href="{{ route('blog.show',$lp->slug) }}" class="mt-2.5 text-[16.5px] font-bold text-slate-900 dark:text-white leading-snug tracking-[-0.01em] line-clamp-2 group-hover:text-[var(--brand)] dark:group-hover:text-[var(--brand-light)] transition-colors">{{ $lp->title }}</a>
                     <p class="text-[13.5px] text-slate-500 dark:text-slate-400 mt-2.5 leading-relaxed line-clamp-2">{{ $lp->excerpt }}</p>
                     <div class="mt-auto pt-4 flex items-center gap-2 text-xs text-slate-400 dark:text-slate-500">
                         <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2"/></svg>
                         <span class="tabular-nums">{{ $lp->published_at?->format('M d, Y') }}</span>
                         <span class="w-1 h-1 bg-slate-300 dark:bg-slate-600 rounded-full"></span>
                         <span>{{ $lp->reading_time }} min read</span>
-                        <svg class="w-4 h-4 ml-auto text-slate-300 dark:text-slate-600 group-hover:text-[#2E7856] group-hover:translate-x-0.5 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-6-6 6 6-6 6"/></svg>
+                        <svg class="w-4 h-4 ml-auto text-slate-300 dark:text-slate-600 group-hover:text-[var(--brand)] group-hover:translate-x-0.5 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-6-6 6 6-6 6"/></svg>
                     </div>
                 </div>
             </article>
@@ -233,7 +233,7 @@
 
 <!-- Write-for-us band: forest CTA with clear action -->
 <section class="max-w-[1200px] mx-auto px-4 sm:px-6 pb-14">
-    <div class="relative overflow-hidden bg-[#173A2A] dark:bg-[#112E20] rounded-2xl px-6 sm:px-10 py-9 sm:py-11 text-white">
+    <div class="relative overflow-hidden bg-[var(--brand-deep)] dark:bg-[#112E20] rounded-2xl px-6 sm:px-10 py-9 sm:py-11 text-white">
         <div class="absolute -right-16 -top-16 w-64 h-64 rounded-full bg-white/5 pointer-events-none" aria-hidden="true"></div>
         <div class="absolute -right-6 top-10 w-28 h-28 rounded-full bg-[#F5C445]/15 pointer-events-none" aria-hidden="true"></div>
         <div class="relative flex flex-col lg:flex-row lg:items-center gap-6 lg:gap-10">
@@ -243,7 +243,7 @@
                 <p class="text-sm text-white/75 mt-2 max-w-[520px] leading-relaxed">Join Huvanti as a writer. Publish across six niches, reach curious readers and build your byline — our editors review every draft within days.</p>
             </div>
             <div class="flex items-center gap-3 shrink-0 flex-wrap">
-                <a href="{{ route('register') }}" class="btn bg-white text-[#173A2A] hover:bg-[#F5C445] hover:text-[#16181d]">Become a writer</a>
+                <a href="{{ route('register') }}" class="btn bg-white text-[var(--brand-deep)] hover:bg-[#F5C445] hover:text-[#16181d]">Become a writer</a>
                 <a href="{{ route('contact') }}" class="btn btn-ghost text-white hover:bg-white/10">Contact team</a>
             </div>
         </div>

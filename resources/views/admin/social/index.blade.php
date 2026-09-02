@@ -17,11 +17,11 @@
             <label class="group inline-flex items-center gap-2 cursor-pointer shrink-0">
                 <span class="relative inline-flex shrink-0">
                     <input type="checkbox" name="social_autopost_enabled" form="social-form" value="1" {{ $enabled ? 'checked' : '' }} class="peer sr-only">
-                    <span class="block w-11 h-6 rounded-full bg-slate-200 dark:bg-slate-700 peer-checked:bg-[#2E7856] transition-colors"></span>
+                    <span class="block w-11 h-6 rounded-full bg-slate-200 dark:bg-slate-700 peer-checked:bg-[var(--brand)] transition-colors"></span>
                     <span class="pointer-events-none absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform peer-checked:translate-x-5"></span>
                 </span>
                 <span class="text-sm font-semibold text-slate-500 group-has-checked:hidden">Disabled</span>
-                <span class="hidden text-sm font-semibold text-[#1F513A] dark:text-[#6FB393] group-has-checked:inline">Enabled</span>
+                <span class="hidden text-sm font-semibold text-[var(--brand-ink)] dark:text-[var(--brand-light)] group-has-checked:inline">Enabled</span>
             </label>
         </div>
         @if(!$enabled)
@@ -52,11 +52,11 @@
                 <label class="group inline-flex items-center gap-2 cursor-pointer shrink-0">
                     <span class="relative inline-flex shrink-0">
                         <input type="checkbox" name="x_enabled" value="1" {{ $netEnabled('x') ? 'checked' : '' }} class="peer sr-only">
-                        <span class="block w-11 h-6 rounded-full bg-slate-200 dark:bg-slate-700 peer-checked:bg-[#2E7856] transition-colors"></span>
+                        <span class="block w-11 h-6 rounded-full bg-slate-200 dark:bg-slate-700 peer-checked:bg-[var(--brand)] transition-colors"></span>
                         <span class="pointer-events-none absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform peer-checked:translate-x-5"></span>
                     </span>
                     <span class="text-sm font-semibold text-slate-500 group-has-checked:hidden">Disabled</span>
-                    <span class="hidden text-sm font-semibold text-[#1F513A] dark:text-[#6FB393] group-has-checked:inline">Enabled</span>
+                    <span class="hidden text-sm font-semibold text-[var(--brand-ink)] dark:text-[var(--brand-light)] group-has-checked:inline">Enabled</span>
                 </label>
             </div>
             <div class="grid sm:grid-cols-2 gap-4">
@@ -77,7 +77,7 @@
                     <input type="password" name="x_access_token_secret" placeholder="{{ $social->mask('x_access_token_secret') ?: 'Paste the token secret' }}" autocomplete="new-password" class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-mono">
                 </div>
             </div>
-            <p class="text-xs text-slate-500"><a href="https://developer.x.com" target="_blank" rel="noopener" class="text-[#1F513A] dark:text-[#6FB393] hover:underline">developer.x.com</a> · <button type="button" class="font-semibold text-[#1F513A] dark:text-[#6FB393] hover:underline" data-test-network="x">Test connection</button></p>
+            <p class="text-xs text-slate-500"><a href="https://developer.x.com" target="_blank" rel="noopener" class="text-[var(--brand-ink)] dark:text-[var(--brand-light)] hover:underline">developer.x.com</a> · <button type="button" class="font-semibold text-[var(--brand-ink)] dark:text-[var(--brand-light)] hover:underline" data-test-network="x">Test connection</button></p>
         </div>
 
         {{-- Facebook --}}
@@ -92,11 +92,11 @@
                 <label class="group inline-flex items-center gap-2 cursor-pointer shrink-0">
                     <span class="relative inline-flex shrink-0">
                         <input type="checkbox" name="facebook_enabled" value="1" {{ $netEnabled('facebook') ? 'checked' : '' }} class="peer sr-only">
-                        <span class="block w-11 h-6 rounded-full bg-slate-200 dark:bg-slate-700 peer-checked:bg-[#2E7856] transition-colors"></span>
+                        <span class="block w-11 h-6 rounded-full bg-slate-200 dark:bg-slate-700 peer-checked:bg-[var(--brand)] transition-colors"></span>
                         <span class="pointer-events-none absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform peer-checked:translate-x-5"></span>
                     </span>
                     <span class="text-sm font-semibold text-slate-500 group-has-checked:hidden">Disabled</span>
-                    <span class="hidden text-sm font-semibold text-[#1F513A] dark:text-[#6FB393] group-has-checked:inline">Enabled</span>
+                    <span class="hidden text-sm font-semibold text-[var(--brand-ink)] dark:text-[var(--brand-light)] group-has-checked:inline">Enabled</span>
                 </label>
             </div>
             <div class="grid sm:grid-cols-2 gap-4">
@@ -109,7 +109,7 @@
                     <input type="password" name="facebook_page_token" placeholder="{{ $social->mask('facebook_page_token') ?: 'Paste a long-lived Page token' }}" autocomplete="new-password" class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-mono">
                 </div>
             </div>
-            <p class="text-xs text-slate-500">Token: <a href="https://developers.facebook.com/tools/explorer/" target="_blank" rel="noopener" class="text-[#1F513A] dark:text-[#6FB393] hover:underline">Graph API Explorer</a> · <button type="button" class="font-semibold text-[#1F513A] dark:text-[#6FB393] hover:underline" data-test-network="facebook">Test connection</button></p>
+            <p class="text-xs text-slate-500">Token: <a href="https://developers.facebook.com/tools/explorer/" target="_blank" rel="noopener" class="text-[var(--brand-ink)] dark:text-[var(--brand-light)] hover:underline">Graph API Explorer</a> · <button type="button" class="font-semibold text-[var(--brand-ink)] dark:text-[var(--brand-light)] hover:underline" data-test-network="facebook">Test connection</button></p>
         </div>
 
         {{-- LinkedIn --}}
@@ -124,11 +124,11 @@
                 <label class="group inline-flex items-center gap-2 cursor-pointer shrink-0">
                     <span class="relative inline-flex shrink-0">
                         <input type="checkbox" name="linkedin_enabled" value="1" {{ $netEnabled('linkedin') ? 'checked' : '' }} class="peer sr-only">
-                        <span class="block w-11 h-6 rounded-full bg-slate-200 dark:bg-slate-700 peer-checked:bg-[#2E7856] transition-colors"></span>
+                        <span class="block w-11 h-6 rounded-full bg-slate-200 dark:bg-slate-700 peer-checked:bg-[var(--brand)] transition-colors"></span>
                         <span class="pointer-events-none absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform peer-checked:translate-x-5"></span>
                     </span>
                     <span class="text-sm font-semibold text-slate-500 group-has-checked:hidden">Disabled</span>
-                    <span class="hidden text-sm font-semibold text-[#1F513A] dark:text-[#6FB393] group-has-checked:inline">Enabled</span>
+                    <span class="hidden text-sm font-semibold text-[var(--brand-ink)] dark:text-[var(--brand-light)] group-has-checked:inline">Enabled</span>
                 </label>
             </div>
             <div class="grid sm:grid-cols-2 gap-4">
@@ -141,7 +141,7 @@
                     <input type="password" name="linkedin_access_token" placeholder="{{ $social->mask('linkedin_access_token') ?: 'Paste your access token' }}" autocomplete="new-password" class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-mono">
                 </div>
             </div>
-            <p class="text-xs text-slate-500">App: <a href="https://www.linkedin.com/developers/" target="_blank" rel="noopener" class="text-[#1F513A] dark:text-[#6FB393] hover:underline">linkedin.com/developers</a> · <button type="button" class="font-semibold text-[#1F513A] dark:text-[#6FB393] hover:underline" data-test-network="linkedin">Test connection</button></p>
+            <p class="text-xs text-slate-500">App: <a href="https://www.linkedin.com/developers/" target="_blank" rel="noopener" class="text-[var(--brand-ink)] dark:text-[var(--brand-light)] hover:underline">linkedin.com/developers</a> · <button type="button" class="font-semibold text-[var(--brand-ink)] dark:text-[var(--brand-light)] hover:underline" data-test-network="linkedin">Test connection</button></p>
         </div>
 
         {{-- Instagram --}}
@@ -156,11 +156,11 @@
                 <label class="group inline-flex items-center gap-2 cursor-pointer shrink-0">
                     <span class="relative inline-flex shrink-0">
                         <input type="checkbox" name="instagram_enabled" value="1" {{ $netEnabled('instagram') ? 'checked' : '' }} class="peer sr-only">
-                        <span class="block w-11 h-6 rounded-full bg-slate-200 dark:bg-slate-700 peer-checked:bg-[#2E7856] transition-colors"></span>
+                        <span class="block w-11 h-6 rounded-full bg-slate-200 dark:bg-slate-700 peer-checked:bg-[var(--brand)] transition-colors"></span>
                         <span class="pointer-events-none absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform peer-checked:translate-x-5"></span>
                     </span>
                     <span class="text-sm font-semibold text-slate-500 group-has-checked:hidden">Disabled</span>
-                    <span class="hidden text-sm font-semibold text-[#1F513A] dark:text-[#6FB393] group-has-checked:inline">Enabled</span>
+                    <span class="hidden text-sm font-semibold text-[var(--brand-ink)] dark:text-[var(--brand-light)] group-has-checked:inline">Enabled</span>
                 </label>
             </div>
             <div class="grid sm:grid-cols-2 gap-4">
@@ -173,7 +173,7 @@
                     <input type="password" name="instagram_access_token" placeholder="{{ $social->mask('instagram_access_token') ?: 'Paste the IG/FB token' }}" autocomplete="new-password" class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-mono">
                 </div>
             </div>
-            <p class="text-xs text-slate-500"><button type="button" class="font-semibold text-[#1F513A] dark:text-[#6FB393] hover:underline" data-test-network="instagram">Test connection</button></p>
+            <p class="text-xs text-slate-500"><button type="button" class="font-semibold text-[var(--brand-ink)] dark:text-[var(--brand-light)] hover:underline" data-test-network="instagram">Test connection</button></p>
         </div>
 
         {{-- Telegram --}}
@@ -188,11 +188,11 @@
                 <label class="group inline-flex items-center gap-2 cursor-pointer shrink-0">
                     <span class="relative inline-flex shrink-0">
                         <input type="checkbox" name="telegram_enabled" value="1" {{ $netEnabled('telegram') ? 'checked' : '' }} class="peer sr-only">
-                        <span class="block w-11 h-6 rounded-full bg-slate-200 dark:bg-slate-700 peer-checked:bg-[#2E7856] transition-colors"></span>
+                        <span class="block w-11 h-6 rounded-full bg-slate-200 dark:bg-slate-700 peer-checked:bg-[var(--brand)] transition-colors"></span>
                         <span class="pointer-events-none absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform peer-checked:translate-x-5"></span>
                     </span>
                     <span class="text-sm font-semibold text-slate-500 group-has-checked:hidden">Disabled</span>
-                    <span class="hidden text-sm font-semibold text-[#1F513A] dark:text-[#6FB393] group-has-checked:inline">Enabled</span>
+                    <span class="hidden text-sm font-semibold text-[var(--brand-ink)] dark:text-[var(--brand-light)] group-has-checked:inline">Enabled</span>
                 </label>
             </div>
             <div class="grid sm:grid-cols-2 gap-4">
@@ -205,7 +205,7 @@
                     <input type="text" name="telegram_chat_id" value="{{ old('telegram_chat_id', \App\Models\Setting::get('telegram_chat_id', '')) }}" placeholder="@huvanti" class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-mono">
                 </div>
             </div>
-            <p class="text-xs text-slate-500">Bot: <a href="https://t.me/BotFather" target="_blank" rel="noopener" class="text-[#1F513A] dark:text-[#6FB393] hover:underline">@BotFather</a> · <button type="button" class="font-semibold text-[#1F513A] dark:text-[#6FB393] hover:underline" data-test-network="telegram">Test connection</button></p>
+            <p class="text-xs text-slate-500">Bot: <a href="https://t.me/BotFather" target="_blank" rel="noopener" class="text-[var(--brand-ink)] dark:text-[var(--brand-light)] hover:underline">@BotFather</a> · <button type="button" class="font-semibold text-[var(--brand-ink)] dark:text-[var(--brand-light)] hover:underline" data-test-network="telegram">Test connection</button></p>
         </div>
 
         {{-- Pinterest --}}
@@ -220,11 +220,11 @@
                 <label class="group inline-flex items-center gap-2 cursor-pointer shrink-0">
                     <span class="relative inline-flex shrink-0">
                         <input type="checkbox" name="pinterest_enabled" value="1" {{ $netEnabled('pinterest') ? 'checked' : '' }} class="peer sr-only">
-                        <span class="block w-11 h-6 rounded-full bg-slate-200 dark:bg-slate-700 peer-checked:bg-[#2E7856] transition-colors"></span>
+                        <span class="block w-11 h-6 rounded-full bg-slate-200 dark:bg-slate-700 peer-checked:bg-[var(--brand)] transition-colors"></span>
                         <span class="pointer-events-none absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform peer-checked:translate-x-5"></span>
                     </span>
                     <span class="text-sm font-semibold text-slate-500 group-has-checked:hidden">Disabled</span>
-                    <span class="hidden text-sm font-semibold text-[#1F513A] dark:text-[#6FB393] group-has-checked:inline">Enabled</span>
+                    <span class="hidden text-sm font-semibold text-[var(--brand-ink)] dark:text-[var(--brand-light)] group-has-checked:inline">Enabled</span>
                 </label>
             </div>
             <div class="grid sm:grid-cols-2 gap-4">
@@ -237,11 +237,11 @@
                     <input type="password" name="pinterest_access_token" placeholder="{{ $social->mask('pinterest_access_token') ?: 'Paste your token' }}" autocomplete="new-password" class="mt-1 w-full h-10 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-mono">
                 </div>
             </div>
-            <p class="text-xs text-slate-500">App: <a href="https://developers.pinterest.com/" target="_blank" rel="noopener" class="text-[#1F513A] dark:text-[#6FB393] hover:underline">developers.pinterest.com</a> · <button type="button" class="font-semibold text-[#1F513A] dark:text-[#6FB393] hover:underline" data-test-network="pinterest">Test connection</button></p>
+            <p class="text-xs text-slate-500">App: <a href="https://developers.pinterest.com/" target="_blank" rel="noopener" class="text-[var(--brand-ink)] dark:text-[var(--brand-light)] hover:underline">developers.pinterest.com</a> · <button type="button" class="font-semibold text-[var(--brand-ink)] dark:text-[var(--brand-light)] hover:underline" data-test-network="pinterest">Test connection</button></p>
         </div>
 
         <div class="flex items-center gap-3 flex-wrap">
-            <button type="submit" class="h-11 px-6 rounded-lg bg-[#2E7856] hover:bg-[#27654A] text-white font-semibold transition">Save All Settings</button>
+            <button type="submit" class="h-11 px-6 rounded-lg bg-[var(--brand)] hover:bg-[var(--brand-strong)] text-white font-semibold transition">Save All Settings</button>
             <span class="text-xs text-slate-400">Leave a field blank to keep its saved value.</span>
         </div>
     </form>
@@ -268,13 +268,13 @@
                             <tr class="border-b border-[#eef0f4] dark:border-[#1c1f26]">
                                 <td class="py-2.5 pr-3 max-w-[220px] truncate">
                                     @if($row->post)
-                                        <a href="{{ route('admin.posts.edit', $row->post->id) }}" class="font-medium text-slate-700 dark:text-slate-200 hover:text-[#1F513A] dark:hover:text-[#6FB393]">{{ $row->post->title }}</a>
+                                        <a href="{{ route('admin.posts.edit', $row->post->id) }}" class="font-medium text-slate-700 dark:text-slate-200 hover:text-[var(--brand-ink)] dark:hover:text-[var(--brand-light)]">{{ $row->post->title }}</a>
                                     @else <span class="text-slate-400">Deleted post</span> @endif
                                 </td>
                                 <td class="py-2.5 pr-3 text-slate-600 dark:text-slate-300">{{ \App\Models\SocialPublish::networkLabel($row->network) }}</td>
                                 <td class="py-2.5 pr-3">
                                     @if($row->status === 'success')
-                                        <span class="inline-flex items-center gap-1 text-[#1F513A] dark:text-[#6FB393] font-semibold text-xs">Published</span>
+                                        <span class="inline-flex items-center gap-1 text-[var(--brand-ink)] dark:text-[var(--brand-light)] font-semibold text-xs">Published</span>
                                     @elseif($row->status === 'failed')
                                         <span class="inline-flex items-center gap-1 text-red-600 dark:text-red-400 font-semibold text-xs" title="{{ $row->error }}">Failed — {{ \Illuminate\Support\Str::limit($row->error, 60) }}</span>
                                     @else

@@ -9,11 +9,11 @@
 <div class="border-b border-[#e6e8ee] dark:border-[#22262e] bg-white dark:bg-[#0f1115]">
     <div class="max-w-[1200px] mx-auto px-4 sm:px-6 page-head !pb-6">
         <nav class="flex items-center gap-1.5 text-[13px] text-slate-400 dark:text-slate-500 mb-2.5" aria-label="Breadcrumb">
-            <a href="/" class="hover:text-[#2E7856] dark:hover:text-[#6FB393] transition">Home</a>
+            <a href="/" class="hover:text-[var(--brand)] dark:hover:text-[var(--brand-light)] transition">Home</a>
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 6 6 6-6 6"/></svg>
             <span class="text-slate-700 dark:text-slate-300 font-medium">Search</span>
         </nav>
-        <h1>Search results @if($q)for <span class="text-[#2E7856] dark:text-[#6FB393]">“{{ $q }}”</span>@endif</h1>
+        <h1>Search results @if($q)for <span class="text-[var(--brand)] dark:text-[var(--brand-light)]">“{{ $q }}”</span>@endif</h1>
         <p class="lede">{{ $posts->total() }} articles found</p>
         <form action="{{ route('search') }}" method="GET" class="mt-5 flex gap-2.5 max-w-[560px]" role="search">
             <div class="relative flex-1 min-w-0">
@@ -33,7 +33,7 @@
                     <span class="absolute top-3 left-3 chip chip-white shadow-sm">{{ $p->category->name ?? 'General' }}</span>
                 </a>
                 <div class="p-5 flex flex-col flex-1">
-                    <a href="{{ route('blog.show',$p->slug) }}" class="text-[16px] font-bold text-slate-900 dark:text-white leading-snug tracking-[-0.01em] line-clamp-2 group-hover:text-[#2E7856] dark:group-hover:text-[#6FB393] transition-colors">{{ $p->title }}</a>
+                    <a href="{{ route('blog.show',$p->slug) }}" class="text-[16px] font-bold text-slate-900 dark:text-white leading-snug tracking-[-0.01em] line-clamp-2 group-hover:text-[var(--brand)] dark:group-hover:text-[var(--brand-light)] transition-colors">{{ $p->title }}</a>
                     <p class="text-[13.5px] text-slate-500 dark:text-slate-400 mt-2 leading-relaxed line-clamp-2">{{ $p->excerpt }}</p>
                     <div class="flex items-center gap-2 mt-auto pt-4 text-xs text-slate-400 dark:text-slate-500">
                         <span class="tabular-nums">{{ $p->published_at?->format('M d, Y') }}</span>

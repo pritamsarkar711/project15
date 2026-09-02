@@ -28,10 +28,10 @@
     <a href="https://pinterest.com/pin/create/button/?url={{ $u }}&description={{ $t }}" target="_blank" rel="noopener" class="{{ $btnClass }} hover:!bg-[#E60023]" aria-label="Save to Pinterest" title="Pinterest">
         <svg class="w-[18px] h-[18px] shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0a12 12 0 0 0-4.37 23.17c-.1-.92-.2-2.34.04-3.35l1.4-5.98s-.36-.72-.36-1.78c0-1.66.96-2.9 2.16-2.9 1.02 0 1.51.77 1.51 1.69 0 1.02-.65 2.56-1 3.98-.28 1.19.6 2.17 1.78 2.17 2.14 0 3.78-2.25 3.78-5.51 0-2.88-2.07-4.9-5.02-4.9a5.2 5.2 0 0 0-5.43 5.22c0 1.03.4 2.14.9 2.75.1.12.11.22.08.34l-.33 1.36c-.05.22-.17.27-.4.16-1.5-.7-2.43-2.88-2.43-4.64 0-3.78 2.74-7.25 7.92-7.25 4.15 0 7.38 2.96 7.38 6.91 0 4.13-2.6 7.45-6.22 7.45-1.21 0-2.36-.63-2.75-1.38l-.75 2.85c-.27 1.04-1 2.35-1.49 3.15A12 12 0 1 0 12 0Z"/></svg>
     </a>
-    <a href="mailto:?subject={{ $t }}&body={{ $u }}" class="{{ $btnClass }} hover:!bg-[#2E7856]" aria-label="Share via Email" title="Email">
+    <a href="mailto:?subject={{ $t }}&body={{ $u }}" class="{{ $btnClass }} hover:!bg-[var(--brand)]" aria-label="Share via Email" title="Email">
         <svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 0 0 2.22 0L21 8M5 19h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2Z"/></svg>
     </a>
-    <button type="button" data-copy-share="{{ $shareUrl ?? url('/') }}" class="{{ $btnClass }} hover:!bg-[#2E7856]" aria-label="Copy link" title="Copy link">
+    <button type="button" data-copy-share="{{ $shareUrl ?? url('/') }}" class="{{ $btnClass }} hover:!bg-[var(--brand)]" aria-label="Copy link" title="Copy link">
         <svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244"/></svg>
     </button>
     <script>
@@ -44,7 +44,7 @@
                     var url = btn.getAttribute('data-copy-share');
                     var done = function(ok){
                         var prev = btn.getAttribute('title');
-                        btn.style.background = ok ? '#2E7856' : '';
+                        btn.style.background = ok ? 'var(--brand)' : '';
                         btn.style.color = '#fff';
                         btn.setAttribute('title', ok ? 'Copied!' : 'Press Ctrl+C');
                         setTimeout(function(){ btn.style.background=''; btn.style.color=''; btn.setAttribute('title', prev); }, 1500);

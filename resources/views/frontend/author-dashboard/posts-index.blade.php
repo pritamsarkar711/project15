@@ -3,7 +3,7 @@
 @section('title', 'My posts')
 
 @section('header-actions')
-<a href="{{ route('author.posts.create') }}" class="inline-flex items-center gap-2 h-9 px-4 rounded-lg bg-[#2E7856] hover:bg-[#27654A] text-white text-xs font-semibold">
+<a href="{{ route('author.posts.create') }}" class="inline-flex items-center gap-2 h-9 px-4 rounded-lg bg-[var(--brand)] hover:bg-[var(--brand-strong)] text-white text-xs font-semibold">
     <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
     New post
 </a>
@@ -21,7 +21,7 @@
 @if($posts->isEmpty())
     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 text-center">
         <p class="text-slate-500 text-sm">No posts here yet.</p>
-        <a href="{{ route('author.posts.create') }}" class="inline-flex items-center gap-2 mt-3 h-10 px-5 rounded-lg bg-[#2E7856] hover:bg-[#27654A] text-white text-sm font-semibold">
+        <a href="{{ route('author.posts.create') }}" class="inline-flex items-center gap-2 mt-3 h-10 px-5 rounded-lg bg-[var(--brand)] hover:bg-[var(--brand-strong)] text-white text-sm font-semibold">
             <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Z"/></svg>
             Write a post
         </a>

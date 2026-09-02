@@ -2,7 +2,7 @@
 @section('title','Feedback detail')
 @section('content')
 <div class="w-full">
-    <a href="{{ route('admin.feedback.index') }}" class="text-sm text-[#1F513A] dark:text-[#6FB393] hover:underline">Back to feedback</a>
+    <a href="{{ route('admin.feedback.index') }}" class="text-sm text-[var(--brand-ink)] dark:text-[var(--brand-light)] hover:underline">Back to feedback</a>
     <div class="mt-4 panel-card p-6">
         <div class="flex items-start justify-between gap-4">
             <div>

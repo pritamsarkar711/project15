@@ -27,7 +27,7 @@
 
     {{-- Selected preview + clear filter chip --}}
     <div class="flex items-center gap-3 mb-4 pb-3 border-b border-slate-100 dark:border-slate-700/50">
-        <div class="w-12 h-12 bg-[#173A2A] rounded-xl text-white flex items-center justify-center" data-icon-preview>
+        <div class="w-12 h-12 bg-[var(--brand-deep)] rounded-xl text-white flex items-center justify-center" data-icon-preview>
             <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">{!! $allIcons[$current] ?? $allIcons['newspaper'] !!}</svg>
         </div>
         <div class="flex-1 min-w-0">
@@ -47,7 +47,7 @@
                         if (!isset($allIcons[$iconKey])) continue;
                         $svgInner = $allIcons[$iconKey];
                     @endphp
-                    <button type="button" data-icon-option="{{ $iconKey }}" class="aspect-square border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 text-slate-500 dark:text-slate-400 flex items-center justify-center hover:border-[#57A37E] hover:text-[#1F513A] dark:hover:text-[#6FB393] transition {{ $current === $iconKey ? '!border-[#173A2A] !bg-[#F0F7F3] dark:!bg-[#2E7856]/10 !text-[#1F513A] dark:!text-[#6FB393]' : '' }}">
+                    <button type="button" data-icon-option="{{ $iconKey }}" class="aspect-square border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 text-slate-500 dark:text-slate-400 flex items-center justify-center hover:border-[var(--brand-mid)] hover:text-[var(--brand-ink)] dark:hover:text-[var(--brand-light)] transition {{ $current === $iconKey ? '!border-[var(--brand-deep)] !bg-[var(--brand-tint-3)] dark:!bg-[var(--brand)]/10 !text-[var(--brand-ink)] dark:!text-[var(--brand-light)]' : '' }}">
                         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">{!! $svgInner !!}</svg>
                     </button>
                 @endforeach
@@ -84,11 +84,11 @@
         if (nameEl) nameEl.textContent = key;
         options.forEach(o => {
             const isActive = (o.getAttribute('data-icon-option') === key);
-            o.classList.toggle('!border-[#173A2A]', isActive);
-            o.classList.toggle('!bg-[#F0F7F3]', isActive);
-            o.classList.toggle('dark:!bg-[#2E7856]/10', isActive);
-            o.classList.toggle('!text-[#1F513A]', isActive);
-            o.classList.toggle('dark:!text-[#6FB393]', isActive);
+            o.classList.toggle('!border-[var(--brand-deep)]', isActive);
+            o.classList.toggle('!bg-[var(--brand-tint-3)]', isActive);
+            o.classList.toggle('dark:!bg-[var(--brand)]/10', isActive);
+            o.classList.toggle('!text-[var(--brand-ink)]', isActive);
+            o.classList.toggle('dark:!text-[var(--brand-light)]', isActive);
         });
     }
     options.forEach(o => o.addEventListener('click', () => selectIcon(o.getAttribute('data-icon-option'))));

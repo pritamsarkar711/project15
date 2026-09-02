@@ -10,9 +10,9 @@
 <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
     <div>
         <h2 class="font-semibold">All Categories</h2>
-        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Shown on the site when <span class="font-semibold text-[#1F513A] dark:text-[#6FB393]">enabled</span> with at least <span class="font-semibold text-[#1F513A] dark:text-[#6FB393]">one published post</span>.</p>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Shown on the site when <span class="font-semibold text-[var(--brand-ink)] dark:text-[var(--brand-light)]">enabled</span> with at least <span class="font-semibold text-[var(--brand-ink)] dark:text-[var(--brand-light)]">one published post</span>.</p>
     </div>
-    <a href="{{ route('admin.categories.create') }}" class="h-9 px-4 rounded-lg bg-[#2E7856] hover:bg-[#27654A] text-white text-sm font-semibold inline-flex items-center gap-1.5">
+    <a href="{{ route('admin.categories.create') }}" class="h-9 px-4 rounded-lg bg-[var(--brand)] hover:bg-[var(--brand-strong)] text-white text-sm font-semibold inline-flex items-center gap-1.5">
         <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14m-7-7h14"/></svg> New Category
     </a>
 </div>
@@ -24,7 +24,7 @@
                 <span class="cursor-move text-slate-400 dark:text-slate-500 shrink-0">
                     <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
                 </span>
-                <span class="w-9 h-9 bg-[#F0F7F3] dark:bg-[#2E7856]/10 text-[#1F513A] dark:text-[#6FB393] flex items-center justify-center shrink-0">
+                <span class="w-9 h-9 bg-[var(--brand-tint-3)] dark:bg-[var(--brand)]/10 text-[var(--brand-ink)] dark:text-[var(--brand-light)] flex items-center justify-center shrink-0">
                     @include('admin.partials.category-icon', ['icon' => $cat->icon, 'class' => 'w-[18px] h-[18px]'])
                 </span>
                 <div class="flex-1 min-w-0">
@@ -32,7 +32,7 @@
                         {{ $cat->name }}
                         @unless($cat->is_active)<span class="text-[10px] font-bold uppercase px-1.5 py-0.5 bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400" title="Disabled, hidden from the site">disabled</span>@endunless
                         @if($cat->is_active && $cat->published_posts_count > 0)
-                            <span class="text-[10px] font-bold uppercase px-1.5 py-0.5 bg-[#E3F0E9] dark:bg-[#2E7856]/15 text-[#1F513A] dark:text-[#6FB393]" title="Enabled and has published posts">live on site</span>
+                            <span class="text-[10px] font-bold uppercase px-1.5 py-0.5 bg-[var(--brand-tint)] dark:bg-[var(--brand)]/15 text-[var(--brand-ink)] dark:text-[var(--brand-light)]" title="Enabled and has published posts">live on site</span>
                         @elseif($cat->is_active)
                             <span class="text-[10px] font-bold uppercase px-1.5 py-0.5 bg-amber-100 dark:bg-amber-500/15 text-amber-700 dark:text-amber-300" title="Enabled, but hidden until it has a published post.">no published posts</span>
                         @endif
@@ -42,7 +42,7 @@
                 {{-- Quick enable / disable without opening the edit form --}}
                 <form method="POST" action="{{ route('admin.categories.toggle', $cat) }}">
                     @csrf
-                    <button type="submit" title="{{ $cat->is_active ? 'Hide from the public site' : 'Enable. Shows on the public site once it has a published post.' }}" class="w-8 h-8 {{ $cat->is_active ? 'bg-[#F0F7F3] dark:bg-[#2E7856]/10 text-[#1F513A] dark:text-[#6FB393] border border-[#C7E0D4] dark:border-[#2E7856]/30' : 'bg-slate-100 dark:bg-slate-700 text-slate-400 dark:text-slate-500 border border-slate-200 dark:border-slate-600' }} flex items-center justify-center shrink-0">
+                    <button type="submit" title="{{ $cat->is_active ? 'Hide from the public site' : 'Enable. Shows on the public site once it has a published post.' }}" class="w-8 h-8 {{ $cat->is_active ? 'bg-[var(--brand-tint-3)] dark:bg-[var(--brand)]/10 text-[var(--brand-ink)] dark:text-[var(--brand-light)] border border-[var(--brand-tint-2)] dark:border-[var(--brand)]/30' : 'bg-slate-100 dark:bg-slate-700 text-slate-400 dark:text-slate-500 border border-slate-200 dark:border-slate-600' }} flex items-center justify-center shrink-0">
                         @if($cat->is_active)
                             <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>
                         @else
@@ -50,7 +50,7 @@
                         @endif
                     </button>
                 </form>
-                <a href="{{ route('admin.categories.edit', $cat) }}" title="Edit" class="w-8 h-8 rounded-lg bg-[#2E7856] hover:bg-[#27654A] text-white flex items-center justify-center shrink-0">
+                <a href="{{ route('admin.categories.edit', $cat) }}" title="Edit" class="w-8 h-8 rounded-lg bg-[var(--brand)] hover:bg-[var(--brand-strong)] text-white flex items-center justify-center shrink-0">
                     <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m18 5 2.47 2.47a1 1 0 0 1 0 1.41L18 11.34 12.66 6l2.42-2.42a1 1 0 0 1 1.41 0ZM11.95 6.7 4.7 13.96a1 1 0 0 0-.29.7V18a1 1 0 0 0 1 1h3.32a1 1 0 0 0 .7-.29l7.26-7.25Z"/></svg>
                 </a>
                 <form method="POST" action="{{ route('admin.categories.destroy', $cat) }}" onsubmit="return confirm('Delete this category?')">@csrf @method('DELETE')

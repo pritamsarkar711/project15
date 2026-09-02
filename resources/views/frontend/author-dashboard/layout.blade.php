@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-site-theme="{{ \App\Support\SiteThemes::validOrDefault(setting('site_theme')) }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -40,22 +40,22 @@
 </head>
 <body class="panel-ui min-h-screen bg-[#f6f7fa] text-slate-900 dark:bg-[#0d0f13] dark:text-slate-100 flex overflow-x-hidden" style="font-family:{{ $panelFontStack }}">
     {{-- Sidebar: identical structure and styling to the admin panel --}}
-    <aside id="author-sidebar" class="fixed inset-y-0 left-0 w-[250px] bg-white dark:bg-[#14171d] text-slate-600 dark:text-slate-300 flex flex-col z-40 transform lg:translate-x-0 -translate-x-full transition-transform duration-300 overflow-y-auto no-scrollbar border-r border-[#e6e8ee] dark:border-[#22262e]">
-        <div class="h-[64px] flex items-center gap-3 px-5 border-b border-[#eef0f4] dark:border-[#22262e] shrink-0">
-            <div class="w-9 h-9 bg-[#173A2A] rounded-lg flex items-center justify-center text-white" aria-hidden="true">
+    <aside id="author-sidebar" class="panel-sidebar fixed inset-y-0 left-0 w-[250px] flex flex-col z-40 transform lg:translate-x-0 -translate-x-full transition-transform duration-300 overflow-y-auto no-scrollbar">
+        <div class="h-[64px] flex items-center gap-3 px-5 border-b border-[var(--sb-border)] shrink-0">
+            <div class="sb-tile w-9 h-9 rounded-lg flex items-center justify-center" aria-hidden="true">
                 <svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Z"/><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 19.5-3-3"/></svg>
             </div>
-            <span class="font-extrabold text-[#101319] dark:text-white leading-none tracking-tight">Author</span>
+            <span class="font-extrabold text-white leading-none tracking-tight">Author</span>
         </div>
 
         <nav class="flex-1 p-3 space-y-1 text-sm font-medium">
-            <a href="{{ route('author.dashboard') }}" class="flex items-center gap-3 px-3 py-2.5 mx-2 rounded-lg transition {{ request()->routeIs('author.dashboard') ? 'bg-[#E9F2EE] text-[#1F513A] font-semibold dark:bg-[#233b30] dark:text-[#8CC7AA]' : 'text-slate-600 dark:text-slate-300 hover:bg-[#f2f4f8] dark:hover:bg-[#1c1f26] hover:text-[#101319] dark:hover:text-white' }}">
+            <a href="{{ route('author.dashboard') }}" class="sb-link flex items-center gap-3 px-3 py-2.5 mx-2 rounded-lg transition {{ request()->routeIs('author.dashboard') ? 'is-active' : '' }}">
                 <svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m3 12 2-2m0 0 7-7 7 7M5 10v10a1 1 0 0 0 1 1h3m10-11 2 2m-2-2v10a1 1 0 0 1-1 1h-3m-6 0a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1m-6 0h6"/></svg>
                 Dashboard
             </a>
 
-            <div class="pt-3 pb-1 px-3 text-[10px] font-bold tracking-[0.18em] text-slate-400 dark:text-slate-500 uppercase">Writing</div>
-            <a href="{{ route('author.posts.index') }}" class="flex items-center gap-3 px-3 py-2.5 mx-2 rounded-lg transition {{ request()->routeIs('author.posts.index') ? 'bg-[#E9F2EE] text-[#1F513A] font-semibold dark:bg-[#233b30] dark:text-[#8CC7AA]' : 'text-slate-600 dark:text-slate-300 hover:bg-[#f2f4f8] dark:hover:bg-[#1c1f26] hover:text-[#101319] dark:hover:text-white' }}">
+            <div class="pt-3 pb-1 px-3 text-[10px] font-bold tracking-[0.18em] sb-label uppercase">Writing</div>
+            <a href="{{ route('author.posts.index') }}" class="sb-link flex items-center gap-3 px-3 py-2.5 mx-2 rounded-lg transition {{ request()->routeIs('author.posts.index') ? 'is-active' : '' }}">
                 <svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/></svg>
                 My Posts
                 @php
@@ -64,47 +64,47 @@
                 @endphp
                 @if($returnedCount)<span class="ml-auto text-[11px] font-bold bg-amber-400 text-slate-900 px-2 py-0.5 rounded-full">{{ $returnedCount }}</span>@endif
             </a>
-            <a href="{{ route('author.posts.create') }}" class="flex items-center gap-3 px-3 py-2.5 mx-2 rounded-lg transition {{ request()->routeIs('author.posts.create') ? 'bg-[#E9F2EE] text-[#1F513A] font-semibold dark:bg-[#233b30] dark:text-[#8CC7AA]' : 'text-slate-600 dark:text-slate-300 hover:bg-[#f2f4f8] dark:hover:bg-[#1c1f26] hover:text-[#101319] dark:hover:text-white' }}">
+            <a href="{{ route('author.posts.create') }}" class="sb-link flex items-center gap-3 px-3 py-2.5 mx-2 rounded-lg transition {{ request()->routeIs('author.posts.create') ? 'is-active' : '' }}">
                 <svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
                 New Post
             </a>
-            <a href="{{ route('author.rules') }}" class="flex items-center gap-3 px-3 py-2.5 mx-2 rounded-lg transition {{ request()->routeIs('author.rules') ? 'bg-[#E9F2EE] text-[#1F513A] font-semibold dark:bg-[#233b30] dark:text-[#8CC7AA]' : 'text-slate-600 dark:text-slate-300 hover:bg-[#f2f4f8] dark:hover:bg-[#1c1f26] hover:text-[#101319] dark:hover:text-white' }}">
+            <a href="{{ route('author.rules') }}" class="sb-link flex items-center gap-3 px-3 py-2.5 mx-2 rounded-lg transition {{ request()->routeIs('author.rules') ? 'is-active' : '' }}">
                 <svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"/></svg>
                 Posting Rules
             </a>
-            <a href="{{ route('author.feedback.index') }}" class="flex items-center gap-3 px-3 py-2.5 mx-2 rounded-lg transition {{ request()->routeIs('author.feedback*') ? 'bg-[#E9F2EE] text-[#1F513A] font-semibold dark:bg-[#233b30] dark:text-[#8CC7AA]' : 'text-slate-600 dark:text-slate-300 hover:bg-[#f2f4f8] dark:hover:bg-[#1c1f26] hover:text-[#101319] dark:hover:text-white' }}">
+            <a href="{{ route('author.feedback.index') }}" class="sb-link flex items-center gap-3 px-3 py-2.5 mx-2 rounded-lg transition {{ request()->routeIs('author.feedback*') ? 'is-active' : '' }}">
                 <svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/></svg>
                 Feedback
             </a>
 
-            <div class="pt-3 pb-1 px-3 text-[10px] font-bold tracking-[0.18em] text-slate-400 dark:text-slate-500 uppercase">Account</div>
-            <a href="{{ route('author.profile.edit') }}" class="flex items-center gap-3 px-3 py-2.5 mx-2 rounded-lg transition {{ request()->routeIs('author.profile*') ? 'bg-[#E9F2EE] text-[#1F513A] font-semibold dark:bg-[#233b30] dark:text-[#8CC7AA]' : 'text-slate-600 dark:text-slate-300 hover:bg-[#f2f4f8] dark:hover:bg-[#1c1f26] hover:text-[#101319] dark:hover:text-white' }}">
+            <div class="pt-3 pb-1 px-3 text-[10px] font-bold tracking-[0.18em] sb-label uppercase">Account</div>
+            <a href="{{ route('author.profile.edit') }}" class="sb-link flex items-center gap-3 px-3 py-2.5 mx-2 rounded-lg transition {{ request()->routeIs('author.profile*') ? 'is-active' : '' }}">
                 <svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Zm6-10.125a1.875 1.875 0 1 1-3.75 0 1.875 1.875 0 0 1 3.75 0Zm1.294 6.336a6.721 6.721 0 0 1-3.17.789 6.721 6.721 0 0 1-3.168-.789 3.376 3.376 0 0 1 6.338 0Z"/></svg>
                 Profile
             </a>
-            <a href="{{ route('author.revenue') }}" class="flex items-center gap-3 px-3 py-2.5 mx-2 rounded-lg transition {{ request()->routeIs('author.revenue') ? 'bg-[#E9F2EE] text-[#1F513A] font-semibold dark:bg-[#233b30] dark:text-[#8CC7AA]' : 'text-slate-600 dark:text-slate-300 hover:bg-[#f2f4f8] dark:hover:bg-[#1c1f26] hover:text-[#101319] dark:hover:text-white' }}">
+            <a href="{{ route('author.revenue') }}" class="sb-link flex items-center gap-3 px-3 py-2.5 mx-2 rounded-lg transition {{ request()->routeIs('author.revenue') ? 'is-active' : '' }}">
                 <svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
                 Revenue
                 <span class="ml-auto text-[10px] font-semibold bg-amber-400 text-slate-900 px-1.5 py-0.5">SOON</span>
             </a>
         </nav>
 
-        <div class="p-3 border-t border-[#eef0f4] dark:border-[#22262e]">
+        <div class="p-3 border-t border-[var(--sb-border)]">
             <div class="flex items-center gap-3 px-1">
                 @if(auth()->user()->author_avatar_path)
                     <img src="{{ '/storage/'.auth()->user()->author_avatar_path }}" class="w-9 h-9 rounded-full object-cover bg-slate-800" alt="" loading="lazy" decoding="async">
                 @else
-                    <div class="w-9 h-9 rounded-full bg-[#2E7856] text-white flex items-center justify-center font-bold text-sm ring-2 ring-[#E9F2EE] dark:ring-[#26314a]">{{ strtoupper(substr(auth()->user()->name,0,1)) }}</div>
+                    <div class="w-9 h-9 rounded-full bg-[var(--brand)] text-white flex items-center justify-center font-bold text-sm ring-2 ring-white/20">{{ strtoupper(substr(auth()->user()->name,0,1)) }}</div>
                 @endif
                 <div class="flex-1 min-w-0">
                     <div class="flex items-center gap-1.5">
-                        <span class="text-sm font-semibold text-[#101319] dark:text-white truncate">{{ auth()->user()->name }}</span>
+                        <span class="text-sm font-semibold sb-name truncate">{{ auth()->user()->name }}</span>
                         {!! auth()->user()->badgeHtml() !!}
                     </div>
-                    <a href="{{ url('/') }}" class="text-[11px] text-slate-400 hover:text-[#2E7856] dark:hover:text-[#8CC7AA]">View site</a>
+                    <a href="{{ url('/') }}" class="text-[11px] sb-view">View site</a>
                 </div>
                 <form method="POST" action="{{ route('logout') }}">@csrf
-                    <button type="submit" title="Sign out" class="w-8 h-8 rounded-lg hover:bg-[#f2f4f8] dark:hover:bg-[#1c1f26] flex items-center justify-center text-slate-400 hover:text-[#101319] dark:hover:text-white transition">
+                    <button type="submit" title="Sign out" class="w-8 h-8 rounded-lg sb-logout flex items-center justify-center transition">
                         <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 17l5-5m0 0-5-5m5 5H9m6-9V5a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2v-2"/></svg>
                     </button>
                 </form>
@@ -127,20 +127,19 @@
                 @if(auth()->check() && auth()->user()->browsingAsUser())
                     <form method="POST" action="{{ route('switch-back-to-admin') }}" class="inline">
                         @csrf
-                        <button type="submit" title="Return to the admin panel" aria-label="Switch to Admin" class="inline-flex items-center justify-center gap-2 h-9 px-3 sm:px-4 text-sm font-semibold bg-[#2E7856] hover:bg-[#27654A] rounded-lg text-white transition cursor-pointer">
+                        <button type="submit" title="Return to the admin panel" aria-label="Switch to Admin" class="inline-flex items-center justify-center gap-2 h-9 px-3 sm:px-4 text-sm font-semibold bg-[var(--brand)] hover:bg-[var(--brand-strong)] rounded-lg text-white transition cursor-pointer">
                             <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2zm10-10V7a4 4 0 0 0-8 0v4h8z"/></svg>
                             <span class="hidden sm:inline">Switch to Admin</span>
                         </button>
                     </form>
                 @endif
-                <button type="button" onclick="toggleAuthorTheme(event)" id="author-theme-btn" aria-label="Switch between light and dark mode" title="Toggle theme"
-                    class="relative w-[52px] h-7 rounded-full bg-[#E9F2EE] dark:bg-[#182029] border border-[#e6e8ee] dark:border-[#2c313c] flex items-center px-1 transition-colors">
-                    <span class="relative z-10 w-5 h-5 rounded-full bg-white dark:bg-[#2E7856] shadow flex items-center justify-center transition-transform duration-300 dark:translate-x-6">
-                        <svg class="w-3 h-3 text-amber-500 block dark:hidden shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
-                        <svg class="w-3 h-3 text-white hidden dark:block shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+                <button type="button" onclick="toggleAuthorTheme(event)" id="author-theme-btn" aria-label="Switch between light and dark mode" title="Toggle theme" class="theme-toggle">
+                    <span class="theme-toggle-knob">
+                        <svg class="theme-toggle-sun shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M4.2 4.2l1.8 1.8M18 18l1.8 1.8M2 12h2.5M19.5 12H22M4.2 19.8 6 18M18 6l1.8-1.8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" fill="none"/></svg>
+                        <svg class="theme-toggle-moon shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
                     </span>
                 </button>
-                <a href="{{ url('/') }}" class="inline-flex items-center justify-center gap-2 h-9 px-3 sm:px-4 text-sm font-semibold text-white bg-[#2E7856] hover:bg-[#27654A] rounded-lg transition" aria-label="View site" title="View site">
+                <a href="{{ url('/') }}" class="inline-flex items-center justify-center gap-2 h-9 px-3 sm:px-4 text-sm font-semibold text-white bg-[var(--brand)] hover:bg-[var(--brand-strong)] rounded-lg transition" aria-label="View site" title="View site">
                     <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 3h6m0 0v6m0-6L10 14M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
                     <span class="hidden sm:inline">View site</span>
                 </a>
@@ -150,12 +149,12 @@
         <main class="flex-1 p-4 sm:p-6 lg:p-7">
             @yield('admin-breadcrumbs')
             @if(session('success'))
-                <div class="mb-4 flex items-center justify-between gap-3 border border-[#C7E0D4] bg-[#F0F7F3] px-4 py-3 text-sm font-medium text-[#173A2A] rounded-xl dark:border-[#2E7856]/30 dark:bg-[#2E7856]/10 dark:text-[#6FB393]">
+                <div class="mb-4 flex items-center justify-between gap-3 border border-[var(--brand-tint-2)] bg-[var(--brand-tint-3)] px-4 py-3 text-sm font-medium text-[var(--brand-deep)] rounded-xl dark:border-[var(--brand)]/30 dark:bg-[var(--brand)]/10 dark:text-[var(--brand-light)]">
                     <span class="flex items-center gap-2">
                         <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path stroke-linecap="round" stroke-linejoin="round" d="m9 11 3 3L22 4"/></svg>
                         {{ session('success') }}
                     </span>
-                    <button onclick="this.parentElement.remove()" class="text-[#27654A] dark:text-[#57A37E]"><svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18 6 6 18M6 6l12 12"/></svg></button>
+                    <button onclick="this.parentElement.remove()" class="text-[var(--brand-strong)] dark:text-[var(--brand-mid)]"><svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18 6 6 18M6 6l12 12"/></svg></button>
                 </div>
             @endif
             @if(session('error'))
@@ -174,7 +173,7 @@
 
     {{-- Back-to-top FAB, same as the admin panel --}}
     <button id="author-back-top" type="button" aria-label="Back to top" title="Back to top"
-        class="fixed bottom-4 right-4 w-10 h-10 bg-[#2E7856] hover:bg-[#27654A] rounded-full dark:bg-[#57A37E] dark:hover:bg-[#2E7856] dark:text-slate-900 text-white shadow-lg flex items-center justify-center transition-opacity duration-200 opacity-0 pointer-events-none z-30">
+        class="fixed bottom-4 right-4 w-10 h-10 bg-[var(--brand)] hover:bg-[var(--brand-strong)] rounded-full dark:bg-[var(--brand-mid)] dark:hover:bg-[var(--brand)] dark:text-slate-900 text-white shadow-lg flex items-center justify-center transition-opacity duration-200 opacity-0 pointer-events-none z-30">
         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m18 15-6-6-6 6"/></svg>
     </button>
 

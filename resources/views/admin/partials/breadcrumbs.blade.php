@@ -18,7 +18,7 @@
                 <li class="font-semibold text-slate-800 dark:text-slate-200">{{ $c['label'] }}</li>
             @else
                 <li>
-                    <a href="{{ $url }}" class="hover:text-[#2E7856] dark:hover:text-[#6FB393] transition">{{ $c['label'] }}</a>
+                    <a href="{{ $url }}" class="hover:text-[var(--brand)] dark:hover:text-[var(--brand-light)] transition">{{ $c['label'] }}</a>
                 </li>
                 <li aria-hidden="true" class="flex items-center"><svg class="w-3.5 h-3.5 text-slate-300 dark:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 6 6 6-6 6"/></svg></li>
             @endif

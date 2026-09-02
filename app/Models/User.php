@@ -111,7 +111,7 @@ class User extends Authenticatable
             // 100+ published posts: yellow badge (authors only).
             'top'    => '<span class="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-400 text-slate-900" title="Top author, 100+ published posts">'.$seal.'Top Author</span>',
             // 10+ published posts: green badge (authors only).
-            default  => '<span class="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#2E7856] text-white" title="Verified author, 10+ published posts">'.$seal.'Author</span>',
+            default  => '<span class="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-[var(--brand)] text-white" title="Verified author, 10+ published posts">'.$seal.'Author</span>',
         };
     }
 
