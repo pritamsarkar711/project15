@@ -376,10 +376,54 @@ textarea:focus-visible, summary:focus-visible, [tabindex]:focus-visible,
 .sb-view:hover { color: #fff; }
 .sb-logout { color: var(--sb-muted); }
 .sb-logout:hover { background: var(--sb-hover); color: #fff; }
-.panel-sidebar::-webkit-scrollbar { width: 5px; }
-.panel-sidebar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.18); border-radius: 999px; }
-.panel-sidebar::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.32); }
-.panel-sidebar::-webkit-scrollbar-track { background: transparent; }
+
+/* Collapsible nav groups: section headers toggle their links open and
+   closed, so the rail stays short on every screen and never needs to
+   show a scrollbar. A collapsed group keeps its pending-count badge on
+   the header so nothing is silently hidden; the badge hides again while
+   the group is expanded, because the links carry it then. */
+.sb-group { margin-top: 10px; }
+.sb-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin: 0 8px;
+    width: calc(100% - 16px);
+    padding: 7px 12px;
+    background: transparent;
+    border: 0;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    text-align: left;
+    font: inherit;
+    color: inherit;
+    transition: background-color .15s ease;
+}
+.sb-head:hover { background: var(--sb-hover); }
+.sb-head:hover .sb-label { color: #fff; }
+.sb-head:focus-visible { outline: 2px solid rgba(255, 255, 255, 0.35); outline-offset: 2px; }
+.sb-head-tools { display: inline-flex; align-items: center; gap: 6px; }
+.sb-head-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 999px;
+    background: #fbbf24;
+    color: #0f172a;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1;
+}
+.sb-group.open .sb-head-badge { display: none; }
+.sb-head-chevron { width: 14px; height: 14px; color: var(--sb-muted); flex-shrink: 0; transition: transform .28s cubic-bezier(0.4, 0, 0.2, 1); }
+.sb-group.open .sb-head-chevron { transform: rotate(180deg); }
+.sb-body { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .28s cubic-bezier(0.4, 0, 0.2, 1); }
+.sb-group.open .sb-body { grid-template-rows: 1fr; }
+.sb-body-inner { overflow: hidden; min-height: 0; padding-bottom: 4px; }
 
 /* ---------- Keyboard hint chips ---------- */
 .kbd {
@@ -922,6 +966,7 @@ body.theme-loading { visibility: hidden; }
 @media (prefers-reduced-motion: reduce) {
     .panel-ui main { animation: none; }
     .panel-ui button, .panel-ui tbody tr, .panel-ui aside nav > a { transition: none; }
+    .panel-ui .sb-body, .panel-ui .sb-head-chevron { transition: none; }
 }
 
 .panel-ui ::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -1070,3 +1115,23 @@ html[data-site-template="editorial"] article a:not([class]) {
     text-decoration-thickness: 1px;
     text-underline-offset: 3px;
 }
+
+/* ============================================================
+   PANEL RAIL GUARDS
+   Two hard rules for the admin and author sidebars that no
+   template or color theme may override.
+   1. The rail never shows a scrollbar. Collapsible groups keep
+      the nav short; if a very short window still overflows,
+      the nav scrolls silently with no visible track or thumb.
+   2. The rail keeps its own geometry. Material rounds every
+      site-wide button into a pill, but a full-width section
+      header must never read as a stadium.
+   Unlayered on purpose so both outrank the template rules.
+   ============================================================ */
+.no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; width: 0; height: 0; }
+.panel-sidebar,
+.panel-sidebar nav { scrollbar-width: none; -ms-overflow-style: none; }
+.panel-sidebar::-webkit-scrollbar,
+.panel-sidebar nav::-webkit-scrollbar { display: none; width: 0; height: 0; }
+html[data-site-template="material"] .panel-sidebar button.sb-head { border-radius: 0.5rem; }

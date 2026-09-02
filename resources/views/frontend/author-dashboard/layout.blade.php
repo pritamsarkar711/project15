@@ -40,7 +40,7 @@
 </head>
 <body class="panel-ui min-h-screen bg-[#f6f7fa] text-slate-900 dark:bg-[#0d0f13] dark:text-slate-100 flex overflow-x-hidden" style="font-family:{{ $panelFontStack }}">
     {{-- Sidebar: identical structure and styling to the admin panel --}}
-    <aside id="author-sidebar" class="panel-sidebar fixed inset-y-0 left-0 w-[250px] flex flex-col z-40 transform lg:translate-x-0 -translate-x-full transition-transform duration-300 overflow-y-auto no-scrollbar">
+    <aside id="author-sidebar" class="panel-sidebar fixed inset-y-0 left-0 w-[250px] flex flex-col z-40 transform lg:translate-x-0 -translate-x-full transition-transform duration-300 overflow-hidden">
         <div class="h-[64px] flex items-center gap-3 px-5 border-b border-[var(--sb-border)] shrink-0">
             <div class="sb-tile w-9 h-9 rounded-lg flex items-center justify-center" aria-hidden="true">
                 <svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Z"/><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 19.5-3-3"/></svg>
@@ -48,7 +48,7 @@
             <span class="font-extrabold text-white leading-none tracking-tight">Author</span>
         </div>
 
-        <nav class="flex-1 p-3 space-y-1 text-sm font-medium">
+        <nav id="author-sb-nav" class="flex-1 min-h-0 overflow-y-auto no-scrollbar p-3 pb-4 space-y-1 text-sm font-medium">
             <a href="{{ route('author.dashboard') }}" class="sb-link flex items-center gap-3 px-3 py-2.5 mx-2 rounded-lg transition {{ request()->routeIs('author.dashboard') ? 'is-active' : '' }}">
                 <svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m3 12 2-2m0 0 7-7 7 7M5 10v10a1 1 0 0 0 1 1h3m10-11 2 2m-2-2v10a1 1 0 0 1-1 1h-3m-6 0a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1m-6 0h6"/></svg>
                 Dashboard
@@ -89,7 +89,7 @@
             </a>
         </nav>
 
-        <div class="p-3 border-t border-[var(--sb-border)]">
+        <div class="shrink-0 p-3 border-t border-[var(--sb-border)]">
             <div class="flex items-center gap-3 px-1">
                 @if(auth()->user()->author_avatar_path)
                     <img src="{{ '/storage/'.auth()->user()->author_avatar_path }}" class="w-9 h-9 rounded-full object-cover bg-slate-800" alt="" loading="lazy" decoding="async">
