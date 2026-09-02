@@ -59,6 +59,18 @@
                 <input type="url" name="portfolio_url" value="{{ old('portfolio_url', $user->portfolio_url) }}" maxlength="255" placeholder="https://"
                     class="w-full h-11 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none text-sm text-slate-900 dark:text-white">
             </div>
+            {{-- Primary niche: one category the author mainly writes in.
+                 Shown on the public author profile next to the role title. --}}
+            <div>
+                <label for="niche-select" class="block text-sm font-semibold text-slate-900 dark:text-white mb-1.5">Primary niche</label>
+                <select id="niche-select" name="niche"
+                    class="w-full h-11 px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none text-sm text-slate-900 dark:text-white">
+                    <option value="">Not specified</option>
+                    @foreach(($categories ?? collect()) as $category)
+                        <option value="{{ $category->slug }}" @selected(old('niche', $user->niche) === $category->slug)>{{ $category->name }}</option>
+                    @endforeach
+                </select>
+            </div>
             {{-- Country picker: tooltip on the label explains what it does; the
                  selected flag icon previews live next to the select. The saved
                  country shows up (with its flag) on the public author profile,

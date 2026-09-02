@@ -11,7 +11,7 @@
             </div>
             <div>
                 <h2 class="text-xl font-bold text-slate-900 dark:text-white">Posting Rules</h2>
-                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">Every post is reviewed before it goes live.</p>
+                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">Every post is reviewed before it goes live. Breaking a rule gets it returned with a note, or removed.</p>
             </div>
         </div>
     </div>
@@ -24,7 +24,7 @@
                 </span>
                 <h3 class="font-semibold text-slate-900 dark:text-white">Write for real readers</h3>
             </div>
-            <p class="text-sm text-slate-600 dark:text-slate-400 mt-3 leading-relaxed">Write in your own words.</p>
+            <p class="text-sm text-slate-600 dark:text-slate-400 mt-3 leading-relaxed">Write in your own words — generic filler is returned for a rewrite.</p>
         </div>
 
         <div class="panel-card p-5">
@@ -34,7 +34,7 @@
                 </span>
                 <h3 class="font-semibold text-slate-900 dark:text-white">Keep it focused</h3>
             </div>
-            <p class="text-sm text-slate-600 dark:text-slate-400 mt-3 leading-relaxed">One clear point, well supported.</p>
+            <p class="text-sm text-slate-600 dark:text-slate-400 mt-3 leading-relaxed">Make one clear point and support it. A concise post with real value outperforms a long one padded with repeated ideas.</p>
         </div>
 
         <div class="panel-card p-5">
@@ -44,7 +44,7 @@
                 </span>
                 <h3 class="font-semibold text-slate-900 dark:text-white">Be useful</h3>
             </div>
-            <p class="text-sm text-slate-600 dark:text-slate-400 mt-3 leading-relaxed">Share concrete steps, picks or examples.</p>
+            <p class="text-sm text-slate-600 dark:text-slate-400 mt-3 leading-relaxed">Answer a question the reader actually has. Share concrete steps, picks or examples rather than vague overviews.</p>
         </div>
 
         <div class="panel-card p-5">
@@ -54,7 +54,7 @@
                 </span>
                 <h3 class="font-semibold text-slate-900 dark:text-white">Support what you say</h3>
             </div>
-            <p class="text-sm text-slate-600 dark:text-slate-400 mt-3 leading-relaxed">Cite sources. Write from genuine knowledge.</p>
+            <p class="text-sm text-slate-600 dark:text-slate-400 mt-3 leading-relaxed">Cite sources where relevant and write from genuine knowledge. Do not present uncertain claims as fact.</p>
         </div>
 
         <div class="panel-card p-5">
@@ -64,7 +64,7 @@
                 </span>
                 <h3 class="font-semibold text-slate-900 dark:text-white">Publish original work</h3>
             </div>
-            <p class="text-sm text-slate-600 dark:text-slate-400 mt-3 leading-relaxed">All content must be yours. Copied text leads to removal.</p>
+            <p class="text-sm text-slate-600 dark:text-slate-400 mt-3 leading-relaxed">All content must be yours. Copied text, repackaged press releases or keyword filled writing leads to permanent removal.</p>
         </div>
 
         <div class="panel-card p-5">
@@ -74,7 +74,7 @@
                 </span>
                 <h3 class="font-semibold text-slate-900 dark:text-white">Complete the extras</h3>
             </div>
-            <p class="text-sm text-slate-600 dark:text-slate-400 mt-3 leading-relaxed">Add one FAQ and fill the meta fields.</p>
+            <p class="text-sm text-slate-600 dark:text-slate-400 mt-3 leading-relaxed">Add at least one FAQ and fill in the meta title and description. This helps readers and search engines understand your topic.</p>
         </div>
 
         <div class="panel-card p-5">
@@ -84,7 +84,7 @@
                 </span>
                 <h3 class="font-semibold text-slate-900 dark:text-white">Affiliate links</h3>
             </div>
-            <p class="text-sm text-slate-600 dark:text-slate-400 mt-3 leading-relaxed">Use the affiliate toggle — the disclosure is added for you.</p>
+            <p class="text-sm text-slate-600 dark:text-slate-400 mt-3 leading-relaxed">When a post includes affiliate links, turn on the affiliate toggle before submitting. The required disclosure is then added for you.</p>
         </div>
 
         <div class="panel-card p-5">
@@ -94,7 +94,7 @@
                 </span>
                 <h3 class="font-semibold text-slate-900 dark:text-white">Submission pace</h3>
             </div>
-            <p class="text-sm text-slate-600 dark:text-slate-400 mt-3 leading-relaxed">One submission per 24 hours. Drafts are unlimited.</p>
+            <p class="text-sm text-slate-600 dark:text-slate-400 mt-3 leading-relaxed">You can submit one post for review every 24 hours. Drafts are unlimited. Use the time to refine your next draft.</p>
         </div>
 
         <div class="panel-card p-5">
@@ -104,7 +104,7 @@
                 </span>
                 <h3 class="font-semibold text-slate-900 dark:text-white">How review works</h3>
             </div>
-            <p class="text-sm text-slate-600 dark:text-slate-400 mt-3 leading-relaxed">Fix the admin note and resubmit. Published posts are locked.</p>
+            <p class="text-sm text-slate-600 dark:text-slate-400 mt-3 leading-relaxed">Admins approve, edit or return posts with a note. Fix the note and resubmit. Published posts are locked.</p>
         </div>
     </div>
 
@@ -116,11 +116,11 @@
             <h3 class="font-semibold text-slate-900 dark:text-white">External link policy</h3>
         </div>
         <ul class="mt-4 space-y-2.5 text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-            <li class="flex gap-2.5"><span class="w-5 h-5 bg-red-50 dark:bg-red-500/10 text-red-500 flex items-center justify-center shrink-0 mt-0.5"><svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg></span>No adult, gambling, drugs, hacking or piracy links.</li>
-            <li class="flex gap-2.5"><span class="w-5 h-5 bg-red-50 dark:bg-red-500/10 text-red-500 flex items-center justify-center shrink-0 mt-0.5"><svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg></span>No low quality sites added for commission.</li>
-            <li class="flex gap-2.5"><span class="w-5 h-5 bg-[#F0F7F3] dark:bg-[#2E7856]/10 text-[#27654A] flex items-center justify-center shrink-0 mt-0.5"><svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg></span>Affiliate links from trusted brands are welcome.</li>
+            <li class="flex gap-2.5"><span class="w-5 h-5 bg-red-50 dark:bg-red-500/10 text-red-500 flex items-center justify-center shrink-0 mt-0.5"><svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg></span>Never link to adult, gambling, betting, drugs, hacking, piracy or any unsafe destination.</li>
+            <li class="flex gap-2.5"><span class="w-5 h-5 bg-red-50 dark:bg-red-500/10 text-red-500 flex items-center justify-center shrink-0 mt-0.5"><svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg></span>Never link to unfamiliar, low quality or questionable sites for the sake of a commission.</li>
+            <li class="flex gap-2.5"><span class="w-5 h-5 bg-[#F0F7F3] dark:bg-[#2E7856]/10 text-[#27654A] flex items-center justify-center shrink-0 mt-0.5"><svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg></span>Affiliate links are welcome only from reputable sources that readers already trust, such as major retailers and well known brands.</li>
         </ul>
-        <p class="text-sm font-semibold text-red-600 dark:text-red-400 mt-4">Breaking the link policy gets the post rejected.</p>
+        <p class="text-sm font-semibold text-red-600 dark:text-red-400 mt-4">A post that breaks the link policy is rejected and the account may be removed.</p>
     </div>
 
     <div class="border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 p-5 mt-4 text-sm text-slate-600 dark:text-slate-400 leading-relaxed">

@@ -35,8 +35,18 @@
                     {!! $author->badgeHtml() !!}
                 </div>
 
-                @if($author->role_title)
-                <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">{{ $author->role_title }}</p>
+                @php $niche = $author->nicheCategory(); @endphp
+                @if($author->role_title || $niche)
+                <p class="text-sm text-slate-600 dark:text-slate-400 mt-1 flex items-center flex-wrap gap-x-2 gap-y-1">
+                    @if($author->role_title)<span>{{ $author->role_title }}</span>@endif
+                    @if($niche)
+                        {{-- Primary niche chip: the category the author mainly writes in --}}
+                        <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-[#1F513A] dark:text-[#8CC7AA] bg-[#E9F2EE] dark:bg-[#233b30] rounded-full px-2.5 py-0.5">
+                            <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 15.004 13.5 3.483l1.5 4.02 4.02 1.5-11.452 3.932M9.568 15.004 3.483 13.5l3.932-11.452m2.153 12.956 4.02 1.5L17.5 2.5l-11.452 3.932"/></svg>
+                            {{ $niche->name }}
+                        </span>
+                    @endif
+                </p>
                 @endif
 
                 @if($author->bio)

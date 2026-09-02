@@ -582,7 +582,14 @@ class AuthorDashboardController extends Controller
     public function profileEdit()
     {
         $user = Auth::user();
-        return view('frontend.author-dashboard.profile', compact('user'));
+        // Active categories double as the niche options: an author's primary
+        // niche is always one real, visible post category.
+        $categories = \App\Models\Category::query()
+            ->where('is_active', true)
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->get(['name', 'slug']);
+        return view('frontend.author-dashboard.profile', compact('user', 'categories'));
     }
 
     public function profileUpdate(Request $request)
@@ -602,6 +609,8 @@ class AuthorDashboardController extends Controller
             // Validated against the Countries list so a tampered request can
             // never store an arbitrary string.
             'country'          => ['nullable', 'string', 'size:2'],
+            // Primary niche: optional category slug from the dropdown.
+            'niche'            => ['nullable', 'string', 'max:100'],
         ];
 
         // Username is one-time-lockable — only allow setting it if it's
@@ -625,6 +634,12 @@ class AuthorDashboardController extends Controller
             return back()->withErrors(['country' => 'Please pick a country from the list.'])->withInput();
         }
 
+        // Same guard for the niche: only real, active category slugs are stored.
+        if (isset($data['niche']) && $data['niche'] !== ''
+            && !\App\Models\Category::where('slug', $data['niche'])->where('is_active', true)->exists()) {
+            return back()->withErrors(['niche' => 'Please pick a niche from the list.'])->withInput();
+        }
+
         $user->name = $data['name'];
         $user->bio = $data['bio'] ?? null;
         $user->role_title = $data['role_title'] ?? null;
@@ -633,6 +648,7 @@ class AuthorDashboardController extends Controller
         // Empty select = user cleared their country — honour that instead of
         // silently keeping the old value.
         $user->country = strtoupper(trim((string) ($data['country'] ?? ''))) ?: null;
+        $user->niche = isset($data['niche']) && $data['niche'] !== '' ? $data['niche'] : null;
 
         if (empty($user->username) && isset($data['username'])) {
             // Lowercase the username for case-insensitive uniqueness on lookup

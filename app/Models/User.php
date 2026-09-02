@@ -12,7 +12,9 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\URL;
 
-#[Fillable(['name', 'email', 'password', 'role', 'bio', 'avatar', 'google_id', 'two_factor_enabled', 'two_factor_secret', 'theme_preference', 'google2fa_secret', 'author_avatar_path', 'username', 'role_title', 'portfolio_url', 'social_links', 'is_verified', 'country'])]
+use App\Models\Category;
+
+#[Fillable(['name', 'email', 'password', 'role', 'bio', 'avatar', 'google_id', 'two_factor_enabled', 'two_factor_secret', 'theme_preference', 'google2fa_secret', 'author_avatar_path', 'username', 'role_title', 'niche', 'portfolio_url', 'social_links', 'is_verified', 'country'])]
 #[Hidden(['password', 'remember_token', 'two_factor_secret', 'google2fa_secret'])]
 class User extends Authenticatable
 {
@@ -204,6 +206,26 @@ class User extends Authenticatable
     {
         try {
             return \App\Support\Countries::flagUrl($this->country ?? null);
+        } catch (\Throwable $e) {
+            return null;
+        }
+    }
+
+    /**
+     * The author's primary niche as a Category model, or null when not picked
+     * or the category no longer exists / was disabled.
+     * Shown on the public author profile next to the role title.
+     */
+    public function nicheCategory(): ?Category
+    {
+        if (! $this->niche) {
+            return null;
+        }
+        try {
+            return \App\Models\Category::query()
+                ->where('slug', $this->niche)
+                ->where('is_active', true)
+                ->first();
         } catch (\Throwable $e) {
             return null;
         }

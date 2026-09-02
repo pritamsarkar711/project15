@@ -3,11 +3,11 @@
  * editor. Mirrors app/Services/SeoAnalyzer.php (same checks, same weights)
  * so the number the author sees while typing matches the persisted score.
  *
- * UI model (RankMath-style, compact):
- *   - Score gauge + verdict on top.
- *   - Failed checks first as short one-line rows with a tiny fix hint.
- *   - Passed checks collapsed behind a "+ N passed" toggle so the panel
- *     stays small while you write.
+ * UI model (RankMath-style):
+ *   - Score gauge + verdict + pass/fix counters on top.
+ *   - Three tab chips — Basic SEO / Content / Media & links — like RankMath's
+ *     check groups. Failed rows read first, passed rows stay dimmed below.
+ *   - Short labels, one-line hints with live values only where they help.
  *
  * Usage: give the editor form the data-seo-panel attribute container:
  *   <div id="seo-score-panel"></div>
@@ -16,6 +16,17 @@
  */
 (function () {
     'use strict';
+
+    var ICON_CHECK = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="display:block"><path d="m5 12.5 4.5 4.5L19 7"/></svg>';
+    var ICON_CROSS = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="display:block"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+    var ICON_DASH = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" style="display:block"><path d="M6 12h12"/></svg>';
+
+    var GROUPS = [
+        { id: 'basic',   label: 'Basic SEO' },
+        { id: 'content', label: 'Content' },
+        { id: 'media',   label: 'Media & links' }
+    ];
+    var activeGroup = null; // remembered between renders
 
     function textOf(html) {
         var div = document.createElement('div');
@@ -33,8 +44,8 @@
         var kw = (input.focusKeyword || '').trim().toLowerCase();
         var checks = [];
         // Short label + a one-line fix hint (shown only for failed rows).
-        var add = function (ok, label, hint, neutral) {
-            checks.push({ ok: neutral ? null : !!ok, label: label, hint: ok || neutral ? '' : hint });
+        var add = function (group, ok, label, hint, neutral) {
+            checks.push({ group: group, ok: neutral ? null : !!ok, label: label, hint: ok || neutral ? '' : hint });
         };
 
         var title = (input.title || '').trim();
@@ -74,21 +85,21 @@
         var firstChunk = text.toLowerCase().substring(0, Math.max(120, text.length * 0.12));
 
         // ----- checks (short labels; same scoring as the server) -----
-        add(kw && titleLower.indexOf(kw) !== -1, 'Keyword in title', 'Add the keyword to the post title.');
-        add(kw && metaTitleLower.indexOf(kw) !== -1, 'Keyword in SEO title', 'Work the keyword into the SEO title.');
-        add(kw && metaDescLower.indexOf(kw) !== -1, 'Keyword in meta description', 'Mention the keyword in the meta description.');
-        add(kw && slug.indexOf(kw) !== -1, 'Keyword in URL slug', 'Include the keyword in the slug.');
-        add(title.length >= 30 && title.length <= 65, 'Title length 30–65', 'Title is ' + title.length + ' characters — aim 30–65.');
-        add(metaTitle.length >= 30 && metaTitle.length <= 60, 'SEO title length 30–60', 'SEO title is ' + metaTitle.length + ' characters — aim 30–60.');
-        add(metaDesc.length >= 120 && metaDesc.length <= 165, 'Meta description 120–165', 'Meta description is ' + metaDesc.length + ' characters — aim 120–165.');
-        add(kw && firstChunk.indexOf(kw) !== -1, 'Keyword in opening paragraph', 'Use the keyword early in the content.');
-        add(kw && density >= 0.5 && density <= 3.0, 'Keyword density 0.5–3%', density > 3.0 ? 'Density ' + density + '% is too high — ease off.' : 'Density ' + density + '% — use the keyword a few more times.');
-        add(kw && headings.some(function (h) { return h.indexOf(kw) !== -1; }), 'Keyword in a subheading', 'Add the keyword to one H2/H3.');
-        add(wordCount >= 600, '600+ words', 'Content is ' + wordCount + ' words — aim 600+.');
-        add(headings.length >= 2, '2+ subheadings', headings.length + ' subheading(s) — add more H2/H3.');
-        add(external >= 1, 'External link', 'Add one outbound link to a trusted source.');
-        add(internal >= 1, 'Internal link', 'Link to another page on your site.');
-        add(imgs.length > 0 && imgNoAlt === 0, 'Image alt text', imgs.length === 0 ? 'Add an image with descriptive alt text.' : 'Add alt text to ' + imgNoAlt + ' image(s).');
+        add('basic', kw && titleLower.indexOf(kw) !== -1, 'Keyword in title', 'Add the keyword to the post title.');
+        add('basic', kw && metaTitleLower.indexOf(kw) !== -1, 'Keyword in SEO title', 'Work the keyword into the SEO title.');
+        add('basic', kw && metaDescLower.indexOf(kw) !== -1, 'Keyword in meta description', 'Mention the keyword in the meta description.');
+        add('basic', kw && slug.indexOf(kw) !== -1, 'Keyword in URL slug', 'Include the keyword in the slug.');
+        add('basic', title.length >= 30 && title.length <= 65, 'Title length 30–65', 'Title is ' + title.length + ' characters — aim 30–65.');
+        add('basic', metaTitle.length >= 30 && metaTitle.length <= 60, 'SEO title length 30–60', 'SEO title is ' + metaTitle.length + ' characters — aim 30–60.');
+        add('basic', metaDesc.length >= 120 && metaDesc.length <= 165, 'Meta description 120–165', 'Meta description is ' + metaDesc.length + ' characters — aim 120–165.');
+        add('content', kw && firstChunk.indexOf(kw) !== -1, 'Keyword in opening paragraph', 'Use the keyword early in the content.');
+        add('content', kw && density >= 0.5 && density <= 3.0, 'Keyword density 0.5–3%', density > 3.0 ? 'Density ' + density + '% is too high — ease off.' : 'Density ' + density + '% — use the keyword a few more times.');
+        add('content', kw && headings.some(function (h) { return h.indexOf(kw) !== -1; }), 'Keyword in a subheading', 'Add the keyword to one H2/H3.');
+        add('content', wordCount >= 600, '600+ words', 'Content is ' + wordCount + ' words — aim 600+.');
+        add('content', headings.length >= 2, '2+ subheadings', headings.length + ' subheading(s) — add more H2/H3.');
+        add('media', external >= 1, 'External link', 'Add one outbound link to a trusted source.');
+        add('media', internal >= 1, 'Internal link', 'Link to another page on your site.');
+        add('media', imgs.length > 0 && imgNoAlt === 0, 'Image alt text', imgs.length === 0 ? 'Add an image with descriptive alt text.' : 'Add alt text to ' + imgNoAlt + ' image(s).');
 
         // ----- score -----
         var scored = checks.filter(function (c) { return c.ok !== null; });
@@ -110,17 +121,56 @@
         return score >= 70 ? 'Good' : score >= 40 ? 'Okay' : 'Needs work';
     }
 
-    var passedExpanded = false;
+    function escapeHtml(s) {
+        return (s || '').replace(/[&<>"']/g, function (m) {
+            return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
+        });
+    }
+
+    function groupStats(checks, groupId) {
+        var pass = 0, fail = 0, neutral = 0;
+        checks.forEach(function (c) {
+            if (c.group !== groupId) return;
+            if (c.ok === null) { neutral++; return; }
+            c.ok ? pass++ : fail++;
+        });
+        return { pass: pass, fail: fail, neutral: neutral };
+    }
+
+    function row(c) {
+        var icon, iconCls, textCls;
+        if (c.ok === true) {
+            icon = ICON_CHECK; iconCls = 'bg-green-600 text-white'; textCls = 'text-slate-400 dark:text-slate-500';
+        } else if (c.ok === false) {
+            icon = ICON_CROSS; iconCls = 'bg-red-500 text-white'; textCls = 'text-slate-700 dark:text-slate-200 font-medium';
+        } else {
+            icon = ICON_DASH; iconCls = 'bg-slate-200 dark:bg-slate-700 text-slate-400 dark:text-slate-500'; textCls = 'text-slate-400 dark:text-slate-500';
+        }
+        return '<li class="flex items-start gap-2.5 px-2.5 py-1.5 rounded-lg' + (c.ok === false ? ' bg-red-50/70 dark:bg-red-500/[0.07]' : '') + '">' +
+            '<span class="shrink-0 w-[18px] h-[18px] rounded-full inline-flex items-center justify-center mt-px ' + iconCls + '">' + icon + '</span>' +
+            '<span class="min-w-0 ' + textCls + '">' + escapeHtml(c.label) +
+            (c.hint ? '<span class="block text-[11.5px] text-slate-400 dark:text-slate-500">' + escapeHtml(c.hint) + '</span>' : '') +
+            '</span></li>';
+    }
 
     function render(el, result) {
         var color = scoreColor(result.score);
         var circumference = 2 * Math.PI * 26;
         var offset = circumference * (1 - result.score / 100);
-        var failed = [], passed = [], neutral = 0;
+        var failed = 0, passed = 0;
         result.checks.forEach(function (c) {
-            if (c.ok === null) { neutral++; return; }
-            if (c.ok === true) { passed.push(c); } else { failed.push(c); }
+            if (c.ok === null) { return; }
+            c.ok ? passed++ : failed++;
         });
+
+        // Pick the default tab: first group that still has something to fix,
+        // otherwise the first group. Remember the author's choice afterwards.
+        if (!activeGroup) {
+            activeGroup = GROUPS[0].id;
+            for (var g = 0; g < GROUPS.length; g++) {
+                if (groupStats(result.checks, GROUPS[g].id).fail > 0) { activeGroup = GROUPS[g].id; break; }
+            }
+        }
 
         var html = '' +
             '<div class="seo-card rounded-[10px] border border-[#e6e8ee] dark:border-[#262a33] bg-white dark:bg-[#101319] p-4 text-[13px] leading-relaxed">' +
@@ -138,61 +188,45 @@
             '<div class="text-slate-500 dark:text-slate-400 text-xs mt-0.5">' + result.words + ' words' +
             (result.hasKeyword ? '' : ' · add a focus keyword to unlock full scoring') + '</div>' +
             '<div class="flex gap-3 mt-1.5 text-[11px] font-semibold">' +
-            '<span class="text-green-600 dark:text-green-400">' + passed.length + ' passed</span>' +
-            '<span class="text-red-500">' + failed.length + ' to fix</span>' +
+            '<span class="inline-flex items-center gap-1 text-green-600 dark:text-green-400"><span class="w-1.5 h-1.5 rounded-full bg-green-600 dark:bg-green-400"></span>' + passed + ' passed</span>' +
+            '<span class="inline-flex items-center gap-1 text-red-500"><span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>' + failed + ' to fix</span>' +
             '</div>' +
             '</div>' +
             '</div>';
 
-        // Failed checks first — short rows, one-line hints.
-        if (failed.length) {
-            html += '<ul class="mt-3 pt-3 border-t border-[#eef0f4] dark:border-[#22262e] m-0 p-0 list-none grid gap-1.5">';
-            failed.forEach(function (c) {
-                html += row(c, false);
+        // RankMath-style group tabs
+        html += '<div class="mt-3 pt-3 border-t border-[#eef0f4] dark:border-[#22262e] flex flex-wrap gap-1.5" role="tablist">';
+            GROUPS.forEach(function (g) {
+                var st = groupStats(result.checks, g.id);
+                var isActive = g.id === activeGroup;
+                html += '<button type="button" role="tab" data-seo-group="' + g.id + '" class="inline-flex items-center gap-1.5 px-2.5 h-7 rounded-full text-[11px] font-semibold border transition ' +
+                    (isActive
+                        ? 'bg-[#173A2A] border-[#173A2A] text-white dark:bg-[#2E7856] dark:border-[#2E7856]'
+                        : 'border-[#e6e8ee] dark:border-[#262a33] text-slate-500 dark:text-slate-400 hover:border-[#2E7856] hover:text-[#1F513A] dark:hover:text-[#6FB393]') +
+                    '">' + escapeHtml(g.label) +
+                    (st.fail > 0 ? '<span class="w-4 h-4 rounded-full bg-red-500 text-white text-[9px] font-bold inline-flex items-center justify-center">' + st.fail + '</span>' : '') +
+                    '</button>';
             });
-            html += '</ul>';
-        }
+            html += '</div>';
 
-        // Passed checks collapsed behind a compact toggle.
-        if (passed.length) {
-            html += '<div class="mt-2">' +
-                '<button type="button" data-seo-toggle class="text-[11px] font-semibold text-slate-400 hover:text-[#1F513A] dark:hover:text-[#6FB393] transition">' +
-                (passedExpanded ? 'Hide passed' : '+ ' + passed.length + ' passed') +
-                '</button>' +
-                (passedExpanded ? '<ul class="mt-1.5 m-0 p-0 list-none grid gap-1.5">' + passed.map(function (c) { return row(c, true); }).join('') + '</ul>' : '') +
-                '</div>';
-        }
+            // Rows for the active group — failed first, then passed, then neutral.
+            var rows = [];
+            result.checks.filter(function (c) { return c.group === activeGroup && c.ok === false; })
+                .forEach(function (c) { rows.push(row(c)); });
+            result.checks.filter(function (c) { return c.group === activeGroup && c.ok === true; })
+                .forEach(function (c) { rows.push(row(c)); });
+            result.checks.filter(function (c) { return c.group === activeGroup && c.ok === null; })
+                .forEach(function (c) { rows.push(row(c)); });
+            html += '<ul class="mt-2 m-0 p-0 list-none grid gap-0.5">' + rows.join('') + '</ul>';
 
         html += '</div>';
         el.innerHTML = html;
 
-        var toggle = el.querySelector('[data-seo-toggle]');
-        if (toggle) {
-            toggle.addEventListener('click', function () {
-                passedExpanded = !passedExpanded;
+        el.querySelectorAll('[data-seo-group]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                activeGroup = btn.getAttribute('data-seo-group');
                 render(el, result);
-                // Keep the toggle visible after re-render.
-                var t2 = el.querySelector('[data-seo-toggle]');
-                if (t2) t2.scrollIntoView({ block: 'nearest' });
             });
-        }
-    }
-
-    function row(c, isPassed) {
-        var mark = isPassed ? '✓' : '✕';
-        var dotCls = isPassed
-            ? 'bg-green-600'
-            : 'bg-red-500';
-        return '<li class="flex gap-2 items-start">' +
-            '<span class="shrink-0 w-4 h-4 rounded-full text-white text-[10px] font-bold inline-flex items-center justify-center mt-0.5 ' + dotCls + '">' + mark + '</span>' +
-            '<span class="' + (isPassed ? 'text-slate-400 dark:text-slate-500' : 'text-slate-600 dark:text-slate-300') + '">' + escapeHtml(c.label) +
-            (c.hint ? '<span class="block text-slate-400 dark:text-slate-500 text-[11.5px]">' + escapeHtml(c.hint) + '</span>' : '') +
-            '</span></li>';
-    }
-
-    function escapeHtml(s) {
-        return (s || '').replace(/[&<>"']/g, function (m) {
-            return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
         });
     }
 
