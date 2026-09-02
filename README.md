@@ -66,6 +66,7 @@ Huvanti is a free, self-hosted publishing platform: a fast multi-author blog fro
 
 ### CMS & Site Management
 - Dashboard stats, posts CRUD with bulk actions + trash, categories (drag & drop), pages, navigation manager, comment moderation, contact inbox, feedback, ads manager
+- **User management**: a full users list in the admin panel with live stats, search, role and status filters, sorting and pagination; change roles inline, suspend or unsuspend accounts (instant sign out everywhere), mark emails verified, send password reset links, reassign posts and delete accounts, individually or in bulk; the acting admin and the last active admin are always protected from lockout
 - **Site themes**: Emerald (default), Material (indigo), Ocean (cyan) and Sunset (amber); switching the theme in the admin panel recolors every page of the site, both panels and both color modes, from one palette source (`resources/css/app.css`)
 - **Site templates**: Classic (default), Material and Editorial; switching the template in the admin panel reshapes corners, elevation, buttons and display typography across every page, both panels and both color modes (`app/Support/SiteTemplates.php` + the SITE TEMPLATES block in `resources/css/app.css`)
 - Light/dark mode with a sliding day/night switch and a circular reveal transition; the admin and author sidebars stay high contrast dark in both modes

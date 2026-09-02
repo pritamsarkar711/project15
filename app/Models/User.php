@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\URL;
 
 use App\Models\Category;
 
-#[Fillable(['name', 'email', 'password', 'role', 'bio', 'avatar', 'google_id', 'two_factor_enabled', 'two_factor_secret', 'theme_preference', 'google2fa_secret', 'author_avatar_path', 'username', 'role_title', 'niche', 'panel_font', 'portfolio_url', 'social_links', 'is_verified', 'country'])]
+#[Fillable(['name', 'email', 'password', 'role', 'status', 'email_verified_at', 'last_login_at', 'bio', 'avatar', 'google_id', 'two_factor_enabled', 'two_factor_secret', 'theme_preference', 'google2fa_secret', 'author_avatar_path', 'username', 'role_title', 'niche', 'panel_font', 'portfolio_url', 'social_links', 'is_verified', 'country'])]
 #[Hidden(['password', 'remember_token', 'two_factor_secret', 'google2fa_secret'])]
 class User extends Authenticatable
 {
@@ -30,6 +30,7 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'last_login_at' => 'datetime',
             'password' => 'hashed',
             'two_factor_enabled' => 'boolean',
             'is_verified' => 'boolean',
