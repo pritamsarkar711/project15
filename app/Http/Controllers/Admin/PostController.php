@@ -538,7 +538,9 @@ class PostController extends Controller
         }
 
         $tab = $request->input('tab', 'pending');
-        $query = Post::query()->with(['category', 'user']);
+        // faqs eager-loaded so the review form can show and edit the author's
+        // FAQ section before the post is approved and published.
+        $query = Post::query()->with(['category', 'user', 'faqs']);
         $query = match ($tab) {
             'pending'   => $query->where('review_status', 'pending_review'),
             'returned'  => $query->where('review_status', 'returned'),
@@ -601,7 +603,18 @@ class PostController extends Controller
         )['score'];
 
         $post->save();
-        $this->syncFaqs($request, $post);
+
+        // FAQ preservation guard (bug fix): sync the FAQ section ONLY when the
+        // review form actually posted it (the faqs_sync marker or real faqs
+        // fields). The review form ships both, so a normal approval re-syncs
+        // cleanly, including intentional full removal by the admin. A request
+        // without either (stale tab, cached page, form without FAQ fields)
+        // must NEVER touch the stored FAQs: the old unconditional syncFaqs()
+        // call deleted the author's entire FAQ section here before publishing,
+        // so every approved post went live without its FAQs.
+        if ($request->boolean('faqs_sync') || $request->filled('faqs')) {
+            $this->syncFaqs($request, $post);
+        }
 
         // Notify the author that their post is now live.
         if ($post->user_id && $post->user) {

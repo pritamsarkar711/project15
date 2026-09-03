@@ -61,7 +61,7 @@ DirectoryIndex index.php index.html
 
 # A unique, cache-independent signal that the corrected deployment is active.
 <IfModule mod_headers.c>
-    Header always set X-Huvanti-Deploy "v69-2026-09-03-revert-arena-pr69-repo-cleanup"
+    Header always set X-Huvanti-Deploy "v70-2026-09-03-faq-survives-approval"
     Header always set X-Content-Type-Options "nosniff"
     Header always set X-Frame-Options "SAMEORIGIN"
     Header always set Referrer-Policy "strict-origin-when-cross-origin"

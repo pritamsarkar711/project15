@@ -12,7 +12,7 @@ pristine set of generated loader files for self-repair.
 Current deployment marker:
 
 ```text
-v69-2026-09-03-revert-arena-pr69-repo-cleanup
+v70-2026-09-03-faq-survives-approval
 ```
 
 ## "I pushed to GitHub but my site didn't change" — read this first
@@ -199,13 +199,13 @@ https://huvanti.com/deployment.json
 Expected JSON includes:
 
 ```json
-"deployment": "v69-2026-09-03-revert-arena-pr69-repo-cleanup"
+"deployment": "v70-2026-09-03-faq-survives-approval"
 ```
 
 Responses also include this header:
 
 ```text
-X-Huvanti-Deploy: v69-2026-09-03-revert-arena-pr69-repo-cleanup
+X-Huvanti-Deploy: v70-2026-09-03-faq-survives-approval
 ```
 
 A command-line check is:
