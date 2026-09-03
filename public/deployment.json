@@ -1,1 +1,5 @@
-{"deployment":"v69-2026-09-03-revert-arena-pr69-repo-cleanup","date":"2026-09-03","note":"Reverted the mistakenly merged arena PR #69 (AI history channel SEO article bundle and seeder) with a clean revert commit. Repo hygiene pass: removed the dead AI Studio React scaffold (root index.html, src/, tsconfig.json, metadata.json), orphaned images (hero-person.png, logo.svg, favicon-32.png, favicon-64.png) and an unused composer stub. Synchronized the deployment marker across .htaccess, public/index.php, deploy.sh and this file. Updated HOSTINGER_DEPLOYMENT.md and tests/deployment_static.py to match the current packaging (tracked composer manifests, vendored fallback, autoloader backup)."}
+{
+  "deployment": "v70-2026-09-03-faq-survives-approval",
+  "date": "2026-09-03",
+  "note": "Bug fix: approving an author submission in the review queue wiped the author's FAQ section before publishing. The approve flow now syncs FAQs only when the review form posts them, and the review form shows the author's FAQs prefilled and editable. Deployment marker bumped to v70 to force view cache refresh."
+}

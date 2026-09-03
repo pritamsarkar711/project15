@@ -92,6 +92,24 @@
                             <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Content (edit before publishing)</label>
                             <textarea name="content" rows="14" class="w-full p-2 font-mono text-[12px] leading-relaxed bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none text-slate-900 dark:text-white">{{ $post->content }}</textarea>
                         </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">FAQ <span class="text-slate-400">(written by the author, editable before publishing)</span></label>
+                            @if($post->faqs->isEmpty())
+                                <p class="text-xs text-slate-500 dark:text-slate-400 mb-2">The author did not add any FAQs.</p>
+                            @endif
+                            <div data-rq-faqs class="space-y-2">
+                                @foreach($post->faqs as $fi => $faq)
+                                    <div class="rq-faq-item p-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+                                        <input type="text" name="faqs[{{ $fi }}][question]" value="{{ $faq->question }}" placeholder="Question" class="w-full h-9 px-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none text-sm text-slate-900 dark:text-white">
+                                        <textarea name="faqs[{{ $fi }}][answer]" rows="2" placeholder="Answer" class="mt-2 w-full p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none text-sm text-slate-900 dark:text-white">{{ $faq->answer }}</textarea>
+                                        <button type="button" data-rq-remove-faq class="mt-2 text-xs font-semibold text-red-600 dark:text-red-400 hover:underline">Remove</button>
+                                    </div>
+                                @endforeach
+                            </div>
+                            <input type="hidden" name="faqs_sync" value="1">
+                            <button type="button" data-rq-add-faq class="mt-2 text-xs font-semibold text-[var(--brand-ink)] dark:text-[var(--brand-light)] hover:underline">Add another FAQ</button>
+                            <p class="mt-1 text-[11px] text-slate-400 dark:text-slate-500">Removing every row deletes the FAQ section from the published post.</p>
+                        </div>
                         <div class="flex flex-wrap gap-4 text-sm">
                             <label class="flex items-center gap-2"><input type="checkbox" name="is_featured" value="1" @checked($post->is_featured)> Featured</label>
                             <label class="flex items-center gap-2"><input type="checkbox" name="is_affiliate" value="1" @checked($post->is_affiliate)> Affiliate</label>
@@ -142,6 +160,34 @@ document.querySelectorAll('[data-open-return]').forEach(function(btn){
             }
         }
     });
+});
+// Review FAQ editor: add / remove rows inside the approve form. Delegated so
+// every review panel on the page works without per-row bindings.
+document.addEventListener('click', function(e){
+    var removeBtn = e.target.closest('[data-rq-remove-faq]');
+    if (removeBtn) {
+        e.preventDefault();
+        var item = removeBtn.closest('.rq-faq-item');
+        if (item) item.remove();
+        return;
+    }
+    var addBtn = e.target.closest('[data-rq-add-faq]');
+    if (addBtn) {
+        e.preventDefault();
+        var wrap = addBtn.closest('form').querySelector('[data-rq-faqs]');
+        if (!wrap) return;
+        var idx = 0;
+        while (wrap.querySelector('input[name="faqs[' + idx + '][question]"]')) idx++;
+        var row = document.createElement('div');
+        row.className = 'rq-faq-item p-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700';
+        row.innerHTML =
+            '<input type="text" name="faqs[' + idx + '][question]" placeholder="Question" class="w-full h-9 px-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none text-sm text-slate-900 dark:text-white">' +
+            '<textarea name="faqs[' + idx + '][answer]" rows="2" placeholder="Answer" class="mt-2 w-full p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none text-sm text-slate-900 dark:text-white"></textarea>' +
+            '<button type="button" data-rq-remove-faq class="mt-2 text-xs font-semibold text-red-600 dark:text-red-400 hover:underline">Remove</button>';
+        wrap.appendChild(row);
+        var q = row.querySelector('input');
+        if (q) q.focus();
+    }
 });
 </script>
 @endpush

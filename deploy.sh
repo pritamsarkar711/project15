@@ -3,7 +3,7 @@
 
 set -Eeuo pipefail
 
-readonly DEPLOYMENT="v69-2026-09-03-revert-arena-pr69-repo-cleanup"
+readonly DEPLOYMENT="v70-2026-09-03-faq-survives-approval"
 echo "=== Huvanti ${DEPLOYMENT} post-deploy ==="
 
 php -v

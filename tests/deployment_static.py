@@ -23,7 +23,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-MARKER = "v69-2026-09-03-revert-arena-pr69-repo-cleanup"
+MARKER = "v70-2026-09-03-faq-survives-approval"
 failures: list[str] = []
 
 
