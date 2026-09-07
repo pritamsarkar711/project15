@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@push('head')<meta name="robots" content="noindex, nofollow">@endpush
+@php($robots = 'noindex, nofollow')
 
 @section('content')
 <div class="max-w-[460px] mx-auto px-4 py-12">

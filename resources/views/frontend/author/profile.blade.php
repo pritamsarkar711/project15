@@ -9,7 +9,7 @@
     $metaDescription = \Illuminate\Support\Str::limit(strip_tags($author->bio ?? ''), 150)
         ?: ('Browse all articles published by ' . $author->name . ' on ' . setting('site_name', 'Huvanti') . ' — profile, stats and latest posts in one place.');
     if ($author->author_avatar_path) {
-        $ogImage = request()->getSchemeAndHttpHost() . asset('storage/' . $author->author_avatar_path);
+        $ogImage = \App\Support\Seo::canonicalOrigin() . asset('storage/' . $author->author_avatar_path);
     }
 @endphp
 

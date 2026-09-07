@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('content')
 @php
-    $shareUrl = urlencode(request()->getSchemeAndHttpHost() . '/blog/' . $post->slug);
+    $shareUrl = urlencode(\App\Support\Seo::canonicalOrigin() . '/blog/' . $post->slug);
     $shareText = urlencode($post->title);
     $authorName = $post->user->name ?? $post->author_name ?? 'Huvanti Team';
     $authorBio = $post->user->bio ?? $post->author_bio ?? 'Editor at Huvanti';
@@ -21,15 +21,15 @@
     // og:image / twitter:image for social scrapers — absolute URL required.
     // Legacy rows may store a full http URL as featured_image — only prefix
     // the host for root-relative paths.
-    $ogImage = str_starts_with($featuredImageUrl, 'http') ? $featuredImageUrl : request()->getSchemeAndHttpHost() . $featuredImageUrl;
+    $ogImage = str_starts_with($featuredImageUrl, 'http') ? $featuredImageUrl : \App\Support\Seo::canonicalOrigin() . $featuredImageUrl;
 @endphp
 @php
     // ---- JSON-LD payload (computed here, printed below) ----
     // Strings are json_encode'd ONCE in PHP and echoed with {!! !!} so
     // quotes survive inside the script tag ({{ }} would HTML-escape them).
     $ldStr    = 'Illuminate\Support\Str';
-    $ldSite   = request()->getSchemeAndHttpHost();
-    $ldUrl    = $ldSite . '/blog/' . $post->slug;
+    $ldSite   = \App\Support\Seo::canonicalOrigin();
+    $ldUrl    = \App\Support\Seo::canonicalUrl();
     $ldImage  = $post->featured_image
         ? (str_starts_with((string) storage_image_url($post->featured_image), 'http')
             ? storage_image_url($post->featured_image)

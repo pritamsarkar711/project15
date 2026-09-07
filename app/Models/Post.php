@@ -38,18 +38,15 @@ class Post extends Model
      */
     public function publicUrl(): string
     {
-        $base = rtrim((string) config('services.indexnow.host'), '/');
+        // Always the HTTPS production apex (or configured IndexNow host in
+        // console context) — never an http:// or www variant, both of which
+        // 301-redirect and waste crawler budget.
         try {
-            if (app()->bound('request')) {
-                $host = request()->getSchemeAndHttpHost();
-                if ($host && !str_starts_with($host, 'http://localhost')) {
-                    $base = rtrim($host, '/');
-                }
-            }
+            return \App\Support\Seo::canonicalOrigin().'/blog/'.$this->slug;
         } catch (\Throwable $e) {
-            // console / worker — keep the configured host
+            $base = rtrim((string) config('services.indexnow.host'), '/');
+            return 'https://'.$base.'/blog/'.$this->slug;
         }
-        return $base.'/blog/'.$this->slug;
     }
 
     /** All social auto-post attempts for this post, one row per network. */

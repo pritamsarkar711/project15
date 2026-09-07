@@ -27,6 +27,20 @@ return \App\Application::configure(basePath: dirname(__DIR__))
             'admin' => \App\Http\Middleware\IsAdmin::class,
             'author' => \App\Http\Middleware\IsAuthor::class,
         ]);
+        // Trust the reverse proxy in front of the app (Hostinger's hCDN /
+        // LiteSpeed edge forwards visitor HTTPS traffic to the origin over
+        // plain HTTP and sends X-Forwarded-* headers). Without this,
+        // Laravel ignores those headers: isSecure() is false and
+        // getSchemeAndHttpHost() emits "http://…" for a site that is only
+        // ever served over HTTPS. That made canonical tags, og:url and
+        // JSON-LD point at http:// URLs which .htaccess 301-redirects to
+        // https — crawlers then follow a redirect for EVERY canonical
+        // signal, wasting crawl budget and delaying/depressing indexing.
+        // '*' trusts the immediate upstream proxy (the edge always is one
+        // on shared hosting); X-Forwarded-Proto is only honoured from a
+        // trusted hop, which prevents header spoofing beyond the edge.
+        $middleware->trustProxies(at: '*');
+
         // Auto-clear compiled Blade views after every admin write (POST/PUT/PATCH/DELETE)
         // so changes are instantly visible on shared hosting with OPcache.
         $middleware->append(\App\Http\Middleware\ClearViewCacheAfterWrite::class);

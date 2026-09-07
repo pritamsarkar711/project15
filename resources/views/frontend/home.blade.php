@@ -8,10 +8,10 @@
             '@context' => 'https://schema.org',
             '@type' => 'WebSite',
             'name' => setting('site_name', 'Huvanti'),
-            'url' => request()->getSchemeAndHttpHost() . '/',
+            'url' => \App\Support\Seo::canonicalOrigin() . '/',
             'potentialAction' => [
                 '@type' => 'SearchAction',
-                'target' => request()->getSchemeAndHttpHost() . '/search?q={search_term_string}',
+                'target' => \App\Support\Seo::canonicalOrigin() . '/search?q={search_term_string}',
                 'query-input' => 'required name=search_term_string',
             ],
         ],
