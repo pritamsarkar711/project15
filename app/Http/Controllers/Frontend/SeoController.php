@@ -23,18 +23,13 @@ class SeoController extends Controller
      */
     protected function absoluteBase(): string
     {
-        try {
-            $base = rtrim(request()->getSchemeAndHttpHost(), '/');
-        } catch (\Throwable $e) {
-            $base = '';
-        }
-        if ($base === '' || str_contains($base, 'localhost')) {
-            $configured = rtrim((string) config('app.url', ''), '/');
-            if ($configured !== '' && !str_contains($configured, 'localhost')) {
-                $base = $configured;
-            }
-        }
-        return $base !== '' ? $base : rtrim(url('/'), '/');
+        // Central canonical origin: HTTPS apex from config('app.url') in
+        // production, request-derived on local previews. This keeps the
+        // sitemap, robots.txt Sitemap line and llms.txt on the SAME origin
+        // as every <link rel=canonical> — previously an edge-forwarded
+        // request made getSchemeAndHttpHost() emit http:// while the site
+        // itself is HTTPS, so the sitemap advertised URLs that 301-redirect.
+        return \App\Support\Seo::canonicalOrigin();
     }
 
     /**
@@ -82,6 +77,13 @@ class SeoController extends Controller
             $blocks[] = "User-agent: {$bot}\nAllow: /";
         }
 
+        // Crawl budget: admin/auth/search are blocked outright. Query-string
+        // URLs are then blocked as PATTERNS — parameter variants (?utm_*,
+        // ?ref=, ?gclid=, free-text ?q=…) all render an otherwise-indexable
+        // page whose canonical points elsewhere; left crawlable they waste
+        // the bot's requests and pile up in GSC as canonical-chosen
+        // duplicates. The indexable facets (?page=, ?category=) are NOT
+        // listed, so they stay fully crawlable.
         $defaultBlock = "User-agent: *\n"
             . "Disallow: /manage\n"
             . "Disallow: /author-dashboard\n"
@@ -89,7 +91,15 @@ class SeoController extends Controller
             . "Disallow: /login\n"
             . "Disallow: /register\n"
             . "Disallow: /forgot-password\n"
-            . "Disallow: /reset-password";
+            . "Disallow: /reset-password\n"
+            . "Disallow: /*?q=\n"
+            . "Disallow: /*?utm_\n"
+            . "Disallow: /*?ref=\n"
+            . "Disallow: /*?gclid=\n"
+            . "Disallow: /*?fbclid=\n"
+            . "Allow: /blog?category=\n"
+            . "Allow: /blog?page=\n"
+            . "Allow: /category/\n";
 
         $sitemapLine = "Sitemap: " . $this->absoluteBase() . "/sitemap.xml";
 
@@ -219,11 +229,12 @@ class SeoController extends Controller
         }
 
         try {
-            // Static pages linked from the header — indexable, so they belong
-            // in the sitemap. The Top Contributors page only exists while the
-            // admin feature switch is on (otherwise it 404s).
-            $entries[] = ['loc' => $base.'/about', 'lastmod' => null];
-            $entries[] = ['loc' => $base.'/contact', 'lastmod' => null];
+            // The Top Contributors page only exists while the admin feature
+            // switch is on (otherwise it 404s). /about and /contact are NOT
+            // added here: like every other built-in page they are emitted by
+            // the Page loop below via StaticPages::canonicalUrl(). Listing
+            // them twice produced duplicate <url> entries, which is invalid
+            // per the sitemap spec and shows up as noise in GSC.
             if (\App\Models\Setting::get('top_contributors_enabled', '1') === '1') {
                 $entries[] = ['loc' => $base.'/top-contributors', 'lastmod' => null];
             }

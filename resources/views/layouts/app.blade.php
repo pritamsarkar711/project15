@@ -26,23 +26,24 @@
     @endphp
     <title>{{ $seoFinalTitle }}</title>
     <meta name="description" content="{{ $seoFinalDescription }}">
+    {{-- Robots directive: indexable by default. Views that must stay out
+         of the index set $robots explicitly (e.g. $robots='noindex,follow'
+         in search.blade.php) so exactly ONE robots tag is emitted. Views
+         that previously pushed a SECOND noindex tag via @push('head')
+         have been switched to this variable — two conflicting robots tags
+         make the signal ambiguous to crawlers. --}}
     <meta name="robots" content="{{ $robots ?? 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1' }}">
     @php
-        // Canonical + og:url: build an ABSOLUTE url from the request's own
-        // scheme/host (config('app.url') may still be a localhost default on
-        // some deploys, and the root-relative URL generator would emit
-        // "/path" which is invalid for canonical/og:url). All query params
-        // are stripped EXCEPT ?page=N so paginated lists canonicalize
-        // correctly; search/filter query strings (?q=, ?category=) collapse
-        // to the clean URL, which kills duplicate-content index bloat.
-        $seoHost = request()->getSchemeAndHttpHost();
-        if (str_contains($seoHost, 'localhost')) {
-            $cfg = rtrim((string) config('app.url', ''), '/');
-            if ($cfg !== '' && !str_contains($cfg, 'localhost')) { $seoHost = $cfg; }
-        }
-        $seoPath = request()->getPathInfo();
-        $seoPage = (int) request()->query('page', 1);
-        $seoCanonical = rtrim($seoHost, '/') . $seoPath . ($seoPage > 1 ? '?page=' . $seoPage : '');
+        // Canonical + og:url come from \App\Support\Seo: a single source of
+        // truth that always emits the production HTTPS apex (never http://,
+        // never www — both of those variants 301-redirect here, so a self-
+        // canonical pointing at them would point crawlers at a redirect)
+        // and collapses crawl-noise query params (?q=, utm_*, ref, sort…)
+        // to the clean URL while keeping ?page= and the /blog?category=
+        // facet. This is what stops the GSC "Alternate page with proper
+        // canonical tag" pile-up from parameter duplicates.
+        $seoCanonical = \App\Support\Seo::canonicalUrl();
+        $seoHost = \App\Support\Seo::canonicalOrigin();
         // Open Graph fallbacks mirror the title/description chain so
         // every page shares something sensible about itself.
         $seoOgTitle = $seoFinalTitle;
@@ -66,8 +67,8 @@
             ?? ((isset($post) && !empty($post->featured_image))
                 ? (str_starts_with((string) storage_image_url($post->featured_image), 'http')
                     ? storage_image_url($post->featured_image)
-                    : request()->getSchemeAndHttpHost() . storage_image_url($post->featured_image))
-                : request()->getSchemeAndHttpHost() . asset('images/og-huvanti.jpg'));
+                    : $seoHost . storage_image_url($post->featured_image))
+                : $seoHost . asset('images/og-huvanti.jpg'));
     @endphp
     <meta property="og:image" content="{{ $seoOgImage }}">
     <meta property="og:image:alt" content="{{ $seoOgTitle }}">

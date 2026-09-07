@@ -61,7 +61,7 @@ class ResetPassword extends BaseResetPassword
 
         $base = '';
         try {
-            $base = rtrim(request()->getSchemeAndHttpHost(), '/');
+            $base = \App\Support\Seo::canonicalOrigin();
         } catch (\Throwable $e) {
             $base = '';
         }

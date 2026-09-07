@@ -1,5 +1,13 @@
 @extends('layouts.app')
 @php($metaTitle = 'Blog — Latest Articles & Expert Insights | ' . setting('site_name','huvanti.com'))
+{{-- The free-text filter (?q=) is a search-results duplicate of /search:
+     keep it OUT of the index (the clean /blog list and /blog?category=
+     facet stay indexable). Its canonical already collapses to the clean
+     URL via Seo::canonicalUrl(); noindex + that canonical makes Google's
+     decision explicit and stops parameter-URL "Alternate page" noise. --}}
+@if(request()->filled('q'))
+    @php($robots = 'noindex, follow')
+@endif
 @section('content')
 <div class="border-b border-[#e6e8ee] dark:border-[#22262e] bg-white dark:bg-[#0f1115]">
     <div class="max-w-[1200px] mx-auto px-4 sm:px-6 page-head !pb-6">

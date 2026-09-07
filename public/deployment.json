@@ -1,5 +1,5 @@
 {
-  "deployment": "v70-2026-09-03-faq-survives-approval",
-  "date": "2026-09-03",
-  "note": "Bug fix: approving an author submission in the review queue wiped the author's FAQ section before publishing. The approve flow now syncs FAQs only when the review form posts them, and the review form shows the author's FAQs prefilled and editable. Deployment marker bumped to v70 to force view cache refresh."
+  "deployment": "v71-2026-09-07-canonical-https-trustproxies",
+  "date": "2026-09-07",
+  "note": "SEO/indexing fixes: trustHosts/trusted proxies so X-Forwarded-Proto is honoured (canonical/og/sitemap URLs are always the HTTPS apex, never http:// or www); canonical tag now collapses crawl-noise query params (utm/ref/gclid/q) while keeping ?page= and /blog?category=; sitemap duplicate about/contact entries removed; single robots meta tag per page (noindex views set $robots instead of pushing a second tag); robots.txt disallows parameter URL patterns to protect crawl budget."
 }
